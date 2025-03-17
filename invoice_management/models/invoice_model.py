@@ -303,7 +303,7 @@ class ClinicInsuranceInvoice(models.Model):
     _name = 'clinic.invoice.insurance'
     _description = 'Hóa đơn bảo hiểm'
 
-    name = fields.Char(string='Số hóa đơn BH', readonly=True, copy=False, default='New')
+    name = fields.Char(string='Số hóa đơn BH', required=True, copy=False, readonly=True, default='New')
     date_from = fields.Date(string='Từ ngày', required=True)
     date_to = fields.Date(string='Đến ngày', required=True)
     state = fields.Selection([
@@ -349,7 +349,7 @@ class ClinicInsuranceInvoice(models.Model):
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
-                vals['name'] = self.env['ir.sequence'].next_by_code('clinic.insurance.invoice') or 'New'
+                vals['name'] = self.env['ir.sequence'].next_by_code('clinic.invoice.insurance') or 'New'
         return super().create(vals_list)
 
     @api.onchange('date_from', 'date_to')

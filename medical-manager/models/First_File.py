@@ -6,7 +6,7 @@ class MedicalTest(models.Model):
     _description = 'Medical Test Management'
 
     test_code = fields.Char(string='Mã xét nghiệm và chuẩn đoán', required=True)
-    patient_id = fields.Many2one('hospital.patient', string='Bệnh nhân', required=True)  # Tham chiếu module khác
+    patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True)  # Tham chiếu module khác
     test_type = fields.Selection([
         ('test', 'Chuẩn đoán'),
         ('blood', 'Máu'),

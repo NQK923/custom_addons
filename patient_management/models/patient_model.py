@@ -6,6 +6,7 @@ from datetime import timedelta, date
 class ClinicPatient(models.Model):
     _name = 'clinic.patient'
     _description = 'Thông tin bệnh nhân'
+    _inherit = 'clinic.patient'
 
     name = fields.Char(string='Họ và Tên', required=True)
     date_of_birth = fields.Date(string='Ngày sinh')
@@ -28,18 +29,19 @@ class ClinicPatient(models.Model):
     ], string='Trạng thái', default='under_treatment')
     last_activity_date = fields.Datetime(string='Ngày hoạt động gần nhất', default=fields.Datetime.now)
     note = fields.Text(string='Ghi chú')
-    insurance = fields.Many2one('clinic.patient.insurance', string='Thông tin bảo hiểm', ondelete='set null')
+    insurance = fields.Many2one('clinic.insurance.policy', string='Thông tin bảo hiểm', ondelete='set null')
     insurance_number = fields.Char(string='Số thẻ BHYT', readonly=True, related='insurance.insurance_number')
-    initial_facility = fields.Char(string='Nơi ĐKKCB', readonly=True, related='insurance.initial_facility')
+    initial_facility = fields.Char(string='Nơi ĐKKCB', readonly=True, related='insurance.insurance_initial_facility')
     tier = fields.Selection([
         ('central', 'Trung ương'),
         ('province', 'Tỉnh'),
         ('district', 'Quận/Huyện'),
         ('commune', 'Xã')
-    ], string='Tuyến', readonly=True, related='insurance.tier')
-    expiry_date = fields.Date(string='Thời hạn', readonly=True, related='insurance.expiry_date')
+    ], string='Tuyến', readonly=True, related='insurance.insurance_tier')
+    expiry_date = fields.Date(string='Thời hạn', readonly=True, related='insurance.insurance_expiry_date')
     has_valid_insurance = fields.Boolean(string='Có bảo hiểm hợp lệ', compute='_compute_has_valid_insurance')
     insurance_status = fields.Char(string='BHYT', compute='_compute_insurance_status')
+    room_id = fields.Many2one('clinic.room', string='Phòng')
 
     @api.depends('date_of_birth')
     def _compute_age(self):
@@ -98,10 +100,13 @@ class ClinicPatient(models.Model):
                 'active': True,
             })
 
-    @api.depends('insurance')
+    @api.depends('insurance', 'insurance.insurance_expiry_date')
     def _compute_has_valid_insurance(self):
         for record in self:
-            record.has_valid_insurance = bool(record.insurance and record.insurance.state == 'valid')
+            if record.insurance and record.insurance.insurance_state == 'valid':
+                record.has_valid_insurance = True
+            else:
+                record.has_valid_insurance = False
 
     @api.depends('has_valid_insurance')
     def _compute_insurance_status(self):
@@ -110,11 +115,11 @@ class ClinicPatient(models.Model):
 
     def action_add_insurance(self):
         # Logic để tạo bản ghi bảo hiểm mới
-        insurance = self.env['clinic.patient.insurance'].create({
+        insurance = self.env['clinic.insurance.policy'].create({
             'insurance_number': 'TEMP_NUMBER',  # Thay bằng logic thực tế
-            'initial_facility': 'Some Facility',
-            'tier': 'district',
-            'expiry_date': date.today() + timedelta(days=365),
+            'insurance_initial_facility': 'Some Facility',
+            'insurance_tier': 'district',
+            'insurance_expiry_date': date.today() + timedelta(days=365),
         })
         self.write({'insurance': insurance.id})
         return True

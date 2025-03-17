@@ -5,7 +5,7 @@
         <field name="model">patient.care.tracking</field>
         <field name="arch" type="xml">
             <list string="Patient Care Tracking">
-                <field name="patient_code"/>
+                <field name="patient_id"/>
                 <field name="care_date"/>
                 <field name="temperature"/>
                 <field name="blood_pressure"/>
@@ -23,7 +23,7 @@
             <form string="Patient Care Tracking">
                 <sheet>
                     <group>
-                        <field name="patient_code"/>
+                        <field name="patient_id"/>
                         <field name="care_date"/>
                     </group>
                     <group string="Dấu hiệu sinh tồn">

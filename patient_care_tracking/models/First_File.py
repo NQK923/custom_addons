@@ -5,8 +5,8 @@ class PatientCareTracking(models.Model):
     _name = "patient.care.tracking"
     _description = "Theo dõi chăm sóc bệnh nhân"
 
-    patient_code = fields.Many2one(
-        'hospital.patient',
+    patient_id = fields.Many2one(
+        'clinic.patient',
         string='Mã bệnh nhân',
         required=True
     )
