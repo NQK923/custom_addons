@@ -1,0 +1,166 @@
+<odoo>
+    <!-- Define the missing menu item -->
+    <menuitem id="menu_pharmacy_root" name="Quản lý dược phẩm" sequence="10"/>
+
+    <!-- Sequence -->
+    <record id="seq_prescription_order" model="ir.sequence">
+        <field name="name">Prescription Order</field>
+        <field name="code">prescription.order</field>
+        <field name="prefix">PRES-</field>
+        <field name="padding">5</field>
+    </record>
+
+    <!-- Menu Root -->
+    <menuitem id="menu_prescription_root" name="Đơn thuốc" parent="menu_pharmacy_root" action="action_prescription_order" sequence="30"/>
+
+    <!-- Action -->
+    <record id="action_prescription_order" model="ir.actions.act_window">
+        <field name="name">Đơn thuốc</field>
+        <field name="res_model">prescription.order</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_prescription_order_list" model="ir.ui.view">
+        <field name="name">prescription.order.list</field>
+        <field name="model">prescription.order</field>
+        <field name="arch" type="xml">
+            <list string="Prescription Orders">
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="staff_id"/>
+                <field name="numdate"/>
+
+                <field name="date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_prescription_order_form" model="ir.ui.view">
+        <field name="name">prescription.order.form</field>
+        <field name="model">prescription.order</field>
+        <field name="arch" type="xml">
+            <form string="Prescription Order">
+                <sheet>
+                    <group>
+                        <field name="name" readonly="1"/>
+                        <field name="patient_id"/>
+                        <field name="staff_id"/>
+                        <field name="numdate"/>
+                        <field name="date"/>
+                    </group>
+                    <notebook>
+                        <page string="Prescription Lines">
+                            <field name="prescription_line_ids">
+                                <list editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="dosage"/>
+                                    <field name="instructions"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+
+<!--    medical-->
+
+    <!-- Menu Pharmacy Products -->
+    <record id="view_pharmacy_product_list" model="ir.ui.view">
+        <field name="name">pharmacy.product.list</field>
+        <field name="model">pharmacy.product</field>
+        <field name="arch" type="xml">
+            <list string="Pharmacy Products">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="category"/>
+                <field name="manufacturer"/>
+                <field name="unit_price"/>
+                <field name="quantity"/>
+                <field name="date"/>
+                <field name="expiry"/>
+
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pharmacy_product_form" model="ir.ui.view">
+        <field name="name">pharmacy.product.form</field>
+        <field name="model">pharmacy.product</field>
+        <field name="arch" type="xml">
+            <form string="Pharmacy Product">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="category"/>
+                        <field name="manufacturer"/>
+                        <field name="unit_price"/>
+                        <field name="quantity" readonly="1"/>
+                        <field name="description"/>
+                        <field name="date"/>
+                        <field name="expiry"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_product" model="ir.actions.act_window">
+        <field name="name">Kho dược phẩm</field>
+        <field name="res_model">pharmacy.product</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_pharmacy_products" name="Kho dược phẩm" parent="menu_pharmacy_root" action="action_pharmacy_product" sequence="10"/>
+
+    <!-- Menu Stock Moves -->
+    <record id="view_pharmacy_stock_move_list" model="ir.ui.view">
+        <field name="name">pharmacy.stock.move.list</field>
+        <field name="model">pharmacy.stock.move</field>
+        <field name="arch" type="xml">
+            <list string="Stock Moves">
+                <field name="product_id"/>
+                <field name="move_type"/>
+                <field name="quantity"/>
+                <field name="date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pharmacy_stock_move_form" model="ir.ui.view">
+        <field name="name">pharmacy.stock.move.form</field>
+        <field name="model">pharmacy.stock.move</field>
+        <field name="arch" type="xml">
+            <form string="Stock Move">
+                <sheet>
+                    <group>
+                        <field name="product_id"/>
+                        <field name="move_type"/>
+                        <field name="quantity"/>
+                        <field name="date"/>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_stock_move" model="ir.actions.act_window">
+        <field name="name">Phiếu nhập/xuất dược phẩm</field>
+        <field name="res_model">pharmacy.stock.move</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_pharmacy_stock_moves" name="Phiếu nhập/xuất dược phẩm" parent="menu_pharmacy_root" action="action_pharmacy_stock_move" sequence="20"/>
+
+</odoo>

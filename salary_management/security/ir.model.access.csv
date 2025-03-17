@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_clinic_staff_salary,access.clinic.staff.salary,model_clinic_staff_salary,base.group_user,1,1,1,1
+access_clinic_staff_salary_allowance,access.clinic.staff.salary.allowance,model_clinic_staff_salary_allowance,base.group_user,1,1,1,1
+access_clinic_staff_salary_bonus,access.clinic.staff.salary.bonus,model_clinic_staff_salary_bonus,base.group_user,1,1,1,1
+access_clinic_staff_salary_deduction,access.clinic.staff.salary.deduction,model_clinic_staff_salary_deduction,base.group_user,1,1,1,1
+access_clinic_staff_salary_qualification_level,access.clinic.staff.salary.qualification_level,model_clinic_staff_salary_qualification_level,base.group_user,1,1,1,1
+access_clinic_salary_sheet,access.clinic.salary.sheet,model_clinic_salary_sheet,base.group_user,1,1,1,1

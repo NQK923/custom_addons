@@ -1,0 +1,194 @@
+<odoo>
+    <!-- Staff List View -->
+    <record id="view_clinic_staff_list" model="ir.ui.view">
+        <field name="name">clinic.staff.list</field>
+        <field name="model">clinic.staff</field>
+        <field name="arch" type="xml">
+            <list string="Staff" default_order="staff_code">
+                <field name="staff_code"/>
+                <field name="staff_type"/>
+                <field name="name"/>
+                <field name="gender"/>
+                <field name="contact_info"/>
+                <field name="faculty"/>
+                <field name="department"/>
+                <field name="qualification"/>
+                <field name="labor_type" string="Loại lao động"/>
+                <field name="status"/>
+                <button name="action_list_check_in_out" type="object" string="Chấm công" icon="fa-clock-o" class="btn-primary"/>
+                <button name="action_list_open_performance_form" type="object" string="Đánh giá" icon="fa-star" class="btn-success"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Staff Type List View -->
+    <record id="view_clinic_staff_type_list" model="ir.ui.view">
+        <field name="name">clinic.staff.type.list</field>
+        <field name="model">clinic.staff.type</field>
+        <field name="arch" type="xml">
+            <list string="Staff Type" default_order="type_code">
+                <field name="type_code"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Staff Form View -->
+    <record id="view_clinic_staff_form" model="ir.ui.view">
+        <field name="name">clinic.staff.form</field>
+        <field name="model">clinic.staff</field>
+        <field name="arch" type="xml">
+            <form string="Staff Form">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_manual_check_in_out" type="object" string="Chấm công" class="oe_stat_button" icon="fa-clock-o"/>
+                        <button name="action_open_performance_form" type="object" string="Đánh giá hiệu suất" class="oe_stat_button" icon="fa-star"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="staff_code" readonly="1" placeholder="Mã nhân sự"/>
+                        </h1>
+                    </div>
+                    <notebook>
+                        <page string="Thông tin chi tiết">
+                            <group>
+                                <field name="staff_type" placeholder="Chức vụ"/>
+                                <field name="name" placeholder="Họ và tên"/>
+                                <field name="date_of_birth"/>
+                                <field name="gender"/>
+                                <field name="contact_info" placeholder="Thông tin liên lạc"/>
+                                <field name="address"/>
+                                <field name="license_number"/>
+                                <field name="department"/>
+                                <field name="faculty"/>
+                                <field name="qualification"/>
+                                <field name="experience_year"/>
+                                <field name="labor_type" string="Loại lao động"/>
+                                <field name="status"/>
+                            </group>
+                        </page>
+                        <page string="Lịch sử chấm công">
+                            <field name="attendance_ids">
+                                <list editable="bottom">
+                                    <field name="date"/>
+                                    <field name="check_in"/>
+                                    <field name="check_out"/>
+                                    <field name="work_hours"/>
+                                    <field name="status"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Đánh giá hiệu suất">
+                            <field name="performance_ids" create="0">
+                                <list editable="bottom">
+                                    <field name="month"/>
+                                    <field name="year"/>
+                                    <field name="score"/>
+                                    <field name="attendance_score"/>
+                                    <field name="work_hours"/>
+                                    <field name="state"/>
+                                    <field name="manager_note"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Staff Type Form View -->
+    <record id="view_clinic_staff_type_form" model="ir.ui.view">
+        <field name="name">clinic.staff.type.form</field>
+        <field name="model">clinic.staff.type</field>
+        <field name="arch" type="xml">
+            <form string="Staff Type Form">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="type_code" readonly="1" placeholder="Mã chức vụ"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="name" placeholder="Tên chức vụ"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Performance Form View -->
+    <record id="view_clinic_staff_performance_form" model="ir.ui.view">
+        <field name="name">clinic.staff.performance.form</field>
+        <field name="model">clinic.staff.performance</field>
+        <field name="arch" type="xml">
+            <form string="Performance Evaluation Form">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_confirm" type="object" string="Xác nhận" class="oe_stat_button"
+                                icon="fa-check" invisible="[('state', 'in', ['confirmed', 'approved'])]"/>
+                        <button name="action_approve" type="object" string="Duyệt" class="oe_stat_button"
+                                icon="fa-thumbs-up" invisible="[('state', '=', 'approved')]"/>
+                    </div>
+                    <group>
+                        <field name="staff_id" widget="many2one" readonly="1"/>
+                        <field name="month"/>
+                        <field name="year"/>
+                        <field name="score" readonly="1"/>
+                        <field name="attendance_score" readonly="1"/>
+                        <field name="work_hours" readonly="1"/>
+                        <field name="state"/>
+                    </group>
+                    <group>
+                        <field name="manager_note"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for Staff -->
+    <record id="action_clinic_staff" model="ir.actions.act_window">
+        <field name="name">Nhân sự</field>
+        <field name="res_model">clinic.staff</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Action for Staff Type -->
+    <record id="action_clinic_staff_type" model="ir.actions.act_window">
+        <field name="name">Chức vụ</field>
+        <field name="res_model">clinic.staff.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Action for Performance (dùng để xóa menu riêng) -->
+    <record id="action_clinic_staff_performance" model="ir.actions.act_window">
+        <field name="name">Đánh giá hiệu suất</field>
+        <field name="res_model">clinic.staff.performance</field>
+        <field name="view_mode">form</field> <!-- Chỉ giữ form, không dùng list -->
+    </record>
+
+    <!-- Menu -->
+    <!-- Root Menu -->
+    <menuitem id="menu_clinic_staff_management" name="Quản lý nhân sự" sequence="10"/>
+
+    <!-- Child Menus -->
+    <menuitem id="menu_clinic_staff"
+              name="Nhân sự"
+              parent="menu_clinic_staff_management"
+              action="action_clinic_staff"
+              sequence="10"/>
+
+    <menuitem id="menu_clinic_staff_type"
+              name="Chức vụ"
+              parent="menu_clinic_staff_management"
+              action="action_clinic_staff_type"
+              sequence="20"/>
+
+    <!-- Xóa menu "Đánh giá hiệu suất" riêng -->
+    <!-- <menuitem id="menu_clinic_staff_performance"
+              name="Đánh giá hiệu suất"
+              parent="menu_clinic_staff_management"
+              action="action_clinic_staff_performance"
+              sequence="30"/> -->
+</odoo>

@@ -1,0 +1,301 @@
+<odoo>
+    <!-- Menu chính trên thanh header -->
+    <menuitem id="menu_salary_management" name="Quản lý lương thưởng" sequence="20"/>
+
+    <!-- Qualification Level Views -->
+    <record id="view_clinic_staff_salary_qualification_level_list" model="ir.ui.view">
+        <field name="name">clinic.staff.salary.qualification_level.list</field>
+        <field name="model">clinic.staff.salary.qualification_level</field>
+        <field name="arch" type="xml">
+            <list string="Hệ số lương">
+                <field name="staff_type_id"/>
+                <field name="rank"/>
+                <field name="salary_factor"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_staff_salary_qualification_level_form" model="ir.ui.view">
+        <field name="name">clinic.staff.salary.qualification_level.form</field>
+        <field name="model">clinic.staff.salary.qualification_level</field>
+        <field name="arch" type="xml">
+            <form string="Hệ số lương">
+                <sheet>
+                    <group>
+                        <field name="staff_type_id"/>
+                        <field name="rank"/>
+                        <field name="salary_factor"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_clinic_staff_salary_qualification_level" model="ir.actions.act_window">
+        <field name="name">Hệ số lương</field>
+        <field name="res_model">clinic.staff.salary.qualification_level</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Salary Sheet Views -->
+    <record id="view_clinic_salary_sheet_list" model="ir.ui.view">
+        <field name="name">clinic.salary.sheet.list</field>
+        <field name="model">clinic.salary.sheet</field>
+        <field name="arch" type="xml">
+            <list string="Bảng lương">
+                <field name="month"/>
+                <field name="year"/>
+                <field name="state"/>
+                <button name="action_create_salary_records" string="Lập bảng lương" type="object" class="btn-primary"
+                        invisible="state == 'confirmed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_salary_sheet_form" model="ir.ui.view">
+        <field name="name">clinic.salary.sheet.form</field>
+        <field name="model">clinic.salary.sheet</field>
+        <field name="arch" type="xml">
+            <form string="Bảng lương">
+                <sheet>
+                    <group>
+                        <field name="month"/>
+                        <field name="year"/>
+                        <field name="state"/>
+                    </group>
+                    <notebook>
+                        <page string="Phiếu lương">
+                            <field name="salary_ids">
+                                <list>
+                                    <field name="staff_id"/>
+                                    <field name="base_salary"/>
+                                    <field name="net_salary"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_clinic_salary_sheet" model="ir.actions.act_window">
+        <field name="name">Bảng lương</field>
+        <field name="res_model">clinic.salary.sheet</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Staff Salary Views -->
+    <record id="view_clinic_staff_salary_list" model="ir.ui.view">
+        <field name="name">clinic.staff.salary.list</field>
+        <field name="model">clinic.staff.salary</field>
+        <field name="arch" type="xml">
+            <list string="Phiếu lương">
+                <field name="staff_id"/>
+                <field name="sheet_name"/>
+                <field name="base_salary"/>
+                <field name="total_allowance"/>
+                <field name="total_bonus"/>
+                <field name="total_deduction"/>
+                <field name="net_salary"/>
+                <field name="state"/>
+                <button name="action_confirm" type="object" string="Xác nhận" class="btn-primary"
+                        invisible="state in ('confirmed', 'paid')" icon="fa-check"/>
+                <button name="action_pay" type="object" string="Thanh toán" class="btn-success"
+                        invisible="state == 'paid'" icon="fa-money"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_staff_salary_form" model="ir.ui.view">
+        <field name="name">clinic.staff.salary.form</field>
+        <field name="model">clinic.staff.salary</field>
+        <field name="arch" type="xml">
+            <form string="Phiếu lương">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_confirm" type="object" string="Xác nhận" class="oe_stat_button"
+                                icon="fa-check" invisible="state in ('confirmed', 'paid')"/>
+                        <button name="action_pay" type="object" string="Thanh toán" class="oe_stat_button"
+                                icon="fa-money" invisible="state == 'paid'"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="staff_id" readonly="1"/>
+                            <field name="sheet_id" readonly="1"/>
+                            <field name="base_salary" readonly="1" options="{'currency': 'VND'}"/>
+                            <field name="standard_work_days" readonly="1"/>
+                            <field name="work_days" readonly="1"/>
+                            <field name="late_days" readonly="1"/>
+                            <field name="absent_days" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="allowance_ids" widget="many2many_tags"/>
+                            <field name="total_allowance" readonly="1" options="{'currency': 'VND'}"/>
+                            <field name="bonus_ids" widget="many2many_tags"/>
+                            <field name="total_bonus" readonly="1" options="{'currency': 'VND'}"/>
+                            <field name="deduction_ids" widget="many2many_tags"/>
+                            <field name="late_penalty" readonly="1" options="{'currency': 'VND'}"/>
+                            <field name="absent_penalty" readonly="1" options="{'currency': 'VND'}"/>
+                            <field name="total_deduction" readonly="1" options="{'currency': 'VND'}"/>
+                            <field name="total_salary_after_deduction" readonly="1" options="{'currency': 'VND'}"/>
+                            <field name="tax" readonly="1" options="{'currency': 'VND'}"/>
+                            <field name="net_salary" readonly="1" options="{'currency': 'VND'}"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_clinic_staff_salary" model="ir.actions.act_window">
+        <field name="name">Phiếu lương</field>
+        <field name="res_model">clinic.staff.salary</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Allowance Views -->
+    <record id="view_clinic_staff_salary_allowance_list" model="ir.ui.view">
+        <field name="name">clinic.staff.salary.allowance.list</field>
+        <field name="model">clinic.staff.salary.allowance</field>
+        <field name="arch" type="xml">
+            <list string="Loại phụ cấp">
+                <field name="name"/>
+                <field name="amount"/>
+                <field name="note"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_staff_salary_allowance_form" model="ir.ui.view">
+        <field name="name">clinic.staff.salary.allowance.form</field>
+        <field name="model">clinic.staff.salary.allowance</field>
+        <field name="arch" type="xml">
+            <form string="Loại phụ cấp">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="amount"/>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_clinic_staff_salary_allowance" model="ir.actions.act_window">
+        <field name="name">Loại phụ cấp</field>
+        <field name="res_model">clinic.staff.salary.allowance</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Bonus Views -->
+    <record id="view_clinic_staff_salary_bonus_list" model="ir.ui.view">
+        <field name="name">clinic.staff.salary.bonus.list</field>
+        <field name="model">clinic.staff.salary.bonus</field>
+        <field name="arch" type="xml">
+            <list string="Loại thưởng">
+                <field name="name"/>
+                <field name="amount"/>
+                <field name="reason"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_staff_salary_bonus_form" model="ir.ui.view">
+        <field name="name">clinic.staff.salary.bonus.form</field>
+        <field name="model">clinic.staff.salary.bonus</field>
+        <field name="arch" type="xml">
+            <form string="Loại thưởng">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="amount"/>
+                        <field name="reason"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_clinic_staff_salary_bonus" model="ir.actions.act_window">
+        <field name="name">Loại thưởng</field>
+        <field name="res_model">clinic.staff.salary.bonus</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Deduction Views -->
+    <record id="view_clinic_staff_salary_deduction_list" model="ir.ui.view">
+        <field name="name">clinic.staff.salary.deduction.list</field>
+        <field name="model">clinic.staff.salary.deduction</field>
+        <field name="arch" type="xml">
+            <list string="Loại khấu trừ">
+                <field name="name"/>
+                <field name="rate"/>
+                <field name="salary_type"/>
+                <field name="reason"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_staff_salary_deduction_form" model="ir.ui.view">
+        <field name="name">clinic.staff.salary.deduction.form</field>
+        <field name="model">clinic.staff.salary.deduction</field>
+        <field name="arch" type="xml">
+            <form string="Loại khấu trừ">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="rate"/>
+                        <field name="salary_type"/>
+                        <field name="reason"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_clinic_staff_salary_deduction" model="ir.actions.act_window">
+        <field name="name">Loại khấu trừ</field>
+        <field name="res_model">clinic.staff.salary.deduction</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_salary_management_sheet"
+              name="Bảng lương"
+              parent="menu_salary_management"
+              action="action_clinic_salary_sheet"
+              sequence="5"/>
+
+    <menuitem id="menu_salary_management_salary"
+              name="Phiếu lương"
+              parent="menu_salary_management"
+              action="action_clinic_staff_salary"
+              sequence="10"/>
+
+    <menuitem id="menu_salary_management_allowance"
+              name="Loại phụ cấp"
+              parent="menu_salary_management"
+              action="action_clinic_staff_salary_allowance"
+              sequence="20"/>
+
+    <menuitem id="menu_salary_management_bonus"
+              name="Loại thưởng"
+              parent="menu_salary_management"
+              action="action_clinic_staff_salary_bonus"
+              sequence="30"/>
+
+    <menuitem id="menu_salary_management_deduction"
+              name="Loại khấu trừ"
+              parent="menu_salary_management"
+              action="action_clinic_staff_salary_deduction"
+              sequence="40"/>
+
+    <menuitem id="menu_salary_management_qualification"
+              name="Hệ số lương"
+              parent="menu_salary_management"
+              action="action_clinic_staff_salary_qualification_level"
+              sequence="50"/>
+</odoo>

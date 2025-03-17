@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_clinic_staff,access.clinic.staff,model_clinic_staff,base.group_user,1,1,1,1
+access_clinic_staff_type,access.clinic.staff.type,model_clinic_staff_type,base.group_user,1,1,1,1
+access_clinic_staff_attendance,access.clinic.staff.attendance,model_clinic_staff_attendance,base.group_user,1,1,1,1
+access_clinic_staff_performance,access.clinic.staff.performance,model_clinic_staff_performance,base.group_user,1,1,1,1
