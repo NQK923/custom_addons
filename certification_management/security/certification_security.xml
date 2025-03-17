@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Nhóm quản lý chứng nhận -->
+        <record id="group_certification_user" model="res.groups">
+            <field name="name">Người dùng chứng nhận</field>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+
+        <record id="group_certification_manager" model="res.groups">
+            <field name="name">Quản lý chứng nhận</field>
+            <field name="category_id" ref="base.module_category_hidden"/>
+            <field name="implied_ids" eval="[(4, ref('group_certification_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+
+<!--        &lt;!&ndash; Quy tắc bảo mật hồ sơ &ndash;&gt;
+        <record id="certification_comp_rule" model="ir.rule">
+            <field name="name">Chứng nhận: quy tắc đa công ty</field>
+            <field name="model_id" ref="model_hospital_certification"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="inspection_comp_rule" model="ir.rule">
+            <field name="name">Kiểm tra: quy tắc đa công ty</field>
+            <field name="model_id" ref="model_hospital_inspection"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>-->
+    </data>
+</odoo>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Items -->
+    <record id="menu_health_compliance_root" model="ir.ui.menu">
+        <field name="name">Quản lý Tuân thủ Y tế</field>
+        <field name="web_icon">compliance_management,static/description/icon.png</field>
+        <field name="sequence">90</field>
+    </record>
+
+    <record id="menu_health_compliance" model="ir.ui.menu">
+        <field name="name">Đánh giá Tuân thủ</field>
+        <field name="parent_id" ref="menu_health_compliance_root"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="menu_health_regulation" model="ir.ui.menu">
+        <field name="name">Quy định Y tế</field>
+        <field name="parent_id" ref="menu_health_compliance_root"/>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="menu_health_authority" model="ir.ui.menu">
+        <field name="name">Cơ quan Quản lý</field>
+        <field name="parent_id" ref="menu_health_compliance_root"/>
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_health_compliance" model="ir.actions.act_window">
+        <field name="name">Đánh giá Tuân thủ</field>
+        <field name="res_model">health.compliance</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_health_compliance_search"/>
+    </record>
+
+    <record id="action_health_regulation" model="ir.actions.act_window">
+        <field name="name">Quy định Y tế</field>
+        <field name="res_model">health.regulation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_health_regulation_search"/>
+    </record>
+
+    <record id="action_health_authority" model="ir.actions.act_window">
+        <field name="name">Cơ quan Quản lý</field>
+        <field name="res_model">health.authority</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu Actions -->
+    <menuitem id="menu_action_health_compliance"
+              name="Đánh giá Tuân thủ"
+              parent="menu_health_compliance"
+              action="action_health_compliance"
+              sequence="10"/>
+
+    <menuitem id="menu_action_health_regulation"
+              name="Quy định Y tế"
+              parent="menu_health_regulation"
+              action="action_health_regulation"
+              sequence="10"/>
+
+    <menuitem id="menu_action_health_authority"
+              name="Cơ quan Quản lý"
+              parent="menu_health_authority"
+              action="action_health_authority"
+              sequence="10"/>
+</odoo>

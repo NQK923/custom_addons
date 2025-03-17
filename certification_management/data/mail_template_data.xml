@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="mail_template_certification_reminder" model="mail.template">
+            <field name="name">Nhắc nhở chứng nhận sắp hết hạn</field>
+            <field name="model_id" ref="model_hospital_certification"/>
+            <field name="subject">Nhắc nhở: Chứng nhận ${object.name} sắp hết hạn</field>
+            <field name="email_from">${(object.company_id.email and '%s &lt;%s&gt;' % (object.company_id.name, object.company_id.email) or '')|safe}</field>
+            <field name="email_to">${object.responsible_id.email}</field>
+            <field name="body_html">
+<![CDATA[
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Kính gửi ${object.responsible_id.name},
+                        <br/><br/>
+                        Thông báo này để nhắc nhở bạn về chứng nhận <strong>${object.name}</strong> sắp hết hạn.
+                        <br/><br/>
+                        <strong>Thông tin chứng nhận:</strong>
+                        <ul>
+                            <li>Tên chứng nhận: ${object.name}</li>
+                            <li>Số hiệu: ${object.number}</li>
+                            <li>Loại: ${object.certification_type}</li>
+                            <li>Ngày hết hạn: ${format_date(object.expiry_date)}</li>
+                            <li>Số ngày còn lại: ${object.days_remaining}</li>
+                        </ul>
+                        <br/>
+                        Vui lòng thực hiện các biện pháp cần thiết để gia hạn chứng nhận này trước khi hết hạn.
+                        <br/><br/>
+                        Trân trọng,
+                        <br/>
+                        ${object.company_id.name}
+                    </p>
+                </div>
+]]>
+            </field>
+            <field name="lang">${object.responsible_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_feedback_dashboard_form" model="ir.ui.view">
+        <field name="name">healthcare.feedback.dashboard.form</field>
+        <field name="model">healthcare.feedback.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Bảng điều khiển phản hồi">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                        </group>
+                        <group>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+
+                    <div class="row mt16">
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-primary text-white p-3 rounded mb-3">
+                                <h3>Tổng số phản hồi</h3>
+                                <h1><field name="total_feedback" nolabel="1"/></h1>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-success text-white p-3 rounded mb-3">
+                                <h3>Điểm hài lòng trung bình</h3>
+                                <h1><field name="avg_satisfaction" nolabel="1" widget="float"/>/5</h1>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-info text-white p-3 rounded mb-3">
+                                <h3>Khen ngợi</h3>
+                                <h2><field name="total_compliments" nolabel="1"/></h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-danger text-white p-3 rounded mb-3">
+                                <h3>Khiếu nại</h3>
+                                <h2><field name="total_complaints" nolabel="1"/></h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-warning text-white p-3 rounded mb-3">
+                                <h3>Góp ý</h3>
+                                <h2><field name="total_suggestions" nolabel="1"/></h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-secondary text-white p-3 rounded mb-3">
+                                <h3>Hỏi đáp</h3>
+                                <h2><field name="total_questions" nolabel="1"/></h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <field name="feedback_by_type_data" widget="text" invisible="1"/>
+                    <field name="feedback_by_month_data" widget="text" invisible="1"/>
+                    <field name="satisfaction_distribution_data" widget="text" invisible="1"/>
+
+                    <notebook>
+                        <page string="Thống kê theo phòng ban">
+                            <field name="department_feedback_ids">
+                                <list>
+                                    <field name="department_id"/>
+                                    <field name="total_feedback"/>
+                                    <field name="compliments"/>
+                                    <field name="complaints"/>
+                                    <field name="suggestions"/>
+                                    <field name="questions"/>
+                                    <field name="others"/>
+                                    <field name="avg_satisfaction"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_feedback_dashboard" model="ir.actions.act_window">
+        <field name="name">Bảng điều khiển phản hồi</field>
+        <field name="res_model">healthcare.feedback.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'form_view_initial_mode': 'edit'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Xem thống kê các phản hồi từ bệnh nhân
+            </p>
+        </field>
+    </record>
+</odoo>

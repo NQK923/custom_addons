@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_healthcare_patient_feedback_user,healthcare.patient.feedback.user,model_healthcare_patient_feedback,base.group_user,1,1,1,0
+access_healthcare_patient_feedback_manager,healthcare.patient.feedback.manager,model_healthcare_patient_feedback,base.group_system,1,1,1,1
+access_healthcare_patient_complaint_user,healthcare.patient.complaint.user,model_healthcare_patient_complaint,base.group_user,1,1,1,0
+access_healthcare_patient_complaint_manager,healthcare.patient.complaint.manager,model_healthcare_patient_complaint,base.group_system,1,1,1,1
+access_healthcare_feedback_statistics_user,healthcare.feedback.statistics.user,model_healthcare_feedback_statistics,base.group_user,1,0,0,0
+access_healthcare_feedback_statistics_manager,healthcare.feedback.statistics.manager,model_healthcare_feedback_statistics,base.group_system,1,1,1,1
+access_healthcare_feedback_dashboard_user,healthcare.feedback.dashboard.user,model_healthcare_feedback_dashboard,base.group_user,1,1,1,0
+access_healthcare_feedback_dashboard_manager,healthcare.feedback.dashboard.manager,model_healthcare_feedback_dashboard,base.group_system,1,1,1,1

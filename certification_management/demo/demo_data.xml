@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Dữ liệu demo chứng nhận -->
+        <record id="certification_demo_1" model="hospital.certification">
+            <field name="name">Giấy phép hoạt động y tế</field>
+            <field name="number">GP-BYT-2023-001</field>
+            <field name="certification_type">operation</field>
+            <field name="authority">Sở Y tế</field>
+            <field name="issue_date" eval="(DateTime.today() - relativedelta(months=6)).strftime('%Y-%m-%d')"/>
+            <field name="expiry_date" eval="(DateTime.today() + relativedelta(years=2, months=6)).strftime('%Y-%m-%d')"/>
+            <field name="description">Giấy phép hoạt động cơ sở khám chữa bệnh</field>
+            <field name="state">valid</field>
+        </record>
+
+        <record id="certification_demo_2" model="hospital.certification">
+            <field name="name">Chứng nhận an toàn phòng cháy</field>
+            <field name="number">PCCC-2023-123</field>
+            <field name="certification_type">safety</field>
+            <field name="authority">Cục Cảnh sát PCCC</field>
+            <field name="issue_date" eval="(DateTime.today() - relativedelta(months=8)).strftime('%Y-%m-%d')"/>
+            <field name="expiry_date" eval="(DateTime.today() + relativedelta(months=4)).strftime('%Y-%m-%d')"/>
+            <field name="description">Chứng nhận đủ điều kiện an toàn phòng cháy chữa cháy</field>
+            <field name="state">valid</field>
+        </record>
+
+        <record id="certification_demo_3" model="hospital.certification">
+            <field name="name">Chứng nhận GMP phòng xét nghiệm</field>
+            <field name="number">GMP-XN-2023-057</field>
+            <field name="certification_type">quality</field>
+            <field name="authority">Cục Quản lý Khám chữa bệnh</field>
+            <field name="issue_date" eval="(DateTime.today() - relativedelta(months=3)).strftime('%Y-%m-%d')"/>
+            <field name="expiry_date" eval="(DateTime.today() - relativedelta(months=1)).strftime('%Y-%m-%d')"/>
+            <field name="description">Chứng nhận thực hành tốt phòng xét nghiệm y khoa</field>
+            <field name="state">expired</field>
+        </record>
+
+        <!-- Dữ liệu demo kiểm tra -->
+        <record id="inspection_demo_1" model="hospital.inspection">
+            <field name="name">Kiểm tra định kỳ PCCC</field>
+            <field name="certification_id" ref="certification_demo_2"/>
+            <field name="date" eval="(DateTime.today() - relativedelta(months=2)).strftime('%Y-%m-%d')"/>
+            <field name="inspector">Đoàn kiểm tra PCCC Quận</field>
+            <field name="result">passed</field>
+            <field name="findings">Kiểm tra hệ thống PCCC và các thiết bị an toàn.</field>
+            <field name="state">completed</field>
+        </record>
+
+        <record id="inspection_demo_2" model="hospital.inspection">
+            <field name="name">Đánh giá tuân thủ GMP</field>
+            <field name="certification_id" ref="certification_demo_3"/>
+            <field name="date" eval="(DateTime.today() - relativedelta(months=4)).strftime('%Y-%m-%d')"/>
+            <field name="inspector">Cục Quản lý Khám chữa bệnh</field>
+            <field name="result">conditional</field>
+            <field name="findings">Một số thiết bị cần được nâng cấp.</field>
+            <field name="recommendations">Cập nhật quy trình làm việc và đào tạo nhân viên mới.</field>
+            <field name="corrective_action_required">True</field>
+            <field name="corrective_action">Thay thế thiết bị và đào tạo nhân viên.</field>
+            <field name="state">completed</field>
+        </record>
+
+        <record id="inspection_demo_3" model="hospital.inspection">
+            <field name="name">Kiểm tra theo kế hoạch - Giấy phép</field>
+            <field name="certification_id" ref="certification_demo_1"/>
+            <field name="planned_date" eval="(DateTime.today() + relativedelta(months=1)).strftime('%Y-%m-%d')"/>
+            <field name="inspector">Sở Y tế</field>
+            <field name="result">pending</field>
+            <field name="state">planned</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Items -->
+    <menuitem id="menu_hospital_certification_root"
+              name="Quản lý chứng nhận y tế"
+              web_icon="hospital_certification,static/description/icon.png"
+              sequence="40"/>
+
+    <menuitem id="menu_certification_main"
+              name="Chứng nhận"
+              parent="menu_hospital_certification_root"
+              sequence="10"/>
+
+    <menuitem id="menu_certification"
+              name="Chứng nhận y tế"
+              parent="menu_certification_main"
+              action="action_hospital_certification"
+              sequence="10"/>
+
+    <menuitem id="menu_inspection"
+              name="Kiểm tra y tế"
+              parent="menu_certification_main"
+              action="action_hospital_inspection"
+              sequence="20"/>
+
+    <menuitem id="menu_certification_config"
+              name="Cấu hình"
+              parent="menu_hospital_certification_root"
+              sequence="100"/>
+</odoo>

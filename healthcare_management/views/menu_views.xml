@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_healthcare_customer_care_root"
+              name="Chăm sóc khách hàng y tế"
+              web_icon="healthcare_customer_care,static/description/icon.png"
+              sequence="10"/>
+
+    <menuitem id="menu_healthcare_patient_feedback"
+              name="Phản hồi của bệnh nhân"
+              parent="menu_healthcare_customer_care_root"
+              action="action_patient_feedback"
+              sequence="10"/>
+
+    <menuitem id="menu_healthcare_patient_complaint"
+              name="Khiếu nại của bệnh nhân"
+              parent="menu_healthcare_customer_care_root"
+              action="action_patient_complaint"
+              sequence="20"/>
+
+    <menuitem id="menu_healthcare_analytics"
+              name="Thống kê"
+              parent="menu_healthcare_customer_care_root"
+              sequence="30"/>
+
+    <menuitem id="menu_healthcare_feedback_statistics"
+              name="Thống kê phản hồi"
+              parent="menu_healthcare_analytics"
+              action="action_feedback_statistics"
+              sequence="10"/>
+
+    <menuitem id="menu_healthcare_feedback_dashboard"
+              name="Phân tích phản hồi"
+              parent="menu_healthcare_analytics"
+              action="action_feedback_dashboard"
+              sequence="20"/>
+</odoo>

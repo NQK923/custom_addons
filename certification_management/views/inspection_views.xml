@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_inspection_form" model="ir.ui.view">
+        <field name="name">hospital.inspection.form</field>
+        <field name="model">hospital.inspection</field>
+        <field name="arch" type="xml">
+            <form string="Kiểm tra y tế">
+                <header>
+                    <button name="action_start" string="Bắt đầu" type="object"
+                            invisible="[('state', '!=', 'planned')]" class="oe_highlight"/>
+                    <button name="action_complete" string="Hoàn thành" type="object"
+                            invisible="[('state', '!=', 'in_progress')]" class="oe_highlight"/>
+                    <button name="action_cancel" string="Hủy bỏ" type="object"
+                            invisible="[('state', 'in', ['completed', 'canceled'])]"/>
+                    <button name="action_reset" string="Đặt lại" type="object"
+                            invisible="[('state', '=', 'planned')]"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="planned,in_progress,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Tên kiểm tra..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="certification_id"/>
+                            <field name="planned_date"/>
+                            <field name="date"/>
+                            <field name="inspector"/>
+                        </group>
+                        <group>
+                            <field name="result"/>
+                            <field name="responsible_id"/>
+                            <field name="corrective_action_required"/>
+                            <field name="corrective_deadline" invisible="[('corrective_action_required', '=', False)]" required="[('corrective_action_required', '=', True)]"/>
+                            <field name="corrective_completed" invisible="[('corrective_action_required', '=', False)]"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Kết quả kiểm tra">
+                            <group>
+                                <field name="findings" placeholder="Những phát hiện trong quá trình kiểm tra..."/>
+                                <field name="recommendations" placeholder="Khuyến nghị từ người kiểm tra..."/>
+                                <field name="notes" placeholder="Ghi chú bổ sung..."/>
+                            </group>
+                        </page>
+                        <page string="Hành động khắc phục" invisible="[('corrective_action_required', '=', False)]">
+                            <field name="corrective_action" placeholder="Mô tả các hành động khắc phục cần thực hiện..."/>
+                        </page>
+                        <page string="Tài liệu">
+                            <group>
+                                <field name="document" filename="document_filename"/>
+                                <field name="document_filename" invisible="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_inspection_tree" model="ir.ui.view">
+        <field name="name">hospital.inspection.tree</field>
+        <field name="model">hospital.inspection</field>
+        <field name="arch" type="xml">
+            <list string="Kiểm tra y tế" decoration-danger="result=='failed'" decoration-success="result=='passed'" decoration-warning="result=='conditional'">
+                <field name="date"/>
+                <field name="name"/>
+                <field name="certification_id"/>
+                <field name="inspector"/>
+                <field name="result"/>
+                <field name="state"/>
+                <field name="corrective_action_required"/>
+                <field name="corrective_completed"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_inspection_search" model="ir.ui.view">
+        <field name="name">hospital.inspection.search</field>
+        <field name="model">hospital.inspection</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm kiểm tra">
+                <field name="name"/>
+                <field name="certification_id"/>
+                <field name="inspector"/>
+                <filter string="Đạt" name="passed" domain="[('result', '=', 'passed')]"/>
+                <filter string="Không đạt" name="failed" domain="[('result', '=', 'failed')]"/>
+                <filter string="Đạt có điều kiện" name="conditional" domain="[('result', '=', 'conditional')]"/>
+                <filter string="Cần khắc phục" name="corrective" domain="[('corrective_action_required', '=', True)]"/>
+                <filter string="Lên kế hoạch" name="planned" domain="[('state', '=', 'planned')]"/>
+                <filter string="Đang thực hiện" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Hoàn thành" name="completed" domain="[('state', '=', 'completed')]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Chứng nhận" name="group_by_cert" context="{'group_by': 'certification_id'}"/>
+                    <filter string="Kết quả" name="group_by_result" context="{'group_by': 'result'}"/>
+                    <filter string="Trạng thái" name="group_by_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="view_inspection_calendar" model="ir.ui.view">
+        <field name="name">hospital.inspection.calendar</field>
+        <field name="model">hospital.inspection</field>
+        <field name="arch" type="xml">
+            <calendar string="Lịch kiểm tra" date_start="date" color="result">
+                <field name="name"/>
+                <field name="certification_id"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_hospital_inspection" model="ir.actions.act_window">
+        <field name="name">Kiểm tra y tế</field>
+        <field name="res_model">hospital.inspection</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="context">{'search_default_planned': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo lịch kiểm tra đầu tiên
+            </p>
+            <p>
+                    Lên kế hoạch và quản lý các cuộc kiểm tra, đánh giá
+                    để đảm bảo tuân thủ quy định y tế.
+            </p>
+        </field>
+    </record>
+</odoo>
