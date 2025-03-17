@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_clinic_appointment_form" model="ir.ui.view">
+        <field name="name">clinic.appointment.form</field>
+        <field name="model">clinic.appointment</field>
+        <field name="arch" type="xml">
+            <form string="Lịch hẹn khám">
+                <header>
+                    <button name="action_confirm" string="Xác nhận" type="object" 
+                            class="oe_highlight" 
+                            invisible="state != 'draft'"/>
+                    <button name="action_done" string="Hoàn thành" type="object" 
+                            class="oe_highlight"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_cancel" string="Hủy" type="object" 
+                            invisible="state not in ('draft', 'confirmed')"/>
+                    <button name="action_draft" string="Đặt về nháp" type="object" 
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="draft,confirmed,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_id" options="{'no_create': True}"/>
+                            <field name="staff_id" options="{'no_create': True}"/>
+                            <field name="appointment_date"/>
+                            <field name="room_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Ghi chú">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- list View -->
+    <record id="view_clinic_appointment_list" model="ir.ui.view">
+        <field name="name">clinic.appointment.list</field>
+        <field name="model">clinic.appointment</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="staff_id"/>
+                <field name="appointment_date"/>
+                <field name="room_id"/>
+                <field name="state" 
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'confirmed'"
+                       decoration-warning="state == 'done'"
+                       decoration-danger="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="view_clinic_appointment_calendar" model="ir.ui.view">
+        <field name="name">clinic.appointment.calendar</field>
+        <field name="model">clinic.appointment</field>
+        <field name="arch" type="xml">
+            <calendar string="Lịch hẹn" 
+                     date_start="appointment_date" 
+                     color="staff_id">
+                <field name="patient_id"/>
+                <field name="staff_id"/>
+                <field name="room_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_clinic_appointment_search" model="ir.ui.view">
+        <field name="name">clinic.appointment.search</field>
+        <field name="model">clinic.appointment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="staff_id"/>
+                <separator/>
+                <filter string="Nháp" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="Đã xác nhận" name="confirmed" domain="[('state','=','confirmed')]"/>
+                <filter string="Hoàn thành" name="done" domain="[('state','=','done')]"/>
+                <filter string="Đã hủy" name="cancelled" domain="[('state','=','cancelled')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Trạng thái" name="state" context="{'group_by':'state'}"/>
+                    <filter string="Bác sĩ" name="doctor" context="{'group_by':'staff_id'}"/>
+                    <filter string="Ngày hẹn" name="appointment_date" context="{'group_by':'appointment_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_clinic_appointment" model="ir.actions.act_window">
+        <field name="name">Lịch hẹn khám</field>
+        <field name="res_model">clinic.appointment</field>
+        <field name="view_mode">calendar,list,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_clinic_appointment_root" 
+              name="Quản lý lịch hẹn" 
+              sequence="10"/>
+
+    <menuitem id="menu_clinic_appointment" 
+              name="Lịch hẹn khám" 
+              parent="menu_clinic_appointment_root" 
+              action="action_clinic_appointment" 
+              sequence="1"/>
+
+    <!-- Sequence -->
+    <record id="seq_clinic_appointment" model="ir.sequence">
+        <field name="name">Appointment Sequence</field>
+        <field name="code">clinic.appointment</field>
+        <field name="prefix">APP</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

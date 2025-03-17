@@ -13,7 +13,7 @@ class TreatmentPlan(models.Model):
         default='New'
     )
     patient_id = fields.Many2one(
-        'hospital.patient',
+        'clinic.patient',
         string='Mã bệnh nhân',
         required=True
     )
@@ -52,7 +52,7 @@ class TreatmentProcess(models.Model):
         ondelete='cascade'
     )
     executor_id = fields.Many2one(
-        'hospital.doctor',
+        'clinic.staff',
         string='Người thực hiện',
         required=True
     )

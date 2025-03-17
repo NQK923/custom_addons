@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Menu Root -->
+    <menuitem id="menu_clinic_root" name="Quản lý Bệnh viện" sequence="10"/>
+    <menuitem id="menu_clinic_room_management" name="Phòng và Giường bệnh" parent="menu_clinic_root" sequence="1"/>
+
+    <!-- Room Views -->
+    <record id="view_clinic_room_form" model="ir.ui.view">
+        <field name="name">clinic.room.form</field>
+        <field name="model">clinic.room</field>
+        <field name="arch" type="xml">
+            <form string="Phòng khám">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="room_type"/>
+                        <field name="status"/>
+                        <field name="capacity"/>
+                    </group>
+                    <notebook>
+                        <page string="Danh sách giường bệnh">
+                            <field name="bed_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="status"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Ghi chú">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_clinic_room_list" model="ir.ui.view">
+        <field name="name">clinic.room.list</field>
+        <field name="model">clinic.room</field>
+        <field name="arch" type="xml">
+            <list string="Phòng khám">
+                <field name="name"/>
+                <field name="room_type"/>
+                <field name="status"/>
+                <field name="capacity"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Bed Views -->
+    <record id="view_clinic_bed_form" model="ir.ui.view">
+        <field name="name">clinic.bed.form</field>
+        <field name="model">clinic.bed</field>
+        <field name="arch" type="xml">
+            <form string="Giường bệnh">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="room_id"/>
+                        <field name="status"/>
+                        <!-- <field name="patient_id"/> -->
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_clinic_bed_list" model="ir.ui.view">
+        <field name="name">clinic.bed.list</field>
+        <field name="model">clinic.bed</field>
+        <field name="arch" type="xml">
+            <list string="Giường bệnh">
+                <field name="name"/>
+                <field name="room_id"/>
+                <field name="status"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_clinic_room" model="ir.actions.act_window">
+        <field name="name">Phòng khám</field>
+        <field name="res_model">clinic.room</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_clinic_bed" model="ir.actions.act_window">
+        <field name="name">Giường bệnh</field>
+        <field name="res_model">clinic.bed</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_clinic_room" 
+              name="Phòng khám" 
+              parent="menu_clinic_room_management" 
+              action="action_clinic_room"
+              sequence="1"/>
+
+    <menuitem id="menu_clinic_bed" 
+              name="Giường bệnh" 
+              parent="menu_clinic_room_management" 
+              action="action_clinic_bed"
+              sequence="2"/>
+</odoo> 
