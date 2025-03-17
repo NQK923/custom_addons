@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- List View cho clinic.patient -->
+    <record id="view_clinic_patient_list" model="ir.ui.view">
+        <field name="name">clinic.patient.list</field>
+        <field name="model">clinic.patient</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="gender"/>
+                <field name="phone"/>
+                <field name="patient_type"/>
+                <field name="insurance_status" string="Có BHYT" readonly="1"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_clinic_patient_form" model="ir.ui.view">
+        <field name="name">clinic.patient.form</field>
+        <field name="model">clinic.patient</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_add_insurance" type="object" string="Thêm bảo hiểm y tế"
+                            class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <group name="personal_info" string="Thông tin cá nhân">
+                        <field name="name"/>
+                        <field name="date_of_birth"/>
+                        <field name="age"/>
+                        <field name="gender"/>
+                        <field name="phone"/>
+                        <field name="address"/>
+                        <field name="patient_type"/>
+                        <field name="state"/>
+                        <field name="last_activity_date" invisible="1"/>
+                        <field name="note"/>
+                    </group>
+                    <group name="insurance_info" string="Thông tin bảo hiểm">
+                        <field name="insurance_number" readonly="1"/>
+                        <field name="initial_facility" readonly="1"/>
+                        <field name="tier" readonly="1"/>
+                        <field name="expiry_date" readonly="1"/>
+                        <field name="has_valid_insurance" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- Action và Menu -->
+    <record id="action_clinic_patient" model="ir.actions.act_window">
+        <field name="name">Quản lý bệnh nhân</field>
+        <field name="res_model">clinic.patient</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_root" name="Quản lý bệnh nhân" action="action_clinic_patient" sequence="10"/>
+</odoo>
+

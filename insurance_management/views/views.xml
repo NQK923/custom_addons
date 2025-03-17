@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- List View cho clinic.insurance.policy -->
+    <record id="view_clinic_insurance_policy_list" model="ir.ui.view">
+        <field name="name">clinic.insurance.policy.list</field>
+        <field name="model">clinic.insurance.policy</field>
+        <field name="arch" type="xml">
+            <list default_order="insurance_number">
+                <field name="patient_id"/>
+                <field name="insurance_number"/>
+                <field name="insurance_initial_facility"/>
+                <field name="insurance_tier"/>
+                <field name="insurance_expiry_date"/>
+                <field name="insurance_state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View cho clinic.insurance.policy -->
+    <record id="view_clinic_insurance_policy_form" model="ir.ui.view">
+        <field name="name">clinic.insurance.policy.form</field>
+        <field name="model">clinic.insurance.policy</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="insurance_number" placeholder="Số thẻ BHYT"/>
+                        </h1>
+                    </div>
+                    <group name="patient_info" string="Thông tin bệnh nhân">
+                        <field name="patient_id" 
+                               domain="[('insurance_policy_id', '=', False)]" 
+                               options="{'no_create': True, 'no_open': True}" 
+                               placeholder="Chọn bệnh nhân"/>
+                    </group>
+                    <group name="insurance_info" string="Thông tin bảo hiểm">
+                        <field name="insurance_initial_facility" placeholder="Nơi ĐKKCB"/>
+                        <field name="insurance_tier" widget="radio" placeholder="Tuyến"/>
+                        <field name="insurance_expiry_date" placeholder="Thời hạn"/>
+                        <field name="insurance_state" readonly="1" widget="statusbar"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action để truy cập danh sách bảo hiểm -->
+    <record id="action_clinic_insurance_policy" model="ir.actions.act_window">
+        <field name="name">Quản lý bảo hiểm y tế</field>
+        <field name="res_model">clinic.insurance.policy</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_insurance_root" name="Quản lý bảo hiểm y tế" 
+              action="action_clinic_insurance_policy" sequence="10"/>
+</odoo>

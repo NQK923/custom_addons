@@ -1,0 +1,102 @@
+
+<odoo>
+    <!-- Root Menu -->
+    <menuitem id="menu_hospital_management" name="Test and diagnostic management" sequence="10"/>
+
+    <!-- Action for Medical Tests -->
+    <record id="action_medical_test" model="ir.actions.act_window">
+        <field name="name">Medical Tests</field>
+        <field name="res_model">medical.test</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Action for Medical Images -->
+    <record id="action_medical_images" model="ir.actions.act_window">
+        <field name="name">Medical Images</field>
+        <field name="res_model">medical.images</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Child Menu for Medical Tests -->
+    <menuitem id="menu_medical_tests"
+              name="Medical Tests"
+              parent="menu_hospital_management"
+              action="action_medical_test"
+              sequence="10"/>
+
+    <!-- Child Menu for Medical Images -->
+    <menuitem id="menu_medical_images"
+              name="Medical Images"
+              parent="menu_hospital_management"
+              action="action_medical_images"
+              sequence="20"/>
+
+    <!-- Medical Tests List View -->
+    <record id="view_medical_test_list" model="ir.ui.view">
+        <field name="name">medical.test.list</field>
+        <field name="model">medical.test</field>
+        <field name="arch" type="xml">
+            <list string="Medical Tests">
+                <field name="test_code"/>
+                <field name="patient_id"/>
+                <field name="test_type"/>
+                <field name="test_date"/>
+                <field name="status"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Medical Tests Form View -->
+    <record id="view_medical_test_form" model="ir.ui.view">
+        <field name="name">medical.test.form</field>
+        <field name="model">medical.test</field>
+        <field name="arch" type="xml">
+            <form string="Medical Test">
+                <sheet>
+                    <group>
+                        <field name="test_code"/>
+                        <field name="patient_id"/>
+                        <field name="test_type"/>
+                        <field name="test_date"/>
+                        <field name="status"/>
+                        <field name="result"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Medical Images List View -->
+    <record id="view_medical_images_list" model="ir.ui.view">
+        <field name="name">medical.images.list</field>
+        <field name="model">medical.images</field>
+        <field name="arch" type="xml">
+            <list string="Medical Images">
+                <field name="test_code"/>
+                <field name="MedicalTest_id"/>
+                <field name="test_type_img"/>
+                <field name="img_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Medical Images Form View -->
+    <record id="view_medical_images_form" model="ir.ui.view">
+        <field name="name">medical.images.form</field>
+        <field name="model">medical.images</field>
+        <field name="arch" type="xml">
+            <form string="Medical Image">
+                <sheet>
+                    <group>
+                        <field name="test_code"/>
+                        <field name="MedicalTest_id"/>
+                        <field name="test_type_img"/>
+                        <field name="img_date"/>
+                        <field name="result_Img"/>
+                        <field name="Img" widget="image"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

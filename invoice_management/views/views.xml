@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu gốc cho Invoice Management -->
+    <menuitem id="menu_invoice_root" name="Quản lý hóa đơn và nhập hàng" sequence="10"/>
+
+    <!-- Sequence for Invoice -->
+    <record id="seq_clinic_invoice" model="ir.sequence">
+        <field name="name">Clinic Invoice</field>
+        <field name="code">clinic.invoice</field>
+        <field name="prefix">I</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- list View for Clinic Invoice -->
+    <record id="view_clinic_invoice_list" model="ir.ui.view">
+        <field name="name">clinic.invoice.list</field>
+        <field name="model">clinic.invoice</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="invoice_date"/>
+                <field name="amount_total"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View for Clinic Invoice -->
+    <record id="view_clinic_invoice_form" model="ir.ui.view">
+        <field name="name">clinic.invoice.form</field>
+        <field name="model">clinic.invoice</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" string="Xác nhận" type="object" 
+                            class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_mark_as_paid" string="Đánh dấu đã thanh toán" 
+                            type="object" class="oe_highlight" invisible="state != 'confirmed'"/>
+                    <button name="action_cancel" string="Hủy" type="object" 
+                            invisible="state not in ('draft', 'confirmed')"/>
+                    <button name="action_reset_to_draft" string="Đặt về nháp" type="object" 
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_id"/>
+                            <field name="prescription_id"/>
+                            <field name="invoice_date"/>
+                        </group>
+                        <group>
+                            <field name="service_amount"/>
+                            <field name="medicine_amount"/>
+                            <field name="amount_total" style="font-weight: bold"/>
+                            <field name="insurance_amount" style="color: green"/>
+                            <field name="patient_amount" style="color: #b91c1c"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Chi tiết hóa đơn">
+                            <group string="Dịch vụ">
+                                <field name="service_lines" nolabel="1">
+                                    <list editable="bottom">
+                                        <field name="service_id"/>
+                                        <field name="quantity"/>
+                                        <field name="price_unit"/>
+                                        <field name="price_subtotal"/>
+                                        <field name="insurance_amount" string="Giảm trừ bảo hiểm"/>
+                                        <field name="patient_amount"/>
+                                    </list>
+                                </field>
+                            </group>
+                            <group string="Thuốc">
+                                <field name="product_lines" nolabel="1">
+                                    <list editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="quantity"/>
+                                        <field name="price_unit"/>
+                                        <field name="price_subtotal"/>
+                                        <field name="insurance_amount" string="Giảm trừ bảo hiểm"/>
+                                        <field name="patient_amount"/>
+                                    </list>
+                                </field>
+                            </group>
+                        </page>
+                        <page string="Ghi chú">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View for Clinic Invoice -->
+    <record id="view_clinic_invoice_search" model="ir.ui.view">
+        <field name="name">clinic.invoice.search</field>
+        <field name="model">clinic.invoice</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <filter string="Nháp" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="Đã xác nhận" name="confirmed" domain="[('state','=','confirmed')]"/>
+                <filter string="Đã thanh toán" name="paid" domain="[('state','=','paid')]"/>
+                <filter string="Đã hủy" name="cancelled" domain="[('state','=','cancelled')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Trạng thái" name="state" context="{'group_by':'state'}"/>
+                    <filter string="Ngày lập" name="invoice_date" context="{'group_by':'invoice_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action for Clinic Invoice -->
+    <record id="action_clinic_invoice" model="ir.actions.act_window">
+        <field name="name">Hóa đơn</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">clinic.invoice</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_clinic_invoice_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo hóa đơn đầu tiên
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu for Clinic Invoice -->
+    <menuitem id="menu_clinic_invoice" 
+              name="Hóa đơn" 
+              parent="menu_invoice_root" 
+              action="action_clinic_invoice" 
+              sequence="1"/>
+
+    <!-- list View for Services -->
+    <record id="view_clinic_service_list" model="ir.ui.view">
+        <field name="name">clinic.service.list</field>
+        <field name="model">clinic.service</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="price"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View for Services -->
+    <record id="view_clinic_service_form" model="ir.ui.view">
+        <field name="name">clinic.service.form</field>
+        <field name="model">clinic.service</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="price"/>
+                        <field name="description"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for Services -->
+    <record id="action_clinic_service" model="ir.actions.act_window">
+        <field name="name">Dịch vụ</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">clinic.service</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu for Services -->
+    <menuitem id="menu_clinic_service"
+              name="Dịch vụ"
+              parent="menu_invoice_root"
+              action="action_clinic_service"
+              sequence="2"/>
+
+    <!-- Sequence for Pharmacy Import Order -->
+    <record id="seq_pharmacy_import_order" model="ir.sequence">
+        <field name="name">Pharmacy Import Order</field>
+        <field name="code">pharmacy.import.order</field>
+        <field name="prefix">IMP-</field>
+        <field name="padding">5</field>
+    </record>
+
+    <!-- Action for Pharmacy Import Order -->
+    <record id="action_pharmacy_import_order" model="ir.actions.act_window">
+        <field name="name">Phiếu nhập hàng</field>
+        <field name="res_model">pharmacy.import.order</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu for Pharmacy Import Order -->
+    <menuitem id="menu_pharmacy_import_order" name="Phiếu nhập hàng" 
+              parent="menu_invoice_root" action="action_pharmacy_import_order" sequence="3"/>
+
+    <!-- List View for Pharmacy Import Order -->
+    <record id="view_pharmacy_import_order_list" model="ir.ui.view">
+        <field name="name">pharmacy.import.order.list</field>
+        <field name="model">pharmacy.import.order</field>
+        <field name="arch" type="xml">
+            <list string="Phiếu nhập hàng">
+                <field name="name"/>
+                <field name="name_supplier"/>
+                <field name="import_date"/>
+                <field name="amount_total"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View for Pharmacy Import Order -->
+    <record id="view_pharmacy_import_order_form" model="ir.ui.view">
+        <field name="name">pharmacy.import.order.form</field>
+        <field name="model">pharmacy.import.order</field>
+        <field name="arch" type="xml">
+            <form string="Phiếu nhập hàng">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_confirm" type="object" string="Xác nhận" 
+                                class="oe_stat_button" icon="fa-check" 
+                                invisible="[('state', '!=', 'draft')]"/>
+                        <button name="action_done" type="object" string="Hoàn tất" 
+                                class="oe_stat_button" icon="fa-check-circle" 
+                                invisible="[('state', '!=', 'confirmed')]"/>
+                        <button name="action_cancel" type="object" string="Hủy" 
+                                class="oe_stat_button" icon="fa-times" 
+                                invisible="[('state', 'in', ['done', 'cancelled'])]"/>
+                        <button name="action_reset_to_draft" type="object" string="Đặt lại Nháp" 
+                                class="oe_stat_button" icon="fa-undo" 
+                                invisible="[('state', '!=', 'cancelled')]"/>
+                    </div>
+                    <group>
+                        <field name="name" readonly="1"/>
+                        <field name="name_supplier"/>
+                        <field name="import_date"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
+                    </group>
+                    <notebook>
+                        <page string="Chi tiết nhập hàng">
+                            <field name="import_lines">
+                                <list editable="bottom">
+                                    <field name="product_id" options="{'no_quick_create': True}"/>
+                                    <field name="quantity"/>
+                                    <field name="price_unit"/>
+                                    <field name="price_subtotal" readonly="1"/>
+                                </list>
+                            </field>
+                            <group>
+                                <field name="amount_subtotal" readonly="1"/>
+                                <field name="amount_tax" readonly="1"/>
+                                <field name="amount_total" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Ghi chú">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Sequence for Insurance Invoice -->
+    <record id="seq_clinic_insurance_invoice" model="ir.sequence">
+        <field name="name">Insurance Invoice</field>
+        <field name="code">clinic.invoice.insurance</field>
+        <field name="prefix">INS/%(year)s/</field>
+        <field name="padding">4</field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_clinic_insurance_invoice_list" model="ir.ui.view">
+        <field name="name">clinic.invoice.insurance.list</field>
+        <field name="model">clinic.invoice.insurance</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="total_service_amount"/>
+                <field name="total_medicine_amount"/>
+                <field name="total_insurance_amount"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_clinic_insurance_invoice_form" model="ir.ui.view">
+        <field name="name">clinic.invoice.insurance.form</field>
+        <field name="model">clinic.invoice.insurance</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" 
+                            string="Xác nhận" 
+                            type="object" 
+                            class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    
+                    <button name="action_pay" 
+                            string="Thanh toán" 
+                            type="object" 
+                            class="oe_highlight"
+                            invisible="state != 'confirmed'"/>
+                    
+                    <button name="action_cancel" 
+                            string="Hủy" 
+                            type="object"
+                            invisible="state not in ('draft', 'confirmed')"/>
+                    
+                    <button name="action_draft" 
+                            string="Đặt về nháp" 
+                            type="object"
+                            invisible="state != 'cancelled'"/>
+                    
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,paid"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="date_from" readonly="state != 'draft'"/>
+                            <field name="date_to" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="total_service_amount"/>
+                            <field name="total_medicine_amount"/>
+                            <field name="total_insurance_amount"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Chi tiết hóa đơn">
+                            <field name="invoice_line_ids" readonly="state != 'draft'">
+                                <list>
+                                    <field name="invoice_id" widget="many2one_button"
+                                           options="{'no_create': True, 'no_edit': True}"
+                                           string="Số hóa đơn"/>
+                                    <field name="patient_id"/>
+                                    <field name="invoice_date"/>
+                                    <field name="service_amount" sum="Tổng tiền dịch vụ"/>
+                                    <field name="medicine_amount" sum="Tổng tiền thuốc"/>
+                                    <field name="insurance_amount" sum="Tổng tiền bảo hiểm"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_clinic_insurance_invoice" model="ir.actions.act_window">
+        <field name="name">Hóa đơn bảo hiểm</field>
+        <field name="res_model">clinic.invoice.insurance</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_clinic_insurance_invoice"
+              name="Hóa đơn bảo hiểm"
+              action="action_clinic_insurance_invoice"
+              parent="menu_invoice_root"
+              sequence="20"/>
+</odoo>

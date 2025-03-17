@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_clinic_invoice,access.clinic.invoice,model_clinic_invoice,base.group_user,1,1,1,1
+access_clinic_invoice_line,access.clinic.invoice.line,model_clinic_invoice_line,base.group_user,1,1,1,1
+access_clinic_service,access.clinic.service,model_clinic_service,base.group_user,1,1,1,1
+access_pharmacy_import_order,access.pharmacy.import.order,model_pharmacy_import_order,base.group_user,1,1,1,1
+access_pharmacy_import_line,access.pharmacy.import.line,model_pharmacy_import_line,base.group_user,1,1,1,1
+access_clinic_insurance_invoice,access.clinic.insurance.invoice,model_clinic_invoice_insurance,base.group_user,1,1,1,1
+access_clinic_invoice_insurance,clinic.invoice.insurance,model_clinic_invoice_insurance,base.group_user,1,1,1,1
+access_clinic_invoice_insurance_line,clinic.invoice.insurance.line,model_clinic_invoice_insurance_line,base.group_user,1,1,1,1

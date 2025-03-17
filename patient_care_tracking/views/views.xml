@@ -1,0 +1,66 @@
+<odoo>
+    <!-- list View -->
+    <record id="view_patient_care_tracking_list" model="ir.ui.view">
+        <field name="name">patient.care.tracking.list</field>
+        <field name="model">patient.care.tracking</field>
+        <field name="arch" type="xml">
+            <list string="Patient Care Tracking">
+                <field name="patient_code"/>
+                <field name="care_date"/>
+                <field name="temperature"/>
+                <field name="blood_pressure"/>
+                <field name="heart_rate"/>
+                <field name="is_emergency"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_patient_care_tracking_form" model="ir.ui.view">
+        <field name="name">patient.care.tracking.form</field>
+        <field name="model">patient.care.tracking</field>
+        <field name="arch" type="xml">
+            <form string="Patient Care Tracking">
+                <sheet>
+                    <group>
+                        <field name="patient_code"/>
+                        <field name="care_date"/>
+                    </group>
+                    <group string="Dấu hiệu sinh tồn">
+                        <field name="temperature"/>
+                        <field name="blood_pressure"/>
+                        <field name="heart_rate"/>
+                        <field name="respiration_rate"/>
+                        <field name="oxygen_saturation"/>
+                    </group>
+                    <group string="Chăm sóc đặc biệt">
+                        <field name="special_care_description"/>
+                        <field name="medical_equipment_used"/>
+                        <field name="is_emergency"/>
+                    </group>
+                    <group string="Điều dưỡng hàng ngày">
+                        <field name="daily_nursing_notes"/>
+                        <field name="abnormal_event"/>
+                        <field name="is_alert_triggered"/>
+                    </group>
+                    <group string="Thông tin người chăm sóc">
+                         <field name="doctor_id"/>
+                        <field name="caregiver_role"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_patient_care_tracking" model="ir.actions.act_window">
+        <field name="name">Patient Care Tracking</field>
+        <field name="res_model">patient.care.tracking</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_patient_care_tracking_root" name="Patient Care" sequence="10"/>
+    <menuitem id="menu_patient_care_tracking" name="Tracking" parent="menu_patient_care_tracking_root"
+              action="action_patient_care_tracking" sequence="10"/>
+</odoo>
