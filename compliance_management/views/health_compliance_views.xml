@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Health Compliance Views -->
+    <record id="view_health_compliance_form" model="ir.ui.view">
+        <field name="name">health.compliance.form</field>
+        <field name="model">health.compliance</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,compliant,non_compliant,partly_compliant"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Tên đánh giá"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="regulation_id"/>
+                            <field name="department_id"/>
+                            <field name="responsible_id"/>
+                        </group>
+                        <group>
+                            <field name="date_assessment"/>
+                            <field name="next_assessment"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Ghi chú">
+                            <field name="notes"/>
+                        </page>
+                        <page string="Hành động khắc phục">
+                            <field name="action_ids">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="description"/>
+                                    <field name="responsible_id"/>
+                                    <field name="deadline"/>
+                                    <field name="state"/>
+                                    <field name="completion_date"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Tài liệu">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_health_compliance_tree" model="ir.ui.view">
+        <field name="name">health.compliance.tree</field>
+        <field name="model">health.compliance</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="state=='non_compliant'" decoration-success="state=='compliant'" decoration-warning="state=='partly_compliant'">
+                <field name="name"/>
+                <field name="regulation_id"/>
+                <field name="date_assessment"/>
+                <field name="next_assessment"/>
+                <field name="state"/>
+                <field name="responsible_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_health_compliance_search" model="ir.ui.view">
+        <field name="name">health.compliance.search</field>
+        <field name="model">health.compliance</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="regulation_id"/>
+                <field name="department_id"/>
+                <field name="responsible_id"/>
+                <separator/>
+                <filter string="Tuân thủ" name="compliant" domain="[('state', '=', 'compliant')]"/>
+                <filter string="Không tuân thủ" name="non_compliant" domain="[('state', '=', 'non_compliant')]"/>
+                <filter string="Đánh giá trong tháng" name="assessment_this_month" domain="[('date_assessment', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')), ('date_assessment', '&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Quy định" name="group_by_regulation" context="{'group_by': 'regulation_id'}"/>
+                    <filter string="Phòng ban" name="group_by_department" context="{'group_by': 'department_id'}"/>
+                    <filter string="Trạng thái" name="group_by_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

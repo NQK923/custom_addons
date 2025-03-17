@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Health Regulation Views -->
+    <record id="view_health_regulation_form" model="ir.ui.view">
+        <field name="name">health.regulation.form</field>
+        <field name="model">health.regulation</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Tên quy định"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="authority_id"/>
+                            <field name="scope"/>
+                        </group>
+                        <group>
+                            <field name="issue_date"/>
+                            <field name="effective_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Mô tả">
+                            <field name="description"/>
+                        </page>
+                        <page string="Đánh giá tuân thủ">
+                            <field name="compliance_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date_assessment"/>
+                                    <field name="state"/>
+                                    <field name="responsible_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Tài liệu">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_health_regulation_tree" model="ir.ui.view">
+        <field name="name">health.regulation.tree</field>
+        <field name="model">health.regulation</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="authority_id"/>
+                <field name="scope"/>
+                <field name="effective_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_health_regulation_search" model="ir.ui.view">
+        <field name="name">health.regulation.search</field>
+        <field name="model">health.regulation</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="authority_id"/>
+                <separator/>
+                <filter string="Quốc gia" name="national" domain="[('scope', '=', 'national')]"/>
+                <filter string="Quốc tế" name="international" domain="[('scope', '=', 'international')]"/>
+                <filter string="Địa phương" name="local" domain="[('scope', '=', 'local')]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Cơ quan ban hành" name="group_by_authority" context="{'group_by': 'authority_id'}"/>
+                    <filter string="Phạm vi" name="group_by_scope" context="{'group_by': 'scope'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Health Authority Views -->
+    <record id="view_health_authority_form" model="ir.ui.view">
+        <field name="name">health.authority.form</field>
+        <field name="model">health.authority</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Tên cơ quan"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="country_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Mô tả">
+                            <field name="description"/>
+                        </page>
+                        <page string="Quy định">
+                            <field name="regulation_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="issue_date"/>
+                                    <field name="effective_date"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_health_authority_tree" model="ir.ui.view">
+        <field name="name">health.authority.tree</field>
+        <field name="model">health.authority</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="country_id"/>
+            </list>
+        </field>
+    </record>
+</odoo>

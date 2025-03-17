@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_patient_complaint_form" model="ir.ui.view">
+        <field name="name">healthcare.patient.complaint.form</field>
+        <field name="model">healthcare.patient.complaint</field>
+        <field name="arch" type="xml">
+            <form string="Khiếu nại từ bệnh nhân">
+                <header>
+                    <button name="action_progress" string="Xử lý" type="object" class="oe_highlight" invisible="state != 'new'"/>
+                    <button name="action_resolve" string="Giải quyết" type="object" class="oe_highlight" invisible="state != 'in_progress'"/>
+                    <button name="action_cancel" string="Hủy" type="object" invisible="state not in ('new','in_progress')"/>
+                    <button name="action_new" string="Thiết lập thành Mới" type="object" invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,in_progress,resolved"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-danger" role="alert" invisible="not is_overdue">
+                        <strong>Cảnh báo!</strong> Khiếu nại này đã quá hạn.
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="complaint_date"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="category"/>
+                            <field name="is_overdue" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="deadline"/>
+                            <field name="feedback_id" readonly="1" invisible="not feedback_id"/>
+                            <field name="resolved_date" readonly="1" invisible="not resolved_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Nội dung khiếu nại">
+                            <field name="description" placeholder="Nhập chi tiết khiếu nại từ bệnh nhân..."/>
+                        </page>
+                        <page string="Giải pháp" invisible="state in ('new', 'cancelled')">
+                            <field name="resolution" placeholder="Nhập phương án giải quyết..."/>
+                        </page>
+                        <page string="Đánh giá" invisible="state != 'resolved'">
+                            <group>
+                                <field name="satisfaction_rating" widget="priority"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_patient_complaint_tree" model="ir.ui.view">
+        <field name="name">healthcare.patient.complaint.tree</field>
+        <field name="model">healthcare.patient.complaint</field>
+        <field name="arch" type="xml">
+            <list string="Khiếu nại từ bệnh nhân" decoration-danger="is_overdue" decoration-success="state=='resolved'" decoration-info="state=='in_progress'" decoration-muted="state=='cancelled'">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="complaint_date"/>
+                <field name="category"/>
+                <field name="priority" widget="priority"/>
+                <field name="user_id"/>
+                <field name="deadline"/>
+                <field name="is_overdue" invisible="1"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_patient_complaint_search" model="ir.ui.view">
+        <field name="name">healthcare.patient.complaint.search</field>
+        <field name="model">healthcare.patient.complaint</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm khiếu nại">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="description"/>
+                <separator/>
+                <filter string="Mới" domain="[('state','=','new')]" name="state_new"/>
+                <filter string="Đang xử lý" domain="[('state','=','in_progress')]" name="state_in_progress"/>
+                <filter string="Đã giải quyết" domain="[('state','=','resolved')]" name="state_resolved"/>
+                <filter string="Đã hủy" domain="[('state','=','cancelled')]" name="state_cancelled"/>
+                <separator/>
+                <filter string="Quá hạn" domain="[('is_overdue','=',True)]" name="overdue"/>
+                <separator/>
+                <filter string="Ưu tiên thấp" domain="[('priority','=','0')]" name="priority_low"/>
+                <filter string="Ưu tiên trung bình" domain="[('priority','=','1')]" name="priority_medium"/>
+                <filter string="Ưu tiên cao" domain="[('priority','=','2')]" name="priority_high"/>
+                <group expand="0" string="Group By">
+                    <filter string="Bệnh nhân" name="group_partner" context="{'group_by':'partner_id'}"/>
+                    <filter string="Phân loại" name="group_category" context="{'group_by':'category'}"/>
+                    <filter string="Trạng thái" name="group_state" context="{'group_by':'state'}"/>
+                    <filter string="Ngày khiếu nại" name="group_date" context="{'group_by':'complaint_date'}"/>
+                    <filter string="Người phụ trách" name="group_user" context="{'group_by':'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_patient_complaint" model="ir.actions.act_window">
+        <field name="name">Khiếu nại của bệnh nhân</field>
+        <field name="res_model">healthcare.patient.complaint</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="search_view_id" ref="view_patient_complaint_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo khiếu nại đầu tiên từ bệnh nhân
+            </p>
+        </field>
+    </record>
+</odoo>

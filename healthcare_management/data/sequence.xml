@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- data/sequence.xml -->
+<odoo>
+    <data noupdate="1">
+        <!-- Sequence for Patient Feedback -->
+        <record id="seq_healthcare_patient_feedback" model="ir.sequence">
+            <field name="name">Mã phản hồi của bệnh nhân</field>
+            <field name="code">healthcare.patient.feedback</field>
+            <field name="prefix">FB</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Sequence for Patient Complaint -->
+        <record id="seq_healthcare_patient_complaint" model="ir.sequence">
+            <field name="name">Mã khiếu nại của bệnh nhân</field>
+            <field name="code">healthcare.patient.complaint</field>
+            <field name="prefix">CP</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>
