@@ -1,5 +1,5 @@
 {
-    'name': 'Room Management',
+    'name': 'Quản lý phòng khám',
     'version': '1.0',
     'category': 'Healthcare',
     'summary': 'Quản lý phòng khám',

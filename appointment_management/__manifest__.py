@@ -1,5 +1,5 @@
 {
-    'name': 'Appointment Management',
+    'name': 'Đặt lịch khám bệnh',
     'version': '1.0',
     'category': 'Healthcare',
     'summary': 'Quản lý lịch hẹn khám',

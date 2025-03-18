@@ -4,7 +4,7 @@
     'summary': 'Module quản lý hóa đơn phòng khám',
     'sequence': 10,
     'description': """Module quản lý hóa đơn phòng khám""",
-    'category': 'Services',
+    'category': 'Healthcare',
     'author': 'Your Name',
     'website': '',
     'depends': ['base','prescription-management'],

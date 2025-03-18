@@ -11,7 +11,7 @@ Long description of module's purpose
     'author': "My Company",
     'website': "https://www.yourcompany.com",
 
-    'category': 'Tools',
+    'category': 'Healthcare',
     'version': '0.1',
 
     # any module necessary for this one to work correctly
