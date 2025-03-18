@@ -3,11 +3,7 @@ access_prescription_order_user,prescription.order user,model_prescription_order,
 access_prescription_order_manager,prescription.order manager,model_prescription_order,base.group_system,1,1,1,1
 access_prescription_line_user,prescription.line user,model_prescription_line,base.group_user,1,0,0,0
 access_prescription_line_manager,prescription.line manager,model_prescription_line,base.group_system,1,1,1,1
-
 access_pharmacy_product,access.pharmacy.product,model_pharmacy_product,,1,1,1,1
-access_pharmacy_stock_move,access.pharmacy.stock.move,model_pharmacy_stock_move,,1,1,1,1
-
 access_pharmacy_product_user,Pharmacy Product User Access,model_pharmacy_product,base.group_user,1,1,1,0
-access_pharmacy_stock_move_user,Pharmacy Stock Move User Access,model_pharmacy_stock_move,base.group_user,1,1,1,0
 access_prescription_order_user,Prescription Order User Access,model_prescription_order,base.group_user,1,1,1,0
 access_prescription_line_user,Prescription Line User Access,model_prescription_line,base.group_user,1,1,1,0

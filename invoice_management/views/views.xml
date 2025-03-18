@@ -186,92 +186,6 @@
               action="action_clinic_service"
               sequence="2"/>
 
-    <!-- Sequence for Pharmacy Import Order -->
-    <record id="seq_pharmacy_import_order" model="ir.sequence">
-        <field name="name">Pharmacy Import Order</field>
-        <field name="code">pharmacy.import.order</field>
-        <field name="prefix">IMP-</field>
-        <field name="padding">5</field>
-    </record>
-
-    <!-- Action for Pharmacy Import Order -->
-    <record id="action_pharmacy_import_order" model="ir.actions.act_window">
-        <field name="name">Phiếu nhập hàng</field>
-        <field name="res_model">pharmacy.import.order</field>
-        <field name="view_mode">list,form</field>
-    </record>
-
-    <!-- Menu for Pharmacy Import Order -->
-    <menuitem id="menu_pharmacy_import_order" name="Phiếu nhập hàng" 
-              parent="menu_invoice_root" action="action_pharmacy_import_order" sequence="3"/>
-
-    <!-- List View for Pharmacy Import Order -->
-    <record id="view_pharmacy_import_order_list" model="ir.ui.view">
-        <field name="name">pharmacy.import.order.list</field>
-        <field name="model">pharmacy.import.order</field>
-        <field name="arch" type="xml">
-            <list string="Phiếu nhập hàng">
-                <field name="name"/>
-                <field name="name_supplier"/>
-                <field name="import_date"/>
-                <field name="amount_total"/>
-                <field name="state"/>
-            </list>
-        </field>
-    </record>
-
-    <!-- Form View for Pharmacy Import Order -->
-    <record id="view_pharmacy_import_order_form" model="ir.ui.view">
-        <field name="name">pharmacy.import.order.form</field>
-        <field name="model">pharmacy.import.order</field>
-        <field name="arch" type="xml">
-            <form string="Phiếu nhập hàng">
-                <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="action_confirm" type="object" string="Xác nhận" 
-                                class="oe_stat_button" icon="fa-check" 
-                                invisible="[('state', '!=', 'draft')]"/>
-                        <button name="action_done" type="object" string="Hoàn tất" 
-                                class="oe_stat_button" icon="fa-check-circle" 
-                                invisible="[('state', '!=', 'confirmed')]"/>
-                        <button name="action_cancel" type="object" string="Hủy" 
-                                class="oe_stat_button" icon="fa-times" 
-                                invisible="[('state', 'in', ['done', 'cancelled'])]"/>
-                        <button name="action_reset_to_draft" type="object" string="Đặt lại Nháp" 
-                                class="oe_stat_button" icon="fa-undo" 
-                                invisible="[('state', '!=', 'cancelled')]"/>
-                    </div>
-                    <group>
-                        <field name="name" readonly="1"/>
-                        <field name="name_supplier"/>
-                        <field name="import_date"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
-                    </group>
-                    <notebook>
-                        <page string="Chi tiết nhập hàng">
-                            <field name="import_lines">
-                                <list editable="bottom">
-                                    <field name="product_id" options="{'no_quick_create': True}"/>
-                                    <field name="quantity"/>
-                                    <field name="price_unit"/>
-                                    <field name="price_subtotal" readonly="1"/>
-                                </list>
-                            </field>
-                            <group>
-                                <field name="amount_subtotal" readonly="1"/>
-                                <field name="amount_tax" readonly="1"/>
-                                <field name="amount_total" readonly="1"/>
-                            </group>
-                        </page>
-                        <page string="Ghi chú">
-                            <field name="note"/>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
     <!-- Sequence for Insurance Invoice -->
     <record id="seq_clinic_insurance_invoice" model="ir.sequence">
         <field name="name">Insurance Invoice</field>
@@ -375,6 +289,124 @@
     <menuitem id="menu_clinic_insurance_invoice"
               name="Hóa đơn bảo hiểm"
               action="action_clinic_insurance_invoice"
+              parent="menu_invoice_root"
+              sequence="20"/>
+
+    <!-- Sequence cho mã phiếu nhập -->
+    <record id="seq_clinic_purchase_order" model="ir.sequence">
+        <field name="name">Mã phiếu nhập</field>
+        <field name="code">clinic.purchase.order</field>
+        <field name="prefix">PNH</field>
+        <field name="padding">5</field>
+    </record>
+
+    <!-- list View -->
+    <record id="view_clinic_purchase_order_list" model="ir.ui.view">
+        <field name="name">clinic.purchase.order.list</field>
+        <field name="model">clinic.purchase.order</field>
+        <field name="arch" type="xml">
+            <list decoration-info="state == 'draft'" decoration-success="state == 'paid'" decoration-danger="state == 'cancelled'">
+                <field name="code"/>
+                <field name="date"/>
+                <field name="supplier_name"/>
+                <field name="amount_untaxed"/>
+                <field name="amount_tax"/>
+                <field name="amount_total"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_clinic_purchase_order_form" model="ir.ui.view">
+        <field name="name">clinic.purchase.order.form</field>
+        <field name="model">clinic.purchase.order</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" 
+                            string="Xác nhận" 
+                            type="object" 
+                            class="oe_highlight"
+                            invisible="state != 'draft'"
+                            confirm="Bạn có chắc chắn muốn xác nhận phiếu nhập này?"/>
+                    <button name="action_pay" 
+                            string="Thanh toán" 
+                            type="object" 
+                            class="oe_highlight"
+                            invisible="state != 'confirmed'"
+                            confirm="Bạn có chắc chắn muốn thanh toán phiếu nhập này? Số lượng sẽ được cập nhật vào kho."/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="code" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date" readonly="state == 'paid'"/>
+                            <field name="supplier_name" readonly="state == 'paid'"/>
+                        </group>
+                        <group>
+                            <field name="amount_untaxed"/>
+                            <field name="amount_tax"/>
+                            <field name="amount_total"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Chi tiết phiếu nhập">
+                            <field name="line_ids" readonly="state == 'paid'">
+                                <list editable="bottom">
+                                    <field name="product_id" options="{'no_create': True}"/>
+                                    <field name="quantity"/>
+                                    <field name="price_unit"/>
+                                    <field name="subtotal"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Ghi chú">
+                            <field name="note" readonly="state == 'paid'"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_clinic_purchase_order_search" model="ir.ui.view">
+        <field name="name">clinic.purchase.order.search</field>
+        <field name="model">clinic.purchase.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="code"/>
+                <field name="supplier_name"/>
+                <filter string="Nháp" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Đã xác nhận" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Đã thanh toán" name="paid" domain="[('state', '=', 'paid')]"/>
+                <filter string="Đã hủy" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Trạng thái" name="state" context="{'group_by': 'state'}"/>
+                    <filter string="Ngày nhập" name="date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_clinic_purchase_order" model="ir.actions.act_window">
+        <field name="name">Phiếu nhập hàng</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">clinic.purchase.order</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_clinic_purchase_order"
+              name="Phiếu nhập hàng"
+              action="action_clinic_purchase_order"
               parent="menu_invoice_root"
               sequence="20"/>
 </odoo>
