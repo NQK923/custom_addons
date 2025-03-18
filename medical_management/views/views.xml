@@ -1,7 +1,7 @@
 
 <odoo>
     <!-- Root Menu -->
-    <menuitem id="menu_hospital_management" name="Test and diagnostic management" sequence="10"/>
+    <menuitem id="menu_hospital_management" name="Xét nghiệm và chẩn đoán" sequence="10"/>
 
     <!-- Action for Medical Tests -->
     <record id="action_medical_test" model="ir.actions.act_window">

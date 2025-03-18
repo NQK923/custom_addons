@@ -41,7 +41,6 @@ class ClinicPatient(models.Model):
     expiry_date = fields.Date(string='Thời hạn', readonly=True, related='insurance.insurance_expiry_date')
     has_valid_insurance = fields.Boolean(string='Có bảo hiểm hợp lệ', compute='_compute_has_valid_insurance')
     insurance_status = fields.Char(string='BHYT', compute='_compute_insurance_status')
-    room_id = fields.Many2one('clinic.room', string='Phòng')
 
     @api.depends('date_of_birth')
     def _compute_age(self):

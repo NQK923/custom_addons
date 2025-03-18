@@ -1,5 +1,5 @@
 {
-    'name': 'Treatment and care management',
+    'name': 'Quản lý điều trị',
     'version': '1.0',
     'category': 'Healthcare',
     'summary': 'Manage pharmacy inventory and stock operations',
