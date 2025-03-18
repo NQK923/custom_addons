@@ -113,13 +113,39 @@ class ClinicInvoice(models.Model):
         self.write({'state': 'confirmed'})
 
     def action_mark_as_paid(self):
-        self.write({'state': 'paid'})
+        for invoice in self:
+            # Kiểm tra số lượng tồn kho trước khi thanh toán
+            for line in invoice.product_lines:
+                if line.product_id.quantity < line.quantity:
+                    raise ValidationError(
+                        f'Không đủ số lượng thuốc {line.product_id.name} trong kho! '
+                        f'(Còn {line.product_id.quantity}, cần {line.quantity})'
+                    )
+            
+            # Cập nhật trạng thái và trừ số lượng trong kho
+            invoice.write({'state': 'paid'})
+            
+            # Trừ số lượng thuốc trong kho
+            for line in invoice.product_lines:
+                line.product_id.quantity -= line.quantity
 
     def action_cancel(self):
-        self.write({'state': 'cancelled'})
+        for invoice in self:
+            # Nếu hóa đơn đã thanh toán, cộng lại số lượng thuốc vào kho
+            if invoice.state == 'paid':
+                for line in invoice.product_lines:
+                    line.product_id.quantity += line.quantity
+            
+            invoice.write({'state': 'cancelled'})
 
     def action_reset_to_draft(self):
-        self.write({'state': 'draft'})
+        for invoice in self:
+            # Chỉ cho phép đặt lại về nháp nếu chưa thanh toán
+            if invoice.state == 'paid':
+                raise ValidationError(
+                    'Không thể đặt lại hóa đơn đã thanh toán về trạng thái nháp!'
+                )
+            invoice.write({'state': 'draft'})
 
 class ClinicInvoiceLine(models.Model):
     _name = 'clinic.invoice.line'
@@ -192,113 +218,6 @@ class ClinicInvoiceLine(models.Model):
                     f"Đơn giá của {line.service_id.name or line.product_id.name} phải lớn hơn 0!"
                 )
                 
-class PharmacyImportOrder(models.Model):
-    _name = 'pharmacy.import.order'
-    _description = 'Phiếu nhập hàng dược phẩm'
-    _order = 'import_date desc, id desc'
-
-    name = fields.Char(string='Số phiếu nhập', required=True, copy=False, readonly=True, 
-                       default=lambda self: 'New')
-    name_supplier = fields.Char(string='Nhà cung cấp', required=True)  # Thay supplier_id bằng name_supplier
-    import_date = fields.Date(string='Ngày nhập', default=fields.Date.today, required=True)
-    import_lines = fields.One2many('pharmacy.import.line', 'import_id', string='Chi tiết nhập hàng')
-    state = fields.Selection([
-        ('draft', 'Nháp'),
-        ('confirmed', 'Đã xác nhận'),
-        ('done', 'Hoàn tất'),
-        ('cancelled', 'Đã hủy')
-    ], string='Trạng thái', default='draft', required=True)
-    amount_subtotal = fields.Float(string='Tổng tiền thuốc', compute='_compute_amounts', store=True)
-    amount_tax = fields.Float(string='Thuế', compute='_compute_amounts', store=True)
-    amount_total = fields.Float(string='Tổng cộng', compute='_compute_amounts', store=True)
-    note = fields.Text(string='Ghi chú')
-
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('pharmacy.import.order') or 'New'
-        return super(PharmacyImportOrder, self).create(vals)
-
-    @api.depends('import_lines.price_subtotal')
-    def _compute_amounts(self):
-        for order in self:
-            amount_subtotal = sum(line.price_subtotal for line in order.import_lines)
-            amount_tax = amount_subtotal * 0.1  # 10% VAT
-            order.amount_subtotal = amount_subtotal
-            order.amount_tax = amount_tax
-            order.amount_total = amount_subtotal + amount_tax
-
-    def action_confirm(self):
-        """Xác nhận phiếu nhập, cập nhật số lượng tồn kho"""
-        for order in self:
-            if order.state != 'draft':
-                raise ValidationError('Chỉ có thể xác nhận phiếu ở trạng thái Nháp!')
-            for line in order.import_lines:
-                line.product_id.quantity += line.quantity  # Cập nhật tồn kho
-            order.write({'state': 'confirmed'})
-
-    def action_done(self):
-        """Hoàn tất phiếu nhập"""
-        for order in self:
-            if order.state != 'confirmed':
-                raise ValidationError('Chỉ có thể hoàn tất phiếu đã xác nhận!')
-            order.write({'state': 'done'})
-
-    def action_cancel(self):
-        """Hủy phiếu nhập, không xóa hẳn"""
-        for order in self:
-            if order.state == 'done':
-                raise ValidationError('Không thể hủy phiếu đã hoàn tất!')
-            if order.state == 'confirmed':
-                # Hoàn lại tồn kho khi hủy phiếu đã xác nhận
-                for line in order.import_lines:
-                    if line.product_id.quantity < line.quantity:
-                        raise ValidationError(f'Không đủ tồn kho để hoàn lại {line.product_id.name}!')
-                    line.product_id.quantity -= line.quantity
-            order.write({'state': 'cancelled'})
-
-    def action_reset_to_draft(self):
-        """Đặt lại phiếu về Nháp"""
-        for order in self:
-            if order.state == 'cancelled':
-                order.write({'state': 'draft'})
-            else:
-                raise ValidationError('Chỉ có thể đặt lại từ trạng thái Đã hủy!')
-
-class PharmacyImportLine(models.Model):
-    _name = 'pharmacy.import.line'
-    _description = 'Chi tiết phiếu nhập hàng'
-
-    import_id = fields.Many2one('pharmacy.import.order', string='Phiếu nhập', required=True)
-    product_id = fields.Many2one('pharmacy.product', string='Thuốc', required=True)
-    quantity = fields.Float(string='Số lượng', default=1.0, required=True)
-    price_unit = fields.Float(string='Đơn giá')
-    price_subtotal = fields.Float(string='Thành tiền', compute='_compute_price_subtotal', store=True)
-
-    @api.onchange('product_id')
-    def _onchange_product_id(self):
-        if self.product_id:
-            self.price_unit = self.product_id.unit_price or 0.0
-
-    @api.depends('quantity', 'price_unit')
-    def _compute_price_subtotal(self):
-        for line in self:
-            line.price_subtotal = line.quantity * line.price_unit
-
-    @api.constrains('quantity')
-    def _check_quantity(self):
-        for line in self:
-            if line.quantity <= 0:
-                raise ValidationError('Số lượng nhập phải lớn hơn 0!')
-    
-    @api.constrains('price_unit')
-    def _check_price_unit(self):
-        for line in self:
-            if line.price_unit <= 0:
-                raise ValidationError(
-                    f"Đơn giá của {line.service_id.name or line.product_id.name} phải lớn hơn 0!"
-                )
-
 class ClinicInsuranceInvoice(models.Model):
     _name = 'clinic.invoice.insurance'
     _description = 'Hóa đơn bảo hiểm'
@@ -416,3 +335,90 @@ class ClinicInsuranceInvoiceLine(models.Model):
             'target': 'new',
             'flags': {'mode': 'readonly'},  # Chỉ cho phép xem
         }
+
+class ClinicPurchaseOrder(models.Model):
+    _name = 'clinic.purchase.order'
+    _description = 'Phiếu nhập hàng'
+    _rec_name = 'code'
+
+    code = fields.Char(string='Mã phiếu nhập', readonly=True, default='New')
+    date = fields.Date(string='Ngày nhập', default=fields.Date.today, required=True)
+    supplier_name = fields.Char(string='Nhà cung cấp', required=True)
+    state = fields.Selection([
+        ('draft', 'Nháp'),
+        ('confirmed', 'Đã xác nhận'),
+        ('paid', 'Đã thanh toán'),
+    ], string='Trạng thái', default='draft', tracking=True)
+    
+    line_ids = fields.One2many('clinic.purchase.order.line', 'order_id', string='Chi tiết phiếu nhập')
+    note = fields.Text(string='Ghi chú')
+    
+    amount_untaxed = fields.Float(string='Tổng tiền chưa thuế', compute='_compute_amounts', store=True)
+    amount_tax = fields.Float(string='Thuế (10%)', compute='_compute_amounts', store=True)
+    amount_total = fields.Float(string='Tổng tiền sau thuế', compute='_compute_amounts', store=True)
+
+    def unlink(self):
+        """Chỉ cho phép xóa ở trạng thái nháp và đã xác nhận"""
+        for record in self:
+            if record.state == 'paid':
+                raise ValidationError('Không thể xóa phiếu nhập đã thanh toán!')
+        return super(ClinicPurchaseOrder, self).unlink()
+
+    def action_confirm(self):
+        """Xác nhận phiếu nhập"""
+        for record in self:
+            if record.state == 'draft':
+                record.write({'state': 'confirmed'})
+
+    def action_pay(self):
+        """Thanh toán phiếu nhập"""
+        for record in self:
+            if record.state == 'confirmed':
+                record.write({'state': 'paid'})
+                # Cập nhật số lượng trong kho
+                for line in record.line_ids:
+                    line.product_id.write({
+                        'quantity': line.product_id.quantity + line.quantity
+                    })
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('code', 'New') == 'New':
+                vals['code'] = self.env['ir.sequence'].next_by_code('clinic.purchase.order') or 'New'
+        return super().create(vals_list)
+
+    def write(self, vals):
+        """Kiểm tra quyền chỉnh sửa"""
+        for record in self:
+            if record.state == 'paid' and not self.env.context.get('allow_paid_edit'):
+                raise ValidationError('Không thể chỉnh sửa phiếu nhập đã thanh toán!')
+        return super(ClinicPurchaseOrder, self).write(vals)
+
+    @api.depends('line_ids.subtotal')
+    def _compute_amounts(self):
+        for order in self:
+            amount_untaxed = sum(order.line_ids.mapped('subtotal'))
+            order.amount_untaxed = amount_untaxed
+            order.amount_tax = amount_untaxed * 0.1
+            order.amount_total = order.amount_untaxed + order.amount_tax
+
+class PurchaseOrderLine(models.Model):
+    _name = 'clinic.purchase.order.line'
+    _description = 'Chi tiết phiếu nhập'
+
+    order_id = fields.Many2one('clinic.purchase.order', string='Phiếu nhập', required=True, ondelete='cascade')
+    product_id = fields.Many2one('pharmacy.product', string='Dược phẩm', required=True)
+    quantity = fields.Integer(string='Số lượng', required=True)
+    price_unit = fields.Float(string='Đơn giá', required=True)
+    subtotal = fields.Float(string='Thành tiền', compute='_compute_subtotal', store=True)
+
+    @api.depends('quantity', 'price_unit')
+    def _compute_subtotal(self):
+        for line in self:
+            line.subtotal = line.quantity * line.price_unit
+
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        if self.product_id:
+            self.price_unit = self.product_id.purchase_price

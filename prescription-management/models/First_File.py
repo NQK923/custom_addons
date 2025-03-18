@@ -1,56 +1,53 @@
-
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 class PharmacyProduct(models.Model):
     _name = 'pharmacy.product'
-    _description = 'Pharmacy Product'
+    _description = 'Dược phẩm'
 
     name = fields.Char(string='Tên thuốc', required=True)
     code = fields.Char(string='Mã thuốc', required=True)
     category = fields.Char(string='Loại thuốc')
     manufacturer = fields.Char(string='Nhà sản xuất')
-    unit_price = fields.Float(string='Đơn giá')
-    quantity = fields.Float(string='Số lượng tồn kho')
+    quantity = fields.Integer(string='Số lượng tồn kho', default=0)
+    uom_id = fields.Selection([
+        ('pill', 'Viên'),
+        ('bottle', 'Chai'),
+        ('box', 'Hộp'),
+        ('pack', 'Gói'),
+        ('tube', 'Ống')
+    ], string='Đơn vị tính', required=True)
+    purchase_price = fields.Float(string='Giá nhập', required=True)
+    unit_price = fields.Float(string='Giá bán', required=True)
+    profit_margin = fields.Float(string='Tỷ suất lợi nhuận (%)', compute='_compute_profit_margin', store=True)
     date = fields.Datetime(string='Ngày sản xuất')
     expiry = fields.Datetime(string='Hạn sử dụng')
     description = fields.Text(string='Mô tả')
+    active = fields.Boolean(default=True)
 
-from odoo.exceptions import ValidationError
-
-class PharmacyStockMove(models.Model):
-    _name = 'pharmacy.stock.move'
-    _description = 'Pharmacy Stock Move'
-
-    product_id = fields.Many2one('pharmacy.product', string='Medicine', required=True)
-    move_type = fields.Selection([
-        ('in', 'Stock In'),
-        ('out', 'Stock Out'),
-    ], string='Move Type', required=True)
-    quantity = fields.Float(string='Số lượng', required=True)
-    date = fields.Datetime(string='Thời gian', default=fields.Datetime.now)
-    note = fields.Text(string='Ghi chú')
-
-    @api.model
-    def create(self, vals):
-        record = super(PharmacyStockMove, self).create(vals)
-        if record.move_type == 'in':
-            record.product_id.quantity += record.quantity
-        elif record.move_type == 'out':
-            if record.product_id.quantity < record.quantity:
-                raise ValidationError('Không đủ số lượng tồn kho để xuất.')
-            record.product_id.quantity -= record.quantity
-        return record
-
-    @api.constrains('quantity')
-    def _check_quantity(self):
+    @api.constrains('purchase_price', 'unit_price')
+    def _check_prices(self):
         for record in self:
-            if record.quantity <= 0:
-                raise ValidationError('Số lượng phải lớn hơn 0.')
-fields.Text(string='Note')
+            if record.purchase_price <= 0:
+                raise ValidationError('Giá nhập phải lớn hơn 0!')
+            if record.unit_price <= 0:
+                raise ValidationError('Giá bán phải lớn hơn 0!')
+            if record.unit_price < record.purchase_price:
+                raise ValidationError('Giá bán phải lớn hơn hoặc bằng giá nhập!')
 
+    @api.depends('purchase_price', 'unit_price')
+    def _compute_profit_margin(self):
+        for record in self:
+            if record.purchase_price > 0:
+                record.profit_margin = ((record.unit_price - record.purchase_price) / record.purchase_price) * 100
+            else:
+                record.profit_margin = 0.0
 
-
-
+    @api.onchange('purchase_price')
+    def _onchange_purchase_price(self):
+        """Tự động đề xuất giá bán khi nhập giá mua (với lợi nhuận 20%)"""
+        if self.purchase_price:
+            self.unit_price = self.purchase_price * 1.2
 class PrescriptionOrder(models.Model):
     _name = 'prescription.order'
     _description = 'Prescription Order'

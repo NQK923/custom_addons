@@ -7,3 +7,5 @@ access_pharmacy_import_line,access.pharmacy.import.line,model_pharmacy_import_li
 access_clinic_insurance_invoice,access.clinic.insurance.invoice,model_clinic_invoice_insurance,base.group_user,1,1,1,1
 access_clinic_invoice_insurance,clinic.invoice.insurance,model_clinic_invoice_insurance,base.group_user,1,1,1,1
 access_clinic_invoice_insurance_line,clinic.invoice.insurance.line,model_clinic_invoice_insurance_line,base.group_user,1,1,1,1
+access_clinic_purchase_order,clinic.purchase.order,model_clinic_purchase_order,base.group_user,1,1,1,1
+access_clinic_purchase_order_line,clinic.purchase.order.line,model_clinic_purchase_order_line,base.group_user,1,1,1,1
