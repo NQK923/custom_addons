@@ -6,10 +6,12 @@
         <field name="model">clinic.insurance.policy</field>
         <field name="arch" type="xml">
             <list>
+                <field name="name"/>
                 <field name="number"/>
+                <field name="patient_id"/>
                 <field name="facility"/>
                 <field name="tier"/>
-                <field name="patient_id"/>
+                <field name="expiry_date"/>
             </list>
         </field>
     </record>
@@ -21,11 +23,21 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
+                    <div class="oe_title" invisible="1">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
                     <group>
-                        <field name="number"/>
-                        <field name="facility"/>
-                        <field name="tier"/>
-                        <field name="patient_id"/>
+                        <group>
+                            <field name="number"/>
+                            <field name="patient_id"/>
+                            <field name="facility"/>
+                        </group>
+                        <group>
+                            <field name="tier"/>
+                            <field name="expiry_date"/>
+                        </group>
                     </group>
                 </sheet>
             </form>

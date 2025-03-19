@@ -24,6 +24,7 @@ Long description of module's purpose
 
     # always loaded
     'data': [
+        'data/sequence.xml',
         'security/ir.model.access.csv',
         'views/views.xml',
     ],
