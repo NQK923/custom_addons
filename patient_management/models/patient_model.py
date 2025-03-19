@@ -1,13 +1,13 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from datetime import timedelta, date
+from datetime import timedelta
 
 
 class ClinicPatient(models.Model):
     _name = 'clinic.patient'
     _description = 'Thông tin bệnh nhân'
-    _inherit = 'clinic.patient'
 
+    patient_id = fields.Char(string='Mã bệnh nhân', required=True, readonly=True, default='New')
     name = fields.Char(string='Họ và Tên', required=True)
     date_of_birth = fields.Date(string='Ngày sinh')
     age = fields.Integer(string='Tuổi', compute='_compute_age', store=True)
@@ -17,30 +17,21 @@ class ClinicPatient(models.Model):
         ('other', 'Khác')
     ], string='Giới tính', required=True)
     phone = fields.Char(string='Số điện thoại')
+    email = fields.Char(string='Địa chỉ email')
     address = fields.Text(string='Địa chỉ')
     patient_type = fields.Selection([
         ('outpatient', 'Ngoại trú'),
         ('inpatient', 'Nội trú')
     ], string='Loại bệnh nhân', required=True, default='outpatient')
     state = fields.Selection([
-        ('under_treatment', 'Đang điều trị'),
-        ('treated', 'Đã điều trị'),
-        ('deceased', 'Tử vong')
-    ], string='Trạng thái', default='under_treatment')
-    last_activity_date = fields.Datetime(string='Ngày hoạt động gần nhất', default=fields.Datetime.now)
+        ('registered', 'Đã đăng ký'),
+        ('hospitalized', 'Đang nhập viện')
+    ], string='Trạng thái', default='registered')
     note = fields.Text(string='Ghi chú')
-    insurance = fields.Many2one('clinic.insurance.policy', string='Thông tin bảo hiểm', ondelete='set null')
-    insurance_number = fields.Char(string='Số thẻ BHYT', readonly=True, related='insurance.insurance_number')
-    initial_facility = fields.Char(string='Nơi ĐKKCB', readonly=True, related='insurance.insurance_initial_facility')
-    tier = fields.Selection([
-        ('central', 'Trung ương'),
-        ('province', 'Tỉnh'),
-        ('district', 'Quận/Huyện'),
-        ('commune', 'Xã')
-    ], string='Tuyến', readonly=True, related='insurance.insurance_tier')
-    expiry_date = fields.Date(string='Thời hạn', readonly=True, related='insurance.insurance_expiry_date')
-    has_valid_insurance = fields.Boolean(string='Có bảo hiểm hợp lệ', compute='_compute_has_valid_insurance')
-    insurance_status = fields.Char(string='BHYT', compute='_compute_insurance_status')
+
+    # Sửa lại định nghĩa quan hệ
+    # insurance_id = fields.One2many('clinic.insurance.policy', 'patient_id', string='Bảo hiểm y tế')
+    # has_insurance = fields.Boolean(string='Có BHYT', compute='_compute_has_insurance', store=True)
 
     @api.depends('date_of_birth')
     def _compute_age(self):
@@ -59,66 +50,19 @@ class ClinicPatient(models.Model):
             if record.date_of_birth and record.date_of_birth > fields.Date.today():
                 raise ValidationError("Ngày sinh không thể là ngày trong tương lai!")
 
-    def action_treated(self):
-        """Cập nhật trạng thái thành 'Đã điều trị' khi nhấn nút trong form."""
-        self.write({'state': 'treated'})
+    def action_hospitalize(self):
+        """Cập nhật trạng thái thành 'Đang nhập viện' khi nhấn nút trong form."""
+        self.write({'state': 'hospitalized'})
         return True
 
-    def action_deceased(self):
-        self.write({'state': 'deceased'})
-        return True
 
-    def _check_abandoned_outpatients(self):
-        """Cron job để tự động chuyển trạng thái 'under_treatment' thành 'treated' cho bệnh nhân ngoại trú sau 24h."""
-        today = fields.Datetime.now()
-        threshold = timedelta(hours=24)
-        outpatients = self.search([
-            ('state', '=', 'under_treatment'),
-            ('patient_type', '=', 'outpatient'),
-            ('last_activity_date', '<=', today - threshold)
-        ])
-        for patient in outpatients:
-            patient.write({
-                'state': 'treated',
-                'note': f"{patient.note or ''}\nTự động chuyển thành 'Đã điều trị' sau 24h không hoạt động."
-            })
+    # @api.model
+    # def create(self, vals):
+    #     if vals.get('patient_id', 'New') == 'New':
+    #         vals['patient_id'] = self.env['ir.sequence'].next_by_code('clinic.patient.sequence') or 'P-0001'
+    #     return super(ClinicPatient, self).create(vals)
 
-    @api.model
-    def _register_hook(self):
-        """Đăng ký cron job khi module được cài đặt."""
-        cron_name = 'Check Abandoned Outpatients'
-        cron_exists = self.env['ir.cron'].search([('name', '=', cron_name)], limit=1)
-        if not cron_exists:
-            self.env['ir.cron'].create({
-                'name': cron_name,
-                'model_id': self.env.ref('patient_management.model_clinic_patient').id,
-                'state': 'code',
-                'code': 'model._check_abandoned_outpatients()',
-                'interval_number': 1,
-                'interval_type': 'hours',
-                'active': True,
-            })
-
-    @api.depends('insurance', 'insurance.insurance_expiry_date')
-    def _compute_has_valid_insurance(self):
-        for record in self:
-            if record.insurance and record.insurance.insurance_state == 'valid':
-                record.has_valid_insurance = True
-            else:
-                record.has_valid_insurance = False
-
-    @api.depends('has_valid_insurance')
-    def _compute_insurance_status(self):
-        for record in self:
-            record.insurance_status = 'Có' if record.has_valid_insurance else 'Không có'
-
-    def action_add_insurance(self):
-        # Logic để tạo bản ghi bảo hiểm mới
-        insurance = self.env['clinic.insurance.policy'].create({
-            'insurance_number': 'TEMP_NUMBER',  # Thay bằng logic thực tế
-            'insurance_initial_facility': 'Some Facility',
-            'insurance_tier': 'district',
-            'insurance_expiry_date': date.today() + timedelta(days=365),
-        })
-        self.write({'insurance': insurance.id})
-        return True
+    # @api.depends('insurance_id')
+    # def _compute_has_insurance(self):
+    #     for record in self:
+    #         record.has_insurance = bool(record.insurance_id)
