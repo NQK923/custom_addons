@@ -122,8 +122,8 @@
                     </div>
                     <group>
                         <group>
-                            <field name="staff_id" readonly="1"/>
-                            <field name="sheet_id" readonly="1"/>
+                            <field name="staff_id"/>
+                            <field name="sheet_id"/>
                             <field name="base_salary" readonly="1" options="{'currency': 'VND'}"/>
                             <field name="standard_work_days" readonly="1"/>
                             <field name="work_days" readonly="1"/>
