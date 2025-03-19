@@ -2,31 +2,26 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from datetime import date
 
-class ClinicPatientInsurance(models.Model):
+class ClinicInsurance(models.Model):
     _name = 'clinic.insurance.policy'
     _description = 'Thông tin bảo hiểm y tế'
 
-    insurance_id = fields.Char(string='Mã bảo hiểm', required=True, readonly=True, default='New')
-    number = fields.Char(string='Số thẻ BHYT', required=True, unique=True)
+    number = fields.Char(string='Số thẻ BHYT', required=True)
     facility = fields.Char(string='Nơi ĐKKCB', required=True)
     tier = fields.Selection([
         ('central', 'Trung ương'),
         ('province', 'Tỉnh'),
         ('district', 'Quận/Huyện'),
         ('commune', 'Xã')
-    ], string='Tuyến', required=True)
+    ], string='Tuyến', required=True, default='district')
+    patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True)
+    insurance_id = fields.Char(string='Mã bảo hiểm', required=True, readonly=True, default='New')
     expiry_date = fields.Date(string='Thời hạn', required=True)
     state = fields.Selection([
         ('valid', 'Hợp lệ'),
         ('expired', 'Hết hạn')
     ], string='Trạng thái', compute='_compute_state', store=True)
-    
-    # Sửa lại định nghĩa quan hệ
-    # patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True, ondelete='restrict')
-    
-    # _sql_constraints = [
-    #     ('unique_patient', 'unique(patient_id)', 'Bệnh nhân này đã có bảo hiểm y tế!')
-    # ]
+
 
     @api.depends('expiry_date')
     def _compute_state(self):
@@ -49,5 +44,5 @@ class ClinicPatientInsurance(models.Model):
     def create(self, vals):
         if vals.get('insurance_id', 'New') == 'New':
             vals['insurance_id'] = self.env['ir.sequence'].next_by_code('clinic.insurance.sequence') or 'IS-0001'
-        return super(ClinicPatientInsurance, self).create(vals)
+        return super(ClinicInsurance, self).create(vals)
 

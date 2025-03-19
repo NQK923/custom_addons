@@ -53,8 +53,6 @@
                         </page>
                         <page string="Thông tin bảo hiểm y tế">
                             <group>
-                                <field name="has_insurance"/>
-                                <field name="insurance_id" readonly="1" invisible="not has_insurance"/>
                             </group>
                         </page>
                     </notebook>
