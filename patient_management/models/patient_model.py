@@ -7,8 +7,8 @@ class ClinicPatient(models.Model):
     _name = 'clinic.patient'
     _description = 'Thông tin bệnh nhân'
 
-    patient_id = fields.Char(string='Mã bệnh nhân', required=True, readonly=True, default='New')
-    name = fields.Char(string='Họ và Tên', required=True)
+    name = fields.Char(string='Mã bệnh nhân', required=True, copy=False, readonly=True, default='New')
+    patient_name = fields.Char(string='Họ và tên', required=True)
     date_of_birth = fields.Date(string='Ngày sinh')
     age = fields.Integer(string='Tuổi', compute='_compute_age', store=True)
     gender = fields.Selection([
@@ -55,12 +55,12 @@ class ClinicPatient(models.Model):
         self.write({'state': 'hospitalized'})
         return True
 
-
-    # @api.model
-    # def create(self, vals):
-    #     if vals.get('patient_id', 'New') == 'New':
-    #         vals['patient_id'] = self.env['ir.sequence'].next_by_code('clinic.patient.sequence') or 'P-0001'
-    #     return super(ClinicPatient, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code('clinic.patient.sequence')
+        return super().create(vals_list)
 
     # @api.depends('insurance_id')
     # def _compute_has_insurance(self):
