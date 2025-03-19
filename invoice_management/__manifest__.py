@@ -7,7 +7,7 @@
     'category': 'Healthcare',
     'author': 'Your Name',
     'website': '',
-    'depends': ['base','prescription-management'],
+    'depends': ['base','prescription_management'],
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
