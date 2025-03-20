@@ -1,23 +1,33 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError, UserError
+import uuid  # Add this at the top
 
 class ClinicService(models.Model):
     _name = 'clinic.service'
     _description = 'Dịch vụ phòng khám'
+    _rec_name = 'service_name'
 
-    name = fields.Char(string='Tên dịch vụ', required=True)
-    code = fields.Char(string='Mã dịch vụ', required=True)
+    name = fields.Char(string='Mã dịch vụ', required=True, copy=False, readonly=True, default='New')
+    service_name = fields.Char(string='Tên dịch vụ', required=True)
     price = fields.Float(string='Giá dịch vụ', required=True)
     description = fields.Text(string='Mô tả')
     active = fields.Boolean(default=True)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
 
 class ClinicInvoice(models.Model):
     _name = 'clinic.invoice'
     _description = 'Hóa đơn phòng khám'
     _order = 'invoice_date desc, id desc'
+    _rec_name = 'display_name'  # Add this
 
-    name = fields.Char(string='Số hóa đơn', required=True, copy=False, readonly=True, 
-                      default=lambda self: 'New')
+    name = fields.Char(string='Mã hóa đơn', required=True, copy=False, readonly=True, default='New')
+    display_name = fields.Char(string='Số hóa đơn', compute='_compute_display_name', store=True)
     patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True)
     prescription_id = fields.Many2one('prescription.order', string='Đơn thuốc', 
                                     domain="[('patient_id', '=', patient_id)]")
@@ -45,11 +55,20 @@ class ClinicInvoice(models.Model):
     patient_amount = fields.Float(string='Bệnh nhân chi trả', compute='_compute_amounts', store=True)
     note = fields.Text(string='Ghi chú')
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('clinic.invoice') or 'New'
-        return super(ClinicInvoice, self).create(vals)
+    @api.depends('name', 'invoice_date')
+    def _compute_display_name(self):
+        for record in self:
+            if record.invoice_date:
+                record.display_name = f'HD{record.invoice_date.strftime("%Y%m%d")}-{record.name}'
+            else:
+                record.display_name = record.name
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
 
     @api.depends('service_lines.price_subtotal', 'product_lines.price_subtotal', 'patient_id')
     def _compute_amounts(self):
@@ -61,9 +80,8 @@ class ClinicInvoice(models.Model):
             
             # Kiểm tra bảo hiểm hợp lệ
             has_valid_insurance = False
-            if invoice.patient_id and invoice.patient_id.insurance_policy_id:
-                policy = invoice.patient_id.insurance_policy_id
-                if policy.insurance_state == 'valid':
+            if invoice.patient_id and invoice.patient_id.has_insurance:
+                if invoice.patient_id.insurance_state == 'Hợp lệ':
                     has_valid_insurance = True
 
             # Tính tiền bảo hiểm chi trả và bệnh nhân trả
@@ -165,7 +183,7 @@ class ClinicInvoiceLine(models.Model):
         if self.service_id:
             if not self.service_id.price:
                 raise ValidationError(
-                    f"Dịch vụ '{self.service_id.name}' chưa có giá. Vui lòng thiết lập giá trước khi sử dụng."
+                    f"Dịch vụ '{self.service_id.service_name}' chưa có giá. Vui lòng thiết lập giá trước khi sử dụng."
                 )
             self.price_unit = self.service_id.price
             self.product_id = False  # Xóa thuốc nếu chọn dịch vụ
@@ -191,9 +209,8 @@ class ClinicInvoiceLine(models.Model):
             
             # Kiểm tra bảo hiểm của bệnh nhân
             has_valid_insurance = False
-            if line.invoice_id.patient_id and line.invoice_id.patient_id.insurance_policy_id:
-                policy = line.invoice_id.patient_id.insurance_policy_id
-                if policy.insurance_state == 'valid':
+            if line.invoice_id.patient_id and line.invoice_id.patient_id.has_insurance:
+                if line.invoice_id.patient_id.insurance_state == 'Hợp lệ':
                     has_valid_insurance = True
 
             # Tính toán số tiền bảo hiểm và bệnh nhân chi trả
@@ -215,14 +232,16 @@ class ClinicInvoiceLine(models.Model):
         for line in self:
             if line.price_unit <= 0:
                 raise ValidationError(
-                    f"Đơn giá của {line.service_id.name or line.product_id.name} phải lớn hơn 0!"
+                    f"Đơn giá của {line.service_id.service_name or line.product_id.name} phải lớn hơn 0!"
                 )
                 
 class ClinicInsuranceInvoice(models.Model):
     _name = 'clinic.invoice.insurance'
     _description = 'Hóa đơn bảo hiểm'
+    _rec_name = 'display_name'  # Add this
 
-    name = fields.Char(string='Số hóa đơn BH', required=True, copy=False, readonly=True, default='New')
+    name = fields.Char(string='Mã hóa đơn BH', required=True, copy=False, readonly=True, default='New')
+    display_name = fields.Char(string='Số hóa đơn BH', compute='_compute_display_name', store=True)
     date_from = fields.Date(string='Từ ngày', required=True)
     date_to = fields.Date(string='Đến ngày', required=True)
     state = fields.Selection([
@@ -264,11 +283,19 @@ class ClinicInsuranceInvoice(models.Model):
             if record.state == 'cancelled':
                 record.state = 'draft'
 
+    @api.depends('name', 'date_from')
+    def _compute_display_name(self):
+        for record in self:
+            if record.date_from:
+                record.display_name = f'BHYT{record.date_from.strftime("%Y%m")}-{record.name}'
+            else:
+                record.display_name = record.name
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
-                vals['name'] = self.env['ir.sequence'].next_by_code('clinic.invoice.insurance') or 'New'
+                vals['name'] = str(uuid.uuid4())[:8]
         return super().create(vals_list)
 
     @api.onchange('date_from', 'date_to')
@@ -339,9 +366,10 @@ class ClinicInsuranceInvoiceLine(models.Model):
 class ClinicPurchaseOrder(models.Model):
     _name = 'clinic.purchase.order'
     _description = 'Phiếu nhập hàng'
-    _rec_name = 'code'
+    _rec_name = 'display_name'  # Change from 'code'
 
-    code = fields.Char(string='Mã phiếu nhập', readonly=True, default='New')
+    name = fields.Char(string='Mã phiếu nhập', readonly=True, default='New')  # Renamed from 'code'
+    display_name = fields.Char(string='Số phiếu nhập', compute='_compute_display_name', store=True)
     date = fields.Date(string='Ngày nhập', default=fields.Date.today, required=True)
     supplier_name = fields.Char(string='Nhà cung cấp', required=True)
     state = fields.Selection([
@@ -381,11 +409,19 @@ class ClinicPurchaseOrder(models.Model):
                         'quantity': line.product_id.quantity + line.quantity
                     })
 
+    @api.depends('name', 'date')
+    def _compute_display_name(self):
+        for record in self:
+            if record.date:
+                record.display_name = f'PNH{record.date.strftime("%Y%m%d")}-{record.name}'
+            else:
+                record.display_name = record.name
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if vals.get('code', 'New') == 'New':
-                vals['code'] = self.env['ir.sequence'].next_by_code('clinic.purchase.order') or 'New'
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = str(uuid.uuid4())[:8]
         return super().create(vals_list)
 
     def write(self, vals):
