@@ -7,6 +7,7 @@ import uuid
 class ClinicInsurance(models.Model):
     _name = 'clinic.insurance.policy'
     _description = 'Thông tin bảo hiểm y tế'
+    _rec_name = 'number'
 
     name = fields.Char(string='Mã bảo hiểm', required=True, copy=False, readonly=True)
     number = fields.Char(string='Số thẻ BHYT', required=True)

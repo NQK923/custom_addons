@@ -6,6 +6,7 @@ import uuid
 class ClinicPatient(models.Model):
     _name = 'clinic.patient'
     _description = 'Thông tin bệnh nhân'
+    _rec_name = 'patient_name'
 
     name = fields.Char(string='Mã bệnh nhân', required=True, copy=False, readonly=True)
     patient_name = fields.Char(string='Họ và tên', required=True)
