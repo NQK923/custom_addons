@@ -11,6 +11,8 @@
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
+        'views/statistics_view.xml',
+        'views/statistics_wizard_view.xml',
     ],
     'demo': [],
     'installable': True,
