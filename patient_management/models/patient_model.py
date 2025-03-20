@@ -1,13 +1,13 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from datetime import timedelta
+import uuid
 
 
 class ClinicPatient(models.Model):
     _name = 'clinic.patient'
     _description = 'Thông tin bệnh nhân'
 
-    name = fields.Char(string='Mã bệnh nhân', required=True, copy=False, readonly=True, default='New')
+    name = fields.Char(string='Mã bệnh nhân', required=True, copy=False, readonly=True)
     patient_name = fields.Char(string='Họ và tên', required=True)
     date_of_birth = fields.Date(string='Ngày sinh')
     age = fields.Integer(string='Tuổi', compute='_compute_age', store=True)
@@ -59,10 +59,13 @@ class ClinicPatient(models.Model):
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
-                vals['name'] = self.env['ir.sequence'].next_by_code('clinic.patient.sequence')
+                # Generate a short UUID
+                vals['name'] = str(uuid.uuid4())[:8]
         return super().create(vals_list)
 
     # @api.depends('insurance_id')
     # def _compute_has_insurance(self):
     #     for record in self:
     #         record.has_insurance = bool(record.insurance_id)
+
+    

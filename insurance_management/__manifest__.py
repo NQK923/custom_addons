@@ -20,11 +20,10 @@ Long description of module's purpose
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base', 'patient_management'],
 
     # always loaded
     'data': [
-        'data/sequence.xml',
         'security/ir.model.access.csv',
         'views/views.xml',
     ],
