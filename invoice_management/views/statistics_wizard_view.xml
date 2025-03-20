@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View for Statistics Wizard -->
+    <record id="view_clinic_statistics_wizard_form" model="ir.ui.view">
+        <field name="name">clinic.statistics.wizard.form</field>
+        <field name="model">clinic.statistics.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Tạo báo cáo thống kê">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group>
+                            <field name="report_type"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_generate_report" string="Tạo báo cáo" type="object" class="btn-primary"/>
+                    <button string="Hủy" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for Statistics Wizard -->
+    <record id="action_clinic_statistics_wizard" model="ir.actions.act_window">
+        <field name="name">Tạo báo cáo thống kê</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">clinic.statistics.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu for Statistics Wizard -->
+    <menuitem id="menu_clinic_statistics_wizard"
+              name="Tạo báo cáo thống kê"
+              parent="menu_invoice_root"
+              action="action_clinic_statistics_wizard"
+              sequence="6"/>
+</odoo>
