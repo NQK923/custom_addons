@@ -29,9 +29,43 @@ class ClinicPatient(models.Model):
     ], string='Trạng thái', default='registered')
     note = fields.Text(string='Ghi chú')
 
-    # Sửa lại định nghĩa quan hệ
-    # insurance_id = fields.One2many('clinic.insurance.policy', 'patient_id', string='Bảo hiểm y tế')
-    # has_insurance = fields.Boolean(string='Có BHYT', compute='_compute_has_insurance', store=True)
+    insurance_number = fields.Char(string='Số thẻ BHYT', compute='_compute_insurance_info')
+    insurance_facility = fields.Char(string='Nơi ĐKKCB', compute='_compute_insurance_info')
+    insurance_expiry = fields.Date(string='Có giá trị đến', compute='_compute_insurance_info')
+    insurance_tier = fields.Selection([
+        ('central', 'Trung ương'),
+        ('province', 'Tỉnh'),
+        ('district', 'Quận/Huyện'),
+        ('commune', 'Xã')
+    ], string='Tuyến', compute='_compute_insurance_info')
+    insurance_state = fields.Char(string='Trạng thái', compute='_compute_insurance_info')
+    has_insurance = fields.Boolean(string='Có bảo hiểm', compute='_compute_insurance_info')
+
+    # dùng cái hàm này để tìm kiếm bảo hiểm của bệnh nhân
+    @api.depends('name')
+    def _compute_insurance_info(self):
+        for patient in self:
+            insurance = self.env['clinic.insurance.policy'].search([
+                ('patient_id', '=', patient.id)
+            ], limit=1)
+            
+            if insurance:
+                patient.has_insurance = True
+                patient.insurance_number = insurance.number
+                patient.insurance_facility = insurance.facility
+                patient.insurance_tier = insurance.tier
+                patient.insurance_expiry = insurance.expiry_date
+                if insurance.state == 'valid':
+                    patient.insurance_state = 'Hợp lệ'
+                else:
+                    patient.insurance_state = 'Hết hạn'
+            else:
+                patient.has_insurance = False
+                patient.insurance_number = False
+                patient.insurance_facility = False
+                patient.insurance_tier = False
+                patient.insurance_expiry = False
+                patient.insurance_state = False
 
     @api.depends('date_of_birth')
     def _compute_age(self):
@@ -62,10 +96,22 @@ class ClinicPatient(models.Model):
                 # Generate a short UUID
                 vals['name'] = str(uuid.uuid4())[:8]
         return super().create(vals_list)
+        
+    # def get_insurance_info(self):
+    #     for patient in self:
+    #         # Search for insurance records linked to this patient
+    #         insurance_records = self.env['clinic.insurance.policy'].search([
+    #             ('patient_id', '=', patient.id)
+    #         ])
+            
+    #         print(f"Insurance information for {patient.patient_name}:")
+    #         for insurance in insurance_records:
+    #             print(f"  - Insurance Number: {insurance.number}")
+    #             print(f"  - Facility: {insurance.facility}")
+    #             print(f"  - Expiry Date: {insurance.expiry_date}")
+    #             print(f"  - State: {insurance.state}")
+            
+            
 
-    # @api.depends('insurance_id')
-    # def _compute_has_insurance(self):
-    #     for record in self:
-    #         record.has_insurance = bool(record.insurance_id)
 
     

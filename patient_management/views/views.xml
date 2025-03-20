@@ -38,14 +38,26 @@
                         </page>
                         <page string="Thông tin bảo hiểm y tế">
                             <group>
+                                <p invisible="has_insurance">Bệnh nhân chưa có bảo hiểm y tế</p>
+                                <group invisible="not has_insurance">
+                                    <field name="name" invisible="1"/>
+                                    <field name="patient_name" invisible="1"/>
+                                    <field name="insurance_number" readonly="1"/>
+                                    <field name="insurance_facility" readonly="1"/>
+                                    <field name="insurance_tier" readonly="1"/>
+                                    <field name="insurance_expiry" readonly="1"/>\
+                                    <field name="insurance_state" readonly="1"/>
+                                </group>
                             </group>
                         </page>
                         <page string="Lịch sử khám bệnh">
                             <group>
+                                <p>Bệnh nhân chưa có lịch sử khám bệnh</p>
                             </group>
                         </page>
                         <page string="Thông tin nhập viện">
                             <group>
+                                <p>Bệnh nhân chưa có thông tin nhập viện</p>
                             </group>
                         </page>
                     </notebook>
