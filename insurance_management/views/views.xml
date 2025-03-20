@@ -6,9 +6,8 @@
         <field name="model">clinic.insurance.policy</field>
         <field name="arch" type="xml">
             <list>
-                <field name="name"/>
                 <field name="number"/>
-                <field name="patient_id"/>
+                <field name="patient_name" string="Bệnh nhân"/>
                 <field name="facility"/>
                 <field name="tier"/>
                 <field name="expiry_date"/>
@@ -25,15 +24,10 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                    <div class="oe_title" invisible="1">
-                        <h1>
-                            <field name="name" readonly="1" invisible="name == 'New'"/>
-                        </h1>
-                    </div>
                     <group>
                         <group>
                             <field name="number" placeholder="Ví dụ: DN119123456789"/>
-                            <field name="patient_id"/>
+                            <field name="patient_name" string="Bệnh nhân"/>
                             <field name="facility"/>
                         </group>
                         <group>

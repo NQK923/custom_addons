@@ -2,12 +2,13 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from datetime import date
 import re
+import uuid
 
 class ClinicInsurance(models.Model):
     _name = 'clinic.insurance.policy'
     _description = 'Thông tin bảo hiểm y tế'
 
-    name = fields.Char(string='Mã bảo hiểm', required=True, copy=False, readonly=True, default='New')
+    name = fields.Char(string='Mã bảo hiểm', required=True, copy=False, readonly=True)
     number = fields.Char(string='Số thẻ BHYT', required=True)
     facility = fields.Char(string='Nơi ĐKKCB')
     tier = fields.Selection([
@@ -16,7 +17,7 @@ class ClinicInsurance(models.Model):
         ('district', 'Quận/Huyện'),
         ('commune', 'Xã')
     ], string='Tuyến', default='district')
-    patient_id = fields.Many2one(
+    patient_name = fields.Many2one(
         'clinic.patient', 
         string='Bệnh nhân', 
         required=True,
@@ -29,7 +30,7 @@ class ClinicInsurance(models.Model):
     ], string='Trạng thái', compute='_compute_state', store=True, tracking=True)
 
     _sql_constraints = [
-        ('unique_patient', 'unique(patient_id)', 'Bệnh nhân này đã có bảo hiểm y tế!'),
+        ('unique_patient', 'unique(patient_name)', 'Bệnh nhân này đã có bảo hiểm y tế!'),
         ('number_unique', 
          'UNIQUE(number)',
          'Số thẻ BHYT đã tồn tại!')
@@ -65,21 +66,13 @@ class ClinicInsurance(models.Model):
             if duplicate:
                 raise ValidationError(f'Số thẻ BHYT {record.number} đã tồn tại!')
 
-    @api.model
-    def _get_next_sequence(self):
-        """Lấy sequence mã bảo hiểm tiếp theo"""
-        return self.env['ir.sequence'].next_by_code('clinic.insurance.sequence') or 'New'
-
     @api.model_create_multi
     def create(self, vals_list):
-        """Gán sequence khi tạo record mới, chỉ gán khi tạo thành công"""
-        result = super(ClinicInsurance, self).create(vals_list)
-        # Sau khi create thành công, mới gán sequence
-        for record in result:
-            if record.name == 'New':
-                sequence = self._get_next_sequence()
-                record.name = sequence
-        return result
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                # Generate a short UUID
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
 
     # Ghi đè cả write để xử lý các trường hợp sao chép
     def copy(self, default=None):
