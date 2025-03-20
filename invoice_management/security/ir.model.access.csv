@@ -7,3 +7,5 @@ access_clinic_invoice_insurance,clinic.invoice.insurance,model_clinic_invoice_in
 access_clinic_invoice_insurance_line,clinic.invoice.insurance.line,model_clinic_invoice_insurance_line,base.group_user,1,1,1,1
 access_clinic_purchase_order,clinic.purchase.order,model_clinic_purchase_order,base.group_user,1,1,1,1
 access_clinic_purchase_order_line,clinic.purchase.order.line,model_clinic_purchase_order_line,base.group_user,1,1,1,1
+access_clinic_statistics,clinic.statistics,model_clinic_statistics,base.group_user,1,1,1,1
+access_clinic_statistics_wizard,clinic.statistics.wizard,model_clinic_statistics_wizard,base.group_user,1,1,1,1
