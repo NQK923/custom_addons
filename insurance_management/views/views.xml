@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <list>
                 <field name="number"/>
-                <field name="patient_name" string="Bệnh nhân"/>
+                <field name="patient_id" string="Bệnh nhân"/>
                 <field name="facility"/>
                 <field name="tier"/>
                 <field name="expiry_date"/>
@@ -27,7 +27,7 @@
                     <group>
                         <group>
                             <field name="number" placeholder="Ví dụ: DN119123456789"/>
-                            <field name="patient_name" string="Bệnh nhân"/>
+                            <field name="patient_id" string="Bệnh nhân"/>
                             <field name="facility"/>
                         </group>
                         <group>

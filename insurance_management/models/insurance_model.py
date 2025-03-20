@@ -17,7 +17,7 @@ class ClinicInsurance(models.Model):
         ('district', 'Quận/Huyện'),
         ('commune', 'Xã')
     ], string='Tuyến', default='district')
-    patient_name = fields.Many2one(
+    patient_id = fields.Many2one(
         'clinic.patient', 
         string='Bệnh nhân', 
         required=True,
@@ -30,7 +30,7 @@ class ClinicInsurance(models.Model):
     ], string='Trạng thái', compute='_compute_state', store=True, tracking=True)
 
     _sql_constraints = [
-        ('unique_patient', 'unique(patient_name)', 'Bệnh nhân này đã có bảo hiểm y tế!'),
+        ('unique_patient', 'unique(patient_id)', 'Bệnh nhân này đã có bảo hiểm y tế!'),
         ('number_unique', 
          'UNIQUE(number)',
          'Số thẻ BHYT đã tồn tại!')
