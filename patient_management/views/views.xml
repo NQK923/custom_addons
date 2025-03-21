@@ -50,16 +50,6 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Lịch sử khám bệnh">
-                            <group>
-                                <p>Bệnh nhân chưa có lịch sử khám bệnh</p>
-                            </group>
-                        </page>
-                        <page string="Thông tin nhập viện">
-                            <group>
-                                <p>Bệnh nhân chưa có thông tin nhập viện</p>
-                            </group>
-                        </page>
                     </notebook>
                 </sheet>
             </form>
