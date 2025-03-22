@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
 from datetime import datetime, timedelta
-import pandas as pd
+
+from odoo import models, fields, api
 
 
 class MedicalReport(models.Model):
@@ -146,56 +146,79 @@ class MedicalReport(models.Model):
         Feedback = self.env['healthcare.patient.feedback']
 
         feedbacks = Feedback.search([
-            ('create_date', '>=', self.date_from),
-            ('create_date', '<=', self.date_to)
+            ('feedback_date', '>=', self.date_from),
+            ('feedback_date', '<=', self.date_to)
         ])
 
-        service_ratings = {
-            'doctor': {'total': 0, 'count': 0},
-            'nurse': {'total': 0, 'count': 0},
-            'cleanliness': {'total': 0, 'count': 0},
-            'waiting_time': {'total': 0, 'count': 0},
-            'overall': {'total': 0, 'count': 0}
+        # Dictionary để lưu đánh giá theo loại phản hồi
+        feedback_types = {
+            'compliment': {'total': 0, 'count': 0},
+            'suggestion': {'total': 0, 'count': 0},
+            'complaint': {'total': 0, 'count': 0},
+            'question': {'total': 0, 'count': 0},
+            'other': {'total': 0, 'count': 0}
         }
 
+        department_ratings = {}
+
+        total_satisfaction = 0
+        satisfaction_count = 0
+
         for feedback in feedbacks:
-            service_ratings['doctor']['total'] += feedback.doctor_rating
-            service_ratings['doctor']['count'] += 1
+            # Bỏ qua nếu không có đánh giá mức độ hài lòng
+            if not feedback.satisfaction_rating:
+                continue
 
-            service_ratings['nurse']['total'] += feedback.nurse_rating
-            service_ratings['nurse']['count'] += 1
+            rating_value = int(feedback.satisfaction_rating)
 
-            service_ratings['cleanliness']['total'] += feedback.cleanliness_rating
-            service_ratings['cleanliness']['count'] += 1
+            # Cập nhật đánh giá theo loại phản hồi
+            if feedback.feedback_type:
+                feedback_types[feedback.feedback_type]['total'] += rating_value
+                feedback_types[feedback.feedback_type]['count'] += 1
 
-            service_ratings['waiting_time']['total'] += feedback.waiting_time_rating
-            service_ratings['waiting_time']['count'] += 1
+            if feedback.department_name:
+                dept_id = feedback.department_name.id
+                dept_name = feedback.department_name.name
+                if dept_id not in department_ratings:
+                    department_ratings[dept_id] = {'name': dept_name, 'total': 0, 'count': 0}
+                department_ratings[dept_id]['total'] += rating_value
+                department_ratings[dept_id]['count'] += 1
 
-            service_ratings['overall']['total'] += feedback.overall_rating
-            service_ratings['overall']['count'] += 1
+            # Cập nhật đánh giá tổng thể
+            total_satisfaction += rating_value
+            satisfaction_count += 1
 
         # Tạo báo cáo
         report = f"""
         BÁO CÁO CHẤT LƯỢNG DỊCH VỤ
         Thời gian: {self.date_from} đến {self.date_to}
 
-        Đánh giá dịch vụ (thang điểm 5):
-        - Bác sĩ: {service_ratings['doctor']['total'] / service_ratings['doctor']['count'] if service_ratings['doctor']['count'] else 0:.2f}
-        - Điều dưỡng: {service_ratings['nurse']['total'] / service_ratings['nurse']['count'] if service_ratings['nurse']['count'] else 0:.2f}
-        - Vệ sinh: {service_ratings['cleanliness']['total'] / service_ratings['cleanliness']['count'] if service_ratings['cleanliness']['count'] else 0:.2f}
-        - Thời gian chờ: {service_ratings['waiting_time']['total'] / service_ratings['waiting_time']['count'] if service_ratings['waiting_time']['count'] else 0:.2f}
-        - Đánh giá tổng thể: {service_ratings['overall']['total'] / service_ratings['overall']['count'] if service_ratings['overall']['count'] else 0:.2f}
+        Đánh giá mức độ hài lòng theo loại phản hồi (thang điểm 5):
+        - Khen ngợi: {feedback_types['compliment']['total'] / feedback_types['compliment']['count'] if feedback_types['compliment']['count'] else 0:.2f}
+        - Góp ý: {feedback_types['suggestion']['total'] / feedback_types['suggestion']['count'] if feedback_types['suggestion']['count'] else 0:.2f}
+        - Khiếu nại: {feedback_types['complaint']['total'] / feedback_types['complaint']['count'] if feedback_types['complaint']['count'] else 0:.2f}
+        - Hỏi đáp: {feedback_types['question']['total'] / feedback_types['question']['count'] if feedback_types['question']['count'] else 0:.2f}
+        - Khác: {feedback_types['other']['total'] / feedback_types['other']['count'] if feedback_types['other']['count'] else 0:.2f}
+
+        Đánh giá mức độ hài lòng theo phòng ban (thang điểm 5):
+        """
+
+        for dept_data in department_ratings.values():
+            avg_rating = dept_data['total'] / dept_data['count'] if dept_data['count'] else 0
+            report += f"- {dept_data['name']}: {avg_rating:.2f}\n"
+
+        report += f"""
+        Đánh giá mức độ hài lòng tổng thể: {total_satisfaction / satisfaction_count if satisfaction_count else 0:.2f}
 
         Tổng số phản hồi: {len(feedbacks)}
+        Số phản hồi có đánh giá: {satisfaction_count}
         """
 
         self.report_data = report
 
     def _generate_performance_report(self):
-        # Giả sử có model hospital.doctor để lưu thông tin bác sĩ
-        # và hospital.appointment để lưu lịch hẹn
-        Doctor = self.env['hospital.doctor']
-        Appointment = self.env['hospital.appointment']
+        Doctor = self.env['clinic.staff']
+        Appointment = self.env['clinic.appointment']
 
         doctors = Doctor.search([])
         doctor_stats = {}
@@ -267,7 +290,7 @@ class MedicalReportWizard(models.TransientModel):
         ('service_quality', 'Chất lượng dịch vụ'),
         ('performance', 'Chỉ số hiệu suất')
     ], string='Loại báo cáo', required=True, default='patient')
-    department_id = fields.Many2one('hospital.department', string='Khoa/Phòng')
+    department_id = fields.Many2one('clinic.department', string='Khoa/Phòng')
 
     def create_report(self):
         self.ensure_one()
