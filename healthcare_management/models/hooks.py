@@ -9,8 +9,22 @@ class ClinicAppointment(models.Model):
     def create(self, vals_list):
         appointments = super().create(vals_list)
 
-        # Tạo reminder cho các lịch hẹn mới
         for appointment in appointments:
             self.env['appointment.reminder'].create_from_appointment(appointment)
 
         return appointments
+
+    def write(self, vals):
+        result = super(ClinicAppointment, self).write(vals)
+
+        if 'appointment_date' in vals:
+            for record in self:
+                reminder = self.env['appointment.reminder'].search([
+                    ('note', '=', record.id),
+                    ('state', 'in', ['to_send', 'failed'])
+                ], limit=1)
+
+                if not reminder:
+                    self.env['appointment.reminder'].create_from_appointment(record)
+
+        return result
