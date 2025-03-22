@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hospital_medical_report_user,hospital.medical.report.user,model_hospital_medical_report,hospital_management.group_hospital_user,1,1,1,0
+access_hospital_medical_report_manager,hospital.medical.report.manager,model_hospital_medical_report,hospital_management.group_hospital_manager,1,1,1,1
+access_hospital_medical_report_wizard_user,hospital.medical.report.wizard.user,model_hospital_medical_report_wizard,hospital_management.group_hospital_user,1,1,1,0
+access_hospital_medical_report_wizard_manager,hospital.medical.report.wizard.manager,model_hospital_medical_report_wizard,hospital_management.group_hospital_manager,1,1,1,1
