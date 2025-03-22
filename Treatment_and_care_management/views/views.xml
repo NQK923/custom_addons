@@ -113,6 +113,7 @@
     </record>
 
 
+
     <!-- Menus -->
     <menuitem id="menu_treatment_plan_root" name="Quản lý điều trị" sequence="10"/>
     <menuitem id="menu_treatment_plan" name="Kế hoạch điều trị" parent="menu_treatment_plan_root" action="action_treatment_plan"/>
