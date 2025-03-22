@@ -21,7 +21,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="id"/>
+                            <field name="note"/>
                             <field name="patient_name"/>
                         </group>
                         <group>

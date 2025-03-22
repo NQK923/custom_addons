@@ -31,7 +31,7 @@
                             <field name="patient_name" options="{'no_create': True}"/>
                             <field name="staff_name" options="{'no_create': True}"/>
                             <field name="appointment_date"/>
-                            <field name="id" options="{'no_create': True}"/>
+                            <field name="room_type" options="{'no_create': True}"/>
                         </group>
                     </group>
                     <notebook>
@@ -54,7 +54,7 @@
                 <field name="patient_name"/>
                 <field name="staff_name"/>
                 <field name="appointment_date"/>
-                <field name="id"/>
+                <field name="room_type"/>
                 <field name="state" 
                        decoration-info="state == 'draft'"
                        decoration-success="state == 'confirmed'"
@@ -74,7 +74,7 @@
                      color="staff_name">
                 <field name="patient_name"/>
                 <field name="staff_name"/>
-                <field name="id"/>
+                <field name="room_type"/>
                 <field name="state"/>
             </calendar>
         </field>
