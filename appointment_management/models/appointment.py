@@ -11,7 +11,7 @@ class ClinicAppointment(models.Model):
     patient_name = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True)
     appointment_date = fields.Datetime(string='Ngày giờ hẹn', required=True)
     staff_name = fields.Many2one('clinic.staff', string='Bác sĩ', required=True)
-    id = fields.Many2one('clinic.room', string='Phòng khám')
+    room_type = fields.Many2one('clinic.room', string='Phòng khám')
     state = fields.Selection([
         ('draft', 'Nháp'),
         ('confirmed', 'Đã xác nhận'),
@@ -53,20 +53,20 @@ class ClinicAppointment(models.Model):
                 ('staff_name', '=', record.staff_name.id),
                 ('appointment_date', '=', record.appointment_date),
                 ('state', 'not in', ['cancelled']),
-                ('id', '!=', record.id)
+                ('room_type', '!=', record.id)
             ]
             if self.search_count(domain) > 0:
                 raise ValidationError(f"Bác sĩ {record.staff_name.name} đã có lịch hẹn khác vào thời điểm này!")
 
-    @api.constrains('id', 'appointment_date')
+    @api.constrains('room_type', 'appointment_date')
     def _check_room_availability(self):
         for record in self:
-            if record.id:
+            if record.room_type:
                 domain = [
-                    ('id', '=', record.id),
+                    ('room_type', '=', record.room_type),
                     ('appointment_date', '=', record.appointment_date),
                     ('state', 'not in', ['cancelled']),
-                    ('id', '!=', record.id)
+                    ('room_type', '!=', record.room_type)
                 ]
                 if self.search_count(domain) > 0:
-                    raise ValidationError(f"Phòng {record.id.name} đã được đặt vào thời điểm này!")
+                    raise ValidationError(f"Phòng {record.room_type.name} đã được đặt vào thời điểm này!")

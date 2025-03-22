@@ -9,7 +9,7 @@
         <field name="body_html" type="html">
             <div style="margin: 0px; padding: 0px; font-size: 13px;">
                 <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                    Kính gửi ${object.patient_id.name},
+                    Kính gửi ${object.patient_name.name},
                 </p>
                 <p style="margin: 0px; padding: 0px; font-size: 13px;">
                     Chúng tôi xin gửi lời nhắc nhở về lịch hẹn khám sắp tới của bạn:
@@ -17,8 +17,8 @@
                 <ul>
                     <li>Mã lịch hẹn: <strong>${object.name}</strong></li>
                     <li>Thời gian: <strong>${format_datetime(object.appointment_date, tz=user.tz)}</strong></li>
-                    <li>Bác sĩ: <strong>${object.id.staff_id.name}</strong></li>
-                    <li>Phòng khám: <strong>${object.id.room_id.name or 'Chưa xác định'}</strong></li>
+                    <li>Bác sĩ: <strong>${object.note.staff_id.name}</strong></li>
+                    <li>Phòng khám: <strong>${object.note.room_id.name or 'Chưa xác định'}</strong></li>
                 </ul>
                 <p style="margin: 0px; padding: 0px; font-size: 13px;">
                     Vui lòng đến trước 15 phút để hoàn tất thủ tục.
