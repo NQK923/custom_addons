@@ -126,3 +126,4 @@ class PatientCareTracking(models.Model):
     def write(self, vals):
         vals['updated_at'] = datetime.now()
         return super(PatientCareTracking, self).write(vals)
+
