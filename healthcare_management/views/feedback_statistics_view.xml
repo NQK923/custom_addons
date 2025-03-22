@@ -7,8 +7,8 @@
         <field name="arch" type="xml">
             <list string="Thống kê phản hồi" create="0" edit="0" delete="0">
                 <field name="name"/>
-                <field name="partner_id"/>
-                <field name="department_id"/>
+                <field name="patient_name"/>
+                <field name="department_name"/>
                 <field name="feedback_date"/>
                 <field name="feedback_type"/>
                 <field name="satisfaction_rating" widget="priority"/>
@@ -40,8 +40,8 @@
         <field name="arch" type="xml">
             <search string="Tìm kiếm thống kê">
                 <field name="name"/>
-                <field name="partner_id"/>
-                <field name="department_id"/>
+                <field name="patient_name"/>
+                <field name="department_name"/>
                 <field name="feedback_date"/>
                 <field name="feedback_type"/>
                 <field name="state"/>
@@ -53,8 +53,8 @@
                 <separator/>
                 <filter string="Có khiếu nại" name="has_complaint" domain="[('has_complaint','=',True)]"/>
                 <group expand="0" string="Group By">
-                    <filter string="Bệnh nhân" name="group_partner" context="{'group_by':'partner_id'}"/>
-                    <filter string="Phòng ban" name="group_department" context="{'group_by':'department_id'}"/>
+                    <filter string="Bệnh nhân" name="group_partner" context="{'group_by':'patient_name'}"/>
+                    <filter string="Phòng ban" name="group_department" context="{'group_by':'department_name'}"/>
                     <filter string="Loại phản hồi" name="group_type" context="{'group_by':'feedback_type'}"/>
                     <filter string="Ngày" name="group_date" context="{'group_by':'feedback_date:day'}"/>
                     <filter string="Tháng" name="group_month" context="{'group_by':'feedback_date:month'}"/>

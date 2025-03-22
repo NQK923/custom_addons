@@ -45,9 +45,6 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
-                    <div class="oe_title">
-                        <h1><field name="name" readonly="1"/></h1>
-                    </div>
                     <group>
                         <group>
                             <field name="patient_id"/>
@@ -145,8 +142,7 @@
         <field name="model">clinic.service</field>
         <field name="arch" type="xml">
             <list>
-                <field name="code"/>
-                <field name="name"/>
+                <field name="service_name"/>
                 <field name="price"/>
             </list>
         </field>
@@ -160,8 +156,7 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="code"/>
-                        <field name="name"/>
+                        <field name="service_name"/>
                         <field name="price"/>
                         <field name="description"/>
                         <field name="active"/>
@@ -247,7 +242,6 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name" readonly="1"/>
                             <field name="date_from" readonly="state != 'draft'"/>
                             <field name="date_to" readonly="state != 'draft'"/>
                         </group>
@@ -306,7 +300,7 @@
         <field name="model">clinic.purchase.order</field>
         <field name="arch" type="xml">
             <list decoration-info="state == 'draft'" decoration-success="state == 'paid'" decoration-danger="state == 'cancelled'">
-                <field name="code"/>
+                <field name="display_name"/>
                 <field name="date"/>
                 <field name="supplier_name"/>
                 <field name="amount_untaxed"/>
@@ -339,13 +333,9 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,paid"/>
                 </header>
                 <sheet>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="code" readonly="1"/>
-                        </h1>
-                    </div>
                     <group>
                         <group>
+                            <field name="name" invisible="1"/>
                             <field name="date" readonly="state == 'paid'"/>
                             <field name="supplier_name" readonly="state == 'paid'"/>
                         </group>
@@ -381,7 +371,8 @@
         <field name="model">clinic.purchase.order</field>
         <field name="arch" type="xml">
             <search>
-                <field name="code"/>
+                <field name="name"/>
+                <field name="display_name"/>
                 <field name="supplier_name"/>
                 <filter string="Nháp" name="draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Đã xác nhận" name="confirmed" domain="[('state', '=', 'confirmed')]"/>

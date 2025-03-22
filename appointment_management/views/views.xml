@@ -28,10 +28,10 @@
                     </div>
                     <group>
                         <group>
-                            <field name="patient_id" options="{'no_create': True}"/>
-                            <field name="staff_id" options="{'no_create': True}"/>
+                            <field name="patient_name" options="{'no_create': True}"/>
+                            <field name="staff_name" options="{'no_create': True}"/>
                             <field name="appointment_date"/>
-                            <field name="room_id" options="{'no_create': True}"/>
+                            <field name="room_type" options="{'no_create': True}"/>
                         </group>
                     </group>
                     <notebook>
@@ -51,10 +51,10 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
-                <field name="patient_id"/>
-                <field name="staff_id"/>
+                <field name="patient_name"/>
+                <field name="staff_name"/>
                 <field name="appointment_date"/>
-                <field name="room_id"/>
+                <field name="room_type"/>
                 <field name="state" 
                        decoration-info="state == 'draft'"
                        decoration-success="state == 'confirmed'"
@@ -71,10 +71,10 @@
         <field name="arch" type="xml">
             <calendar string="Lịch hẹn" 
                      date_start="appointment_date" 
-                     color="staff_id">
-                <field name="patient_id"/>
-                <field name="staff_id"/>
-                <field name="room_id"/>
+                     color="staff_name">
+                <field name="patient_name"/>
+                <field name="staff_name"/>
+                <field name="room_type"/>
                 <field name="state"/>
             </calendar>
         </field>
@@ -87,8 +87,8 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name"/>
-                <field name="patient_id"/>
-                <field name="staff_id"/>
+                <field name="patient_name"/>
+                <field name="staff_name"/>
                 <separator/>
                 <filter string="Nháp" name="draft" domain="[('state','=','draft')]"/>
                 <filter string="Đã xác nhận" name="confirmed" domain="[('state','=','confirmed')]"/>
@@ -96,7 +96,7 @@
                 <filter string="Đã hủy" name="cancelled" domain="[('state','=','cancelled')]"/>
                 <group expand="0" string="Group By">
                     <filter string="Trạng thái" name="state" context="{'group_by':'state'}"/>
-                    <filter string="Bác sĩ" name="doctor" context="{'group_by':'staff_id'}"/>
+                    <filter string="Bác sĩ" name="doctor" context="{'group_by':'staff_name'}"/>
                     <filter string="Ngày hẹn" name="appointment_date" context="{'group_by':'appointment_date:day'}"/>
                 </group>
             </search>

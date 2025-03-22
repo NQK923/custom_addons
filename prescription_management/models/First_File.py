@@ -35,6 +35,28 @@ class PharmacyProduct(models.Model):
             if record.unit_price < record.purchase_price:
                 raise ValidationError('Giá bán phải lớn hơn hoặc bằng giá nhập!')
 
+            # Kiểm tra mức thặng số tối đa theo quy định
+            max_profit_margin = self._get_max_profit_margin(record.purchase_price)
+            actual_profit_margin = ((record.unit_price - record.purchase_price) / record.purchase_price) * 100
+            if actual_profit_margin > max_profit_margin:
+                raise ValidationError(
+                    f"Giá bán vượt quá mức thặng số tối đa cho phép ({max_profit_margin}%)! "
+                    f"Giá bán tối đa cho phép là {record.purchase_price * (1 + max_profit_margin / 100)} VNĐ."
+                )
+
+    def _get_max_profit_margin(self, purchase_price):
+        """Tính mức thặng số tối đa theo quy định."""
+        if purchase_price <= 1000:
+            return 15.0  # 15%
+        elif 1000 < purchase_price <= 5000:
+            return 10.0  # 10%
+        elif 5000 < purchase_price <= 100000:
+            return 7.0   # 7%
+        elif 100000 < purchase_price <= 1000000:
+            return 5.0   # 5%
+        else:
+            return 2.0   # 2%
+
     @api.depends('purchase_price', 'unit_price')
     def _compute_profit_margin(self):
         for record in self:
@@ -45,9 +67,11 @@ class PharmacyProduct(models.Model):
 
     @api.onchange('purchase_price')
     def _onchange_purchase_price(self):
-        """Tự động đề xuất giá bán khi nhập giá mua (với lợi nhuận 20%)"""
+        """Tự động đề xuất giá bán dựa trên mức thặng số tối đa."""
         if self.purchase_price:
-            self.unit_price = self.purchase_price * 1.2
+            max_profit_margin = self._get_max_profit_margin(self.purchase_price)
+            self.unit_price = self.purchase_price * (1 + max_profit_margin / 100)
+
 class PrescriptionOrder(models.Model):
     _name = 'prescription.order'
     _description = 'Prescription Order'

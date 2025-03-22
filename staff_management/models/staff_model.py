@@ -1,37 +1,64 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 from datetime import datetime
-
+import uuid
 
 class StaffType(models.Model):
     _name = 'clinic.staff.type'
     _description = 'Staff Type'
+    _rec_name = 'position' # Tên hiển thị trong list view
 
-    name = fields.Char(string="Chức vụ", required=True,
-                       help="Nhập chức vụ y tế, ví dụ: Bác sĩ Hạng 1, Y tá Hạng 2, v.v.")
-    type_code = fields.Char(string="Mã chức vụ", required=True, copy=False, readonly=True,
-                            default=lambda self: self.env['ir.sequence'].next_by_code('staff.type.code') or 'ST0001')
+    name = fields.Char(string="Mã chức vụ", required=True, copy=False, readonly=True)
+    position = fields.Char(string="Chức vụ", required=True,
+                          help="Nhập chức vụ y tế, ví dụ: Bác sĩ CKI, Điều dưỡng viên, v.v.")
+    note = fields.Text(string="Ghi chú")
 
-    _sql_constraints = [
-        ('unique_type_code', 'unique(type_code)', 'Mã chức vụ phải là duy nhất!')
-    ]
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
 
-    @api.model
-    def create(self, vals):
-        if not vals.get('type_code'):
-            vals['type_code'] = self.env['ir.sequence'].next_by_code('staff.type.code') or 'ST0001'
-        return super(StaffType, self).create(vals)
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update(name='New')
+        return super().copy(default)
 
+class Department(models.Model):
+    _name = 'clinic.department'
+    _description = 'Department'
+    _rec_name = 'department_name'
+
+    name = fields.Char(string="Mã khoa", required=True, copy=False, readonly=True)
+    department_name = fields.Char(string="Tên khoa", required=True,
+                                 help="Nhập tên khoa, ví dụ: Khoa Nội, Khoa Xét nghiệm...")
+    type = fields.Selection([
+        ('clinical', 'Khoa lâm sàng'),
+        ('subclinical', 'Khoa cận lâm sàng'),
+    ], string="Loại", required=True, help="Phân loại khoa")
+    note = fields.Text(string="Ghi chú")
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
+
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update(name='New')
+        return super().copy(default)
 
 class Staff(models.Model):
     _name = 'clinic.staff'
     _description = 'Staff Information'
+    _rec_name = 'staff_name'
 
-    staff_code = fields.Char(string="Mã nhân sự", required=True, copy=False, readonly=True,
-                             default=lambda self: self.env['ir.sequence'].next_by_code('staff.code') or 'NV0001')
-    staff_id = fields.Many2one('res.users', string='Tài khoản người dùng', ondelete='restrict')
+    name = fields.Char(string="Mã nhân sự", required=True, copy=False, readonly=True, default="New")
+    staff_name = fields.Char(string='Họ và Tên', required=True)
     staff_type = fields.Many2one('clinic.staff.type', string='Chức vụ')
-    name = fields.Char(string='Họ và Tên', required=True)
     contact_info = fields.Char(string='Thông tin liên lạc')
     date_of_birth = fields.Date(string='Ngày sinh')
     address = fields.Text(string='Địa chỉ')
@@ -41,7 +68,7 @@ class Staff(models.Model):
         ('other', 'Khác')
     ], string='Giới tính', required=True)
     faculty = fields.Char(string='Khoa')
-    department = fields.Char(string='Phòng')
+    department_id = fields.Many2one('clinic.department', string='Khoa')
     license_number = fields.Char(string='Số giấy phép hành nghề', unique=True)
     qualification = fields.Char(string='Trình độ chuyên môn')
     experience_year = fields.Integer(string='Số năm kinh nghiệm')
@@ -56,78 +83,22 @@ class Staff(models.Model):
         ('full_time', 'Toàn thời gian'),
         ('part_time', 'Bán thời gian')
     ], string='Loại Lao động', required=True, default='full_time')
-    total_salary = fields.Float(string='Tổng lương', compute='_compute_salary_fields', store=False)
-    net_salary = fields.Float(string='Thực nhận', compute='_compute_salary_fields', store=False)
-    salary_status = fields.Selection([
-        ('not_created', 'Chưa lập phiếu'),
-        ('created', 'Đã lập phiếu')
-    ], string='Trạng thái', compute='_compute_salary_fields', store=False)
-
-    _sql_constraints = [
-        ('unique_staff_code', 'unique(staff_code)', 'Mã nhân sự phải là duy nhất!'),
-        ('unique_license_number', 'unique(license_number)', 'Số giấy phép hành nghề phải là duy nhất!')
-    ]
-
-    @api.model
-    def create(self, vals):
-        if not vals.get('staff_code'):
-            vals['staff_code'] = self.env['ir.sequence'].next_by_code('staff.code') or 'NV0001'
-        return super(Staff, self).create(vals)
-
-    # Các hàm khác giữ nguyên...
-
-
-    def _compute_salary_fields(self):
-        for record in self:
-            # Lấy bảng lương gần nhất cho nhân viên
-            salary_record = self.env['clinic.staff.salary'].search([
-                ('staff_id', '=', record.id),
-                ('sheet_id', '!=', False)
-            ], order='sheet_id.id desc', limit=1)
-            if salary_record:
-                record.total_salary = salary_record.total_salary
-                record.net_salary = salary_record.net_salary
-                record.salary_status = 'created'
-            else:
-                record.total_salary = 0.0
-                record.net_salary = 0.0
-                record.salary_status = 'not_created'
-
-    def action_create_salary_record(self):
-        """Mở form để tạo phiếu lương cho nhân viên"""
-        current_month = str(datetime.now().month)
-        current_year = str(datetime.now().year)
-        salary_record = self.env['clinic.staff.salary'].search([
-            ('staff_id', '=', self.id),
-            ('month', '=', current_month),
-            ('year', '=', current_year)
-        ], limit=1)
-
-        if not salary_record:
-            return {
-                'name': 'Tạo phiếu lương',
-                'type': 'ir.actions.act_window',
-                'res_model': 'clinic.staff.salary',
-                'view_mode': 'form',
-                'view_id': self.env.ref('salary_management.view_clinic_staff_salary_form').id,
-                'target': 'current',
-                'context': {
-                    'default_staff_id': self.id,
-                    'default_month': current_month,
-                    'default_year': current_year,
-                },
-            }
-        else:
-            return {
-                'warning': {
-                    'title': 'Thông báo',
-                    'message': 'Phiếu lương cho tháng/năm này đã tồn tại!',
-                }
-            }
 
     _sql_constraints = [
         ('unique_license_number', 'unique(license_number)', 'Số giấy phép hành nghề phải là duy nhất!')
     ]
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
+
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update(name='New')
+        return super().copy(default)
 
     def action_manual_check_in_out(self):
         today = fields.Date.today()
@@ -164,7 +135,7 @@ class Staff(models.Model):
             elif not attendance.check_out:
                 attendance.write({'check_out': fields.Datetime.now()})
             else:
-                raise UserError('Nhân viên %s đã chấm công đầy đủ hôm nay!' % record.name)
+                raise UserError('Nhân viên %s đã chấm công đầy đủ hôm nay!' % record.staff_name)
 
     def action_open_performance_form(self):
         """Mở form đánh giá hiệu suất từ form view"""
@@ -198,12 +169,11 @@ class Staff(models.Model):
                 },
             }
 
-
 class StaffAttendance(models.Model):
     _name = 'clinic.staff.attendance'
     _description = 'Staff Attendance'
 
-    staff_id = fields.Many2one('clinic.staff', string='Mã nhân viên', required=True, ondelete='cascade')
+    staff_id = fields.Many2one('clinic.staff', string='Nhân viên', required=True, ondelete='cascade')
     date = fields.Date(string='Ngày', default=fields.Date.today, required=True)
     check_in = fields.Datetime(string='Giờ vào')
     check_out = fields.Datetime(string='Giờ ra')
@@ -227,7 +197,7 @@ class StaffAttendance(models.Model):
     def _compute_status(self):
         for record in self:
             if record.check_in:
-                start_time = fields.Datetime.from_string(f"{record.date} 08:00:00")
+                start_time = fields.Datetime.from_string(f"{record.date} 23:00:00")
                 record.status = 'late' if record.check_in > start_time else 'present'
             else:
                 record.status = 'absent'
@@ -235,7 +205,6 @@ class StaffAttendance(models.Model):
     _sql_constraints = [
         ('unique_staff_date', 'unique(staff_id, date)', 'Chỉ được chấm công một lần mỗi ngày cho mỗi nhân viên!')
     ]
-
 
 class StaffPerformance(models.Model):
     _name = 'clinic.staff.performance'

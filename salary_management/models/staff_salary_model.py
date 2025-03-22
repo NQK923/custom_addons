@@ -1,5 +1,6 @@
 from odoo import models, fields, api
 from datetime import datetime
+import uuid
 
 
 # Model quản lý hệ số lương (giữ nguyên)
@@ -7,6 +8,7 @@ class StaffSalaryQualificationLevel(models.Model):
     _name = 'clinic.staff.salary.qualification_level'
     _description = 'Clinic Staff Salary Qualification Level'
 
+    name = fields.Char(string="Mã hệ số", required=True, copy=False, readonly=True, default="New")
     staff_type_id = fields.Many2one('clinic.staff.type', string='Chức vụ', required=True, ondelete='restrict')
     rank = fields.Selection(
         [(str(i), str(i)) for i in range(1, 16)],  # Từ 1 đến 15
@@ -20,12 +22,26 @@ class StaffSalaryQualificationLevel(models.Model):
          'Một chức vụ và bậc chỉ được gán một hệ số lương duy nhất!'),
     ]
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
+
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update(name='New')
+        return super().copy(default)
+
 
 # Model quản lý bảng lương
 class SalarySheet(models.Model):
     _name = 'clinic.salary.sheet'
     _description = 'Bảng lương'
 
+    name = fields.Char(string="Mã bảng lương", required=True, copy=False, readonly=True, default="New")
+    display_name = fields.Char(string="Tên bảng lương", compute='_compute_display_name', store=True)
     month = fields.Selection([
         ('1', 'Tháng 1'), ('2', 'Tháng 2'), ('3', 'Tháng 3'),
         ('4', 'Tháng 4'), ('5', 'Tháng 5'), ('6', 'Tháng 6'),
@@ -43,8 +59,19 @@ class SalarySheet(models.Model):
     salary_ids = fields.One2many('clinic.staff.salary', 'sheet_id', string='Phiếu lương')
 
     _sql_constraints = [
-        ('unique_month_year', 'UNIQUE(month, year)', 'Bảng lương cho tháng và năm này đã tồn tại!')
+        ('unique_month_year', 'UNIQUE(month, year)', 'Bảng lương cho tháng và năm này đã tồn tại!'),
+        ('unique_name', 'UNIQUE(name)', 'Bảng lương cho tháng và năm này đã tồn tại!')
     ]
+
+    _rec_name = 'display_name'  # Use display_name for display
+
+    @api.depends('month', 'year')
+    def _compute_display_name(self):
+        for record in self:
+            if record.month and record.year:
+                record.display_name = f"Bảng lương tháng {record.month}/{record.year}"
+            else:
+                record.display_name = "New"
 
     def action_create_salary_records(self):
         """Tạo phiếu lương cho nhân viên đang làm việc dựa trên bảng lương."""
@@ -63,12 +90,27 @@ class SalarySheet(models.Model):
         # Cập nhật trạng thái bảng lương thành 'confirmed'
         self.write({'state': 'confirmed'})
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
+
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update(name='New')
+        return super().copy(default)
+
 
 # Model quản lý phiếu lương
 class StaffSalary(models.Model):
     _name = 'clinic.staff.salary'
     _description = 'Clinic Staff Salary'
+    _rec_name = 'display_name'  # Use display_name for display
 
+    name = fields.Char(string="Mã phiếu lương", required=True, copy=False, readonly=True, default="New")
+    display_name = fields.Char(string="Tên phiếu lương", compute='_compute_display_name', store=True)
     sheet_id = fields.Many2one('clinic.salary.sheet', string='Bảng lương', ondelete='cascade', required=True)
     staff_id = fields.Many2one('clinic.staff', string='Nhân viên', required=True, ondelete='cascade')
     allowance_ids = fields.Many2many('clinic.staff.salary.allowance', string='Phụ cấp áp dụng')
@@ -97,7 +139,8 @@ class StaffSalary(models.Model):
 
     _sql_constraints = [
         ('unique_salary_per_sheet', 'unique(staff_id, sheet_id)',
-         'Mỗi nhân viên chỉ có một phiếu lương cho mỗi bảng lương!')
+         'Mỗi nhân viên chỉ có một phiếu lương cho mỗi bảng lương!'),
+        ('unique_name', 'UNIQUE(name)', 'Phiếu lương cho tháng và năm này đã tồn tại!')
     ]
 
     BASE_SALARY = 2340000  # 2.340.000 VNĐ
@@ -227,42 +270,104 @@ class StaffSalary(models.Model):
             else:
                 record.absent_days = 0.0
 
+    @api.depends('staff_id', 'sheet_id.month', 'sheet_id.year')
+    def _compute_display_name(self):
+        for record in self:
+            if record.staff_id and record.sheet_id:
+                record.display_name = f"Lương {record.staff_id.staff_name} - {record.sheet_id.display_name}"
+            else:
+                record.display_name = "New"
+
     def action_confirm(self):
         self.write({'state': 'confirmed'})
 
     def action_pay(self):
         self.write({'state': 'paid'})
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
+
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update(name='New')
+        return super().copy(default)
+
 
 # Model quản lý phụ cấp (giữ nguyên)
 class StaffSalaryAllowance(models.Model):
     _name = 'clinic.staff.salary.allowance'
     _description = 'Clinic Staff Salary Allowance'
+    _rec_name = 'allowance_name'  # Use allowance_name for display
 
-    name = fields.Char(string='Loại phụ cấp', required=True)
+    name = fields.Char(string="Mã phụ cấp", required=True, copy=False, readonly=True, default="New")
+    allowance_name = fields.Char(string='Loại phụ cấp', required=True)
     amount = fields.Float(string='Số tiền phụ cấp (VNĐ)', required=True)
     note = fields.Text(string='Ghi chú')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
+
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update(name='New')
+        return super().copy(default)
 
 
 # Model quản lý thưởng (giữ nguyên)
 class StaffSalaryBonus(models.Model):
     _name = 'clinic.staff.salary.bonus'
     _description = 'Clinic Staff Salary Bonus'
+    _rec_name = 'bonus_name'  # Use bonus_name for display
 
-    name = fields.Char(string='Loại thưởng', required=True)
+    name = fields.Char(string="Mã thưởng", required=True, copy=False, readonly=True, default="New")
+    bonus_name = fields.Char(string='Loại thưởng', required=True)
     amount = fields.Float(string='Số tiền thưởng (VNĐ)', required=True)
     reason = fields.Text(string='Lý do')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
+
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update(name='New')
+        return super().copy(default)
 
 
 # Model quản lý khấu trừ (giữ nguyên)
 class StaffSalaryDeduction(models.Model):
     _name = 'clinic.staff.salary.deduction'
     _description = 'Clinic Staff Salary Deduction'
+    _rec_name = 'deduction_name'  # Use deduction_name for display
 
-    name = fields.Char(string='Loại khấu trừ', required=True)
+    name = fields.Char(string="Mã khấu trừ", required=True, copy=False, readonly=True, default="New")
+    deduction_name = fields.Char(string='Loại khấu trừ', required=True)
     rate = fields.Float(string='Tỷ lệ (%)', default=0.0)
     salary_type = fields.Selection([
         ('base_salary', 'Lương cơ bản'),
         ('total_salary', 'Tổng lương')
     ], string='Loại lương áp dụng', required=True, default='base_salary')
     reason = fields.Text(string='Lý do khấu trừ')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
+
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update(name='New')
+        return super().copy(default)

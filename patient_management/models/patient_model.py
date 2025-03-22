@@ -1,14 +1,15 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from datetime import timedelta, date
+import uuid
 
 
 class ClinicPatient(models.Model):
     _name = 'clinic.patient'
     _description = 'Thông tin bệnh nhân'
-    _inherit = 'clinic.patient'
+    _rec_name = 'patient_name'
 
-    name = fields.Char(string='Họ và Tên', required=True)
+    name = fields.Char(string='Mã bệnh nhân', required=True, copy=False, readonly=True)
+    patient_name = fields.Char(string='Họ và tên', required=True)
     date_of_birth = fields.Date(string='Ngày sinh')
     age = fields.Integer(string='Tuổi', compute='_compute_age', store=True)
     gender = fields.Selection([
@@ -17,30 +18,55 @@ class ClinicPatient(models.Model):
         ('other', 'Khác')
     ], string='Giới tính', required=True)
     phone = fields.Char(string='Số điện thoại')
+    email = fields.Char(string='Địa chỉ email')
     address = fields.Text(string='Địa chỉ')
     patient_type = fields.Selection([
         ('outpatient', 'Ngoại trú'),
         ('inpatient', 'Nội trú')
     ], string='Loại bệnh nhân', required=True, default='outpatient')
     state = fields.Selection([
-        ('under_treatment', 'Đang điều trị'),
-        ('treated', 'Đã điều trị'),
-        ('deceased', 'Tử vong')
-    ], string='Trạng thái', default='under_treatment')
-    last_activity_date = fields.Datetime(string='Ngày hoạt động gần nhất', default=fields.Datetime.now)
+        ('registered', 'Đã đăng ký'),
+        ('hospitalized', 'Đang nhập viện')
+    ], string='Trạng thái', default='registered')
     note = fields.Text(string='Ghi chú')
-    insurance = fields.Many2one('clinic.insurance.policy', string='Thông tin bảo hiểm', ondelete='set null')
-    insurance_number = fields.Char(string='Số thẻ BHYT', readonly=True, related='insurance.insurance_number')
-    initial_facility = fields.Char(string='Nơi ĐKKCB', readonly=True, related='insurance.insurance_initial_facility')
-    tier = fields.Selection([
+
+    insurance_number = fields.Char(string='Số thẻ BHYT', compute='_compute_insurance_info')
+    insurance_facility = fields.Char(string='Nơi ĐKKCB', compute='_compute_insurance_info')
+    insurance_expiry = fields.Date(string='Có giá trị đến', compute='_compute_insurance_info')
+    insurance_tier = fields.Selection([
         ('central', 'Trung ương'),
         ('province', 'Tỉnh'),
         ('district', 'Quận/Huyện'),
         ('commune', 'Xã')
-    ], string='Tuyến', readonly=True, related='insurance.insurance_tier')
-    expiry_date = fields.Date(string='Thời hạn', readonly=True, related='insurance.insurance_expiry_date')
-    has_valid_insurance = fields.Boolean(string='Có bảo hiểm hợp lệ', compute='_compute_has_valid_insurance')
-    insurance_status = fields.Char(string='BHYT', compute='_compute_insurance_status')
+    ], string='Tuyến', compute='_compute_insurance_info')
+    insurance_state = fields.Char(string='Trạng thái', compute='_compute_insurance_info')
+    has_insurance = fields.Boolean(string='Có bảo hiểm', compute='_compute_insurance_info')
+
+    # dùng cái hàm này để tìm kiếm bảo hiểm của bệnh nhân
+    @api.depends('name')
+    def _compute_insurance_info(self):
+        for patient in self:
+            insurance = self.env['clinic.insurance.policy'].search([
+                ('patient_id', '=', patient.id)
+            ], limit=1)
+            
+            if insurance:
+                patient.has_insurance = True
+                patient.insurance_number = insurance.number
+                patient.insurance_facility = insurance.facility
+                patient.insurance_tier = insurance.tier
+                patient.insurance_expiry = insurance.expiry_date
+                if insurance.state == 'valid':
+                    patient.insurance_state = 'Hợp lệ'
+                else:
+                    patient.insurance_state = 'Hết hạn'
+            else:
+                patient.has_insurance = False
+                patient.insurance_number = False
+                patient.insurance_facility = False
+                patient.insurance_tier = False
+                patient.insurance_expiry = False
+                patient.insurance_state = False
 
     @api.depends('date_of_birth')
     def _compute_age(self):
@@ -59,66 +85,34 @@ class ClinicPatient(models.Model):
             if record.date_of_birth and record.date_of_birth > fields.Date.today():
                 raise ValidationError("Ngày sinh không thể là ngày trong tương lai!")
 
-    def action_treated(self):
-        """Cập nhật trạng thái thành 'Đã điều trị' khi nhấn nút trong form."""
-        self.write({'state': 'treated'})
+    def action_hospitalize(self):
+        """Cập nhật trạng thái thành 'Đang nhập viện' khi nhấn nút trong form."""
+        self.write({'state': 'hospitalized'})
         return True
 
-    def action_deceased(self):
-        self.write({'state': 'deceased'})
-        return True
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                # Generate a short UUID
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
+        
+    # def get_insurance_info(self):
+    #     for patient in self:
+    #         # Search for insurance records linked to this patient
+    #         insurance_records = self.env['clinic.insurance.policy'].search([
+    #             ('patient_id', '=', patient.id)
+    #         ])
+            
+    #         print(f"Insurance information for {patient.patient_name}:")
+    #         for insurance in insurance_records:
+    #             print(f"  - Insurance Number: {insurance.number}")
+    #             print(f"  - Facility: {insurance.facility}")
+    #             print(f"  - Expiry Date: {insurance.expiry_date}")
+    #             print(f"  - State: {insurance.state}")
+            
+            
 
-    def _check_abandoned_outpatients(self):
-        """Cron job để tự động chuyển trạng thái 'under_treatment' thành 'treated' cho bệnh nhân ngoại trú sau 24h."""
-        today = fields.Datetime.now()
-        threshold = timedelta(hours=24)
-        outpatients = self.search([
-            ('state', '=', 'under_treatment'),
-            ('patient_type', '=', 'outpatient'),
-            ('last_activity_date', '<=', today - threshold)
-        ])
-        for patient in outpatients:
-            patient.write({
-                'state': 'treated',
-                'note': f"{patient.note or ''}\nTự động chuyển thành 'Đã điều trị' sau 24h không hoạt động."
-            })
 
-    @api.model
-    def _register_hook(self):
-        """Đăng ký cron job khi module được cài đặt."""
-        cron_name = 'Check Abandoned Outpatients'
-        cron_exists = self.env['ir.cron'].search([('name', '=', cron_name)], limit=1)
-        if not cron_exists:
-            self.env['ir.cron'].create({
-                'name': cron_name,
-                'model_id': self.env.ref('patient_management.model_clinic_patient').id,
-                'state': 'code',
-                'code': 'model._check_abandoned_outpatients()',
-                'interval_number': 1,
-                'interval_type': 'hours',
-                'active': True,
-            })
-
-    @api.depends('insurance', 'insurance.insurance_expiry_date')
-    def _compute_has_valid_insurance(self):
-        for record in self:
-            if record.insurance and record.insurance.insurance_state == 'valid':
-                record.has_valid_insurance = True
-            else:
-                record.has_valid_insurance = False
-
-    @api.depends('has_valid_insurance')
-    def _compute_insurance_status(self):
-        for record in self:
-            record.insurance_status = 'Có' if record.has_valid_insurance else 'Không có'
-
-    def action_add_insurance(self):
-        # Logic để tạo bản ghi bảo hiểm mới
-        insurance = self.env['clinic.insurance.policy'].create({
-            'insurance_number': 'TEMP_NUMBER',  # Thay bằng logic thực tế
-            'insurance_initial_facility': 'Some Facility',
-            'insurance_tier': 'district',
-            'insurance_expiry_date': date.today() + timedelta(days=365),
-        })
-        self.write({'insurance': insurance.id})
-        return True
+    
