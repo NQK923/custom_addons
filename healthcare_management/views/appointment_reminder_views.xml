@@ -11,6 +11,8 @@
                             class="oe_highlight" invisible="state not in ['to_send', 'failed']"/>
                     <button name="action_cancel_reminder" string="Hủy thông báo" type="object"
                             invisible="state not in ['to_send', 'failed']"/>
+                    <button name="action_sync_all_appointments" string="Đồng bộ tất cả lịch hẹn" type="object"
+                            class="btn-secondary" groups="base.group_system"/>
                     <field name="state" widget="statusbar" statusbar_visible="to_send,sent,failed,cancelled"/>
                 </header>
                 <sheet>
@@ -80,7 +82,14 @@
         </field>
     </record>
 
-    <!-- Action -->
+    <record id="action_sync_all_appointments" model="ir.actions.server">
+        <field name="name">Đồng bộ tất cả lịch hẹn</field>
+        <field name="model_id" ref="model_appointment_reminder"/>
+        <field name="binding_model_id" ref="model_appointment_reminder"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_sync_all_appointments()</field>
+    </record>
+
     <record id="action_appointment_reminder" model="ir.actions.act_window">
         <field name="name">Thông báo lịch hẹn</field>
         <field name="res_model">appointment.reminder</field>
@@ -88,7 +97,12 @@
         <field name="search_view_id" ref="view_appointment_reminder_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Tạo thông báo lịch hẹn mới
+                Tạo thông báo lịch hẹn mới hoặc đồng bộ từ lịch hẹn
+            </p>
+            <p>
+                <button name="%(action_sync_all_appointments)d" type="action" class="oe_highlight">
+                    Đồng bộ tất cả lịch hẹn
+                </button>
             </p>
         </field>
     </record>
