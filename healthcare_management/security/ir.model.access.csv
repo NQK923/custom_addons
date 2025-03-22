@@ -7,5 +7,3 @@ access_healthcare_feedback_statistics_user,healthcare.feedback.statistics.user,m
 access_healthcare_feedback_statistics_manager,healthcare.feedback.statistics.manager,model_healthcare_feedback_statistics,base.group_system,1,1,1,1
 access_healthcare_feedback_dashboard_user,healthcare.feedback.dashboard.user,model_healthcare_feedback_dashboard,base.group_user,1,1,1,0
 access_healthcare_feedback_dashboard_manager,healthcare.feedback.dashboard.manager,model_healthcare_feedback_dashboard,base.group_system,1,1,1,1
-access_appointment_reminder_user,appointment.reminder.user,model_appointment_reminder,clinic.group_clinic_user,1,1,1,0
-access_appointment_reminder_manager,appointment.reminder.manager,model_appointment_reminder,clinic.group_clinic_manager,1,1,1,1

@@ -8,9 +8,9 @@
             <form string="Thông báo lịch hẹn">
                 <header>
                     <button name="action_send_reminder_now" string="Gửi thông báo ngay" type="object"
-                            class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['to_send', 'failed'])]}"/>
+                            class="oe_highlight" invisible="state not in ['to_send', 'failed']"/>
                     <button name="action_cancel_reminder" string="Hủy thông báo" type="object"
-                            attrs="{'invisible': [('state', 'not in', ['to_send', 'failed'])]}"/>
+                            invisible="state not in ['to_send', 'failed']"/>
                     <field name="state" widget="statusbar" statusbar_visible="to_send,sent,failed,cancelled"/>
                 </header>
                 <sheet>
@@ -29,7 +29,7 @@
                             <field name="notification_date"/>
                         </group>
                     </group>
-                    <field name="email_status" attrs="{'invisible': [('email_status', '=', False)]}"/>
+                    <field name="email_status" invisible="email_status == False"/>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
@@ -92,10 +92,4 @@
             </p>
         </field>
     </record>
-
-    <!-- Menu -->
-    <menuitem id="menu_appointment_reminder_root" name="Thông báo lịch hẹn" sequence="10"
-              parent="clinic.menu_clinic_root"/>
-    <menuitem id="menu_appointment_reminder" name="Quản lý thông báo"
-              parent="menu_appointment_reminder_root" action="action_appointment_reminder" sequence="10"/>
 </odoo>

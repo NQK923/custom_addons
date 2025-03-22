@@ -9,7 +9,7 @@ class AppointmentReminder(models.Model):
 
     note = fields.Many2one('clinic.appointment', string='Lịch hẹn', required=True, ondelete='cascade')
     name = fields.Char(string='Tên', related='note.name', store=True)
-    patient_name = fields.Many2one(related='note.patient_id', string='Bệnh nhân', store=True)
+    patient_name = fields.Many2one(related='note.patient_name', string='Bệnh nhân', store=True)
     appointment_date = fields.Datetime(related='note.appointment_date', string='Ngày giờ hẹn', store=True)
     notification_date = fields.Datetime(string='Ngày gửi thông báo', compute='_compute_notification_date', store=True)
     state = fields.Selection([
