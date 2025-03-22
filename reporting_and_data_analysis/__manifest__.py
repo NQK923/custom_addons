@@ -13,13 +13,13 @@
     'category': 'Healthcare',
     'author': 'Your Name',
     'website': 'https://www.yourwebsite.com',
-    'depends': ['base', 'mail', 'hospital_management'],  # Giả sử có module hospital_management
+    'depends': ['base', 'mail'],
     'data': [
         'security/ir.model.access.csv',
         'views/medical_report_views.xml',
     ],
     'demo': [],
     'installable': True,
-    'application': False,
+    'application': True,
     'auto_install': False,
 }
