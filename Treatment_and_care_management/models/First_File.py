@@ -118,6 +118,7 @@ class PatientCareTracking(models.Model):
     created_at = fields.Datetime(string="Ngày tạo", default=fields.Datetime.now)
     updated_at = fields.Datetime(string="Ngày cập nhật")
 
+
     @api.model
     def create(self, vals):
         vals['updated_at'] = datetime.now()
