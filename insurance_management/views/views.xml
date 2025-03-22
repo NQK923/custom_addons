@@ -29,10 +29,7 @@
                         </h1>
                     </div>
                     <group name="patient_info" string="Thông tin bệnh nhân">
-                        <field name="patient_id" 
-                               domain="[('insurance_policy_id', '=', False)]" 
-                               options="{'no_create': True, 'no_open': True}" 
-                               placeholder="Chọn bệnh nhân"/>
+                        <field name="patient_id"/>
                     </group>
                     <group name="insurance_info" string="Thông tin bảo hiểm">
                         <field name="insurance_initial_facility" placeholder="Nơi ĐKKCB"/>

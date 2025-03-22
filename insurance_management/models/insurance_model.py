@@ -6,7 +6,11 @@ class ClinicPatientInsurance(models.Model):
     _name = 'clinic.insurance.policy'
     _description = 'Thông tin bảo hiểm y tế của bệnh nhân'
 
-    patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True, ondelete='cascade')
+    patient_id = fields.Many2one(
+        'clinic.patient',
+        string='Mã bệnh nhân',
+        required=True
+    )
     insurance_number = fields.Char(string='Số thẻ BHYT', required=True, unique=True)
     insurance_initial_facility = fields.Char(string='Nơi ĐKKCB', required=True)
     insurance_tier = fields.Selection([
