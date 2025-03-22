@@ -12,7 +12,7 @@ class PatientComplaint(models.Model):
 
     name = fields.Char(string='Mã khiếu nại', required=True, copy=False, readonly=True,
                        default=lambda self: _('New'))
-    partner_id = fields.Many2one('res.partner', string='Bệnh nhân', required=True, tracking=True)
+    patient_name = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True, tracking=True)
     complaint_date = fields.Date(string='Ngày khiếu nại', default=fields.Date.context_today, tracking=True)
 
     description = fields.Text(string='Nội dung khiếu nại', required=True)
