@@ -12,8 +12,8 @@ class PatientFeedback(models.Model):
 
     name = fields.Char(string='Mã phản hồi', required=True, copy=False, readonly=True,
                        default=lambda self: _('New'))
-    partner_id = fields.Many2one('res.partner', string='Bệnh nhân', required=True, tracking=True)
-    department_id = fields.Many2one('hr.department', string='Phòng ban', tracking=True)
+    patient_name = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True, tracking=True)
+    department_name = fields.Many2one('clinic.department', string='Phòng ban', tracking=True)
     feedback_date = fields.Date(string='Ngày phản hồi', default=fields.Date.context_today, tracking=True)
     feedback_type = fields.Selection([
         ('compliment', 'Khen ngợi'),
@@ -67,7 +67,7 @@ class PatientFeedback(models.Model):
             'view_mode': 'form',
             'target': 'current',
             'context': {
-                'default_partner_id': self.partner_id.id,
+                'default_patient_name': self.patient_name.id,
                 'default_feedback_id': self.id,
                 'default_description': self.description,
             }

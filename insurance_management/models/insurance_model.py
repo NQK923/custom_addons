@@ -1,57 +1,83 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from datetime import date
+import re
+import uuid
 
-class ClinicPatientInsurance(models.Model):
+class ClinicInsurance(models.Model):
     _name = 'clinic.insurance.policy'
-    _description = 'Thông tin bảo hiểm y tế của bệnh nhân'
+    _description = 'Thông tin bảo hiểm y tế'
+    _rec_name = 'number'
 
-    patient_id = fields.Many2one(
-        'clinic.patient',
-        string='Mã bệnh nhân',
-        required=True
-    )
-    insurance_number = fields.Char(string='Số thẻ BHYT', required=True, unique=True)
-    insurance_initial_facility = fields.Char(string='Nơi ĐKKCB', required=True)
-    insurance_tier = fields.Selection([
+    name = fields.Char(string='Mã bảo hiểm', required=True, copy=False, readonly=True)
+    number = fields.Char(string='Số thẻ BHYT', required=True)
+    facility = fields.Char(string='Nơi ĐKKCB')
+    tier = fields.Selection([
         ('central', 'Trung ương'),
         ('province', 'Tỉnh'),
         ('district', 'Quận/Huyện'),
         ('commune', 'Xã')
-    ], string='Tuyến', required=True)
-    insurance_expiry_date = fields.Date(string='Thời hạn', required=True)
-    insurance_state = fields.Selection([
+    ], string='Tuyến', default='district')
+    patient_id = fields.Many2one(
+        'clinic.patient', 
+        string='Bệnh nhân', 
+        required=True,
+        ondelete='restrict'
+    )
+    expiry_date = fields.Date(string='Có giá trị đến', required=True)
+    state = fields.Selection([
         ('valid', 'Hợp lệ'),
         ('expired', 'Hết hạn')
-    ], string='Trạng thái', compute='_compute_state', store=True)
+    ], string='Trạng thái', compute='_compute_state', store=True, tracking=True)
 
-    @api.depends('insurance_expiry_date')
+    _sql_constraints = [
+        ('unique_patient', 'unique(patient_id)', 'Bệnh nhân này đã có bảo hiểm y tế!'),
+        ('number_unique', 
+         'UNIQUE(number)',
+         'Số thẻ BHYT đã tồn tại!')
+    ]
+
+    @api.depends('expiry_date')
     def _compute_state(self):
-        today = date.today()
+        today = fields.Date.today()
         for record in self:
-            if not record.insurance_expiry_date:
-                record.insurance_state = 'valid'  # Hoặc để trống tùy nghiệp vụ
-            elif record.insurance_expiry_date < today:
-                record.insurance_state = 'expired'
+            if record.expiry_date:
+                record.state = 'valid' if record.expiry_date >= today else 'expired'
             else:
-                record.insurance_state = 'valid'
+                record.state = 'valid'
 
-    @api.constrains('insurance_number')
-    def _check_insurance_number_length(self):
+    @api.constrains('number')
+    def _check_number(self):
         for record in self:
-            if len(record.insurance_number) != 15:  # Giả định số thẻ BHYT là 15 ký tự
-                raise ValidationError("Số thẻ BHYT phải có đúng 15 ký tự!")
+            # Kiểm tra định dạng: 2 chữ cái + 1 số + 2 số + 10 số
+            pattern = r'^[A-Z]{2}[1-5][0-9]{2}[0-9]{10}$'
+            if not re.match(pattern, record.number):
+                raise ValidationError('''Số thẻ BHYT không hợp lệ! 
+                    Định dạng phải là: 
+                    - 2 chữ cái in hoa (mã đối tượng)
+                    - 1 chữ số từ 1-5 (mức hưởng)
+                    - 2 chữ số (mã tỉnh)
+                    - 10 chữ số (số định danh)
+                    Ví dụ: DN119123456789''')
+            
+            duplicate = self.search([
+                ('id', '!=', record.id),
+                ('number', '=', record.number)
+            ])
+            if duplicate:
+                raise ValidationError(f'Số thẻ BHYT {record.number} đã tồn tại!')
 
-    class ClinicPatient(models.Model):
-        _name = 'clinic.patient'
-        _description = 'Thông tin bệnh nhân'
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                # Generate a short UUID
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
 
-        name = fields.Char(string='Họ và tên', required=True)
-        gender = fields.Selection([
-            ('male', 'Nam'),
-            ('female', 'Nữ'),
-            ('other', 'Khác')
-        ], string='Giới tính', required=True)
-        phone = fields.Char(string='Số điện thoại', required=True)
-        address = fields.Text(string='Địa chỉ')
-        insurance_policy_id = fields.Many2one('clinic.insurance.policy', string='Bảo hiểm y tế')
+    # Ghi đè cả write để xử lý các trường hợp sao chép
+    def copy(self, default=None):
+        default = dict(default or {})
+        default.update(name='New')
+        return super().copy(default)
+

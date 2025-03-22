@@ -1,48 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- List View cho clinic.insurance.policy -->
+    <!-- List View -->
     <record id="view_clinic_insurance_policy_list" model="ir.ui.view">
         <field name="name">clinic.insurance.policy.list</field>
         <field name="model">clinic.insurance.policy</field>
         <field name="arch" type="xml">
-            <list default_order="insurance_number">
-                <field name="patient_id"/>
-                <field name="insurance_number"/>
-                <field name="insurance_initial_facility"/>
-                <field name="insurance_tier"/>
-                <field name="insurance_expiry_date"/>
-                <field name="insurance_state"/>
+            <list>
+                <field name="number"/>
+                <field name="patient_id" string="Bệnh nhân"/>
+                <field name="facility"/>
+                <field name="tier"/>
+                <field name="expiry_date"/>
+                <field name="state" decoration-danger="state == 'expired'" 
+                                  decoration-success="state == 'valid'"/>
             </list>
         </field>
     </record>
 
-    <!-- Form View cho clinic.insurance.policy -->
+    <!-- Form View -->
     <record id="view_clinic_insurance_policy_form" model="ir.ui.view">
         <field name="name">clinic.insurance.policy.form</field>
         <field name="model">clinic.insurance.policy</field>
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="insurance_number" placeholder="Số thẻ BHYT"/>
-                        </h1>
-                    </div>
-                    <group name="patient_info" string="Thông tin bệnh nhân">
-                        <field name="patient_id"/>
-                    </group>
-                    <group name="insurance_info" string="Thông tin bảo hiểm">
-                        <field name="insurance_initial_facility" placeholder="Nơi ĐKKCB"/>
-                        <field name="insurance_tier" widget="radio" placeholder="Tuyến"/>
-                        <field name="insurance_expiry_date" placeholder="Thời hạn"/>
-                        <field name="insurance_state" readonly="1" widget="statusbar"/>
+                    <group>
+                        <group>
+                            <field name="number" placeholder="Ví dụ: DN119123456789"/>
+                            <field name="patient_id" string="Bệnh nhân"/>
+                            <field name="facility"/>
+                        </group>
+                        <group>
+                            <field name="tier"/>
+                            <field name="expiry_date"/>
+                            <field name="state" widget="statusbar" statusbar_visible="valid,expired"/>
+                        </group>
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <!-- Action để truy cập danh sách bảo hiểm -->
+    <!-- Action -->
     <record id="action_clinic_insurance_policy" model="ir.actions.act_window">
         <field name="name">Quản lý bảo hiểm y tế</field>
         <field name="res_model">clinic.insurance.policy</field>
@@ -50,6 +49,8 @@
     </record>
 
     <!-- Menu -->
-    <menuitem id="menu_insurance_root" name="Quản lý bảo hiểm y tế" 
-              action="action_clinic_insurance_policy" sequence="10"/>
+    <menuitem id="menu_insurance_root" 
+              name="Quản lý bảo hiểm y tế" 
+              action="action_clinic_insurance_policy" 
+              sequence="10"/>
 </odoo>

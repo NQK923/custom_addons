@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <menuitem id="menu_healthcare_customer_care_root"
               name="Chăm sóc khách hàng y tế"
               web_icon="healthcare_customer_care,static/description/icon.png"
@@ -17,6 +16,12 @@
               parent="menu_healthcare_customer_care_root"
               action="action_patient_complaint"
               sequence="20"/>
+
+    <menuitem id="menu_appointment_reminder"
+              name="Thông báo lịch hẹn"
+              parent="menu_healthcare_customer_care_root"
+              action="healthcare_management.action_appointment_reminder"
+              sequence="40"/>
 
     <menuitem id="menu_healthcare_analytics"
               name="Thống kê"

@@ -10,8 +10,8 @@ class FeedbackStatistics(models.Model):
     _order = 'feedback_date desc'
 
     name = fields.Char(string='Mã phản hồi')
-    partner_id = fields.Many2one('res.partner', string='Bệnh nhân')
-    department_id = fields.Many2one('hr.department', string='Phòng ban')
+    patient_name = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True, tracking=True)
+    department_name = fields.Many2one('clinic.department', string='Phòng ban', tracking=True)
     feedback_date = fields.Date(string='Ngày phản hồi')
     feedback_type = fields.Selection([
         ('compliment', 'Khen ngợi'),
@@ -46,8 +46,8 @@ class FeedbackStatistics(models.Model):
                 SELECT
                     fb.id as id,
                     fb.name as name,
-                    fb.partner_id as partner_id,
-                    fb.department_id as department_id,
+                    fb.patient_name as patient_name,
+                    fb.department_name as department_name,
                     fb.feedback_date as feedback_date,
                     fb.feedback_type as feedback_type,
                     fb.state as state,

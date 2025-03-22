@@ -122,8 +122,8 @@
                     </div>
                     <group>
                         <group>
-                            <field name="staff_id" readonly="1"/>
-                            <field name="sheet_id" readonly="1"/>
+                            <field name="staff_id"/>
+                            <field name="sheet_id"/>
                             <field name="base_salary" readonly="1" options="{'currency': 'VND'}"/>
                             <field name="standard_work_days" readonly="1"/>
                             <field name="work_days" readonly="1"/>
@@ -161,7 +161,7 @@
         <field name="model">clinic.staff.salary.allowance</field>
         <field name="arch" type="xml">
             <list string="Loại phụ cấp">
-                <field name="name"/>
+                <field name="allowance_name"/>
                 <field name="amount"/>
                 <field name="note"/>
             </list>
@@ -175,7 +175,7 @@
             <form string="Loại phụ cấp">
                 <sheet>
                     <group>
-                        <field name="name"/>
+                        <field name="allowance_name"/>
                         <field name="amount"/>
                         <field name="note"/>
                     </group>
@@ -196,7 +196,7 @@
         <field name="model">clinic.staff.salary.bonus</field>
         <field name="arch" type="xml">
             <list string="Loại thưởng">
-                <field name="name"/>
+                <field name="bonus_name"/>
                 <field name="amount"/>
                 <field name="reason"/>
             </list>
@@ -210,7 +210,7 @@
             <form string="Loại thưởng">
                 <sheet>
                     <group>
-                        <field name="name"/>
+                        <field name="bonus_name"/>
                         <field name="amount"/>
                         <field name="reason"/>
                     </group>
@@ -231,7 +231,7 @@
         <field name="model">clinic.staff.salary.deduction</field>
         <field name="arch" type="xml">
             <list string="Loại khấu trừ">
-                <field name="name"/>
+                <field name="deduction_name"/>
                 <field name="rate"/>
                 <field name="salary_type"/>
                 <field name="reason"/>
@@ -246,7 +246,7 @@
             <form string="Loại khấu trừ">
                 <sheet>
                     <group>
-                        <field name="name"/>
+                        <field name="deduction_name"/>
                         <field name="rate"/>
                         <field name="salary_type"/>
                         <field name="reason"/>
