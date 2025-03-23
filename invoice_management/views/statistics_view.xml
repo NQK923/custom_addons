@@ -1,77 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Form View for Statistics -->
+    <!-- Định nghĩa view form cho thống kê -->
     <record id="view_clinic_statistics_form" model="ir.ui.view">
         <field name="name">clinic.statistics.form</field>
         <field name="model">clinic.statistics</field>
         <field name="arch" type="xml">
-            <form>
+            <form string="Thống kê phòng khám">
                 <sheet>
                     <div class="oe_title">
-                        <h1>Thống kê phòng khám</h1>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
                     </div>
-
                     <group>
                         <group>
-                            <field name="date_from" />
-                            <field name="date_to" />
+                            <field name="date_from"/>
+                            <field name="date_to"/>
                         </group>
                         <group>
-                            <button name="action_calculate_statistics"
-                                    string="Tính toán thống kê"
-                                    type="object"
-                                    class="oe_highlight"/>
+                            <field name="total_invoices"/>
+                            <field name="paid_invoices"/>
+                            <field name="cancelled_invoices"/>
                         </group>
                     </group>
-
                     <notebook>
-                        <!-- Hóa đơn -->
-                        <page string="Thống kê hóa đơn">
+                        <page string="Thống kê doanh thu">
                             <group>
-                                <field name="total_invoices"/>
-                                <field name="total_amount" widget="monetary"/>
-                                <field name="service_amount" widget="monetary"/>
-                                <field name="medicine_amount" widget="monetary"/>
-                                <field name="insurance_amount" widget="monetary"/>
-                                <field name="patient_amount" widget="monetary"/>
+                                <field name="total_revenue" widget="monetary"/>
+                                <field name="service_revenue" widget="monetary"/>
+                                <field name="medicine_revenue" widget="monetary"/>
+                                <field name="insurance_revenue" widget="monetary"/>
+                                <field name="patient_revenue" widget="monetary"/>
                             </group>
-
-                            <!-- Biểu đồ doanh thu theo tháng -->
-                            <div>
-                                <h3>Doanh thu theo tháng</h3>
-                                <field name="revenue_chart" widget="chart"/>
+                            <!-- Biểu đồ doanh thu -->
+                            <div class="oe_graph_chart">
+                                <field name="chart_data" widget="clinic_statistics_chart" string="Biểu đồ doanh thu"/>
                             </div>
                         </page>
-
-                        <!-- Dịch vụ và thuốc -->
-                        <page string="Thống kê dịch vụ và thuốc">
+                        <page string="Top dịch vụ &amp; thuốc">
                             <group>
-                                <group string="Top 10 dịch vụ sử dụng nhiều nhất">
-                                    <field name="top_services" widget="list"/>
+                                <group string="Dịch vụ được sử dụng nhiều nhất">
+                                    <field name="most_used_service_id"/>
+                                    <field name="most_used_service_count"/>
                                 </group>
-                                <group string="Top 10 thuốc sử dụng nhiều nhất">
-                                    <field name="top_products" widget="list"/>
+                                <group string="Thuốc bán chạy nhất">
+                                    <field name="most_sold_product_id"/>
+                                    <field name="most_sold_product_count"/>
                                 </group>
                             </group>
                         </page>
-
-                        <!-- Bảo hiểm -->
-                        <page string="Thống kê bảo hiểm">
-                            <group>
-                                <field name="insurance_percentage" string="Tỷ lệ bảo hiểm chi trả (%)"/>
-                                <field name="insurance_amount" widget="monetary"/>
-                                <field name="patient_insurance_count" string="Số lượng bệnh nhân có bảo hiểm"/>
-                                <field name="patient_without_insurance_count" string="Số lượng bệnh nhân không có bảo hiểm"/>
-                            </group>
-                        </page>
-
-                        <!-- Nhập hàng -->
-                        <page string="Thống kê nhập hàng">
-                            <group>
-                                <field name="total_purchases"/>
-                                <field name="purchase_amount" widget="monetary"/>
-                                <field name="total_quantity"/>
-                            </group>
+                        <page string="Thống kê theo ngày">
+                            <field name="daily_stats_ids">
+                                <list>
+                                    <field name="date"/>
+                                    <field name="invoice_count"/>
+                                    <field name="total_revenue" sum="Tổng"/>
+                                    <field name="service_revenue" sum="Tổng"/>
+                                    <field name="medicine_revenue" sum="Tổng"/>
+                                </list>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
@@ -79,102 +66,57 @@
         </field>
     </record>
 
-    <!-- Dashboard View -->
-    <record id="view_clinic_statistics_dashboard" model="ir.ui.view">
-        <field name="name">clinic.statistics.dashboard</field>
+    <!-- Định nghĩa view tree cho thống kê -->
+    <record id="view_clinic_statistics_tree" model="ir.ui.view">
+        <field name="name">clinic.statistics.tree</field>
         <field name="model">clinic.statistics</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_dashboard">
-                <field name="id"/>
-                <field name="total_invoices"/>
-                <field name="total_amount"/>
-                <field name="service_amount"/>
-                <field name="medicine_amount"/>
-                <field name="insurance_amount"/>
-                <field name="patient_amount"/>
-
-                <templates>
-                    <t t-name="kanban-box">
-                        <div class="oe_kanban_global_click">
-                            <div class="oe_kanban_card">
-                                <div class="row">
-                                    <!-- Hóa đơn -->
-                                    <div class="col-6 o_kanban_primary_left">
-                                        <div class="o_kanban_primary_title mb-1">
-                                            <strong>Thống kê hóa đơn</strong>
-                                        </div>
-                                        <div>
-                                            <span>Tổng số: </span>
-                                            <span class="float-right"><field name="total_invoices"/></span>
-                                        </div>
-                                        <div>
-                                            <span>Tổng doanh thu: </span>
-                                            <span class="float-right"><field name="total_amount" widget="monetary"/></span>
-                                        </div>
-                                        <div>
-                                            <span>Doanh thu dịch vụ: </span>
-                                            <span class="float-right"><field name="service_amount" widget="monetary"/></span>
-                                        </div>
-                                        <div>
-                                            <span>Doanh thu thuốc: </span>
-                                            <span class="float-right"><field name="medicine_amount" widget="monetary"/></span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Bảo hiểm -->
-                                    <div class="col-6 o_kanban_primary_right">
-                                        <div class="o_kanban_primary_title mb-1">
-                                            <strong>Thống kê bảo hiểm</strong>
-                                        </div>
-                                        <div>
-                                            <span>Bảo hiểm chi trả: </span>
-                                            <span class="float-right"><field name="insurance_amount" widget="monetary"/></span>
-                                        </div>
-                                        <div>
-                                            <span>Bệnh nhân chi trả: </span>
-                                            <span class="float-right"><field name="patient_amount" widget="monetary"/></span>
-                                        </div>
-                                        <div>
-                                            <span>Tỷ lệ BH/Tổng: </span>
-                                            <span class="float-right"><field name="insurance_percentage"/> %</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-3 text-center">
-                                    <div class="col-6">
-                                        <a name="action_view_invoices" type="object">
-                                            <i class="fa fa-file-text-o fa-2x text-primary"></i>
-                                            <div>Xem hóa đơn</div>
-                                        </a>
-                                    </div>
-                                    <div class="col-6">
-                                        <a name="action_view_insurance_invoices" type="object">
-                                            <i class="fa fa-medkit fa-2x text-success"></i>
-                                            <div>Xem hóa đơn BH</div>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
-                </templates>
-            </kanban>
+            <list string="Thống kê phòng khám">
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="total_revenue" sum="Tổng"/>
+                <field name="total_invoices" sum="Tổng"/>
+                <field name="paid_invoices" sum="Tổng"/>
+            </list>
         </field>
     </record>
 
-    <!-- Action -->
+    <!-- Tạo action cho model thống kê -->
     <record id="action_clinic_statistics" model="ir.actions.act_window">
-        <field name="name">Thống kê</field>
+        <field name="name">Thống kê phòng khám</field>
         <field name="res_model">clinic.statistics</field>
-        <field name="view_mode">kanban,form</field>
-        <field name="target">current</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Chưa có dữ liệu thống kê
+            </p>
+            <p>
+                Tạo thống kê mới để xem báo cáo phòng khám
+            </p>
+        </field>
     </record>
 
-    <!-- Menu for Statistics -->
+    <!-- Tạo menu cho thống kê -->
     <menuitem id="menu_clinic_statistics"
-              name="Thống kê"
+              name="Thống kê phòng khám"
               parent="menu_invoice_root"
               action="action_clinic_statistics"
+              sequence="40"/>
+
+    <!-- Tạo action cho báo cáo hàng tháng -->
+    <record id="action_monthly_report" model="ir.actions.server">
+        <field name="name">Báo cáo tháng này</field>
+        <field name="model_id" ref="model_clinic_statistics"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.generate_monthly_report().action_view_form()
+        </field>
+    </record>
+
+    <menuitem id="menu_monthly_report"
+              name="Báo cáo tháng này"
+              parent="menu_clinic_statistics"
+              action="action_monthly_report"
               sequence="5"/>
 </odoo>

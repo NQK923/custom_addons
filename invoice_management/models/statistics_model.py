@@ -6,278 +6,228 @@ import calendar
 class ClinicStatistics(models.Model):
     _name = 'clinic.statistics'
     _description = 'Thống kê phòng khám'
-    # Remove _auto = False to make it a regular table model instead of a view
-    # This allows storing data and executing methods
 
-    name = fields.Char(string='Tên')
-    date = fields.Date(string='Ngày')
-    month = fields.Char(string='Tháng')
-    year = fields.Char(string='Năm')
+    name = fields.Char(string='Tên', readonly=True)
+    date_from = fields.Date(string='Từ ngày')
+    date_to = fields.Date(string='Đến ngày')
 
-    # Date filter fields
-    date_from = fields.Date(string='Từ ngày', default=lambda self: fields.Date.today() - timedelta(days=30))
-    date_to = fields.Date(string='Đến ngày', default=lambda self: fields.Date.today())
+    # Thống kê doanh thu
+    total_revenue = fields.Float(string='Tổng doanh thu', readonly=True)
+    service_revenue = fields.Float(string='Doanh thu dịch vụ', readonly=True)
+    medicine_revenue = fields.Float(string='Doanh thu thuốc', readonly=True)
+    insurance_revenue = fields.Float(string='Doanh thu từ bảo hiểm', readonly=True)
+    patient_revenue = fields.Float(string='Doanh thu từ bệnh nhân', readonly=True)
 
-    # Invoice statistics
+    # Thống kê đơn hàng
     total_invoices = fields.Integer(string='Tổng số hóa đơn', readonly=True)
-    total_amount = fields.Float(string='Tổng doanh thu', readonly=True)
-    service_amount = fields.Float(string='Doanh thu dịch vụ', readonly=True)
-    medicine_amount = fields.Float(string='Doanh thu thuốc', readonly=True)
-    insurance_amount = fields.Float(string='Bảo hiểm chi trả', readonly=True)
-    patient_amount = fields.Float(string='Bệnh nhân chi trả', readonly=True)
+    paid_invoices = fields.Integer(string='Hóa đơn đã thanh toán', readonly=True)
+    cancelled_invoices = fields.Integer(string='Hóa đơn đã hủy', readonly=True)
 
-    # Patient statistics
-    patient_count = fields.Integer(string='Số lượng bệnh nhân', readonly=True)
-    new_patient_count = fields.Integer(string='Bệnh nhân mới', readonly=True)
+    # Thống kê dịch vụ
+    most_used_service_id = fields.Many2one('clinic.service', string='Dịch vụ được sử dụng nhiều nhất', readonly=True)
+    most_used_service_count = fields.Integer(string='Số lượt sử dụng', readonly=True)
 
-    # Additional fields for the view
-    revenue_chart = fields.Text(string='Biểu đồ doanh thu', readonly=True)
-    top_services = fields.Text(string='Top dịch vụ', readonly=True)
-    top_products = fields.Text(string='Top thuốc', readonly=True)
-    patient_insurance_count = fields.Integer(string='Số BN có bảo hiểm', readonly=True)
-    patient_without_insurance_count = fields.Integer(string='Số BN không có bảo hiểm', readonly=True)
-    total_purchases = fields.Integer(string='Tổng số đơn nhập', readonly=True)
-    purchase_amount = fields.Float(string='Giá trị nhập hàng', readonly=True)
-    total_quantity = fields.Integer(string='Tổng số lượng', readonly=True)
-    insurance_percentage = fields.Float(string='Tỷ lệ bảo hiểm', readonly=True)
+    # Thống kê thuốc
+    most_sold_product_id = fields.Many2one('pharmacy.product', string='Thuốc bán chạy nhất', readonly=True)
+    most_sold_product_count = fields.Integer(string='Số lượng bán', readonly=True)
 
-    # Add method to calculate statistics on button click
-    def action_calculate_statistics(self):
-        for record in self:
-            # Get invoice statistics
-            invoice_stats = self.get_invoice_statistics(record.date_from, record.date_to)
-            record.total_invoices = invoice_stats['total_invoices']
-            record.total_amount = invoice_stats['total_amount']
-            record.service_amount = invoice_stats['service_amount']
-            record.medicine_amount = invoice_stats['medicine_amount']
-            record.insurance_amount = invoice_stats['insurance_amount']
-            record.patient_amount = invoice_stats['patient_amount']
+    # Dữ liệu biểu đồ
+    chart_data = fields.Text(string='Dữ liệu biểu đồ', readonly=True)
 
-            # Get insurance statistics
-            insurance_stats = self.get_insurance_statistics(record.date_from, record.date_to)
-            record.insurance_percentage = insurance_stats['insurance_percentage']
-
-            # Get purchase statistics
-            purchase_stats = self.get_purchase_statistics(record.date_from, record.date_to)
-            record.total_purchases = purchase_stats['total_purchases']
-            record.purchase_amount = purchase_stats['total_amount']
-            record.total_quantity = purchase_stats['total_quantity']
-
-            # Count patients with/without insurance
-            patient_with_ins, patient_without_ins = self._count_patients_by_insurance(
-                record.date_from, record.date_to)
-            record.patient_insurance_count = patient_with_ins
-            record.patient_without_insurance_count = patient_without_ins
-
-            # Get top services and products (serialize to text)
-            top_services = self.get_service_statistics(record.date_from, record.date_to)
-            record.top_services = str(top_services)  # Simple serialization
-
-            top_products = self.get_product_statistics(record.date_from, record.date_to)
-            record.top_products = str(top_products)  # Simple serialization
-
-            # Generate revenue chart data
-            # You'll need to implement this based on your charting requirements
-
-        return True
-
-    def _count_patients_by_insurance(self, start_date, end_date):
-        """Count patients with and without insurance"""
-        domain = [
-            ('invoice_date', '>=', start_date),
-            ('invoice_date', '<=', end_date),
-            ('state', '=', 'paid')
-        ]
-
-        invoices = self.env['clinic.invoice'].search(domain)
-
-        # Get unique patients
-        patients_with_insurance = set()
-        patients_without_insurance = set()
-
-        for invoice in invoices:
-            patient_id = invoice.patient_id.id
-            if invoice.insurance_amount > 0:
-                patients_with_insurance.add(patient_id)
-            else:
-                patients_without_insurance.add(patient_id)
-
-        return len(patients_with_insurance), len(patients_without_insurance)
+    # Thống kê theo ngày
+    daily_stats_ids = fields.One2many('clinic.statistics.daily', 'statistics_id', string='Thống kê theo ngày')
 
     @api.model
-    def get_invoice_statistics(self, start_date=None, end_date=None):
-        """Lấy thống kê hóa đơn trong khoảng thời gian"""
-        if not start_date:
-            start_date = fields.Date.today() - timedelta(days=30)
-        if not end_date:
-            end_date = fields.Date.today()
+    def create_statistics(self, date_from, date_to):
+        """Tạo thống kê từ dữ liệu hóa đơn trong khoảng thời gian"""
+        # Tính toán thống kê
+        name = f'Thống kê từ {date_from} đến {date_to}'
 
+        # Tìm tất cả hóa đơn trong khoảng thời gian
         domain = [
-            ('invoice_date', '>=', start_date),
-            ('invoice_date', '<=', end_date),
-            ('state', '=', 'paid')
+            ('invoice_date', '>=', date_from),
+            ('invoice_date', '<=', date_to)
         ]
-
         invoices = self.env['clinic.invoice'].search(domain)
-        return {
-            'total_invoices': len(invoices),
-            'total_amount': sum(invoices.mapped('amount_total')),
-            'service_amount': sum(invoices.mapped('service_amount')),
-            'medicine_amount': sum(invoices.mapped('medicine_amount')),
-            'insurance_amount': sum(invoices.mapped('insurance_amount')),
-            'patient_amount': sum(invoices.mapped('patient_amount'))
-        }
 
-    @api.model
-    def get_monthly_statistics(self, year=None):
-        """Lấy thống kê theo tháng trong năm"""
-        if not year:
-            year = fields.Date.today().year
+        # Tính tổng doanh thu
+        total_revenue = 0
+        service_revenue = 0
+        medicine_revenue = 0
+        insurance_revenue = 0
+        patient_revenue = 0
 
-        result = []
-        for month in range(1, 13):
-            # Tính ngày đầu và cuối tháng
-            start_date = fields.Date.to_string(datetime(year, month, 1))
-            last_day = calendar.monthrange(year, month)[1]
-            end_date = fields.Date.to_string(datetime(year, month, last_day))
+        # Đếm số lượng hóa đơn
+        total_invoices = len(invoices)
+        paid_invoices = len(invoices.filtered(lambda x: x.state == 'paid'))
+        cancelled_invoices = len(invoices.filtered(lambda x: x.state == 'cancelled'))
 
-            # Lấy hóa đơn trong tháng
-            domain = [
-                ('invoice_date', '>=', start_date),
-                ('invoice_date', '<=', end_date),
-                ('state', '=', 'paid')
-            ]
-            invoices = self.env['clinic.invoice'].search(domain)
+        # Tính tổng doanh thu (chỉ từ hóa đơn đã thanh toán)
+        paid_invoices_records = invoices.filtered(lambda x: x.state == 'paid')
+        for invoice in paid_invoices_records:
+            total_revenue += invoice.amount_total
+            service_revenue += invoice.service_amount
+            medicine_revenue += invoice.medicine_amount
+            insurance_revenue += invoice.insurance_amount
+            patient_revenue += invoice.patient_amount
 
-            month_name = calendar.month_name[month]
-            result.append({
-                'month': month_name,
-                'total_invoices': len(invoices),
-                'total_amount': sum(invoices.mapped('amount_total')),
-                'service_amount': sum(invoices.mapped('service_amount')),
-                'medicine_amount': sum(invoices.mapped('medicine_amount'))
+        # Tìm dịch vụ được sử dụng nhiều nhất
+        service_counts = {}
+        for invoice in paid_invoices_records:
+            for line in invoice.service_lines:
+                service_id = line.service_id.id
+                if service_id not in service_counts:
+                    service_counts[service_id] = 0
+                service_counts[service_id] += line.quantity
+
+        most_used_service_id = False
+        most_used_service_count = 0
+        if service_counts:
+            most_used_service_id = max(service_counts, key=service_counts.get)
+            most_used_service_count = service_counts[most_used_service_id]
+
+        # Tìm thuốc bán chạy nhất
+        product_counts = {}
+        for invoice in paid_invoices_records:
+            for line in invoice.product_lines:
+                product_id = line.product_id.id
+                if product_id not in product_counts:
+                    product_counts[product_id] = 0
+                product_counts[product_id] += line.quantity
+
+        most_sold_product_id = False
+        most_sold_product_count = 0
+        if product_counts:
+            most_sold_product_id = max(product_counts, key=product_counts.get)
+            most_sold_product_count = product_counts[most_sold_product_id]
+
+        # Tạo dữ liệu biểu đồ theo ngày
+        daily_stats = []
+        delta = timedelta(days=1)
+        current_date = datetime.strptime(date_from, '%Y-%m-%d').date()
+        end_date = datetime.strptime(date_to, '%Y-%m-%d').date()
+
+        while current_date <= end_date:
+            daily_invoices = invoices.filtered(lambda x: x.invoice_date == current_date and x.state == 'paid')
+
+            daily_total = sum(inv.amount_total for inv in daily_invoices)
+            daily_service = sum(inv.service_amount for inv in daily_invoices)
+            daily_medicine = sum(inv.medicine_amount for inv in daily_invoices)
+
+            daily_stats.append({
+                'date': current_date.strftime('%Y-%m-%d'),
+                'total': daily_total,
+                'service': daily_service,
+                'medicine': daily_medicine,
+                'count': len(daily_invoices)
             })
 
-        return result
+            current_date += delta
 
-    @api.model
-    def get_service_statistics(self, start_date=None, end_date=None):
-        """Lấy thống kê dịch vụ được sử dụng nhiều nhất"""
-        if not start_date:
-            start_date = fields.Date.today() - timedelta(days=30)
-        if not end_date:
-            end_date = fields.Date.today()
-
-        # Lấy tất cả các dòng dịch vụ từ hóa đơn đã thanh toán
-        domain = [
-            ('invoice_id.invoice_date', '>=', start_date),
-            ('invoice_id.invoice_date', '<=', end_date),
-            ('invoice_id.state', '=', 'paid'),
-            ('service_id', '!=', False)
-        ]
-
-        service_lines = self.env['clinic.invoice.line'].search(domain)
-
-        # Thống kê theo dịch vụ
-        services_data = {}
-        for line in service_lines:
-            service_id = line.service_id.id
-            if service_id not in services_data:
-                services_data[service_id] = {
-                    'name': line.service_id.name,
-                    'count': 0,
-                    'total_amount': 0
+        # Tạo dữ liệu biểu đồ
+        chart_data = {
+            'labels': [stat['date'] for stat in daily_stats],
+            'datasets': [
+                {
+                    'label': 'Tổng doanh thu',
+                    'data': [stat['total'] for stat in daily_stats],
+                    'backgroundColor': 'rgba(75, 192, 192, 0.2)',
+                    'borderColor': 'rgba(75, 192, 192, 1)',
+                },
+                {
+                    'label': 'Doanh thu dịch vụ',
+                    'data': [stat['service'] for stat in daily_stats],
+                    'backgroundColor': 'rgba(54, 162, 235, 0.2)',
+                    'borderColor': 'rgba(54, 162, 235, 1)',
+                },
+                {
+                    'label': 'Doanh thu thuốc',
+                    'data': [stat['medicine'] for stat in daily_stats],
+                    'backgroundColor': 'rgba(255, 206, 86, 0.2)',
+                    'borderColor': 'rgba(255, 206, 86, 1)',
                 }
-            services_data[service_id]['count'] += line.quantity
-            services_data[service_id]['total_amount'] += line.price_subtotal
-
-        # Sắp xếp theo số lượng sử dụng
-        result = sorted(services_data.values(), key=lambda x: x['count'], reverse=True)
-        return result[:10]  # Top 10 dịch vụ
-
-    @api.model
-    def get_product_statistics(self, start_date=None, end_date=None):
-        """Lấy thống kê thuốc được sử dụng nhiều nhất"""
-        if not start_date:
-            start_date = fields.Date.today() - timedelta(days=30)
-        if not end_date:
-            end_date = fields.Date.today()
-
-        # Lấy tất cả các dòng thuốc từ hóa đơn đã thanh toán
-        domain = [
-            ('invoice_id.invoice_date', '>=', start_date),
-            ('invoice_id.invoice_date', '<=', end_date),
-            ('invoice_id.state', '=', 'paid'),
-            ('product_id', '!=', False)
-        ]
-
-        product_lines = self.env['clinic.invoice.line'].search(domain)
-
-        # Thống kê theo thuốc
-        products_data = {}
-        for line in product_lines:
-            product_id = line.product_id.id
-            if product_id not in products_data:
-                products_data[product_id] = {
-                    'name': line.product_id.name,
-                    'count': 0,
-                    'total_amount': 0
-                }
-            products_data[product_id]['count'] += line.quantity
-            products_data[product_id]['total_amount'] += line.price_subtotal
-
-        # Sắp xếp theo số lượng sử dụng
-        result = sorted(products_data.values(), key=lambda x: x['count'], reverse=True)
-        return result[:10]  # Top 10 thuốc
-
-    @api.model
-    def get_insurance_statistics(self, start_date=None, end_date=None):
-        """Lấy thống kê về bảo hiểm"""
-        if not start_date:
-            start_date = fields.Date.today() - timedelta(days=30)
-        if not end_date:
-            end_date = fields.Date.today()
-
-        domain = [
-            ('invoice_date', '>=', start_date),
-            ('invoice_date', '<=', end_date),
-            ('state', '=', 'paid')
-        ]
-
-        invoices = self.env['clinic.invoice'].search(domain)
-
-        total_amount = sum(invoices.mapped('amount_total'))
-        insurance_amount = sum(invoices.mapped('insurance_amount'))
-
-        # Tính tỷ lệ bảo hiểm chi trả
-        insurance_percentage = 0
-        if total_amount > 0:
-            insurance_percentage = (insurance_amount / total_amount) * 100
-
-        return {
-            'total_amount': total_amount,
-            'insurance_amount': insurance_amount,
-            'insurance_percentage': round(insurance_percentage, 2)
+            ]
         }
 
-    @api.model
-    def get_purchase_statistics(self, start_date=None, end_date=None):
-        """Lấy thống kê về nhập hàng"""
-        if not start_date:
-            start_date = fields.Date.today() - timedelta(days=30)
-        if not end_date:
-            end_date = fields.Date.today()
+        # Tạo bản ghi thống kê
+        vals = {
+            'name': name,
+            'date_from': date_from,
+            'date_to': date_to,
+            'total_revenue': total_revenue,
+            'service_revenue': service_revenue,
+            'medicine_revenue': medicine_revenue,
+            'insurance_revenue': insurance_revenue,
+            'patient_revenue': patient_revenue,
+            'total_invoices': total_invoices,
+            'paid_invoices': paid_invoices,
+            'cancelled_invoices': cancelled_invoices,
+            'most_used_service_id': most_used_service_id,
+            'most_used_service_count': most_used_service_count,
+            'most_sold_product_id': most_sold_product_id,
+            'most_sold_product_count': most_sold_product_count,
+            'chart_data': str(chart_data),
+            'daily_stats_ids': [(0, 0, {
+                'date': stat['date'],
+                'total_revenue': stat['total'],
+                'service_revenue': stat['service'],
+                'medicine_revenue': stat['medicine'],
+                'invoice_count': stat['count']
+            }) for stat in daily_stats]
+        }
 
-        domain = [
-            ('date', '>=', start_date),
-            ('date', '<=', end_date),
-            ('state', '=', 'paid')
-        ]
+        return self.create(vals)
 
-        purchases = self.env['clinic.purchase.order'].search(domain)
+    def generate_monthly_report(self):
+        """Tạo báo cáo thống kê theo tháng"""
+        # Lấy tháng hiện tại
+        today = fields.Date.today()
+        first_day = today.replace(day=1)
+        last_day = today.replace(day=calendar.monthrange(today.year, today.month)[1])
 
+        # Tạo thống kê
+        return self.create_statistics(first_day.strftime('%Y-%m-%d'), last_day.strftime('%Y-%m-%d'))
+
+
+class ClinicStatisticsDaily(models.Model):
+    _name = 'clinic.statistics.daily'
+    _description = 'Thống kê theo ngày'
+
+    statistics_id = fields.Many2one('clinic.statistics', string='Thống kê', ondelete='cascade')
+    date = fields.Date(string='Ngày', required=True)
+    total_revenue = fields.Float(string='Tổng doanh thu')
+    service_revenue = fields.Float(string='Doanh thu dịch vụ')
+    medicine_revenue = fields.Float(string='Doanh thu thuốc')
+    invoice_count = fields.Integer(string='Số hóa đơn')
+
+
+class ClinicStatisticsWizard(models.TransientModel):
+    _name = 'clinic.statistics.wizard'
+    _description = 'Wizard tạo thống kê'
+
+    date_from = fields.Date(string='Từ ngày', required=True, default=lambda self: fields.Date.today().replace(day=1))
+    date_to = fields.Date(string='Đến ngày', required=True, default=lambda self: fields.Date.today())
+
+    def action_generate_statistics(self):
+        """Tạo thống kê từ wizard"""
+        self.ensure_one()
+
+        # Kiểm tra ngày hợp lệ
+        if self.date_from > self.date_to:
+            raise models.ValidationError('Ngày bắt đầu phải nhỏ hơn ngày kết thúc')
+
+        # Tạo thống kê
+        statistics = self.env['clinic.statistics'].create_statistics(
+            self.date_from.strftime('%Y-%m-%d'),
+            self.date_to.strftime('%Y-%m-%d')
+        )
+
+        # Mở form xem thống kê
         return {
-            'total_purchases': len(purchases),
-            'total_amount': sum(purchases.mapped('amount_total')),
-            'total_quantity': sum(purchase.line_ids.mapped('quantity') for purchase in purchases)
+            'name': 'Thống kê phòng khám',
+            'type': 'ir.actions.act_window',
+            'res_model': 'clinic.statistics',
+            'res_id': statistics.id,
+            'view_mode': 'form',
+            'target': 'current',
         }

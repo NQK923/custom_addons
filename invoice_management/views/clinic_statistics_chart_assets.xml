@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_backend" name="clinic_statistics_assets_backend" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"/>
+            <script type="text/javascript" src="/invoice_management/static/src/js/clinic_statistics_chart.js"/>
+        </xpath>
+    </template>
+</odoo>
