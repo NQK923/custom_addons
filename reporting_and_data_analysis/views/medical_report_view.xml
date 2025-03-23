@@ -7,9 +7,9 @@
         <field name="arch" type="xml">
             <form string="Báo cáo y tế">
                 <header>
-                    <button name="generate_report" string="Tạo báo cáo" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="generate_report" string="Cập nhật báo cáo" type="object" attrs="{'invisible': [('state', '=', 'draft')]}"/>
-                    <button string="Xác nhận báo cáo" type="object" name="action_approve" states="generated" class="oe_highlight"/>
+                    <button name="generate_report" string="Tạo báo cáo" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="generate_report" string="Cập nhật báo cáo" type="object" invisible="state == 'draft'"/>
+                    <button string="Xác nhận báo cáo" type="object" name="action_approve" invisible="state != 'generated'" class="oe_highlight"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,generated,approved"/>
                 </header>
                 <sheet>
@@ -32,15 +32,11 @@
                         <page string="Nội dung báo cáo">
                             <field name="report_data" widget="html"/>
                         </page>
-                        <page string="Biểu đồ" attrs="{'invisible': [('chart_image', '=', False)]}">
+                        <page string="Biểu đồ" invisible="not chart_image">
                             <field name="chart_image" widget="image"/>
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"/>
-                    <field name="message_ids" widget="mail_thread"/>
-                </div>
             </form>
         </field>
     </record>
@@ -133,6 +129,7 @@
     </record>
 
     <!-- Menu -->
+    <menuitem id="menu_hospital_root" name="Hospital" sequence="10"/>
     <menuitem id="menu_hospital_reports" name="Báo cáo" parent="menu_hospital_root" sequence="40"/>
     <menuitem id="menu_hospital_medical_reports" name="Báo cáo y tế" parent="menu_hospital_reports" action="action_hospital_medical_report" sequence="10"/>
     <menuitem id="menu_hospital_medical_report_wizard" name="Tạo báo cáo mới" parent="menu_hospital_reports" action="action_hospital_medical_report_wizard" sequence="5"/>

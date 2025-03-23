@@ -13,10 +13,10 @@
     'category': 'Healthcare',
     'author': 'Your Name',
     'website': 'https://www.yourwebsite.com',
-    'depends': ['base', 'mail'],
+    'depends': ['base', 'mail','appointment_management','healthcare_management','staff_management'],
     'data': [
         'security/ir.model.access.csv',
-        'views/medical_report_views.xml',
+        'views/medical_report_view.xml',
     ],
     'demo': [],
     'installable': True,
