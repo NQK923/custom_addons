@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Form View cho Báo cáo y tế -->
+    <!-- Form View cho Báo cáo y tế với menu biểu đồ -->
     <record id="view_hospital_medical_report_form" model="ir.ui.view">
         <field name="name">hospital.medical.report.form</field>
         <field name="model">hospital.medical.report</field>
@@ -28,14 +28,57 @@
                             <field name="staff_id"/>
                         </group>
                     </group>
-                    <notebook>
-                        <page string="Nội dung báo cáo">
-                            <field name="report_data" widget="html"/>
-                        </page>
-                        <page string="Biểu đồ" invisible="not chart_image">
-                            <field name="chart_image" widget="image"/>
-                        </page>
-                    </notebook>
+
+                    <!-- Menu navigation for biểu đồ -->
+                    <div class="o_notebook" invisible="state == 'draft'">
+                        <div class="o_notebook_headers">
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item"><a data-toggle="tab" href="#report_content" class="nav-link active">Nội dung báo cáo</a></li>
+                                <li class="nav-item" invisible="chart_image == False"><a data-toggle="tab" href="#main_chart" class="nav-link">Biểu đồ chính</a></li>
+                                <li class="nav-item" invisible="additional_chart1 == False"><a data-toggle="tab" href="#chart1" class="nav-link">Biểu đồ bổ sung 1</a></li>
+                                <li class="nav-item" invisible="additional_chart2 == False"><a data-toggle="tab" href="#chart2" class="nav-link">Biểu đồ bổ sung 2</a></li>
+                            </ul>
+                        </div>
+                        <div class="tab-content">
+                            <div id="report_content" class="tab-pane active">
+                                <field name="report_data" widget="text"/>
+                            </div>
+                            <div id="main_chart" class="tab-pane" invisible="chart_image == False">
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        <h3>Biểu đồ chính</h3>
+                                        <field name="chart_image" widget="image" options="{'size': [800, 600]}" filename="chart_filename"/>
+                                        <field name="chart_filename" invisible="1"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="chart1" class="tab-pane" invisible="additional_chart1 == False">
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        <h3>Biểu đồ bổ sung 1</h3>
+                                        <field name="additional_chart1" widget="image" options="{'size': [800, 600]}" filename="additional_chart1_filename"/>
+                                        <field name="additional_chart1_filename" invisible="1"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="chart2" class="tab-pane" invisible="additional_chart2 == False">
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        <h3>Biểu đồ bổ sung 2</h3>
+                                        <field name="additional_chart2" widget="image" options="{'size': [800, 600]}" filename="additional_chart2_filename"/>
+                                        <field name="additional_chart2_filename" invisible="1"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Only show this for draft state -->
+                    <group invisible="state != 'draft'">
+                        <div class="alert alert-info" role="alert">
+                            Vui lòng nhấn "Tạo báo cáo" để xem nội dung và biểu đồ.
+                        </div>
+                    </group>
                 </sheet>
             </form>
         </field>

@@ -7,10 +7,10 @@ class AppointmentReminder(models.Model):
     _description = 'Quản lý thông báo lịch hẹn'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    note = fields.Many2one('clinic.appointment', string='Lịch hẹn', required=True, ondelete='cascade')
-    name = fields.Char(string='Tên', related='note.name', store=True)
-    patient_name = fields.Many2one(related='note.patient_name', string='Bệnh nhân', store=True)
-    appointment_date = fields.Datetime(related='note.appointment_date', string='Ngày giờ hẹn', store=True)
+    appointment_id = fields.Many2one('clinic.appointment', string='Lịch hẹn', required=True, ondelete='cascade')
+    name = fields.Char(string='Tên', related='appointment_id.name', store=True)
+    patient_id = fields.Many2one(related='appointment_id.patient_id', string='Bệnh nhân', store=True)
+    appointment_date = fields.Datetime(related='appointment_id.appointment_date', string='Ngày giờ hẹn', store=True)
     notification_date = fields.Datetime(string='Ngày gửi thông báo', compute='_compute_notification_date', store=True)
     state = fields.Selection([
         ('to_send', 'Chờ gửi'),
@@ -32,10 +32,10 @@ class AppointmentReminder(models.Model):
     def create_from_appointment(self, appointment):
         """Tạo bản ghi reminder cho lịch hẹn mới"""
         if appointment.state == 'draft':
-            existing = self.search([('note', '=', appointment.id)], limit=1)
+            existing = self.search([('appointment_id', '=', appointment.id)], limit=1)
             if not existing:
                 self.create({
-                    'note': appointment.id,
+                    'appointment_id': appointment.id,
                 })
 
     @api.model
@@ -53,10 +53,10 @@ class AppointmentReminder(models.Model):
 
         # Tạo reminder cho các lịch hẹn chưa có
         for appointment in appointments:
-            existing = self.search([('note', '=', appointment.id)], limit=1)
+            existing = self.search([('appointment_id', '=', appointment.id)], limit=1)
             if not existing:
                 self.create({
-                    'note': appointment.id,
+                    'appointment_id': appointment.id,
                 })
 
         # Gửi thông báo cho các reminder đến hạn
@@ -64,7 +64,7 @@ class AppointmentReminder(models.Model):
             ('state', '=', 'to_send'),
             ('notification_date', '>=', today),
             ('notification_date', '<=', tomorrow),
-            ('note.state', '=', 'draft')
+            ('appointment_id.state', '=', 'draft')
         ])
 
         for reminder in reminders:
@@ -78,8 +78,8 @@ class AppointmentReminder(models.Model):
             reminder.write({'state': 'sent', 'email_status': 'Email đã được gửi thành công'})
 
             # Cập nhật trạng thái lịch hẹn (nếu cần)
-            if hasattr(reminder.note, 'action_confirm'):
-                reminder.note.action_confirm()
+            if hasattr(reminder.appointment_id, 'action_confirm'):
+                reminder.appointment_id.action_confirm()
 
             return True
         except Exception as e:
@@ -104,10 +104,10 @@ class AppointmentReminder(models.Model):
 
         created_count = 0
         for appointment in appointments:
-            existing = self.search([('note', '=', appointment.id)], limit=1)
+            existing = self.search([('appointment_id', '=', appointment.id)], limit=1)
             if not existing:
                 self.create({
-                    'note': appointment.id,
+                    'appointment_id': appointment.id,
                 })
                 created_count += 1
 

@@ -71,7 +71,7 @@
                         <page string="Thống kê theo phòng ban">
                             <field name="department_feedback_ids">
                                 <list>
-                                    <field name="department_name"/>
+                                    <field name="department_id"/>
                                     <field name="total_feedback"/>
                                     <field name="compliments"/>
                                     <field name="complaints"/>

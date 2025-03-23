@@ -23,8 +23,8 @@
                     </div>
                     <group>
                         <group>
-                            <field name="note"/>
-                            <field name="patient_name"/>
+                            <field name="appointment_id"/>
+                            <field name="patient_id"/>
                         </group>
                         <group>
                             <field name="appointment_date"/>
@@ -49,7 +49,7 @@
             <list string="Thông báo lịch hẹn" decoration-muted="state == 'cancelled'"
                   decoration-success="state == 'sent'" decoration-danger="state == 'failed'">
                 <field name="name"/>
-                <field name="patient_name"/>
+                <field name="patient_id"/>
                 <field name="appointment_date"/>
                 <field name="notification_date"/>
                 <field name="state"/>
@@ -64,7 +64,7 @@
         <field name="arch" type="xml">
             <search string="Tìm kiếm thông báo lịch hẹn">
                 <field name="name"/>
-                <field name="patient_name"/>
+                <field name="patient_id"/>
                 <separator/>
                 <filter name="to_send" string="Chờ gửi" domain="[('state', '=', 'to_send')]"/>
                 <filter name="sent" string="Đã gửi" domain="[('state', '=', 'sent')]"/>
