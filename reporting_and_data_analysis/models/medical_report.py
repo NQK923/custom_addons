@@ -50,6 +50,11 @@ class MedicalReport(models.Model):
         self.state = 'generated'
         return True
 
+    def action_approve(self):
+        self.ensure_one()
+        self.state = 'approved'
+        return True
+
     def _generate_patient_report(self):
         # Lấy dữ liệu từ các model liên quan
         Patient = self.env['clinic.patient']
