@@ -15,7 +15,7 @@
     'category': 'Healthcare',
     'author': 'Your Company',
     'website': 'https://www.yourcompany.com',
-    'depends': ['base', 'mail'],
+    'depends': ['base', 'mail', 'staff_management'],
     'data': [
         'security/certification_security.xml',
         'security/ir.model.access.csv',
