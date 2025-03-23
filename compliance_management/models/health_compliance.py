@@ -44,7 +44,7 @@ class HealthCompliance(models.Model):
 
     name = fields.Char('Tên đánh giá', required=True, tracking=True)
     regulation_id = fields.Many2one('health.regulation', string='Quy định', required=True, tracking=True)
-    department_id = fields.Many2one('hr.department', string='Phòng ban', tracking=True)
+    department_id = fields.Many2one('clinic.department', string='Phòng ban', tracking=True)
     date_assessment = fields.Date('Ngày đánh giá', default=fields.Date.today, tracking=True)
     next_assessment = fields.Date('Đánh giá tiếp theo', tracking=True)
     state = fields.Selection([

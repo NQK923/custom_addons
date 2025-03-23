@@ -35,7 +35,7 @@ class MedicalInspection(models.Model):
     corrective_deadline = fields.Date(string='Hạn khắc phục')
     corrective_completed = fields.Boolean(string='Đã hoàn thành khắc phục', default=False)
 
-    responsible_id = fields.Many2one('res.users', string='Người phụ trách',
+    staff_id = fields.Many2one('clinic.staff', string='Người phụ trách',
                                      default=lambda self: self.env.user, tracking=True)
     state = fields.Selection([
         ('planned', 'Lên kế hoạch'),

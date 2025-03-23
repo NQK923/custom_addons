@@ -33,7 +33,7 @@
                             <field name="number"/>
                             <field name="certification_type"/>
                             <field name="authority"/>
-                            <field name="responsible_id"/>
+                            <field name="staff_id"/>
                             <field name="department_id"/>
                         </group>
                         <group>
@@ -103,7 +103,7 @@
                 <field name="name"/>
                 <field name="number"/>
                 <field name="authority"/>
-                <field name="responsible_id"/>
+                <field name="staff_id"/>
                 <filter string="Sắp hết hạn" name="expiring" domain="[('state', '=', 'expiring')]"/>
                 <filter string="Hết hạn" name="expired" domain="[('state', '=', 'expired')]"/>
                 <filter string="Có hiệu lực" name="valid" domain="[('state', '=', 'valid')]"/>
