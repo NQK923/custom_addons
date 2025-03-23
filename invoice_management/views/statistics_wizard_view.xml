@@ -1,43 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Form View for Statistics Wizard -->
+    <!-- Form view cho wizard tạo thống kê -->
     <record id="view_clinic_statistics_wizard_form" model="ir.ui.view">
         <field name="name">clinic.statistics.wizard.form</field>
         <field name="model">clinic.statistics.wizard</field>
         <field name="arch" type="xml">
-            <form string="Tạo báo cáo thống kê">
-                <sheet>
-                    <group>
-                        <group>
-                            <field name="date_from"/>
-                            <field name="date_to"/>
-                        </group>
-                        <group>
-                            <field name="report_type"/>
-                        </group>
-                    </group>
-                </sheet>
+            <form string="Tạo thống kê phòng khám">
+                <group>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                </group>
                 <footer>
-                    <button name="action_generate_report" string="Tạo báo cáo" type="object" class="btn-primary"/>
+                    <button name="action_generate_statistics" string="Tạo báo cáo" type="object" class="btn-primary"/>
                     <button string="Hủy" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
         </field>
     </record>
 
-    <!-- Action for Statistics Wizard -->
+    <!-- Action cho wizard tạo thống kê -->
     <record id="action_clinic_statistics_wizard" model="ir.actions.act_window">
-        <field name="name">Tạo báo cáo thống kê</field>
-        <field name="type">ir.actions.act_window</field>
+        <field name="name">Tạo thống kê</field>
         <field name="res_model">clinic.statistics.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
 
-    <!-- Menu for Statistics Wizard -->
+    <!-- Menu cho wizard tạo thống kê -->
     <menuitem id="menu_clinic_statistics_wizard"
-              name="Tạo báo cáo thống kê"
-              parent="menu_invoice_root"
+              name="Tạo thống kê mới"
+              parent="menu_clinic_statistics"
               action="action_clinic_statistics_wizard"
-              sequence="6"/>
+              sequence="5"/>
 </odoo>
