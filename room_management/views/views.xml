@@ -20,9 +20,11 @@
                     <notebook>
                         <page string="Danh sách giường bệnh">
                             <field name="bed_ids">
-                                <list>
+                                <list editble="bottom">
                                     <field name="name"/>
                                     <field name="status"/>
+                                    <field name="patient_id" string="Mã bệnh nhân"/>
+                                    <field name="patient_name" string="Tên bệnh nhân"/>
                                 </list>
                             </field>
                         </page>
@@ -59,7 +61,8 @@
                         <field name="name"/>
                         <field name="room_id"/>
                         <field name="status"/>
-                        <!-- <field name="patient_id"/> -->
+                        <field name="patient_id" string="Mã bệnh nhân"/>
+                        <field name="patient_name" string="Tên bệnh nhân"/>
                     </group>
                 </sheet>
             </form>
@@ -72,6 +75,7 @@
         <field name="arch" type="xml">
             <list string="Giường bệnh">
                 <field name="name"/>
+                <field name="patient_id"/>
                 <field name="room_id"/>
                 <field name="status"/>
             </list>
@@ -92,15 +96,15 @@
     </record>
 
     <!-- Menu Items -->
-    <menuitem id="menu_clinic_room" 
-              name="Phòng khám" 
-              parent="menu_clinic_room_management" 
+    <menuitem id="menu_clinic_room"
+              name="Phòng khám"
+              parent="menu_clinic_room_management"
               action="action_clinic_room"
               sequence="1"/>
 
-    <menuitem id="menu_clinic_bed" 
-              name="Giường bệnh" 
-              parent="menu_clinic_room_management" 
+    <menuitem id="menu_clinic_bed"
+              name="Giường bệnh"
+              parent="menu_clinic_room_management"
               action="action_clinic_bed"
               sequence="2"/>
 </odoo> 

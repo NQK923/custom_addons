@@ -4,7 +4,7 @@
     'category': 'Healthcare',
     'summary': 'Manage pharmacy inventory and stock operations',
     'description': 'A module to manage pharmacy inventory, stock in/out, and ensure sufficient medicine supply for patients.',
-    'depends': ['base'],
+    'depends': ['base', "patient_management"],
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',  # Chỉ load file này

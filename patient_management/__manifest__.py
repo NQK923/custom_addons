@@ -10,10 +10,11 @@
     'category': 'Healthcare',
     'version': '0.1',
     'license': 'LGPL-3',
-    'depends': ['base'],  # Thêm insurance_management vào depends
+    'depends': ['base', "contacts"],  # Thêm insurance_management vào depends
     'data': [
         'security/ir.model.access.csv',
-        'views/views.xml',
+        'views/clinic_patient_views.xml',
+        'views/res_partner_views.xml',
     ],
     'installable': True,
     'application': True,
