@@ -1,6 +1,7 @@
 from odoo import models, fields, api
 from datetime import datetime, timedelta
 import calendar
+import json
 
 
 class ClinicStatistics(models.Model):
@@ -124,31 +125,6 @@ class ClinicStatistics(models.Model):
 
             current_date += delta
 
-        # Tạo dữ liệu biểu đồ
-        chart_data = {
-            'labels': [stat['date'] for stat in daily_stats],
-            'datasets': [
-                {
-                    'label': 'Tổng doanh thu',
-                    'data': [stat['total'] for stat in daily_stats],
-                    'backgroundColor': 'rgba(75, 192, 192, 0.2)',
-                    'borderColor': 'rgba(75, 192, 192, 1)',
-                },
-                {
-                    'label': 'Doanh thu dịch vụ',
-                    'data': [stat['service'] for stat in daily_stats],
-                    'backgroundColor': 'rgba(54, 162, 235, 0.2)',
-                    'borderColor': 'rgba(54, 162, 235, 1)',
-                },
-                {
-                    'label': 'Doanh thu thuốc',
-                    'data': [stat['medicine'] for stat in daily_stats],
-                    'backgroundColor': 'rgba(255, 206, 86, 0.2)',
-                    'borderColor': 'rgba(255, 206, 86, 1)',
-                }
-            ]
-        }
-
         # Tạo bản ghi thống kê
         vals = {
             'name': name,
@@ -166,7 +142,6 @@ class ClinicStatistics(models.Model):
             'most_used_service_count': most_used_service_count,
             'most_sold_product_id': most_sold_product_id,
             'most_sold_product_count': most_sold_product_count,
-            'chart_data': str(chart_data),
             'daily_stats_ids': [(0, 0, {
                 'date': stat['date'],
                 'total_revenue': stat['total'],
@@ -187,6 +162,18 @@ class ClinicStatistics(models.Model):
 
         # Tạo thống kê
         return self.create_statistics(first_day.strftime('%Y-%m-%d'), last_day.strftime('%Y-%m-%d'))
+
+    def action_view_form(self):
+        """Return action to view the statistics form"""
+        self.ensure_one()
+        return {
+            'name': self.name,
+            'type': 'ir.actions.act_window',
+            'res_model': 'clinic.statistics',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
 
 
 class ClinicStatisticsDaily(models.Model):
