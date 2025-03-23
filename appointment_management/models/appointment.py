@@ -8,10 +8,10 @@ class ClinicAppointment(models.Model):
     _rec_name = 'name'
 
     name = fields.Char(string='Mã lịch hẹn', required=True, copy=False, readonly=True, default='New')
-    patient_name = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True)
+    patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True)
     appointment_date = fields.Datetime(string='Ngày giờ hẹn', required=True)
-    staff_name = fields.Many2one('clinic.staff', string='Bác sĩ', required=True)
-    room_type = fields.Many2one('clinic.room', string='Phòng khám')
+    staff_id = fields.Many2one('clinic.staff', string='Bác sĩ', required=True)
+    room_id = fields.Many2one('clinic.room', string='Phòng khám')
     state = fields.Selection([
         ('draft', 'Nháp'),
         ('confirmed', 'Đã xác nhận'),
@@ -45,28 +45,28 @@ class ClinicAppointment(models.Model):
             if record.appointment_date and record.appointment_date < fields.Datetime.now():
                 raise ValidationError("Không thể đặt lịch hẹn trong quá khứ!")
 
-    @api.constrains('staff_name', 'appointment_date')
+    @api.constrains('staff_id', 'appointment_date')
     def _check_doctor_availability(self):
         for record in self:
             # Kiểm tra xem bác sĩ có lịch hẹn khác trong cùng thời điểm không
             domain = [
-                ('staff_name', '=', record.staff_name.id),
+                ('staff_id', '=', record.staff_id.id),
                 ('appointment_date', '=', record.appointment_date),
                 ('state', 'not in', ['cancelled']),
-                ('room_type', '!=', record.id)
+                ('room_id', '!=', record.id)
             ]
             if self.search_count(domain) > 0:
-                raise ValidationError(f"Bác sĩ {record.staff_name.name} đã có lịch hẹn khác vào thời điểm này!")
+                raise ValidationError(f"Bác sĩ {record.staff_id.name} đã có lịch hẹn khác vào thời điểm này!")
 
-    @api.constrains('room_type', 'appointment_date')
+    @api.constrains('room_id', 'appointment_date')
     def _check_room_availability(self):
         for record in self:
-            if record.room_type:
+            if record.room_id:
                 domain = [
-                    ('room_type', '=', record.room_type),
+                    ('room_id', '=', record.room_id),
                     ('appointment_date', '=', record.appointment_date),
                     ('state', 'not in', ['cancelled']),
-                    ('room_type', '!=', record.room_type)
+                    ('room_id', '!=', record.room_id)
                 ]
                 if self.search_count(domain) > 0:
-                    raise ValidationError(f"Phòng {record.room_type.name} đã được đặt vào thời điểm này!")
+                    raise ValidationError(f"Phòng {record.room_id.name} đã được đặt vào thời điểm này!")

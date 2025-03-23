@@ -21,13 +21,13 @@
                     </div>
                     <group>
                         <group>
-                            <field name="patient_name"/>
+                            <field name="patient_id"/>
                             <field name="feedback_date"/>
                             <field name="feedback_type"/>
                             <field name="user_id"/>
                         </group>
                         <group>
-                            <field name="department_name"/>
+                            <field name="department_id"/>
                             <field name="satisfaction_rating" widget="priority"/>
                             <field name="complaint_id" readonly="1" invisible="complaint_id == False"/>
                         </group>
@@ -53,7 +53,7 @@
         <field name="arch" type="xml">
             <list string="Phản hồi từ bệnh nhân" decoration-danger="state=='new'" decoration-success="state=='noted'" decoration-muted="state=='cancelled'">
                 <field name="name"/>
-                <field name="patient_name"/>
+                <field name="patient_id"/>
                 <field name="feedback_date"/>
                 <field name="feedback_type"/>
                 <field name="user_id"/>
@@ -69,7 +69,7 @@
         <field name="arch" type="xml">
             <search string="Tìm kiếm phản hồi">
                 <field name="name"/>
-                <field name="patient_name"/>
+                <field name="patient_id"/>
                 <field name="description"/>
                 <separator/>
                 <filter string="Mới" domain="[('state','=','new')]" name="state_new"/>
@@ -81,7 +81,7 @@
                 <filter string="Khiếu nại" domain="[('feedback_type','=','complaint')]" name="type_complaint"/>
                 <filter string="Hỏi đáp" domain="[('feedback_type','=','question')]" name="type_question"/>
                 <group expand="0" string="Group By">
-                    <filter string="Bệnh nhân" name="group_partner" context="{'group_by':'patient_name'}"/>
+                    <filter string="Bệnh nhân" name="group_partner" context="{'group_by':'patient_id'}"/>
                     <filter string="Loại phản hồi" name="group_type" context="{'group_by':'feedback_type'}"/>
                     <filter string="Trạng thái" name="group_state" context="{'group_by':'state'}"/>
                     <filter string="Ngày phản hồi" name="group_date" context="{'group_by':'feedback_date'}"/>

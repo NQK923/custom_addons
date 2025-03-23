@@ -24,7 +24,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="patient_name"/>
+                            <field name="patient_id"/>
                             <field name="complaint_date"/>
                             <field name="priority" widget="priority"/>
                             <field name="category"/>
@@ -66,7 +66,7 @@
         <field name="arch" type="xml">
             <list string="Khiếu nại từ bệnh nhân" decoration-danger="is_overdue" decoration-success="state=='resolved'" decoration-info="state=='in_progress'" decoration-muted="state=='cancelled'">
                 <field name="name"/>
-                <field name="patient_name"/>
+                <field name="patient_id"/>
                 <field name="complaint_date"/>
                 <field name="category"/>
                 <field name="priority" widget="priority"/>
@@ -84,7 +84,7 @@
         <field name="arch" type="xml">
             <search string="Tìm kiếm khiếu nại">
                 <field name="name"/>
-                <field name="patient_name"/>
+                <field name="patient_id"/>
                 <field name="description"/>
                 <separator/>
                 <filter string="Mới" domain="[('state','=','new')]" name="state_new"/>
@@ -98,7 +98,7 @@
                 <filter string="Ưu tiên trung bình" domain="[('priority','=','1')]" name="priority_medium"/>
                 <filter string="Ưu tiên cao" domain="[('priority','=','2')]" name="priority_high"/>
                 <group expand="0" string="Group By">
-                    <filter string="Bệnh nhân" name="group_partner" context="{'group_by':'patient_name'}"/>
+                    <filter string="Bệnh nhân" name="group_partner" context="{'group_by':'patient_id'}"/>
                     <filter string="Phân loại" name="group_category" context="{'group_by':'category'}"/>
                     <filter string="Trạng thái" name="group_state" context="{'group_by':'state'}"/>
                     <filter string="Ngày khiếu nại" name="group_date" context="{'group_by':'complaint_date'}"/>
