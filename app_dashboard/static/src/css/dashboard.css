@@ -1,0 +1,38 @@
+.o_dashboard {
+    background-color: #f9f9f9;
+    padding: 20px;
+}
+
+.o_dashboard_title {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.o_dashboard_apps {
+    display: flex;
+    gap: 20px;
+}
+
+.o_dashboard_tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.o_tile_icon {
+    font-size: 32px;
+    color: #4CAF50;
+    margin-bottom: 10px;
+}
+
+.o_tile_title {
+    font-size: 16px;
+    color: #555;
+}

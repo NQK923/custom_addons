@@ -7,7 +7,7 @@
     'depends': ['base'],
     'data': [
         'security/ir.model.access.csv',
-        'views/dashboard_view.xml',  # Chỉ load file này
+        'views/views.xml',  # Chỉ load file này
     ],
     'installable': True,
     'application': True,
