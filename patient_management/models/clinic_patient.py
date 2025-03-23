@@ -1,3 +1,5 @@
+import datetime
+
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 import uuid
@@ -6,20 +8,57 @@ import uuid
 class ClinicPatient(models.Model):
     _name = 'clinic.patient'
     _description = 'Thông tin bệnh nhân'
-    _rec_name = 'patient_name'
+    _rec_name = 'code'
+    _order = "date desc"
 
-    name = fields.Char(string='Mã bệnh nhân', required=True, copy=False, readonly=True)
-    patient_name = fields.Char(string='Họ và tên', required=True)
-    date_of_birth = fields.Date(string='Ngày sinh')
-    age = fields.Integer(string='Tuổi', compute='_compute_age', store=True)
-    gender = fields.Selection([
-        ('male', 'Nam'),
-        ('female', 'Nữ'),
-        ('other', 'Khác')
-    ], string='Giới tính', required=True)
-    phone = fields.Char(string='Số điện thoại')
-    email = fields.Char(string='Địa chỉ email')
-    address = fields.Text(string='Địa chỉ')
+
+    parent_id = fields.Many2one(
+        string="Lần khám gần đây",
+        comodel_name="clinic.patient",
+        ondelete="restrict",
+        domain="[('partner_id', '=', partner_id)]"
+    )
+    partner_id = fields.Many2one(
+        string="Bệnh nhân",
+        comodel_name="res.partner",
+        ondelete="restrict",
+    )
+    code = fields.Char(
+        string='Mã bệnh nhân',
+        required=True,
+        copy=False,
+        readonly=True,
+        default="New",
+    )
+    name = fields.Char(
+        related="partner_id.name",
+        readonly=False,
+    )
+    email = fields.Char(
+        related="partner_id.email",
+        readonly=False,
+    )
+    gender = fields.Selection(
+        related="partner_id.gender",
+        readonly=False,
+    )
+    age = fields.Integer(
+        related="partner_id.age",
+        readonly=False,
+    )
+    date_of_birth = fields.Date(
+        related="partner_id.date_of_birth",
+        readonly=False,
+    )
+    phone = fields.Char(
+        related="partner_id.phone",
+        readonly=False,
+    )
+    date = fields.Datetime(
+        string="Ngày đăng ký",
+        default=datetime.datetime.now(),
+        required=True,
+    )
     patient_type = fields.Selection([
         ('outpatient', 'Ngoại trú'),
         ('inpatient', 'Nội trú')
@@ -32,7 +71,7 @@ class ClinicPatient(models.Model):
 
     insurance_number = fields.Char(string='Số thẻ BHYT', compute='_compute_insurance_info')
     insurance_facility = fields.Char(string='Nơi ĐKKCB', compute='_compute_insurance_info')
-    insurance_expiry = fields.Date(string='Có giá trị đến', compute='_compute_insurance_info')
+    insurance_expiry = fields.Date(c='Có giá trị đến', compute='_compute_insurance_info')
     insurance_tier = fields.Selection([
         ('central', 'Trung ương'),
         ('province', 'Tỉnh'),
@@ -49,7 +88,7 @@ class ClinicPatient(models.Model):
             insurance = self.env['clinic.insurance.policy'].search([
                 ('patient_id', '=', patient.id)
             ], limit=1)
-            
+
             if insurance:
                 patient.has_insurance = True
                 patient.insurance_number = insurance.number
@@ -68,22 +107,6 @@ class ClinicPatient(models.Model):
                 patient.insurance_expiry = False
                 patient.insurance_state = False
 
-    @api.depends('date_of_birth')
-    def _compute_age(self):
-        today = fields.Date.today()
-        for record in self:
-            if record.date_of_birth:
-                birth_date = fields.Date.from_string(record.date_of_birth)
-                record.age = today.year - birth_date.year - (
-                        (today.month, today.day) < (birth_date.month, birth_date.day))
-            else:
-                record.age = 0
-
-    @api.constrains('date_of_birth')
-    def _check_date_of_birth(self):
-        for record in self:
-            if record.date_of_birth and record.date_of_birth > fields.Date.today():
-                raise ValidationError("Ngày sinh không thể là ngày trong tương lai!")
 
     def action_hospitalize(self):
         """Cập nhật trạng thái thành 'Đang nhập viện' khi nhấn nút trong form."""
@@ -93,26 +116,21 @@ class ClinicPatient(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if vals.get('name', 'New') == 'New':
+            if vals.get('code', 'New') == 'New':
                 # Generate a short UUID
-                vals['name'] = str(uuid.uuid4())[:8]
+                vals['code'] = str(uuid.uuid4())[:8]
         return super().create(vals_list)
-        
+
     # def get_insurance_info(self):
     #     for patient in self:
     #         # Search for insurance records linked to this patient
     #         insurance_records = self.env['clinic.insurance.policy'].search([
     #             ('patient_id', '=', patient.id)
     #         ])
-            
+
     #         print(f"Insurance information for {patient.patient_name}:")
     #         for insurance in insurance_records:
     #             print(f"  - Insurance Number: {insurance.number}")
     #             print(f"  - Facility: {insurance.facility}")
     #             print(f"  - Expiry Date: {insurance.expiry_date}")
     #             print(f"  - State: {insurance.state}")
-            
-            
-
-
-    
