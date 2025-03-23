@@ -31,6 +31,7 @@
                             <field name="treatment_process_ids">
                                 <list string="Processes">
                                     <field name="code"/>
+                                    <field name="service_id"/>
                                     <field name="executor_id"/>
                                     <field name="state"/>
                                     <field name="execution_time"/>

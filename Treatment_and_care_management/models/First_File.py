@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from pkg_resources import require
+
 from odoo import models, fields, api
 
 # Kế hoạch điều trị
@@ -46,6 +48,12 @@ class TreatmentProcess(models.Model):
         string='Kế hoạch điều trị',
         required=True,
         ondelete='cascade'
+    )
+    service_id= fields.Many2one(
+        'clinic.service',
+        string='Loại dịch vụ',
+        required=True
+
     )
     executor_id = fields.Many2one(
         'clinic.staff',
