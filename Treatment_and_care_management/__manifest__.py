@@ -8,6 +8,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',  # Chỉ load file này
+        "views/clinic_patient_views.xml",
     ],
     'installable': True,
     'application': True,
