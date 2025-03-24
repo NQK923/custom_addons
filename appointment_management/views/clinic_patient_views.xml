@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="clinic_patient_view_form_inherit" model="ir.ui.view">
+            <field name="name">clinic.patient.view.form.inherit</field>
+            <field name="model">clinic.patient</field>
+            <field name="inherit_id" ref="patient_management.view_clinic_patient_form"/>
+            <field name="arch" type="xml">
+                <notebook position="inside">
+                     <page string="Lịch khám bệnh">
+                        <field name="appointment_ids"/>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+    </data>
+</odoo>

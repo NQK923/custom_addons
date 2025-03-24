@@ -1,2 +1,4 @@
-from . import patient_model
+from . import clinic_patient
+from . import res_partner
+from . import pathology
 

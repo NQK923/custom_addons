@@ -11,4 +11,10 @@ class ClinicBed(models.Model):
         ('occupied', 'Có bệnh nhân'),
         ('maintenance', 'Bảo trì')
     ], string='Trạng thái', default='available')
-    # patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân') 
+    patient_id = fields.Many2one(
+        comodel_name='clinic.patient',
+        string='Bệnh nhân'
+    )
+    patient_name = fields.Char(
+        related="patient_id.name"
+    )
