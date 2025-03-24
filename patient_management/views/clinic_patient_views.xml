@@ -8,16 +8,14 @@
             <list>
                 <field name="code" optional="show"/>
                 <field name="date" optional="show"/>
-                <field name="partner_id" widget="many2one_avatar"/>
+                <field name="name" />
                 <field name="gender"/>
                 <field name="email" optional="show"/>
                 <field name="phone" optional="show"/>
                 <field name="age" optional="show"/>
                 <field name="date_of_birth" optional="hide"/>
-
-
                 <field name="patient_type"/>
-                <field name="state"/>
+
             </list>
         </field>
     </record>
@@ -27,24 +25,20 @@
         <field name="model">clinic.patient</field>
         <field name="arch" type="xml">
             <form>
-                <header>
-                    <field name="state" widget="statusbar" options="{'clickable': 1}"/>
-                </header>
                 <sheet>
                     <group>
                         <group string="Thông tin bệnh nhân">
                             <field name="code"/>
-                            <field name="partner_id" widget="many2one_avatar"/>
-                            <field name="email" widget="email" readonly="not partner_id"/>
-                            <field name="phone" widget="phone" readonly="not partner_id"/>
-                            <field name="age" readonly="not partner_id"/>
-                            <field name="date_of_birth" readonly="not partner_id"/>
-                            <field name="gender" widget="radio" options="{'horizontal': 1}" readonly="not partner_id"/>
+                            <field name="name"/>
+                            <field name="email" widget="email"/>
+                            <field name="phone" widget="phone"/>
+                            <field name="date_of_birth"/>
+                            <field name="age"/>
+                            <field name="gender" widget="radio" options="{'horizontal': 1}"/>
                         </group>
                         <group string="Thông tin đăng ký và lịch sử">
                             <field name="date"/>
                             <field name="patient_type"/>
-                            <field name="parent_id" />
                         </group>
                     </group>
                     <notebook>
