@@ -6,11 +6,10 @@ import io
 
 from odoo import models, fields, api
 
-# Import matplotlib for chart generation
 try:
     import matplotlib
 
-    matplotlib.use('Agg')  # Use non-interactive backend
+    matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     import numpy as np
 
@@ -29,15 +28,12 @@ class MedicalReport(models.Model):
     report_type = fields.Selection([
         ('patient', 'Tình hình bệnh nhân'),
         ('epidemiology', 'Dịch tễ học'),
-        ('service_quality', 'Chất lượng dịch vụ'),
-        ('performance', 'Chỉ số hiệu suất')
+        ('service_quality', 'Chất lượng dịch vụ')
     ], string='Loại báo cáo', required=True, default='patient')
 
     report_data = fields.Text('Dữ liệu báo cáo', readonly=True)
     chart_image = fields.Binary('Biểu đồ', attachment=True)
     chart_filename = fields.Char('Tên file biểu đồ', default='chart.png')
-
-    # Add fields to support multiple charts
     additional_chart1 = fields.Binary('Biểu đồ bổ sung 1', attachment=True)
     additional_chart1_filename = fields.Char('Tên file biểu đồ 1', default='chart1.png')
     additional_chart2 = fields.Binary('Biểu đồ bổ sung 2', attachment=True)
@@ -65,8 +61,6 @@ class MedicalReport(models.Model):
             self._generate_epidemiology_report()
         elif self.report_type == 'service_quality':
             self._generate_service_quality_report()
-        elif self.report_type == 'performance':
-            self._generate_performance_report()
 
         self.state = 'generated'
         return True
@@ -86,27 +80,23 @@ class MedicalReport(models.Model):
         buf.seek(0)
         img_data = base64.b64encode(buf.getvalue())
         buf.close()
-        plt.close(plt_figure)  # Close the figure to free memory
+        plt.close(plt_figure)
         return img_data
 
     def _generate_patient_report(self):
-        # Lấy dữ liệu từ các model liên quan
         Patient = self.env['clinic.patient']
         Appointment = self.env['clinic.appointment']
 
-        # Tổng số bệnh nhân mới
         new_patients = Patient.search_count([
             ('create_date', '>=', self.date_from),
             ('create_date', '<=', self.date_to)
         ])
 
-        # Tổng số lượt khám
         appointments = Appointment.search_count([
             ('appointment_date', '>=', self.date_from),
             ('appointment_date', '<=', self.date_to)
         ])
 
-        # Báo cáo theo độ tuổi (giả sử có trường date_of_birth trong model Patient)
         age_groups = {
             '0-18': 0,
             '19-40': 0,
@@ -127,7 +117,6 @@ class MedicalReport(models.Model):
                 else:
                     age_groups['60+'] += 1
 
-        # Tạo báo cáo
         report = f"""
         BÁO CÁO TÌNH HÌNH BỆNH NHÂN
         Thời gian: {self.date_from} đến {self.date_to}
@@ -145,21 +134,18 @@ class MedicalReport(models.Model):
 
         self.report_data = report
 
-        # Generate age distribution pie chart
         if MATPLOTLIB_ENABLED:
             fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
 
-            # Chart 1: Age distribution pie chart
             labels = age_groups.keys()
             sizes = age_groups.values()
-            explode = (0.1, 0, 0, 0)  # explode 1st slice
+            explode = (0.1, 0, 0, 0)
 
             ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
                     shadow=True, startangle=90)
-            ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
+            ax1.axis('equal')
             ax1.set_title('Phân bố bệnh nhân theo độ tuổi')
 
-            # Chart 2: New patients vs appointments bar chart
             labels = ['Bệnh nhân mới', 'Lượt khám']
             values = [new_patients, appointments]
 
@@ -167,19 +153,16 @@ class MedicalReport(models.Model):
             ax2.set_title('Số lượng bệnh nhân mới và lượt khám')
             ax2.set_ylabel('Số lượng')
 
-            # Add values on top of bars
             for i, v in enumerate(values):
                 ax2.text(i, v + 0.1, str(v), ha='center')
 
             fig.tight_layout()
 
-            # Convert to binary data and save
             self.chart_image = self._create_chart_image(fig)
 
     def _generate_epidemiology_report(self):
         Diagnosis = self.env['medical.test']
 
-        # Lấy số lượng chẩn đoán theo mã ICD-10
         diagnoses = Diagnosis.search([
             ('date', '>=', self.date_from),
             ('date', '<=', self.date_to)
@@ -195,15 +178,13 @@ class MedicalReport(models.Model):
                     'count': 1
                 }
 
-        # Sắp xếp theo số lượng giảm dần
         sorted_diseases = sorted(disease_stats.items(), key=lambda x: x[1]['count'], reverse=True)
 
-        # Tạo báo cáo
         report = f"""
         BÁO CÁO DỊCH TỄ HỌC
         Thời gian: {self.date_from} đến {self.date_to}
 
-        Top 10 bệnh/chẩn đoán phổ biến:
+        Bệnh chẩn đoán phổ biến:
         """
 
         for i, (icd_code, data) in enumerate(sorted_diseases[:10], 1):
@@ -211,9 +192,7 @@ class MedicalReport(models.Model):
 
         self.report_data = report
 
-        # Generate chart for top diseases
         if MATPLOTLIB_ENABLED and sorted_diseases:
-            # Take top 10 or all if less than 10
             top_diseases = sorted_diseases[:min(10, len(sorted_diseases))]
 
             fig, ax = plt.subplots(figsize=(10, 6))
@@ -221,10 +200,8 @@ class MedicalReport(models.Model):
             disease_names = [f"{data['name']} ({code})" for code, data in top_diseases]
             disease_counts = [data['count'] for _, data in top_diseases]
 
-            # Horizontal bar chart for better readability with long names
             bars = ax.barh(disease_names, disease_counts, color='skyblue')
 
-            # Add count labels to each bar
             for bar in bars:
                 width = bar.get_width()
                 ax.text(width + 0.5, bar.get_y() + bar.get_height() / 2,
@@ -244,7 +221,6 @@ class MedicalReport(models.Model):
             ('feedback_date', '<=', self.date_to)
         ])
 
-        # Dictionary để lưu đánh giá theo loại phản hồi
         feedback_types = {
             'compliment': {'total': 0, 'count': 0, 'name': 'Khen ngợi'},
             'suggestion': {'total': 0, 'count': 0, 'name': 'Góp ý'},
@@ -259,13 +235,11 @@ class MedicalReport(models.Model):
         satisfaction_count = 0
 
         for feedback in feedbacks:
-            # Bỏ qua nếu không có đánh giá mức độ hài lòng
             if not feedback.satisfaction_rating:
                 continue
 
             rating_value = int(feedback.satisfaction_rating)
 
-            # Cập nhật đánh giá theo loại phản hồi
             if feedback.feedback_type:
                 feedback_types[feedback.feedback_type]['total'] += rating_value
                 feedback_types[feedback.feedback_type]['count'] += 1
@@ -278,18 +252,15 @@ class MedicalReport(models.Model):
                 department_ratings[dept_id]['total'] += rating_value
                 department_ratings[dept_id]['count'] += 1
 
-            # Cập nhật đánh giá tổng thể
             total_satisfaction += rating_value
             satisfaction_count += 1
 
-        # Calculate average ratings
         for fb_type in feedback_types.values():
             fb_type['avg'] = fb_type['total'] / fb_type['count'] if fb_type['count'] else 0
 
         for dept in department_ratings.values():
             dept['avg'] = dept['total'] / dept['count'] if dept['count'] else 0
 
-        # Tạo báo cáo
         report = f"""
         BÁO CÁO CHẤT LƯỢNG DỊCH VỤ
         Thời gian: {self.date_from} đến {self.date_to}
@@ -316,12 +287,9 @@ class MedicalReport(models.Model):
 
         self.report_data = report
 
-        # Generate charts
         if MATPLOTLIB_ENABLED:
-            # Chart 1: Feedback type ratings
             fig1, ax1 = plt.subplots(figsize=(10, 6))
 
-            # Filter out types with no ratings
             valid_fb_types = {k: v for k, v in feedback_types.items() if v['count'] > 0}
 
             if valid_fb_types:
@@ -329,12 +297,10 @@ class MedicalReport(models.Model):
                 values = [v['avg'] for v in valid_fb_types.values()]
                 counts = [v['count'] for v in valid_fb_types.values()]
 
-                # Color-code by rating value
                 colors = ['#ff9999' if v < 3 else '#99ff99' if v > 4 else '#ffcc99' for v in values]
 
                 bars = ax1.bar(labels, values, color=colors)
 
-                # Add value labels
                 for i, (bar, count) in enumerate(zip(bars, counts)):
                     height = bar.get_height()
                     ax1.text(bar.get_x() + bar.get_width() / 2., height + 0.1,
@@ -347,7 +313,6 @@ class MedicalReport(models.Model):
 
                 self.chart_image = self._create_chart_image(fig1)
 
-            # Chart 2: Department ratings
             if department_ratings:
                 fig2, ax2 = plt.subplots(figsize=(10, 6))
 
@@ -355,159 +320,19 @@ class MedicalReport(models.Model):
                 dept_avgs = [d['avg'] for d in department_ratings.values()]
                 dept_counts = [d['count'] for d in department_ratings.values()]
 
-                # Horizontal bar chart for better readability with long department names
                 bars = ax2.barh(dept_names, dept_avgs, color='lightblue')
 
-                # Add value labels
                 for i, (bar, count) in enumerate(zip(bars, dept_counts)):
                     width = bar.get_width()
                     ax2.text(width + 0.1, bar.get_y() + bar.get_height() / 2.,
                              f'{width:.2f}\n({count})', ha='left', va='center')
 
-                ax2.set_xlim(0, 5.5)  # Set x-axis to accommodate the rating scale
+                ax2.set_xlim(0, 5.5)
                 ax2.set_xlabel('Đánh giá trung bình')
                 ax2.set_title('Đánh giá theo phòng ban')
                 fig2.tight_layout()
 
                 self.additional_chart1 = self._create_chart_image(fig2)
-
-    def _generate_performance_report(self):
-        Doctor = self.env['clinic.staff']
-        Appointment = self.env['clinic.appointment']
-
-        doctors = Doctor.search([])
-        doctor_stats = {}
-
-        for doctor in doctors:
-            appointments = Appointment.search([
-                ('doctor_id', '=', doctor.id),
-                ('appointment_date', '>=', self.date_from),
-                ('appointment_date', '<=', self.date_to)
-            ])
-
-            completed = len([a for a in appointments if a.state == 'done'])
-            cancelled = len([a for a in appointments if a.state == 'cancel'])
-
-            doctor_stats[doctor.id] = {
-                'name': doctor.name,
-                'total': len(appointments),
-                'completed': completed,
-                'cancelled': cancelled,
-                'completion_rate': completed / len(appointments) * 100 if len(appointments) else 0
-            }
-
-        # Tính thời gian chờ trung bình
-        all_appointments = Appointment.search([
-            ('appointment_date', '>=', self.date_from),
-            ('appointment_date', '<=', self.date_to),
-            ('actual_start_time', '!=', False),
-            ('scheduled_time', '!=', False)
-        ])
-
-        total_waiting_time = sum(
-            (a.actual_start_time - a.scheduled_time).total_seconds() / 60 for a in all_appointments)
-        avg_waiting_time = total_waiting_time / len(all_appointments) if all_appointments else 0
-
-        # Tạo báo cáo
-        report = f"""
-        BÁO CÁO CHỈ SỐ HIỆU SUẤT
-        Thời gian: {self.date_from} đến {self.date_to}
-
-        1. Hiệu suất bác sĩ:
-        """
-
-        for doctor_id, stats in doctor_stats.items():
-            report += f"\n- {stats['name']}: {stats['completed']}/{stats['total']} ca ({stats['completion_rate']:.1f}%)"
-
-        report += f"""
-
-        2. Thời gian chờ:
-        - Thời gian chờ trung bình: {avg_waiting_time:.1f} phút
-
-        3. Tỷ lệ hoàn thành:
-        - Tổng số lịch hẹn: {sum(stats['total'] for stats in doctor_stats.values())}
-        - Hoàn thành: {sum(stats['completed'] for stats in doctor_stats.values())}
-        - Tỷ lệ hoàn thành: {sum(stats['completed'] for stats in doctor_stats.values()) / sum(stats['total'] for stats in doctor_stats.values()) * 100 if sum(stats['total'] for stats in doctor_stats.values()) else 0:.1f}%
-        """
-
-        self.report_data = report
-
-        # Generate charts
-        if MATPLOTLIB_ENABLED and doctor_stats:
-            # Chart 1: Doctor completion rates
-            fig1, ax1 = plt.subplots(figsize=(10, 6))
-
-            doctor_names = [stats['name'] for stats in doctor_stats.values()]
-            completion_rates = [stats['completion_rate'] for stats in doctor_stats.values()]
-
-            # Sort data for better visualization
-            sorted_data = sorted(zip(doctor_names, completion_rates), key=lambda x: x[1])
-            doctor_names, completion_rates = zip(*sorted_data) if sorted_data else ([], [])
-
-            # Horizontal bar chart for completion rates
-            bars = ax1.barh(doctor_names, completion_rates, color='lightgreen')
-
-            # Add percentage labels
-            for bar in bars:
-                width = bar.get_width()
-                ax1.text(width + 1, bar.get_y() + bar.get_height() / 2.,
-                         f'{width:.1f}%', ha='left', va='center')
-
-            ax1.set_xlabel('Tỷ lệ hoàn thành (%)')
-            ax1.set_title('Tỷ lệ hoàn thành theo bác sĩ')
-            fig1.tight_layout()
-
-            self.chart_image = self._create_chart_image(fig1)
-
-            # Chart 2: Appointment status breakdown
-            if sum(stats['total'] for stats in doctor_stats.values()) > 0:
-                fig2, ax2 = plt.subplots(figsize=(8, 8))
-
-                completed = sum(stats['completed'] for stats in doctor_stats.values())
-                cancelled = sum(stats['cancelled'] for stats in doctor_stats.values())
-                in_progress = sum(stats['total'] for stats in doctor_stats.values()) - completed - cancelled
-
-                labels = ['Hoàn thành', 'Hủy', 'Đang xử lý']
-                sizes = [completed, cancelled, in_progress]
-                colors = ['#66b3ff', '#ff9999', '#99ff99']
-                explode = (0.1, 0, 0)  # explode the 1st slice
-
-                # Only include non-zero values
-                valid_data = [(label, size, color, ex) for label, size, color, ex in
-                              zip(labels, sizes, colors, explode) if size > 0]
-
-                if valid_data:
-                    labels, sizes, colors, explode = zip(*valid_data)
-
-                    ax2.pie(sizes, explode=explode, labels=labels, colors=colors,
-                            autopct='%1.1f%%', shadow=True, startangle=90)
-                    ax2.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
-                    ax2.set_title('Phân bố trạng thái cuộc hẹn')
-
-                    self.additional_chart1 = self._create_chart_image(fig2)
-
-            # Chart 3: Average waiting time comparison with target time
-            fig3, ax3 = plt.subplots(figsize=(8, 6))
-
-            target_time = 15  # Example target waiting time (15 minutes)
-
-            categories = ['Thời gian chờ trung bình', 'Thời gian mục tiêu']
-            times = [avg_waiting_time, target_time]
-            colors = ['red' if avg_waiting_time > target_time else 'green', 'blue']
-
-            bars = ax3.bar(categories, times, color=colors)
-
-            # Add time labels
-            for bar in bars:
-                height = bar.get_height()
-                ax3.text(bar.get_x() + bar.get_width() / 2., height + 0.5,
-                         f'{height:.1f} phút', ha='center', va='bottom')
-
-            ax3.set_ylabel('Thời gian (phút)')
-            ax3.set_title('Thời gian chờ so với mục tiêu')
-            fig3.tight_layout()
-
-            self.additional_chart2 = self._create_chart_image(fig3)
 
 
 class MedicalReportWizard(models.TransientModel):
@@ -519,8 +344,7 @@ class MedicalReportWizard(models.TransientModel):
     report_type = fields.Selection([
         ('patient', 'Tình hình bệnh nhân'),
         ('epidemiology', 'Dịch tễ học'),
-        ('service_quality', 'Chất lượng dịch vụ'),
-        ('performance', 'Chỉ số hiệu suất')
+        ('service_quality', 'Chất lượng dịch vụ')
     ], string='Loại báo cáo', required=True, default='patient')
     department_id = fields.Many2one('clinic.department', string='Khoa/Phòng')
 
@@ -533,10 +357,8 @@ class MedicalReportWizard(models.TransientModel):
             'department_id': self.department_id.id if self.department_id else False,
         })
 
-        # Tạo báo cáo ngay lập tức
         report.generate_report()
 
-        # Mở báo cáo vừa tạo
         return {
             'name': 'Báo cáo y tế',
             'view_mode': 'form',
