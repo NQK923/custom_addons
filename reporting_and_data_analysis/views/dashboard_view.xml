@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Biểu đồ Dashboard -->
+    <!-- Biểu đồ Dashboard chính - Thêm title rõ ràng hơn -->
     <record id="view_clinic_dashboard_graph" model="ir.ui.view">
         <field name="name">clinic.dashboard.graph</field>
         <field name="model">clinic.dashboard</field>
         <field name="arch" type="xml">
-            <graph string="Thống kê phòng khám" sample="1" type="bar" stacked="True">
+            <graph string="Tổng quan doanh thu phòng khám" sample="1" type="bar" stacked="True">
                 <field name="month" type="row"/>
                 <field name="service_amount" type="measure"/>
                 <field name="medicine_amount" type="measure"/>
@@ -19,7 +19,7 @@
         <field name="name">clinic.dashboard.pivot</field>
         <field name="model">clinic.dashboard</field>
         <field name="arch" type="xml">
-            <pivot string="Thống kê phòng khám" sample="1">
+            <pivot string="Tổng quan doanh thu phòng khám" sample="1">
                 <field name="month" type="row"/>
                 <field name="service_amount" type="measure"/>
                 <field name="medicine_amount" type="measure"/>
@@ -29,36 +29,95 @@
         </field>
     </record>
 
-    <!-- Biểu đồ dịch vụ -->
+    <!-- Thêm view kanban cho dashboard -->
+    <record id="view_clinic_dashboard_kanban" model="ir.ui.view">
+        <field name="name">clinic.dashboard.kanban</field>
+        <field name="model">clinic.dashboard</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard">
+                <field name="month"/>
+                <field name="total_amount"/>
+                <field name="service_amount"/>
+                <field name="medicine_amount"/>
+                <field name="insurance_amount"/>
+                <field name="patient_amount"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title"><field name="month"/></strong>
+                                <div class="o_kanban_record_subtitle mt-2">
+                                    <strong>Tổng doanh thu: </strong> <field name="total_amount" widget="monetary"/>
+                                </div>
+                                <div class="mt-2">
+                                    <div><span>Dịch vụ: </span> <field name="service_amount" widget="monetary"/></div>
+                                    <div><span>Thuốc: </span> <field name="medicine_amount" widget="monetary"/></div>
+                                    <div><span>Bảo hiểm: </span> <field name="insurance_amount" widget="monetary"/></div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Biểu đồ dịch vụ - Mở rộng chức năng -->
     <record id="view_clinic_service_dashboard_graph" model="ir.ui.view">
         <field name="name">clinic.service.dashboard.graph</field>
         <field name="model">clinic.dashboard</field>
         <field name="arch" type="xml">
-            <graph string="Thống kê dịch vụ" type="pie" sample="1">
+            <graph string="Phân tích doanh thu theo dịch vụ" type="pie" sample="1">
                 <field name="service_id"/>
                 <field name="service_amount" type="measure"/>
             </graph>
         </field>
     </record>
 
-    <!-- Biểu đồ thuốc -->
+    <!-- Thêm pivot view cho dịch vụ -->
+    <record id="view_clinic_service_dashboard_pivot" model="ir.ui.view">
+        <field name="name">clinic.service.dashboard.pivot</field>
+        <field name="model">clinic.dashboard</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân tích doanh thu theo dịch vụ" sample="1">
+                <field name="service_id" type="row"/>
+                <field name="month" type="col"/>
+                <field name="service_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Biểu đồ thuốc - Mở rộng chức năng -->
     <record id="view_clinic_product_dashboard_graph" model="ir.ui.view">
         <field name="name">clinic.product.dashboard.graph</field>
         <field name="model">clinic.dashboard</field>
         <field name="arch" type="xml">
-            <graph string="Thống kê thuốc" type="pie" sample="1">
+            <graph string="Phân tích doanh thu theo thuốc" type="pie" sample="1">
                 <field name="product_id"/>
                 <field name="medicine_amount" type="measure"/>
             </graph>
         </field>
     </record>
 
-    <!-- Biểu đồ bệnh nhân -->
+    <!-- Thêm pivot view cho thuốc -->
+    <record id="view_clinic_product_dashboard_pivot" model="ir.ui.view">
+        <field name="name">clinic.product.dashboard.pivot</field>
+        <field name="model">clinic.dashboard</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân tích doanh thu theo thuốc" sample="1">
+                <field name="product_id" type="row"/>
+                <field name="month" type="col"/>
+                <field name="medicine_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Biểu đồ bệnh nhân - Mở rộng chức năng -->
     <record id="view_clinic_patient_dashboard_graph" model="ir.ui.view">
         <field name="name">clinic.patient.dashboard.graph</field>
         <field name="model">clinic.dashboard</field>
         <field name="arch" type="xml">
-            <graph string="Thống kê bệnh nhân" type="bar" stacked="True" sample="1">
+            <graph string="Phân tích doanh thu theo bệnh nhân" type="bar" stacked="True" sample="1">
                 <field name="patient_id"/>
                 <field name="service_amount" type="measure"/>
                 <field name="medicine_amount" type="measure"/>
@@ -66,26 +125,46 @@
         </field>
     </record>
 
-    <!-- Dashboard chính -->
+    <!-- Thêm pivot view cho bệnh nhân -->
+    <record id="view_clinic_patient_dashboard_pivot" model="ir.ui.view">
+        <field name="name">clinic.patient.dashboard.pivot</field>
+        <field name="model">clinic.dashboard</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân tích doanh thu theo bệnh nhân" sample="1">
+                <field name="patient_id" type="row"/>
+                <field name="month" type="col"/>
+                <field name="service_amount" type="measure"/>
+                <field name="medicine_amount" type="measure"/>
+                <field name="total_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Dashboard chính - Cập nhật view_mode -->
     <record id="action_clinic_dashboard" model="ir.actions.act_window">
         <field name="name">Bảng điều khiển phòng khám</field>
         <field name="res_model">clinic.dashboard</field>
-        <field name="view_mode">graph,pivot</field>
+        <field name="view_mode">kanban,graph,pivot</field>
         <field name="context">{'graph_measure': 'total_amount', 'graph_groupbys': ['month']}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Không có dữ liệu để hiển thị
             </p>
+            <p>
+                Tạo bản ghi phân tích đầu tiên hoặc sử dụng bộ lọc ngày tháng để xem dữ liệu.
+            </p>
         </field>
     </record>
 
-    <!-- Hành động cho từng tab -->
+    <!-- Hành động cho từng tab - Cập nhật để bao gồm pivot view -->
     <record id="action_clinic_service_dashboard" model="ir.actions.act_window">
         <field name="name">Thống kê dịch vụ</field>
         <field name="res_model">clinic.dashboard</field>
         <field name="view_mode">graph,pivot</field>
         <field name="context">{'graph_measure': 'service_amount', 'graph_groupbys': ['service_id']}</field>
-        <field name="view_id" ref="view_clinic_service_dashboard_graph"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                     (0, 0, {'view_mode': 'graph', 'view_id': ref('view_clinic_service_dashboard_graph')}),
+                                     (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_clinic_service_dashboard_pivot')})]"/>
         <field name="domain">[('service_id', '!=', False)]</field>
     </record>
 
@@ -94,7 +173,9 @@
         <field name="res_model">clinic.dashboard</field>
         <field name="view_mode">graph,pivot</field>
         <field name="context">{'graph_measure': 'medicine_amount', 'graph_groupbys': ['product_id']}</field>
-        <field name="view_id" ref="view_clinic_product_dashboard_graph"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                     (0, 0, {'view_mode': 'graph', 'view_id': ref('view_clinic_product_dashboard_graph')}),
+                                     (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_clinic_product_dashboard_pivot')})]"/>
         <field name="domain">[('product_id', '!=', False)]</field>
     </record>
 
@@ -103,18 +184,26 @@
         <field name="res_model">clinic.dashboard</field>
         <field name="view_mode">graph,pivot</field>
         <field name="context">{'graph_measure': 'total_amount', 'graph_groupbys': ['patient_id']}</field>
-        <field name="view_id" ref="view_clinic_patient_dashboard_graph"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                     (0, 0, {'view_mode': 'graph', 'view_id': ref('view_clinic_patient_dashboard_graph')}),
+                                     (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_clinic_patient_dashboard_pivot')})]"/>
     </record>
 
-    <!-- Wizard filter -->
+    <!-- Wizard filter - Cải thiện UI -->
     <record id="view_clinic_dashboard_wizard_form" model="ir.ui.view">
         <field name="name">clinic.dashboard.wizard.form</field>
         <field name="model">clinic.dashboard.wizard</field>
         <field name="arch" type="xml">
             <form string="Tùy chọn hiển thị">
                 <group>
-                    <field name="date_from" required="1"/>
-                    <field name="date_to" required="1"/>
+                    <group>
+                        <field name="date_from" required="1"/>
+                        <field name="date_to" required="1"/>
+                    </group>
+                    <group>
+                        <field name="department_id" widget="selection"/>
+                        <field name="report_type" widget="selection"/>
+                    </group>
                 </group>
                 <footer>
                     <button name="action_view_dashboard" string="Xem báo cáo" type="object" class="btn-primary"/>
