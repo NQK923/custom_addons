@@ -6,9 +6,16 @@
         <field name="model">clinic.patient</field>
         <field name="arch" type="xml">
             <list>
-                <field name="patient_name"/>
+                <field name="code" optional="show"/>
+                <field name="date" optional="show"/>
+                <field name="partner_id" widget="many2one_avatar"/>
                 <field name="gender"/>
-                <field name="phone"/>
+                <field name="email" optional="show"/>
+                <field name="phone" optional="show"/>
+                <field name="age" optional="show"/>
+                <field name="date_of_birth" optional="hide"/>
+
+
                 <field name="patient_type"/>
                 <field name="state"/>
             </list>
@@ -20,28 +27,35 @@
         <field name="model">clinic.patient</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <field name="state" widget="statusbar" options="{'clickable': 1}"/>
+                </header>
                 <sheet>
+                    <group>
+                        <group string="Thông tin bệnh nhân">
+                            <field name="code"/>
+                            <field name="partner_id" widget="many2one_avatar"/>
+                            <field name="email" widget="email" readonly="not partner_id"/>
+                            <field name="phone" widget="phone" readonly="not partner_id"/>
+                            <field name="age" readonly="not partner_id"/>
+                            <field name="date_of_birth" readonly="not partner_id"/>
+                            <field name="gender" widget="radio" options="{'horizontal': 1}" readonly="not partner_id"/>
+                        </group>
+                        <group string="Thông tin đăng ký và lịch sử">
+                            <field name="date"/>
+                            <field name="patient_type"/>
+                            <field name="parent_id" />
+                        </group>
+                    </group>
                     <notebook>
-                        <page string="Thông tin bệnh nhân">
-                            <group>
-                                <field name="patient_name"/>
-                                <field name="date_of_birth"/>
-                                <field name="age"/>
-                                <field name="gender"/>
-                                <field name="phone"/>
-                                <field name="email"/>
-                                <field name="address"/>
-                                <field name="patient_type"/>
-                                <field name="state"/>
-                                <field name="note"/>
-                            </group>
+                        <page string="Ghi chú">
+                            <field name="note" widget="html"/>
                         </page>
                         <page string="Thông tin bảo hiểm y tế">
                             <group>
                                 <p invisible="has_insurance">Bệnh nhân chưa có bảo hiểm y tế</p>
                                 <group invisible="not has_insurance">
                                     <field name="name" invisible="1"/>
-                                    <field name="patient_name" invisible="1"/>
                                     <field name="insurance_number" readonly="1"/>
                                     <field name="insurance_facility" readonly="1"/>
                                     <field name="insurance_tier" readonly="1"/>
