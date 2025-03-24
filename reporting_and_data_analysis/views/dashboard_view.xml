@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Biểu đồ Dashboard -->
+    <record id="view_clinic_dashboard_graph" model="ir.ui.view">
+        <field name="name">clinic.dashboard.graph</field>
+        <field name="model">clinic.dashboard</field>
+        <field name="arch" type="xml">
+            <graph string="Thống kê phòng khám" sample="1" type="bar" stacked="True">
+                <field name="month" type="row"/>
+                <field name="service_amount" type="measure"/>
+                <field name="medicine_amount" type="measure"/>
+                <field name="insurance_amount" type="measure"/>
+                <field name="patient_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_clinic_dashboard_pivot" model="ir.ui.view">
+        <field name="name">clinic.dashboard.pivot</field>
+        <field name="model">clinic.dashboard</field>
+        <field name="arch" type="xml">
+            <pivot string="Thống kê phòng khám" sample="1">
+                <field name="month" type="row"/>
+                <field name="service_amount" type="measure"/>
+                <field name="medicine_amount" type="measure"/>
+                <field name="insurance_amount" type="measure"/>
+                <field name="patient_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Biểu đồ dịch vụ -->
+    <record id="view_clinic_service_dashboard_graph" model="ir.ui.view">
+        <field name="name">clinic.service.dashboard.graph</field>
+        <field name="model">clinic.dashboard</field>
+        <field name="arch" type="xml">
+            <graph string="Thống kê dịch vụ" type="pie" sample="1">
+                <field name="service_id"/>
+                <field name="service_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Biểu đồ thuốc -->
+    <record id="view_clinic_product_dashboard_graph" model="ir.ui.view">
+        <field name="name">clinic.product.dashboard.graph</field>
+        <field name="model">clinic.dashboard</field>
+        <field name="arch" type="xml">
+            <graph string="Thống kê thuốc" type="pie" sample="1">
+                <field name="product_id"/>
+                <field name="medicine_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Biểu đồ bệnh nhân -->
+    <record id="view_clinic_patient_dashboard_graph" model="ir.ui.view">
+        <field name="name">clinic.patient.dashboard.graph</field>
+        <field name="model">clinic.dashboard</field>
+        <field name="arch" type="xml">
+            <graph string="Thống kê bệnh nhân" type="bar" stacked="True" sample="1">
+                <field name="patient_id"/>
+                <field name="service_amount" type="measure"/>
+                <field name="medicine_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Dashboard chính -->
+    <record id="action_clinic_dashboard" model="ir.actions.act_window">
+        <field name="name">Bảng điều khiển phòng khám</field>
+        <field name="res_model">clinic.dashboard</field>
+        <field name="view_mode">graph,pivot</field>
+        <field name="context">{'graph_measure': 'total_amount', 'graph_groupbys': ['month']}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Không có dữ liệu để hiển thị
+            </p>
+        </field>
+    </record>
+
+    <!-- Hành động cho từng tab -->
+    <record id="action_clinic_service_dashboard" model="ir.actions.act_window">
+        <field name="name">Thống kê dịch vụ</field>
+        <field name="res_model">clinic.dashboard</field>
+        <field name="view_mode">graph,pivot</field>
+        <field name="context">{'graph_measure': 'service_amount', 'graph_groupbys': ['service_id']}</field>
+        <field name="view_id" ref="view_clinic_service_dashboard_graph"/>
+        <field name="domain">[('service_id', '!=', False)]</field>
+    </record>
+
+    <record id="action_clinic_product_dashboard" model="ir.actions.act_window">
+        <field name="name">Thống kê thuốc</field>
+        <field name="res_model">clinic.dashboard</field>
+        <field name="view_mode">graph,pivot</field>
+        <field name="context">{'graph_measure': 'medicine_amount', 'graph_groupbys': ['product_id']}</field>
+        <field name="view_id" ref="view_clinic_product_dashboard_graph"/>
+        <field name="domain">[('product_id', '!=', False)]</field>
+    </record>
+
+    <record id="action_clinic_patient_dashboard" model="ir.actions.act_window">
+        <field name="name">Thống kê bệnh nhân</field>
+        <field name="res_model">clinic.dashboard</field>
+        <field name="view_mode">graph,pivot</field>
+        <field name="context">{'graph_measure': 'total_amount', 'graph_groupbys': ['patient_id']}</field>
+        <field name="view_id" ref="view_clinic_patient_dashboard_graph"/>
+    </record>
+
+    <!-- Wizard filter -->
+    <record id="view_clinic_dashboard_wizard_form" model="ir.ui.view">
+        <field name="name">clinic.dashboard.wizard.form</field>
+        <field name="model">clinic.dashboard.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Tùy chọn hiển thị">
+                <group>
+                    <field name="date_from" required="1"/>
+                    <field name="date_to" required="1"/>
+                </group>
+                <footer>
+                    <button name="action_view_dashboard" string="Xem báo cáo" type="object" class="btn-primary"/>
+                    <button string="Hủy bỏ" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_clinic_dashboard_wizard" model="ir.actions.act_window">
+        <field name="name">Bảng điều khiển phòng khám</field>
+        <field name="res_model">clinic.dashboard.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_clinic_dashboard_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

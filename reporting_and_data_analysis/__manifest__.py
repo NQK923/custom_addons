@@ -17,6 +17,8 @@
     'data': [
         'security/ir.model.access.csv',
         'views/medical_report_view.xml',
+        'views/dashboard_view.xml',
+        'views/menu.xml',
     ],
     'demo': [],
     'installable': True,
