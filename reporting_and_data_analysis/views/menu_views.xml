@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Items -->
+    <menuitem id="menu_invoice_statistics"
+              name="Thống kê hóa đơn"
+              parent="invoice_management.menu_invoice_root"
+              sequence="30"/>
+
+    <menuitem id="menu_invoice_statistics_detail"
+              name="Thống kê chi tiết"
+              parent="menu_invoice_statistics"
+              action="action_invoice_statistics"
+              sequence="10"/>
+
+    <menuitem id="menu_invoice_dashboard"
+              name="Bảng điều khiển"
+              parent="menu_invoice_statistics"
+              action="action_invoice_dashboard"
+              sequence="20"/>
+</odoo>

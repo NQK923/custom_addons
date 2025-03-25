@@ -1,7 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_hospital_medical_report_user,hospital.medical.report.user,model_hospital_medical_report,base.group_user,1,1,1,0
-access_hospital_medical_report_manager,hospital.medical.report.manager,model_hospital_medical_report,base.group_system,1,1,1,1
-access_hospital_medical_report_wizard_user,hospital.medical.report.wizard.user,model_hospital_medical_report_wizard,base.group_user,1,1,1,0
-access_hospital_medical_report_wizard_manager,hospital.medical.report.wizard.manager,model_hospital_medical_report_wizard,base.group_system,1,1,1,1
-access_clinic_dashboard,access.clinic.dashboard,model_clinic_dashboard,base.group_user,1,0,0,0
-access_clinic_dashboard_wizard,access.clinic.dashboard.wizard,model_clinic_dashboard_wizard,base.group_user,1,1,1,0
+access_invoice_statistics_user,invoice.statistics.user,model_invoice_statistics,base.group_user,1,0,0,0
+access_invoice_statistics_manager,invoice.statistics.manager,model_invoice_statistics,base.group_system,1,1,1,1
+access_invoice_dashboard_user,invoice.dashboard.user,model_invoice_dashboard,base.group_user,1,1,1,0
+access_invoice_dashboard_manager,invoice.dashboard.manager,model_invoice_dashboard,base.group_system,1,1,1,1

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_invoice_dashboard_form" model="ir.ui.view">
+        <field name="name">invoice.dashboard.form</field>
+        <field name="model">invoice.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Bảng điều khiển hóa đơn">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                        </group>
+                        <group>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+
+                    <!-- Thông tin tổng quan -->
+                    <div class="row mt16">
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-primary text-white p-3 rounded mb-3">
+                                <h3>Tổng doanh thu</h3>
+                                <h1><field name="total_revenue" nolabel="1" widget="monetary"/></h1>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-success text-white p-3 rounded mb-3">
+                                <h3>Tổng hóa đơn</h3>
+                                <h1><field name="total_invoices" nolabel="1"/></h1>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin doanh thu -->
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-info text-white p-3 rounded mb-3">
+                                <h3>Doanh thu dịch vụ</h3>
+                                <h2><field name="total_service_revenue" nolabel="1" widget="monetary"/></h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-warning text-white p-3 rounded mb-3">
+                                <h3>Doanh thu thuốc</h3>
+                                <h2><field name="total_medicine_revenue" nolabel="1" widget="monetary"/></h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-danger text-white p-3 rounded mb-3">
+                                <h3>Tổng bảo hiểm chi trả</h3>
+                                <h2><field name="total_insurance_amount" nolabel="1" widget="monetary"/></h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin số lượng -->
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-secondary text-white p-3 rounded mb-3">
+                                <h3>Số HĐ đã thanh toán</h3>
+                                <h2><field name="total_paid_invoices" nolabel="1"/></h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-secondary text-white p-3 rounded mb-3">
+                                <h3>Số HĐ đã xác nhận</h3>
+                                <h2><field name="total_confirmed_invoices" nolabel="1"/></h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-secondary text-white p-3 rounded mb-3">
+                                <h3>Tổng số dịch vụ</h3>
+                                <h2><field name="total_services" nolabel="1"/></h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="o_stat_info bg-secondary text-white p-3 rounded mb-3">
+                                <h3>Tổng số thuốc</h3>
+                                <h2><field name="total_products" nolabel="1"/></h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dữ liệu cho biểu đồ -->
+                    <field name="revenue_by_day_data" widget="text" invisible="1"/>
+                    <field name="revenue_by_month_data" widget="text" invisible="1"/>
+                    <field name="service_vs_medicine_data" widget="text" invisible="1"/>
+                    <field name="invoice_status_data" widget="text" invisible="1"/>
+                    <field name="insurance_vs_patient_data" widget="text" invisible="1"/>
+
+                    <!-- Nơi để thêm biểu đồ trực quan (sẽ được thêm sau bằng JS widgets) -->
+                    <div class="row mt16">
+                        <div class="col-lg-12">
+                            <h3>Biểu đồ doanh thu</h3>
+                            <div class="o_graph_container" style="height: 300px; width: 100%;"></div>
+                        </div>
+                    </div>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_invoice_dashboard" model="ir.actions.act_window">
+        <field name="name">Bảng điều khiển hóa đơn</field>
+        <field name="res_model">invoice.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'form_view_initial_mode': 'edit'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Xem thống kê và phân tích hóa đơn
+            </p>
+        </field>
+    </record>
+</odoo>
