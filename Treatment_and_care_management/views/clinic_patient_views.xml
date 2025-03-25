@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="clinic_patient_view_form_inherit" model="ir.ui.view">
+            <field name="name">clinic_patient_view_form_inherit</field>
+            <field name="model">clinic.patient</field>
+            <field name="inherit_id" ref="patient_management.view_clinic_patient_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Lịch sử khám">
+                        <field name="treatment_plan_ids">
+                            <list>
+                                <field name="code"/>
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                            </list>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -10,7 +10,6 @@
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
-        "views/clinic_patient_views.xml",
     ],
     'installable': True,
     'application': True,
