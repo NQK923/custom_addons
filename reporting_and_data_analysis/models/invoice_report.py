@@ -165,8 +165,9 @@ class InvoiceReportPatient(models.Model):
 
     patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', readonly=True)
     patient_name = fields.Char(string='Tên bệnh nhân', readonly=True)
-    has_insurance = fields.Boolean(string='Có bảo hiểm', readonly=True)
-    insurance_state = fields.Char(string='Trạng thái BH', readonly=True)
+    # Các trường không tồn tại trong database đã được loại bỏ
+    # has_insurance = fields.Boolean(string='Có bảo hiểm', readonly=True)
+    # insurance_state = fields.Char(string='Trạng thái BH', readonly=True)
 
     invoice_count = fields.Integer(string='Số hóa đơn', readonly=True)
     service_amount = fields.Float(string='Tiền dịch vụ', readonly=True)
@@ -184,8 +185,6 @@ class InvoiceReportPatient(models.Model):
                     MIN(i.id) as id,
                     i.patient_id,
                     p.name as patient_name,
-                    p.has_insurance,
-                    p.insurance_state,
                     COUNT(i.id) as invoice_count,
                     SUM(i.service_amount) as service_amount,
                     SUM(i.medicine_amount) as medicine_amount,
@@ -203,7 +202,7 @@ class InvoiceReportPatient(models.Model):
                 WHERE
                     i.state IN ('confirmed', 'paid')
                 GROUP BY
-                    i.patient_id, p.name, p.has_insurance, p.insurance_state
+                    i.patient_id, p.name
                 ORDER BY
                     total_amount DESC
             )

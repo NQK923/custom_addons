@@ -49,8 +49,8 @@
                 <field name="name"/>
                 <field name="year"/>
                 <field name="month"/>
-                <filter string="This Year" name="this_year" domain="[('year','=',time.strftime('%Y'))]"/>
-                <filter string="Last Year" name="last_year" domain="[('year','=',str(int(time.strftime('%Y')) - 1))]"/>
+                <filter string="This Year" name="this_year" domain="[('year','=', context_today().year)]"/>
+                <filter string="Last Year" name="last_year" domain="[('year','=', (context_today().year - 1))]"/>
                 <group expand="1" string="Group By">
                     <filter string="Year" name="year" context="{'group_by':'year'}"/>
                     <filter string="Month" name="month" context="{'group_by':'month'}"/>
@@ -220,7 +220,8 @@
         <field name="arch" type="xml">
             <pivot string="Patient Invoice Analysis" display_quantity="true">
                 <field name="patient_name" type="row"/>
-                <field name="has_insurance" type="row"/>
+                <!-- Loại bỏ trường has_insurance vì không tồn tại -->
+                <!-- <field name="has_insurance" type="row"/> -->
                 <field name="invoice_count" type="measure"/>
                 <field name="service_amount" type="measure"/>
                 <field name="medicine_amount" type="measure"/>
@@ -248,7 +249,9 @@
         <field name="model">clinic.invoice.report.patient</field>
         <field name="arch" type="xml">
             <graph string="Insurance vs Patient Payments" type="pie">
-                <field name="has_insurance"/>
+                <!-- Loại bỏ trường has_insurance vì không tồn tại -->
+                <!-- <field name="has_insurance"/> -->
+                <field name="patient_name"/> <!-- Thay bằng trường khác -->
                 <field name="total_amount" type="measure"/>
             </graph>
         </field>
@@ -262,14 +265,16 @@
                 <field name="patient_name"/>
                 <field name="patient_id"/>
                 <separator/>
-                <filter string="Has Insurance" name="has_insurance" domain="[('has_insurance','=',True)]"/>
-                <filter string="No Insurance" name="no_insurance" domain="[('has_insurance','=',False)]"/>
-                <filter string="Valid Insurance" name="valid_insurance" domain="[('insurance_state','=','Hợp lệ')]"/>
+                <!-- Loại bỏ các filter liên quan đến has_insurance -->
+                <!-- <filter string="Has Insurance" name="has_insurance" domain="[('has_insurance','=',True)]"/> -->
+                <!-- <filter string="No Insurance" name="no_insurance" domain="[('has_insurance','=',False)]"/> -->
+                <!-- <filter string="Valid Insurance" name="valid_insurance" domain="[('insurance_state','=','Hợp lệ')]"/> -->
                 <filter string="High Spending" name="high_spending" domain="[('total_amount','>',5000000)]"/>
                 <group expand="1" string="Group By">
                     <filter string="Patient" name="patient" context="{'group_by':'patient_id'}"/>
-                    <filter string="Insurance Status" name="insurance_status" context="{'group_by':'insurance_state'}"/>
-                    <filter string="Has Insurance" name="group_insurance" context="{'group_by':'has_insurance'}"/>
+                    <!-- Loại bỏ các filter group by liên quan đến insurance_state và has_insurance -->
+                    <!-- <filter string="Insurance Status" name="insurance_status" context="{'group_by':'insurance_state'}"/> -->
+                    <!-- <filter string="Has Insurance" name="group_insurance" context="{'group_by':'has_insurance'}"/> -->
                 </group>
             </search>
         </field>
@@ -337,8 +342,8 @@
                 <field name="month"/>
                 <field name="state"/>
                 <separator/>
-                <filter string="This Year" name="this_year" domain="[('year','=',time.strftime('%Y'))]"/>
-                <filter string="Last Year" name="last_year" domain="[('year','=',str(int(time.strftime('%Y')) - 1))]"/>
+                <filter string="This Year" name="this_year" domain="[('year','=', context_today().year)]"/>
+                <filter string="Last Year" name="last_year" domain="[('year','=', (context_today().year - 1))]"/>
                 <separator/>
                 <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
                 <filter string="Confirmed" name="confirmed" domain="[('state','=','confirmed')]"/>
@@ -369,28 +374,33 @@
         </field>
     </record>
 
-    <!-- Dashboard View -->
+    <!-- Dashboard View (using form instead) -->
     <record id="clinic_invoice_dashboard_view" model="ir.ui.view">
         <field name="name">clinic.invoice.dashboard</field>
         <field name="model">clinic.invoice.report.monthly</field>
         <field name="arch" type="xml">
-            <dashboard>
-                <view type="graph" ref="view_clinic_invoice_report_monthly_graph"/>
-                <group>
-                    <aggregate name="total_revenue" field="total_amount" string="Total Revenue" widget="monetary"/>
-                    <aggregate name="service_revenue" field="service_amount" string="Service Revenue" widget="monetary"/>
-                    <aggregate name="medicine_revenue" field="medicine_amount" string="Medicine Revenue" widget="monetary"/>
-                    <aggregate name="invoice_count" field="invoice_count" string="Invoice Count"/>
-                </group>
-                <view type="pivot" ref="view_clinic_invoice_report_monthly_pivot"/>
-            </dashboard>
+            <form string="Tổng quan doanh thu" create="false" edit="false">
+                <sheet>
+                    <group string="Chỉ số tổng quan">
+                        <field name="total_amount" widget="monetary" string="Tổng doanh thu"/>
+                        <field name="service_amount" widget="monetary" string="Doanh thu dịch vụ"/>
+                        <field name="medicine_amount" widget="monetary" string="Doanh thu thuốc"/>
+                        <field name="invoice_count" string="Số hóa đơn"/>
+                    </group>
+                    <notebook>
+                        <page string="Biểu đồ doanh thu">
+                            <field name="year" invisible="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
         </field>
     </record>
 
     <record id="action_clinic_invoice_dashboard" model="ir.actions.act_window">
         <field name="name">Tổng quan doanh thu</field>
         <field name="res_model">clinic.invoice.report.monthly</field>
-        <field name="view_mode">dashboard,pivot,graph</field>
+        <field name="view_mode">graph,pivot,form</field>
         <field name="search_view_id" ref="view_clinic_invoice_report_monthly_search"/>
         <field name="context">{'search_default_this_year': 1}</field>
         <field name="help" type="html">
@@ -404,7 +414,9 @@
     </record>
 
     <!-- Menu Items -->
-    <menuitem id="menu_clinic_reporting" name="Báo cáo thống kê" parent="invoice_management.menu_invoice_management" sequence="50"/>
+    <!-- Tạo menu gốc riêng thay vì sử dụng menu của invoice_management -->
+    <menuitem id="menu_clinic_reporting_root" name="Báo cáo y tế"  sequence="50"/>
+    <menuitem id="menu_clinic_reporting" name="Báo cáo thống kê" parent="menu_clinic_reporting_root" sequence="10"/>
 
     <menuitem id="menu_clinic_invoice_dashboard" name="Tổng quan" parent="menu_clinic_reporting" action="action_clinic_invoice_dashboard" sequence="10"/>
     <menuitem id="menu_clinic_monthly_revenue" name="Doanh thu theo tháng" parent="menu_clinic_reporting" action="action_clinic_invoice_report_monthly" sequence="20"/>
