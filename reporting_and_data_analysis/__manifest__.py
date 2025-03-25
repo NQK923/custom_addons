@@ -17,6 +17,8 @@
     'data': [
         'security/ir.model.access.csv',
         'views/invoice_report_views.xml',
+        'views/medical_report_view.xml',
+        'views/menu_views.xml',
     ],
     'demo': [],
     'installable': True,

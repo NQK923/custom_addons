@@ -9,3 +9,7 @@ access_clinic_invoice_report_patient_user,clinic.invoice.report.patient user,mod
 access_clinic_invoice_report_patient_manager,clinic.invoice.report.patient manager,model_clinic_invoice_report_patient,base.group_system,1,0,0,0
 access_clinic_invoice_report_status_user,clinic.invoice.report.status user,model_clinic_invoice_report_status,base.group_user,1,0,0,0
 access_clinic_invoice_report_status_manager,clinic.invoice.report.status manager,model_clinic_invoice_report_status,base.group_system,1,0,0,0
+access_hospital_medical_report_user,hospital.medical.report user,model_hospital_medical_report,base.group_user,1,1,1,0
+access_hospital_medical_report_manager,hospital.medical.report manager,model_hospital_medical_report,base.group_system,1,1,1,1
+access_hospital_medical_report_wizard_user,hospital.medical.report.wizard user,model_hospital_medical_report_wizard,base.group_user,1,1,1,0
+access_hospital_medical_report_wizard_manager,hospital.medical.report.wizard manager,model_hospital_medical_report_wizard,base.group_system,1,1,1,1
