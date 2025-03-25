@@ -11,7 +11,7 @@ class PatientCareTracking(models.Model):
         required=True
     )
     care_date = fields.Date(string="Ngày chăm sóc", default=fields.Date.context_today, required=True)
-    doctor_id = fields.Many2one('hospital.doctor', string="Nhân viên chăm sóc")
+    doctor_id = fields.Many2one('clinic.staff', string="Nhân viên chăm sóc")
 
     # Dấu hiệu sinh tồn
     temperature = fields.Float(string="Nhiệt độ (°C)")
