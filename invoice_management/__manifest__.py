@@ -13,6 +13,8 @@
         'views/views.xml',
         'views/statistics_view.xml',
         'views/statistics_wizard_view.xml',
+        'views/report_reportlab.xml',
+        'views/statistics_report.xml',
     ],
     'demo': [],
     'installable': True,

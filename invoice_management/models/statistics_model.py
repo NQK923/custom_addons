@@ -102,7 +102,6 @@ class ClinicStatistics(models.Model):
             most_sold_product_id = max(product_counts, key=product_counts.get)
             most_sold_product_count = product_counts[most_sold_product_id]
 
-        # Tạo dữ liệu biểu đồ theo ngày
         daily_stats = []
         delta = timedelta(days=1)
         current_date = datetime.strptime(date_from, '%Y-%m-%d').date()
@@ -196,25 +195,16 @@ class ClinicStatisticsWizard(models.TransientModel):
     date_to = fields.Date(string='Đến ngày', required=True, default=lambda self: fields.Date.today())
 
     def action_generate_statistics(self):
-        """Tạo thống kê từ wizard"""
+        """Tạo thống kê và xuất file PDF"""
         self.ensure_one()
 
         # Kiểm tra ngày hợp lệ
         if self.date_from > self.date_to:
             raise models.ValidationError('Ngày bắt đầu phải nhỏ hơn ngày kết thúc')
 
-        # Tạo thống kê
         statistics = self.env['clinic.statistics'].create_statistics(
             self.date_from.strftime('%Y-%m-%d'),
             self.date_to.strftime('%Y-%m-%d')
         )
 
-        # Mở form xem thống kê
-        return {
-            'name': 'Thống kê phòng khám',
-            'type': 'ir.actions.act_window',
-            'res_model': 'clinic.statistics',
-            'res_id': statistics.id,
-            'view_mode': 'form',
-            'target': 'current',
-        }
+        return self.env.ref('invoice_management.action_report_statistics_reportlab').report_action(statistics)

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_statistics_reportlab_template">
+        <t t-call="web.html_container">
+        </t>
+    </template>
+
+    <record id="action_report_statistics_reportlab" model="ir.actions.report">
+        <field name="name">Báo cáo thống kê (PDF)</field>
+        <field name="model">clinic.statistics</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">invoice_management.report_statistics_reportlab_template</field>
+        <field name="report_file">invoice_management.report_statistics_reportlab_template</field>
+        <field name="binding_model_id" ref="model_clinic_statistics"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>
