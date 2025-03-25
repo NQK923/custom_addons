@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Định nghĩa action báo cáo -->
+    <record id="action_report_clinic_statistics" model="ir.actions.report">
+        <field name="name">Thống kê phòng khám</field>
+        <field name="model">clinic.statistics</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">invoice_management.report_clinic_statistics</field>
+        <field name="report_file">invoice_management.report_clinic_statistics</field>
+        <field name="binding_model_id" ref="model_clinic_statistics"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Mẫu QWeb cho báo cáo PDF -->
+    <template id="report_clinic_statistics">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 t-field="doc.name" class="text-center"/>
+                        <!-- Thêm thông tin tiền tệ -->
+                        <div class="text-center">
+                            <small>Đơn vị tiền tệ: VND</small>
+                        </div>
+
+                        <div class="row mt32 mb32">
+                            <div class="col-6">
+                                <strong>Từ ngày:</strong> <span t-field="doc.date_from"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Đến ngày:</strong> <span t-field="doc.date_to"/>
+                            </div>
+                        </div>
+
+                        <h3>Tổng quan</h3>
+                        <div class="row">
+                            <div class="col-4">
+                                <strong>Tổng số hóa đơn:</strong> <span t-field="doc.total_invoices"/>
+                            </div>
+                            <div class="col-4">
+                                <strong>Đã thanh toán:</strong> <span t-field="doc.paid_invoices"/>
+                            </div>
+                            <div class="col-4">
+                                <strong>Đã hủy:</strong> <span t-field="doc.cancelled_invoices"/>
+                            </div>
+                        </div>
+
+                        <h3 class="mt16">Doanh thu</h3>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Loại</th>
+                                    <th class="text-right">Số tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Tổng doanh thu</td>
+                                    <td class="text-right">
+                                        <span t-esc="'{:,.0f}'.format(doc.total_revenue)"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Doanh thu dịch vụ</td>
+                                    <td class="text-right">
+                                        <span t-esc="'{:,.0f}'.format(doc.service_revenue)"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Doanh thu thuốc</td>
+                                    <td class="text-right">
+                                        <span t-esc="'{:,.0f}'.format(doc.medicine_revenue)"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Doanh thu từ bảo hiểm</td>
+                                    <td class="text-right">
+                                        <span t-esc="'{:,.0f}'.format(doc.insurance_revenue)"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Doanh thu từ bệnh nhân</td>
+                                    <td class="text-right">
+                                        <span t-esc="'{:,.0f}'.format(doc.patient_revenue)"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h3 class="mt16">Top dịch vụ &amp; Thuốc</h3>
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Dịch vụ được sử dụng nhiều nhất:</strong>
+                                <p t-if="doc.most_used_service_id">
+                                    <span t-field="doc.most_used_service_id.service_name"/>
+                                    (<span t-field="doc.most_used_service_count"/> lượt)
+                                </p>
+                                <p t-else="">Không có dữ liệu</p>
+                            </div>
+                            <div class="col-6">
+                                <strong>Thuốc bán chạy nhất:</strong>
+                                <p t-if="doc.most_sold_product_id">
+                                    <span t-field="doc.most_sold_product_id.name"/>
+                                    (<span t-field="doc.most_sold_product_count"/> lượt)
+                                </p>
+                                <p t-else="">Không có dữ liệu</p>
+                            </div>
+                        </div>
+
+                        <h3 class="mt16">Thống kê theo ngày</h3>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Ngày</th>
+                                    <th class="text-right">Số hóa đơn</th>
+                                    <th class="text-right">Tổng doanh thu</th>
+                                    <th class="text-right">Doanh thu dịch vụ</th>
+                                    <th class="text-right">Doanh thu thuốc</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="doc.daily_stats_ids" t-as="day">
+                                    <td><span t-field="day.date"/></td>
+                                    <td class="text-right"><span t-field="day.invoice_count"/></td>
+                                    <td class="text-right"><span t-esc="'{:,.0f}'.format(day.total_revenue)"/></td>
+                                    <td class="text-right"><span t-esc="'{:,.0f}'.format(day.service_revenue)"/></td>
+                                    <td class="text-right"><span t-esc="'{:,.0f}'.format(day.medicine_revenue)"/></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td><strong>Tổng</strong></td>
+                                    <td class="text-right"><strong><t t-esc="sum(doc.daily_stats_ids.mapped('invoice_count'))"/></strong></td>
+                                    <td class="text-right"><strong><t t-esc="'{:,.0f}'.format(sum(doc.daily_stats_ids.mapped('total_revenue')))"/></strong></td>
+                                    <td class="text-right"><strong><t t-esc="'{:,.0f}'.format(sum(doc.daily_stats_ids.mapped('service_revenue')))"/></strong></td>
+                                    <td class="text-right"><strong><t t-esc="'{:,.0f}'.format(sum(doc.daily_stats_ids.mapped('medicine_revenue')))"/></strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
