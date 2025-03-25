@@ -1,4 +1,5 @@
 import io
+import os
 from datetime import datetime
 
 from reportlab.lib import colors
@@ -6,14 +7,26 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
-from odoo import models, api
+from odoo import models, api, modules
 
 
 class ClinicStatisticsReportLab(models.AbstractModel):
     _name = 'report.invoice_management.report_statistics_reportlab_template'
     _description = 'Báo cáo thống kê sử dụng Reportlab'
 
+    def _register_fonts(self):
+        """Đăng ký font Arial từ Windows để hỗ trợ tiếng Việt"""
+        # Đường dẫn đến thư mục fonts của Windows
+        windows_fonts_path = 'C:/Windows/Fonts'
+
+        # Đăng ký các font Arial
+        pdfmetrics.registerFont(TTFont('Arial', os.path.join(windows_fonts_path, 'arial.ttf')))
+        pdfmetrics.registerFont(TTFont('Arial-Bold', os.path.join(windows_fonts_path, 'arialbd.ttf')))
+        pdfmetrics.registerFont(TTFont('Arial-Italic', os.path.join(windows_fonts_path, 'ariali.ttf')))
+        pdfmetrics.registerFont(TTFont('Arial-BoldItalic', os.path.join(windows_fonts_path, 'arialbi.ttf')))
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -24,6 +37,9 @@ class ClinicStatisticsReportLab(models.AbstractModel):
         }
 
     def _get_pdf(self, statistics):
+        # Đăng ký font
+        self._register_fonts()
+
         buffer = io.BytesIO()
 
         doc = SimpleDocTemplate(
@@ -37,29 +53,34 @@ class ClinicStatisticsReportLab(models.AbstractModel):
 
         elements = []
 
-        styles = getSampleStyleSheet()
+        # Tạo các styles với font Arial
         title_style = ParagraphStyle(
             'Title',
-            parent=styles['Heading1'],
-            alignment=1,
+            fontName='Arial-Bold',
             fontSize=16,
+            alignment=1,
             spaceAfter=12
         )
         subtitle_style = ParagraphStyle(
             'Subtitle',
-            parent=styles['Heading2'],
+            fontName='Arial',
             fontSize=14,
             spaceAfter=6
         )
         header_style = ParagraphStyle(
             'Header',
-            parent=styles['Heading3'],
+            fontName='Arial-Bold',
             fontSize=12,
             spaceBefore=10,
             spaceAfter=6
         )
-        normal_style = styles['Normal']
+        normal_style = ParagraphStyle(
+            'Normal',
+            fontName='Arial',
+            fontSize=10
+        )
 
+        # Tạo các phần tử với font Arial
         title = Paragraph(statistics.name, title_style)
         elements.append(title)
 
@@ -84,7 +105,8 @@ class ClinicStatisticsReportLab(models.AbstractModel):
             ('BACKGROUND', (0, 0), (1, 0), colors.lightgrey),
             ('TEXTCOLOR', (0, 0), (1, 0), colors.black),
             ('ALIGN', (0, 0), (1, 0), 'CENTER'),
-            ('FONTNAME', (0, 0), (1, 0), 'Helvetica-Bold'),
+            ('FONTNAME', (0, 0), (1, 0), 'Arial-Bold'),
+            ('FONTNAME', (0, 1), (1, -1), 'Arial'),
             ('FONTSIZE', (0, 0), (1, 0), 11),
             ('BOTTOMPADDING', (0, 0), (1, 0), 8),
             ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
@@ -111,7 +133,8 @@ class ClinicStatisticsReportLab(models.AbstractModel):
             ('BACKGROUND', (0, 0), (1, 0), colors.lightgrey),
             ('TEXTCOLOR', (0, 0), (1, 0), colors.black),
             ('ALIGN', (0, 0), (1, 0), 'CENTER'),
-            ('FONTNAME', (0, 0), (1, 0), 'Helvetica-Bold'),
+            ('FONTNAME', (0, 0), (1, 0), 'Arial-Bold'),
+            ('FONTNAME', (0, 1), (1, -1), 'Arial'),  # Đảm bảo nội dung bảng sử dụng Arial
             ('ALIGN', (1, 1), (1, -1), 'RIGHT'),
             ('FONTSIZE', (0, 0), (1, 0), 11),
             ('BOTTOMPADDING', (0, 0), (1, 0), 8),
@@ -150,7 +173,8 @@ class ClinicStatisticsReportLab(models.AbstractModel):
             ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Arial-Bold'),
+            ('FONTNAME', (0, 1), (-1, -1), 'Arial'),  # Đảm bảo nội dung bảng sử dụng Arial
             ('FONTSIZE', (0, 0), (-1, 0), 11),
             ('ALIGN', (-1, 1), (-1, -1), 'CENTER'),  # Số lượng căn giữa
             ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
@@ -204,8 +228,9 @@ class ClinicStatisticsReportLab(models.AbstractModel):
                 ('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey),  # Dòng tổng
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
                 ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),  # Dòng tổng
+                ('FONTNAME', (0, 0), (-1, 0), 'Arial-Bold'),
+                ('FONTNAME', (0, 1), (-1, -2), 'Arial'),  # Nội dung bảng
+                ('FONTNAME', (0, -1), (-1, -1), 'Arial-Bold'),  # Dòng tổng
                 ('FONTSIZE', (0, 0), (-1, 0), 10),
                 ('ALIGN', (1, 1), (1, -1), 'CENTER'),  # Số hóa đơn căn giữa
                 ('ALIGN', (2, 1), (-1, -1), 'RIGHT'),  # Các cột tiền căn phải
@@ -217,7 +242,7 @@ class ClinicStatisticsReportLab(models.AbstractModel):
         # Thêm chân trang
         footer_text = Paragraph(
             f"Báo cáo được tạo vào ngày {datetime.now().strftime('%d/%m/%Y %H:%M')}",
-            styles['Italic']
+            ParagraphStyle('Footer', fontName='Arial-Italic', fontSize=8)
         )
         elements.append(Spacer(1, 1 * cm))
         elements.append(footer_text)
