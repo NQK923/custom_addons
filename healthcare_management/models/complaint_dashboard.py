@@ -260,41 +260,7 @@ class ComplaintDashboard(models.Model):
             complaint_month_chart = [data for _, data in sorted_months]
 
             record.complaint_by_month_data = json.dumps(complaint_month_chart)
-
-            # Dữ liệu phân bố đánh giá mức độ hài lòng
-            satisfaction_data = self.env['healthcare.complaint.statistics'].read_group(
-                domain + [('satisfaction_numeric', '>', 0)],
-                fields=['satisfaction_rating'],
-                groupby=['satisfaction_rating']
-            )
-
-            # Xác định khóa đếm trong kết quả read_group cho satisfaction_data
-            count_key_satisfaction = 'satisfaction_rating_count'
-            if satisfaction_data:
-                possible_count_keys = ['__count', 'satisfaction_rating_count']
-                for key in possible_count_keys:
-                    if key in satisfaction_data[0]:
-                        count_key_satisfaction = key
-                        break
-
-            satisfaction_chart = []
-            satisfaction_labels = {
-                '1': 'Rất không hài lòng',
-                '2': 'Không hài lòng',
-                '3': 'Bình thường',
-                '4': 'Hài lòng',
-                '5': 'Rất hài lòng'
-            }
-
-            for data in satisfaction_data:
-                # Safely get satisfaction_rating
-                rating = data.get('satisfaction_rating', '')
-                satisfaction_chart.append({
-                    'rating': satisfaction_labels.get(rating, rating),
-                    'count': data.get(count_key_satisfaction, 0)
-                })
-
-            record.satisfaction_distribution_data = json.dumps(satisfaction_chart)
+            record.satisfaction_distribution_data = json.dumps([])
 
 
 class ComplaintDashboardCategory(models.TransientModel):

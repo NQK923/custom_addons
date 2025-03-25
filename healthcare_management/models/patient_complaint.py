@@ -45,13 +45,6 @@ class PatientComplaint(models.Model):
     deadline = fields.Date(string='Hạn chót', compute='_compute_deadline', store=True)
     is_overdue = fields.Boolean(string='Quá hạn', compute='_compute_is_overdue', store=True)
 
-    satisfaction_rating = fields.Selection([
-        ('1', 'Rất không hài lòng'),
-        ('2', 'Không hài lòng'),
-        ('3', 'Bình thường'),
-        ('4', 'Hài lòng'),
-        ('5', 'Rất hài lòng')
-    ], string='Đánh giá mức độ hài lòng')
 
     @api.depends('complaint_date', 'priority')
     def _compute_deadline(self):
