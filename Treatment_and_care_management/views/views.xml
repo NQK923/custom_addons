@@ -1,10 +1,10 @@
 <odoo>
-    <!-- list View for Treatment Plan -->
+    <!-- List View for Treatment Plan -->
     <record id="view_treatment_plan_list" model="ir.ui.view">
         <field name="name">treatment.plan.list</field>
         <field name="model">treatment.plan</field>
         <field name="arch" type="xml">
-            <list string="Kế hoạch điều trị">
+            <list string="Treatment Plans">
                 <field name="code"/>
                 <field name="patient_id"/>
                 <field name="start_date"/>
@@ -18,19 +18,20 @@
         <field name="name">treatment.plan.form</field>
         <field name="model">treatment.plan</field>
         <field name="arch" type="xml">
-            <form string="Kế hoạch điều trị">
+            <form string="Treatment Plan">
                 <sheet>
                     <group>
-                        <field name="code" readonly="1"/>
+                        <field name="code" />
                         <field name="patient_id"/>
                         <field name="start_date"/>
                         <field name="end_date"/>
                     </group>
                     <notebook>
-                        <page string="Quá trình điều trị">
+                        <page string="Treatment Processes">
                             <field name="treatment_process_ids">
-                                <list string="Quá trình điều trị">
+                                <list string="Processes">
                                     <field name="code"/>
+                                    <field name="service_id"/>
                                     <field name="executor_id"/>
                                     <field name="state"/>
                                     <field name="execution_time"/>
@@ -44,68 +45,78 @@
         </field>
     </record>
 
-    <!-- list View for Treatment Process -->
-    <record id="view_treatment_process_list" model="ir.ui.view">
-        <field name="name">treatment.process.list</field>
-        <field name="model">treatment.process</field>
+    <!-- Action and Menu for Treatment Plan -->
+    <record id="action_treatment_plan" model="ir.actions.act_window">
+        <field name="name">Treatment Plans</field>
+        <field name="res_model">treatment.plan</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+     <record id="view_patient_care_tracking_list" model="ir.ui.view">
+        <field name="name">patient.care.tracking.list</field>
+        <field name="model">patient.care.tracking</field>
         <field name="arch" type="xml">
-            <list string="Quá trình điều trị">
-                <field name="code"/>
-                <field name="plan_id"/>
-                <field name="executor_id"/>
-                <field name="state"/>
-                <field name="execution_time"/>
-                <field name="prescription_id"/>
+            <list string="Patient Care Tracking">
+                <field name="patient_id"/>
+                <field name="care_date"/>
+                <field name="statenew"/>
+                <field name="temperature"/>
+                <field name="blood_pressure"/>
+                <field name="heart_rate"/>
+                <field name="is_emergency"/>
             </list>
         </field>
     </record>
 
-    <!-- Form View for Treatment Process -->
-    <record id="view_treatment_process_form" model="ir.ui.view">
-        <field name="name">treatment.process.form</field>
-        <field name="model">treatment.process</field>
+    <!-- Form View -->
+    <record id="view_patient_care_tracking_form" model="ir.ui.view">
+        <field name="name">patient.care.tracking.form</field>
+        <field name="model">patient.care.tracking</field>
         <field name="arch" type="xml">
-            <form string="Quá trình điều trị">
+            <form string="Patient Care Tracking">
                 <sheet>
                     <group>
-                        <field name="code" readonly="1"/>
-                        <field name="plan_id"/>
-                        <field name="executor_id"/>
-                        <field name="state"/>
-                        <field name="execution_time"/>
-                        <field name="prescription_id"/>
+                        <field name="patient_id"/>
+                        <field name="care_date"/>
+                        <field name="statenew"/>
+                    </group>
+                    <group string="Dấu hiệu sinh tồn">
+                        <field name="temperature"/>
+                        <field name="blood_pressure"/>
+                        <field name="heart_rate"/>
+                        <field name="respiration_rate"/>
+                        <field name="oxygen_saturation"/>
+                    </group>
+                    <group string="Chăm sóc đặc biệt">
+                        <field name="special_care_description"/>
+                        <field name="medical_equipment_used"/>
+                        <field name="is_emergency"/>
+                    </group>
+                    <group string="Điều dưỡng hàng ngày">
+                        <field name="daily_nursing_notes"/>
+                        <field name="abnormal_event"/>
+                        <field name="is_alert_triggered"/>
+                    </group>
+                    <group string="Thông tin người chăm sóc">
+                         <field name="doctor_id"/>
+                        <field name="caregiver_role"/>
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <!-- Action for Treatment Plan -->
-    <record id="action_treatment_plan" model="ir.actions.act_window">
-        <field name="name">Kế hoạch điều trị</field>
-        <field name="res_model">treatment.plan</field>
+    <!-- Action and Menu for Patient Care Tracking -->
+    <record id="action_patient_care_tracking" model="ir.actions.act_window">
+        <field name="name">Patient Care Tracking</field>
+        <field name="res_model">patient.care.tracking</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <!-- Action for Treatment Process -->
-    <record id="action_treatment_process" model="ir.actions.act_window">
-        <field name="name">Quá trình điều trị</field>
-        <field name="res_model">treatment.process</field>
-        <field name="view_mode">list,form</field>
-    </record>
 
-    <!-- Menu for Treatment Plan -->
+
+    <!-- Menus -->
     <menuitem id="menu_treatment_plan_root" name="Quản lý điều trị" sequence="10"/>
-
-    <menuitem id="menu_treatment_plan"
-              name="Kế hoạch điều trị"
-              parent="menu_treatment_plan_root"
-              action="action_treatment_plan"
-              sequence="10"/>
-
-    <menuitem id="menu_treatment_process"
-              name="Quá trình điều trị"
-              parent="menu_treatment_plan_root"
-              action="action_treatment_process"
-              sequence="20"/>
+    <menuitem id="menu_treatment_plan" name="Kế hoạch điều trị" parent="menu_treatment_plan_root" action="action_treatment_plan"/>
+    <menuitem id="menu_patient_care_tracking" name="Theo dõi chăm sóc bệnh nhân" parent="menu_treatment_plan_root" action="action_patient_care_tracking"/>
 </odoo>
