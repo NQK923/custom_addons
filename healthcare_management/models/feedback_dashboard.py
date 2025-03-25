@@ -58,13 +58,13 @@ class FeedbackDashboard(models.Model):
 
             record.total_feedback = sum(item.get(count_key, 0) for item in feedback_data)
             record.total_compliments = sum(
-                item.get(count_key, 0) for item in feedback_data if item['feedback_type'] == 'compliment')
+                item.get(count_key, 0) for item in feedback_data if item.get('feedback_type') == 'compliment')
             record.total_complaints = sum(
-                item.get(count_key, 0) for item in feedback_data if item['feedback_type'] == 'complaint')
+                item.get(count_key, 0) for item in feedback_data if item.get('feedback_type') == 'complaint')
             record.total_suggestions = sum(
-                item.get(count_key, 0) for item in feedback_data if item['feedback_type'] == 'suggestion')
+                item.get(count_key, 0) for item in feedback_data if item.get('feedback_type') == 'suggestion')
             record.total_questions = sum(
-                item.get(count_key, 0) for item in feedback_data if item['feedback_type'] == 'question')
+                item.get(count_key, 0) for item in feedback_data if item.get('feedback_type') == 'question')
 
             # Tính điểm hài lòng trung bình
             satisfaction_data = self.env['healthcare.feedback.statistics'].search(
@@ -80,95 +80,70 @@ class FeedbackDashboard(models.Model):
     @api.depends('date_from', 'date_to')
     def _compute_department_statistics(self):
         for record in self:
-            record.department_feedback_ids = [(5, 0, 0)]  # Xóa các records hiện tại
+            # Clear previous records
+            record.department_feedback_ids = [(5, 0, 0)]
 
-            domain = [
-                ('feedback_date', '>=', record.date_from),
-                ('feedback_date', '<=', record.date_to),
-                ('department_id', '!=', False)
-            ]
+            # Define the date range for our queries
+            date_from_str = record.date_from
+            date_to_str = record.date_to
 
-            # Lấy thống kê theo phòng ban
-            department_data = self.env['healthcare.feedback.statistics'].read_group(
-                domain,
-                fields=['department_id', 'satisfaction_numeric', 'feedback_type'],
-                groupby=['department_id', 'feedback_type']
-            )
+            # Use direct SQL to ensure accurate counts
+            # This query gets all department stats in one go
+            self.env.cr.execute("""
+                SELECT 
+                    d.id AS department_id,
+                    d.name AS department_name,
+                    COUNT(fs.id) AS total_feedback,
+                    SUM(CASE WHEN fs.feedback_type = 'compliment' THEN 1 ELSE 0 END) AS compliments,
+                    SUM(CASE WHEN fs.feedback_type = 'complaint' THEN 1 ELSE 0 END) AS complaints,
+                    SUM(CASE WHEN fs.feedback_type = 'suggestion' THEN 1 ELSE 0 END) AS suggestions,
+                    SUM(CASE WHEN fs.feedback_type = 'question' THEN 1 ELSE 0 END) AS questions,
+                    SUM(CASE WHEN fs.feedback_type NOT IN ('compliment', 'complaint', 'suggestion', 'question') 
+                            OR fs.feedback_type IS NULL THEN 1 ELSE 0 END) AS others,
+                    AVG(CASE WHEN fs.satisfaction_numeric > 0 THEN fs.satisfaction_numeric ELSE NULL END) AS avg_satisfaction
+                FROM 
+                    healthcare_feedback_statistics fs
+                JOIN 
+                    clinic_department d ON fs.department_id = d.id
+                WHERE 
+                    fs.feedback_date >= %s AND fs.feedback_date <= %s
+                GROUP BY 
+                    d.id, d.name
+                ORDER BY 
+                    d.name
+            """, (date_from_str, date_to_str))
 
-            # Xác định khóa đếm trong kết quả read_group
-            count_key = 'feedback_type_count'
-            if department_data:
-                # Tìm khóa đếm phù hợp trong kết quả
-                possible_count_keys = ['__count', 'feedback_type_count']
-                for key in possible_count_keys:
-                    if key in department_data[0]:
-                        count_key = key
-                        break
+            # Get the results
+            department_stats = self.env.cr.dictfetchall()
 
-            department_stats = defaultdict(lambda: {
-                'department_id': False,
-                'total': 0,
-                'compliments': 0,
-                'complaints': 0,
-                'suggestions': 0,
-                'questions': 0,
-                'other': 0,
-                'total_satisfaction': 0,
-                'satisfaction_count': 0
-            })
+            # Create department feedback records
+            department_feedback_commands = []
+            for stats in department_stats:
+                # Convert None to 0 for integer fields
+                for field in ['compliments', 'complaints', 'suggestions', 'questions', 'others', 'total_feedback']:
+                    if stats.get(field) is None:
+                        stats[field] = 0
 
-            for data in department_data:
-                dept_id = data['department_id'][0] if data['department_id'] else False
-                if not dept_id:
-                    continue
+                # Default avg_satisfaction to 0 if None
+                if stats.get('avg_satisfaction') is None:
+                    stats['avg_satisfaction'] = 0
 
-                count = data.get(count_key, 0)
-                feedback_type = data['feedback_type']
-                department_stats[dept_id]['department_id'] = dept_id
-                department_stats[dept_id]['total'] += count
-
-                if feedback_type == 'compliment':
-                    department_stats[dept_id]['compliments'] += count
-                elif feedback_type == 'complaint':
-                    department_stats[dept_id]['complaints'] += count
-                elif feedback_type == 'suggestion':
-                    department_stats[dept_id]['suggestions'] += count
-                elif feedback_type == 'question':
-                    department_stats[dept_id]['questions'] += count
-                elif feedback_type == 'other':
-                    department_stats[dept_id]['other'] += count
-
-            # Tính điểm hài lòng trung bình cho mỗi phòng ban
-            for dept_id in department_stats:
-                satisfaction_data = self.env['healthcare.feedback.statistics'].search(
-                    domain + [
-                        ('department_id', '=', dept_id),
-                        ('satisfaction_numeric', '>', 0)
-                    ]
-                )
-
-                if satisfaction_data:
-                    total_score = sum(data.satisfaction_numeric for data in satisfaction_data)
-                    department_stats[dept_id]['total_satisfaction'] = total_score
-                    department_stats[dept_id]['satisfaction_count'] = len(satisfaction_data)
-
-            # Tạo records mới
-            for dept_id, stats in department_stats.items():
-                vals = {
+                department_feedback_commands.append((0, 0, {
                     'dashboard_id': record.id,
                     'department_id': stats['department_id'],
-                    'total_feedback': stats['total'],
+                    'department_name': stats['department_name'],
+                    'total_feedback': stats['total_feedback'],
                     'compliments': stats['compliments'],
                     'complaints': stats['complaints'],
                     'suggestions': stats['suggestions'],
                     'questions': stats['questions'],
-                    'others': stats['other'],
-                }
+                    'others': stats['others'],
+                    'avg_satisfaction': stats['avg_satisfaction'],
+                }))
 
-                if stats['satisfaction_count'] > 0:
-                    vals['avg_satisfaction'] = stats['total_satisfaction'] / stats['satisfaction_count']
-
-                self.env['healthcare.feedback.dashboard.department'].create(vals)
+            # Update the one2many field with the new records
+            if department_feedback_commands:
+                record.department_feedback_ids = department_feedback_commands
 
     @api.depends('date_from', 'date_to')
     def _compute_chart_data(self):
@@ -198,8 +173,10 @@ class FeedbackDashboard(models.Model):
 
             feedback_type_chart = []
             for data in feedback_type_data:
+                # Safely get feedback_type
+                feedback_type = data.get('feedback_type', 'other')
                 type_name = dict(self.env['healthcare.feedback.statistics']._fields['feedback_type'].selection).get(
-                    data['feedback_type'], 'Khác')
+                    feedback_type, 'Khác')
                 feedback_type_chart.append({
                     'type': type_name,
                     'count': data.get(count_key_type, 0)
@@ -248,7 +225,8 @@ class FeedbackDashboard(models.Model):
                     month_data[month_key]['month_name'] = f"{month_names.get(month, month)}/{year}"
                     month_data[month_key]['total'] += data.get(count_key_month, 0)
 
-                    feedback_type = data['feedback_type']
+                    # Safely get feedback_type
+                    feedback_type = data.get('feedback_type', 'other')
                     if feedback_type == 'compliment':
                         month_data[month_key]['compliments'] += data.get(count_key_month, 0)
                     elif feedback_type == 'complaint':
@@ -257,7 +235,7 @@ class FeedbackDashboard(models.Model):
                         month_data[month_key]['suggestions'] += data.get(count_key_month, 0)
                     elif feedback_type == 'question':
                         month_data[month_key]['questions'] += data.get(count_key_month, 0)
-                    elif feedback_type == 'other':
+                    else:
                         month_data[month_key]['other'] += data.get(count_key_month, 0)
 
             # Sắp xếp theo tháng
@@ -292,7 +270,8 @@ class FeedbackDashboard(models.Model):
             }
 
             for data in satisfaction_data:
-                rating = data['satisfaction_rating']
+                # Safely get satisfaction_rating
+                rating = data.get('satisfaction_rating', '')
                 satisfaction_chart.append({
                     'rating': satisfaction_labels.get(rating, rating),
                     'count': data.get(count_key_satisfaction, 0)
@@ -301,12 +280,13 @@ class FeedbackDashboard(models.Model):
             record.satisfaction_distribution_data = json.dumps(satisfaction_chart)
 
 
-class FeedbackDashboardDepartment(models.Model):
+class FeedbackDashboardDepartment(models.TransientModel):
     _name = 'healthcare.feedback.dashboard.department'
     _description = 'Thống kê phản hồi theo phòng ban'
 
     dashboard_id = fields.Many2one('healthcare.feedback.dashboard', string='Bảng điều khiển')
     department_id = fields.Many2one('clinic.department', string='Phòng ban')
+    department_name = fields.Char(string='Tên phòng ban')
     total_feedback = fields.Integer(string='Tổng số phản hồi')
     compliments = fields.Integer(string='Khen ngợi')
     complaints = fields.Integer(string='Khiếu nại')

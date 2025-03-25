@@ -40,8 +40,7 @@ class MedicalCertification(models.Model):
         ('renewed', 'Đã gia hạn')
     ], string='Trạng thái', default='draft', tracking=True)
 
-    staff_id = fields.Many2one('clinic.staff', string='Người phụ trách',
-                                     default=lambda self: self.env.user, tracking=True)
+    staff_id = fields.Many2one('clinic.staff', string='Người phụ trách', tracking=True)
     department_id = fields.Many2one('clinic.department', string='Phòng ban liên quan')
 
     renewal_date = fields.Date(string='Ngày gia hạn tiếp theo')

@@ -31,13 +31,6 @@
                             <field name="date"/>
                             <field name="inspector"/>
                         </group>
-                        <group>
-                            <field name="result"/>
-                            <field name="responsible_id"/>
-                            <field name="corrective_action_required"/>
-                            <field name="corrective_deadline" invisible="[('corrective_action_required', '=', False)]" required="[('corrective_action_required', '=', True)]"/>
-                            <field name="corrective_completed" invisible="[('corrective_action_required', '=', False)]"/>
-                        </group>
                     </group>
                     <notebook>
                         <page string="Kết quả kiểm tra">
