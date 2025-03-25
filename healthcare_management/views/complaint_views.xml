@@ -44,11 +44,6 @@
                         <page string="Giải pháp" invisible="state in ('new', 'cancelled')">
                             <field name="resolution" placeholder="Nhập phương án giải quyết..."/>
                         </page>
-                        <page string="Đánh giá" invisible="state != 'resolved'">
-                            <group>
-                                <field name="satisfaction_rating" widget="priority"/>
-                            </group>
-                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

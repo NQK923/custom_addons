@@ -36,13 +36,6 @@ class ComplaintStatistics(models.Model):
 
     month = fields.Char(string='Tháng', readonly=True)
     year = fields.Char(string='Năm', readonly=True)
-    satisfaction_rating = fields.Selection([
-        ('1', 'Rất không hài lòng'),
-        ('2', 'Không hài lòng'),
-        ('3', 'Bình thường'),
-        ('4', 'Hài lòng'),
-        ('5', 'Rất hài lòng')
-    ], string='Đánh giá sau giải quyết')
     satisfaction_numeric = fields.Integer(string='Điểm đánh giá', readonly=True)
 
     def init(self):
@@ -66,15 +59,7 @@ class ComplaintStatistics(models.Model):
                     END as resolution_time,
                     TO_CHAR(cp.complaint_date, 'MM') as month,
                     TO_CHAR(cp.complaint_date, 'YYYY') as year,
-                    cp.satisfaction_rating as satisfaction_rating,
-                    CASE 
-                        WHEN cp.satisfaction_rating = '1' THEN 1
-                        WHEN cp.satisfaction_rating = '2' THEN 2
-                        WHEN cp.satisfaction_rating = '3' THEN 3
-                        WHEN cp.satisfaction_rating = '4' THEN 4
-                        WHEN cp.satisfaction_rating = '5' THEN 5
-                        ELSE 0
-                    END as satisfaction_numeric
+                    0 as satisfaction_numeric
                 FROM
                     healthcare_patient_complaint cp
             )

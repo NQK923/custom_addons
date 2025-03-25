@@ -14,7 +14,6 @@
                 <field name="state"/>
                 <field name="user_id"/>
                 <field name="resolution_time"/>
-                <field name="satisfaction_rating" widget="priority"/>
                 <field name="satisfaction_numeric" invisible="1"/>
                 <field name="month" invisible="1"/>
                 <field name="year" invisible="1"/>
