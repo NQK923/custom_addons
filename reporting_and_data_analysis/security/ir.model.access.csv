@@ -1,5 +1,11 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_invoice_statistics_user,invoice.statistics.user,model_invoice_statistics,base.group_user,1,0,0,0
-access_invoice_statistics_manager,invoice.statistics.manager,model_invoice_statistics,base.group_system,1,1,1,1
-access_invoice_dashboard_user,invoice.dashboard.user,model_invoice_dashboard,base.group_user,1,1,1,0
-access_invoice_dashboard_manager,invoice.dashboard.manager,model_invoice_dashboard,base.group_system,1,1,1,1
+access_clinic_invoice_report_monthly_user,clinic.invoice.report.monthly user,model_clinic_invoice_report_monthly,base.group_user,1,0,0,0
+access_clinic_invoice_report_monthly_manager,clinic.invoice.report.monthly manager,model_clinic_invoice_report_monthly,base.group_system,1,0,0,0
+access_clinic_invoice_report_service_user,clinic.invoice.report.service user,model_clinic_invoice_report_service,base.group_user,1,0,0,0
+access_clinic_invoice_report_service_manager,clinic.invoice.report.service manager,model_clinic_invoice_report_service,base.group_system,1,0,0,0
+access_clinic_invoice_report_product_user,clinic.invoice.report.product user,model_clinic_invoice_report_product,base.group_user,1,0,0,0
+access_clinic_invoice_report_product_manager,clinic.invoice.report.product manager,model_clinic_invoice_report_product,base.group_system,1,0,0,0
+access_clinic_invoice_report_patient_user,clinic.invoice.report.patient user,model_clinic_invoice_report_patient,base.group_user,1,0,0,0
+access_clinic_invoice_report_patient_manager,clinic.invoice.report.patient manager,model_clinic_invoice_report_patient,base.group_system,1,0,0,0
+access_clinic_invoice_report_status_user,clinic.invoice.report.status user,model_clinic_invoice_report_status,base.group_user,1,0,0,0
+access_clinic_invoice_report_status_manager,clinic.invoice.report.status manager,model_clinic_invoice_report_status,base.group_system,1,0,0,0

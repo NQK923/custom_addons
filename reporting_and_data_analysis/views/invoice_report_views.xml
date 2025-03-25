@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Monthly Invoice Report Views -->
+    <record id="view_clinic_invoice_report_monthly_pivot" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.monthly.pivot</field>
+        <field name="model">clinic.invoice.report.monthly</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân tích hóa đơn theo tháng" display_quantity="true">
+                <field name="name" type="row"/>
+                <field name="service_amount" type="measure" string="Doanh thu dịch vụ"/>
+                <field name="medicine_amount" type="measure" string="Doanh thu thuốc"/>
+                <field name="total_amount" type="measure" string="Tổng doanh thu"/>
+                <field name="insurance_amount" type="measure" string="Bảo hiểm chi trả"/>
+                <field name="patient_amount" type="measure" string="Bệnh nhân chi trả"/>
+                <field name="invoice_count" type="measure" string="Số hóa đơn"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_monthly_graph" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.monthly.graph</field>
+        <field name="model">clinic.invoice.report.monthly</field>
+        <field name="arch" type="xml">
+            <graph string="Doanh thu theo tháng" type="bar" stacked="True">
+                <field name="name"/>
+                <field name="service_amount" type="measure" string="Doanh thu dịch vụ"/>
+                <field name="medicine_amount" type="measure" string="Doanh thu thuốc"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_monthly_line_graph" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.monthly.line.graph</field>
+        <field name="model">clinic.invoice.report.monthly</field>
+        <field name="arch" type="xml">
+            <graph string="Monthly Revenue Trend" type="line">
+                <field name="name"/>
+                <field name="total_amount" type="measure"/>
+                <field name="invoice_count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_monthly_search" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.monthly.search</field>
+        <field name="model">clinic.invoice.report.monthly</field>
+        <field name="arch" type="xml">
+            <search string="Monthly Invoice Analysis">
+                <field name="name"/>
+                <field name="year"/>
+                <field name="month"/>
+                <filter string="This Year" name="this_year" domain="[('year','=',time.strftime('%Y'))]"/>
+                <filter string="Last Year" name="last_year" domain="[('year','=',str(int(time.strftime('%Y')) - 1))]"/>
+                <group expand="1" string="Group By">
+                    <filter string="Year" name="year" context="{'group_by':'year'}"/>
+                    <filter string="Month" name="month" context="{'group_by':'month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_clinic_invoice_report_monthly" model="ir.actions.act_window">
+        <field name="name">Phân tích doanh thu theo tháng</field>
+        <field name="res_model">clinic.invoice.report.monthly</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="search_view_id" ref="view_clinic_invoice_report_monthly_search"/>
+        <field name="context">{'search_default_this_year': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Chưa có dữ liệu để hiển thị!
+            </p>
+            <p>
+                Tạo một số hóa đơn để xem phân tích doanh thu theo tháng.
+            </p>
+        </field>
+    </record>
+
+    <!-- Service Revenue Report Views -->
+    <record id="view_clinic_invoice_report_service_pivot" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.service.pivot</field>
+        <field name="model">clinic.invoice.report.service</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân tích doanh thu dịch vụ" display_quantity="true">
+                <field name="service_name" type="row" string="Tên dịch vụ"/>
+                <field name="total_quantity" type="measure" string="Tổng số lượng"/>
+                <field name="total_revenue" type="measure" string="Tổng doanh thu"/>
+                <field name="insurance_covered" type="measure" string="Bảo hiểm chi trả"/>
+                <field name="patient_paid" type="measure" string="Bệnh nhân chi trả"/>
+                <field name="invoice_count" type="measure" string="Số hóa đơn"/>
+                <field name="avg_price" type="measure" string="Giá trung bình"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_service_graph" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.service.graph</field>
+        <field name="model">clinic.invoice.report.service</field>
+        <field name="arch" type="xml">
+            <graph string="Service Revenue" type="bar">
+                <field name="service_name"/>
+                <field name="total_revenue" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_service_pie" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.service.pie</field>
+        <field name="model">clinic.invoice.report.service</field>
+        <field name="arch" type="xml">
+            <graph string="Service Revenue Distribution" type="pie">
+                <field name="service_name"/>
+                <field name="total_revenue" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_service_search" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.service.search</field>
+        <field name="model">clinic.invoice.report.service</field>
+        <field name="arch" type="xml">
+            <search string="Service Revenue Analysis">
+                <field name="service_name"/>
+                <field name="service_id"/>
+                <filter string="High Revenue" name="high_revenue" domain="[('total_revenue','>',1000000)]"/>
+                <group expand="1" string="Group By">
+                    <filter string="Service" name="service" context="{'group_by':'service_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_clinic_invoice_report_service" model="ir.actions.act_window">
+        <field name="name">Service Revenue Analysis</field>
+        <field name="res_model">clinic.invoice.report.service</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="search_view_id" ref="view_clinic_invoice_report_service_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No data available yet!
+            </p>
+            <p>
+                Create some invoices with services to see the service revenue analysis.
+            </p>
+        </field>
+    </record>
+
+    <!-- Medicine Revenue Report Views -->
+    <record id="view_clinic_invoice_report_product_pivot" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.product.pivot</field>
+        <field name="model">clinic.invoice.report.product</field>
+        <field name="arch" type="xml">
+            <pivot string="Medicine Revenue Analysis" display_quantity="true">
+                <field name="product_name" type="row"/>
+                <field name="total_quantity" type="measure"/>
+                <field name="total_revenue" type="measure"/>
+                <field name="insurance_covered" type="measure"/>
+                <field name="patient_paid" type="measure"/>
+                <field name="invoice_count" type="measure"/>
+                <field name="avg_price" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_product_graph" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.product.graph</field>
+        <field name="model">clinic.invoice.report.product</field>
+        <field name="arch" type="xml">
+            <graph string="Medicine Revenue" type="bar">
+                <field name="product_name"/>
+                <field name="total_revenue" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_product_pie" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.product.pie</field>
+        <field name="model">clinic.invoice.report.product</field>
+        <field name="arch" type="xml">
+            <graph string="Medicine Revenue Distribution" type="pie">
+                <field name="product_name"/>
+                <field name="total_revenue" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_product_search" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.product.search</field>
+        <field name="model">clinic.invoice.report.product</field>
+        <field name="arch" type="xml">
+            <search string="Medicine Revenue Analysis">
+                <field name="product_name"/>
+                <field name="product_id"/>
+                <filter string="High Revenue" name="high_revenue" domain="[('total_revenue','>',1000000)]"/>
+                <group expand="1" string="Group By">
+                    <filter string="Medicine" name="product" context="{'group_by':'product_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_clinic_invoice_report_product" model="ir.actions.act_window">
+        <field name="name">Medicine Revenue Analysis</field>
+        <field name="res_model">clinic.invoice.report.product</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="search_view_id" ref="view_clinic_invoice_report_product_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No data available yet!
+            </p>
+            <p>
+                Create some invoices with medicines to see the medicine revenue analysis.
+            </p>
+        </field>
+    </record>
+
+    <!-- Patient Invoice Report Views -->
+    <record id="view_clinic_invoice_report_patient_pivot" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.patient.pivot</field>
+        <field name="model">clinic.invoice.report.patient</field>
+        <field name="arch" type="xml">
+            <pivot string="Patient Invoice Analysis" display_quantity="true">
+                <field name="patient_name" type="row"/>
+                <field name="has_insurance" type="row"/>
+                <field name="invoice_count" type="measure"/>
+                <field name="service_amount" type="measure"/>
+                <field name="medicine_amount" type="measure"/>
+                <field name="total_amount" type="measure"/>
+                <field name="insurance_amount" type="measure"/>
+                <field name="patient_amount" type="measure"/>
+                <field name="insurance_rate" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_patient_graph" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.patient.graph</field>
+        <field name="model">clinic.invoice.report.patient</field>
+        <field name="arch" type="xml">
+            <graph string="Top Patient Spending" type="bar">
+                <field name="patient_name"/>
+                <field name="patient_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_patient_pie" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.patient.pie</field>
+        <field name="model">clinic.invoice.report.patient</field>
+        <field name="arch" type="xml">
+            <graph string="Insurance vs Patient Payments" type="pie">
+                <field name="has_insurance"/>
+                <field name="total_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_patient_search" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.patient.search</field>
+        <field name="model">clinic.invoice.report.patient</field>
+        <field name="arch" type="xml">
+            <search string="Patient Invoice Analysis">
+                <field name="patient_name"/>
+                <field name="patient_id"/>
+                <separator/>
+                <filter string="Has Insurance" name="has_insurance" domain="[('has_insurance','=',True)]"/>
+                <filter string="No Insurance" name="no_insurance" domain="[('has_insurance','=',False)]"/>
+                <filter string="Valid Insurance" name="valid_insurance" domain="[('insurance_state','=','Hợp lệ')]"/>
+                <filter string="High Spending" name="high_spending" domain="[('total_amount','>',5000000)]"/>
+                <group expand="1" string="Group By">
+                    <filter string="Patient" name="patient" context="{'group_by':'patient_id'}"/>
+                    <filter string="Insurance Status" name="insurance_status" context="{'group_by':'insurance_state'}"/>
+                    <filter string="Has Insurance" name="group_insurance" context="{'group_by':'has_insurance'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_clinic_invoice_report_patient" model="ir.actions.act_window">
+        <field name="name">Patient Invoice Analysis</field>
+        <field name="res_model">clinic.invoice.report.patient</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="search_view_id" ref="view_clinic_invoice_report_patient_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No data available yet!
+            </p>
+            <p>
+                Create some invoices to see the patient invoice analysis.
+            </p>
+        </field>
+    </record>
+
+    <!-- Invoice Status Report Views -->
+    <record id="view_clinic_invoice_report_status_pivot" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.status.pivot</field>
+        <field name="model">clinic.invoice.report.status</field>
+        <field name="arch" type="xml">
+            <pivot string="Invoice Status Analysis" display_quantity="true">
+                <field name="name" type="row"/>
+                <field name="state" type="col"/>
+                <field name="invoice_count" type="measure"/>
+                <field name="total_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_status_graph" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.status.graph</field>
+        <field name="model">clinic.invoice.report.status</field>
+        <field name="arch" type="xml">
+            <graph string="Invoice Status Distribution" type="bar" stacked="True">
+                <field name="name"/>
+                <field name="invoice_count" type="measure"/>
+                <field name="state" type="row"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_status_pie" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.status.pie</field>
+        <field name="model">clinic.invoice.report.status</field>
+        <field name="arch" type="xml">
+            <graph string="Invoice Status Distribution" type="pie">
+                <field name="state"/>
+                <field name="invoice_count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_clinic_invoice_report_status_search" model="ir.ui.view">
+        <field name="name">clinic.invoice.report.status.search</field>
+        <field name="model">clinic.invoice.report.status</field>
+        <field name="arch" type="xml">
+            <search string="Invoice Status Analysis">
+                <field name="name"/>
+                <field name="year"/>
+                <field name="month"/>
+                <field name="state"/>
+                <separator/>
+                <filter string="This Year" name="this_year" domain="[('year','=',time.strftime('%Y'))]"/>
+                <filter string="Last Year" name="last_year" domain="[('year','=',str(int(time.strftime('%Y')) - 1))]"/>
+                <separator/>
+                <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('state','=','confirmed')]"/>
+                <filter string="Paid" name="paid" domain="[('state','=','paid')]"/>
+                <filter string="Cancelled" name="cancelled" domain="[('state','=','cancelled')]"/>
+                <group expand="1" string="Group By">
+                    <filter string="Year" name="year" context="{'group_by':'year'}"/>
+                    <filter string="Month" name="month" context="{'group_by':'month'}"/>
+                    <filter string="Status" name="status" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_clinic_invoice_report_status" model="ir.actions.act_window">
+        <field name="name">Invoice Status Analysis</field>
+        <field name="res_model">clinic.invoice.report.status</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="search_view_id" ref="view_clinic_invoice_report_status_search"/>
+        <field name="context">{'search_default_this_year': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No data available yet!
+            </p>
+            <p>
+                Create some invoices to see the invoice status analysis.
+            </p>
+        </field>
+    </record>
+
+    <!-- Dashboard View -->
+    <record id="clinic_invoice_dashboard_view" model="ir.ui.view">
+        <field name="name">clinic.invoice.dashboard</field>
+        <field name="model">clinic.invoice.report.monthly</field>
+        <field name="arch" type="xml">
+            <dashboard>
+                <view type="graph" ref="view_clinic_invoice_report_monthly_graph"/>
+                <group>
+                    <aggregate name="total_revenue" field="total_amount" string="Total Revenue" widget="monetary"/>
+                    <aggregate name="service_revenue" field="service_amount" string="Service Revenue" widget="monetary"/>
+                    <aggregate name="medicine_revenue" field="medicine_amount" string="Medicine Revenue" widget="monetary"/>
+                    <aggregate name="invoice_count" field="invoice_count" string="Invoice Count"/>
+                </group>
+                <view type="pivot" ref="view_clinic_invoice_report_monthly_pivot"/>
+            </dashboard>
+        </field>
+    </record>
+
+    <record id="action_clinic_invoice_dashboard" model="ir.actions.act_window">
+        <field name="name">Tổng quan doanh thu</field>
+        <field name="res_model">clinic.invoice.report.monthly</field>
+        <field name="view_mode">dashboard,pivot,graph</field>
+        <field name="search_view_id" ref="view_clinic_invoice_report_monthly_search"/>
+        <field name="context">{'search_default_this_year': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Chưa có dữ liệu để hiển thị!
+            </p>
+            <p>
+                Tạo một số hóa đơn để xem dữ liệu tổng quan.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_clinic_reporting" name="Báo cáo thống kê" parent="invoice_management.menu_invoice_management" sequence="50"/>
+
+    <menuitem id="menu_clinic_invoice_dashboard" name="Tổng quan" parent="menu_clinic_reporting" action="action_clinic_invoice_dashboard" sequence="10"/>
+    <menuitem id="menu_clinic_monthly_revenue" name="Doanh thu theo tháng" parent="menu_clinic_reporting" action="action_clinic_invoice_report_monthly" sequence="20"/>
+    <menuitem id="menu_clinic_service_revenue" name="Phân tích dịch vụ" parent="menu_clinic_reporting" action="action_clinic_invoice_report_service" sequence="30"/>
+    <menuitem id="menu_clinic_medicine_revenue" name="Phân tích thuốc" parent="menu_clinic_reporting" action="action_clinic_invoice_report_product" sequence="40"/>
+    <menuitem id="menu_clinic_patient_analysis" name="Phân tích bệnh nhân" parent="menu_clinic_reporting" action="action_clinic_invoice_report_patient" sequence="50"/>
+    <menuitem id="menu_clinic_invoice_status" name="Trạng thái hóa đơn" parent="menu_clinic_reporting" action="action_clinic_invoice_report_status" sequence="60"/>
+</odoo>
