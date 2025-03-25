@@ -16,10 +16,7 @@
     'depends': ['base', 'mail','appointment_management','healthcare_management','staff_management', 'invoice_management'],
     'data': [
         'security/ir.model.access.csv',
-        'views/invoice_statistics_view.xml',
-        'views/invoice_dashboard_view.xml',
-        'views/menu_views.xml',
-        'views/assets.xml',
+        'views/invoice_report_views.xml',
     ],
     'demo': [],
     'installable': True,
