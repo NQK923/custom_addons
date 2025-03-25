@@ -22,22 +22,16 @@
                     </group>
 
                     <div class="row mt16">
-                        <div class="col-lg-4 col-md-6 col-sm-12">
+                        <div class="col-lg-6 col-md-6 col-sm-12">
                             <div class="o_stat_info bg-primary text-white p-3 rounded mb-3">
                                 <h3>Tổng số khiếu nại</h3>
                                 <h1><field name="total_complaints" nolabel="1"/></h1>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 col-sm-12">
+                        <div class="col-lg-6 col-md-6 col-sm-12">
                             <div class="o_stat_info bg-success text-white p-3 rounded mb-3">
                                 <h3>Thời gian giải quyết trung bình</h3>
                                 <h1><field name="avg_resolution_time" nolabel="1" widget="float"/> ngày</h1>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-sm-12">
-                            <div class="o_stat_info bg-info text-white p-3 rounded mb-3">
-                                <h3>Điểm hài lòng trung bình</h3>
-                                <h1><field name="avg_satisfaction" nolabel="1" widget="float"/>/5</h1>
                             </div>
                         </div>
                     </div>
@@ -71,7 +65,6 @@
 
                     <field name="complaint_by_category_data" widget="text" invisible="1"/>
                     <field name="complaint_by_month_data" widget="text" invisible="1"/>
-                    <field name="satisfaction_distribution_data" widget="text" invisible="1"/>
 
                     <notebook>
                         <page string="Thống kê theo phân loại">
@@ -84,7 +77,6 @@
                                     <field name="resolved_count"/>
                                     <field name="cancelled_count"/>
                                     <field name="avg_resolution_time"/>
-                                    <field name="avg_satisfaction"/>
                                 </list>
                             </field>
                         </page>

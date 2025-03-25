@@ -36,7 +36,6 @@ class ComplaintStatistics(models.Model):
 
     month = fields.Char(string='Tháng', readonly=True)
     year = fields.Char(string='Năm', readonly=True)
-    satisfaction_numeric = fields.Integer(string='Điểm đánh giá', readonly=True)
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -58,8 +57,7 @@ class ComplaintStatistics(models.Model):
                         ELSE NULL
                     END as resolution_time,
                     TO_CHAR(cp.complaint_date, 'MM') as month,
-                    TO_CHAR(cp.complaint_date, 'YYYY') as year,
-                    0 as satisfaction_numeric
+                    TO_CHAR(cp.complaint_date, 'YYYY') as year
                 FROM
                     healthcare_patient_complaint cp
             )

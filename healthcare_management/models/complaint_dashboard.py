@@ -22,7 +22,6 @@ class ComplaintDashboard(models.Model):
     cancelled_complaints = fields.Integer(string='Đã hủy', compute='_compute_statistics')
     avg_resolution_time = fields.Float(string='Thời gian giải quyết TB (ngày)', compute='_compute_statistics',
                                        digits=(10, 1))
-    avg_satisfaction = fields.Float(string='Điểm hài lòng trung bình', compute='_compute_statistics', digits=(2, 1))
 
     # Thống kê theo phân loại
     category_complaint_ids = fields.One2many('healthcare.complaint.dashboard.category', 'dashboard_id',
@@ -32,7 +31,6 @@ class ComplaintDashboard(models.Model):
     # Dữ liệu cho biểu đồ (Lưu dạng JSON)
     complaint_by_category_data = fields.Text(string='Dữ liệu theo phân loại', compute='_compute_chart_data')
     complaint_by_month_data = fields.Text(string='Dữ liệu theo tháng', compute='_compute_chart_data')
-    satisfaction_distribution_data = fields.Text(string='Phân bố đánh giá', compute='_compute_chart_data')
 
     @api.depends('date_from', 'date_to')
     def _compute_statistics(self):
@@ -44,7 +42,7 @@ class ComplaintDashboard(models.Model):
 
             complaint_data = self.env['healthcare.complaint.statistics'].read_group(
                 domain,
-                fields=['state', 'resolution_time', 'satisfaction_numeric'],
+                fields=['state', 'resolution_time'],
                 groupby=['state']
             )
 
@@ -79,17 +77,6 @@ class ComplaintDashboard(models.Model):
             else:
                 record.avg_resolution_time = 0.0
 
-            # Tính điểm hài lòng trung bình
-            satisfaction_data = self.env['healthcare.complaint.statistics'].search(
-                domain + [('satisfaction_numeric', '>', 0)]
-            )
-
-            if satisfaction_data:
-                total_score = sum(data.satisfaction_numeric for data in satisfaction_data)
-                record.avg_satisfaction = total_score / len(satisfaction_data)
-            else:
-                record.avg_satisfaction = 0.0
-
     @api.depends('date_from', 'date_to')
     def _compute_category_statistics(self):
         for record in self:
@@ -109,8 +96,7 @@ class ComplaintDashboard(models.Model):
                     SUM(CASE WHEN state = 'in_progress' THEN 1 ELSE 0 END) AS in_progress_count,
                     SUM(CASE WHEN state = 'resolved' THEN 1 ELSE 0 END) AS resolved_count,
                     SUM(CASE WHEN state = 'cancelled' THEN 1 ELSE 0 END) AS cancelled_count,
-                    AVG(CASE WHEN resolution_time > 0 THEN resolution_time ELSE NULL END) AS avg_resolution_time,
-                    AVG(CASE WHEN satisfaction_numeric > 0 THEN satisfaction_numeric ELSE NULL END) AS avg_satisfaction
+                    AVG(CASE WHEN resolution_time > 0 THEN resolution_time ELSE NULL END) AS avg_resolution_time
                 FROM 
                     healthcare_complaint_statistics
                 WHERE 
@@ -141,9 +127,6 @@ class ComplaintDashboard(models.Model):
                 if stats.get('avg_resolution_time') is None:
                     stats['avg_resolution_time'] = 0
 
-                if stats.get('avg_satisfaction') is None:
-                    stats['avg_satisfaction'] = 0
-
                 # Get category display name
                 category_value = stats.get('category')
                 category_name = category_mapping.get(category_value, 'Không xác định')
@@ -158,7 +141,6 @@ class ComplaintDashboard(models.Model):
                     'resolved_count': stats['resolved_count'],
                     'cancelled_count': stats['cancelled_count'],
                     'avg_resolution_time': stats['avg_resolution_time'],
-                    'avg_satisfaction': stats['avg_satisfaction'],
                 }))
 
             # Update the one2many field with the new records
@@ -260,7 +242,6 @@ class ComplaintDashboard(models.Model):
             complaint_month_chart = [data for _, data in sorted_months]
 
             record.complaint_by_month_data = json.dumps(complaint_month_chart)
-            record.satisfaction_distribution_data = json.dumps([])
 
 
 class ComplaintDashboardCategory(models.TransientModel):
@@ -276,4 +257,3 @@ class ComplaintDashboardCategory(models.TransientModel):
     resolved_count = fields.Integer(string='Đã giải quyết')
     cancelled_count = fields.Integer(string='Đã hủy')
     avg_resolution_time = fields.Float(string='Thời gian xử lý TB', digits=(10, 1))
-    avg_satisfaction = fields.Float(string='Điểm hài lòng TB', digits=(2, 1))

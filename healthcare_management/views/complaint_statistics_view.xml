@@ -14,7 +14,6 @@
                 <field name="state"/>
                 <field name="user_id"/>
                 <field name="resolution_time"/>
-                <field name="satisfaction_numeric" invisible="1"/>
                 <field name="month" invisible="1"/>
                 <field name="year" invisible="1"/>
             </list>
@@ -28,7 +27,7 @@
         <field name="arch" type="xml">
             <graph string="Biểu đồ khiếu nại" type="bar" sample="1">
                 <field name="category"/>
-                <field name="satisfaction_numeric" type="measure"/>
+                <field name="resolution_time" type="measure"/>
             </graph>
         </field>
     </record>
