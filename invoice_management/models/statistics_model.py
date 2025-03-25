@@ -207,4 +207,18 @@ class ClinicStatisticsWizard(models.TransientModel):
             self.date_to.strftime('%Y-%m-%d')
         )
 
-        return self.env.ref('invoice_management.action_report_statistics_reportlab').report_action(statistics)
+        # Return URL action to download the PDF
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/report/statistics_pdf/{statistics.id}',
+            'target': 'new',
+        }
+
+    def action_print_reportlab_pdf(self):
+        """Open the ReportLab PDF report in a new window"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/report/statistics_pdf/{self.id}',
+            'target': 'new',
+        }
