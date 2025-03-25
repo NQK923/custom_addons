@@ -32,7 +32,8 @@
         <field name="model">invoice.statistics</field>
         <field name="arch" type="xml">
             <graph string="Biểu đồ hóa đơn" type="bar" sample="1">
-                <field name="invoice_date:month"/>
+                <field name="month"/>
+                <field name="year"/>
                 <field name="amount_total" type="measure"/>
             </graph>
         </field>
@@ -44,7 +45,8 @@
         <field name="model">invoice.statistics</field>
         <field name="arch" type="xml">
             <pivot string="Thống kê chi tiết hóa đơn" sample="1">
-                <field name="invoice_date:month" type="row"/>
+                <field name="month" type="row"/>
+                <field name="year" type="row"/>
                 <field name="state" type="col"/>
                 <field name="amount_total" type="measure"/>
                 <field name="service_amount" type="measure"/>
@@ -80,10 +82,10 @@
                 <group expand="0" string="Group By">
                     <filter string="Bệnh nhân" name="group_patient" context="{'group_by':'patient_id'}"/>
                     <filter string="Trạng thái" name="group_state" context="{'group_by':'state'}"/>
-                    <filter string="Ngày" name="group_day" context="{'group_by':'invoice_date:day'}"/>
-                    <filter string="Tháng" name="group_month" context="{'group_by':'invoice_date:month'}"/>
-                    <filter string="Quý" name="group_quarter" context="{'group_by':'invoice_date:quarter'}"/>
-                    <filter string="Năm" name="group_year" context="{'group_by':'invoice_date:year'}"/>
+                    <filter string="Ngày" name="group_day" context="{'group_by':'day'}"/>
+                    <filter string="Tháng" name="group_month" context="{'group_by':'month'}"/>
+                    <filter string="Năm" name="group_year" context="{'group_by':'year'}"/>
+                    <filter string="Ngày hóa đơn" name="group_invoice_date" context="{'group_by':'invoice_date'}"/>
                 </group>
             </search>
         </field>
