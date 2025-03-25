@@ -3,7 +3,6 @@
     <!-- Menu Items -->
     <menuitem id="menu_invoice_statistics"
               name="Thống kê hóa đơn"
-              parent="invoice_management.menu_invoice_root"
               sequence="30"/>
 
     <menuitem id="menu_invoice_statistics_detail"

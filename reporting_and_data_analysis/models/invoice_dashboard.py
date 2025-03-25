@@ -113,41 +113,50 @@ class InvoiceDashboard(models.Model):
             # 1. Doanh thu theo ngày
             day_data = self.env['invoice.statistics'].read_group(
                 domain,
-                fields=['amount_total', 'service_amount', 'medicine_amount', 'invoice_date'],
-                groupby=['invoice_date:day'],
-                orderby='invoice_date asc'
+                fields=['amount_total', 'service_amount', 'medicine_amount', 'day', 'month', 'year'],
+                groupby=['day', 'month', 'year']
             )
 
             # Xác định khóa đếm
             count_key_day = '__count'
             if day_data and len(day_data) > 0:
-                for key in ['__count', 'invoice_date_count', 'invoice_date_day_count']:
+                for key in ['__count', 'day_count']:
                     if key in day_data[0]:
                         count_key_day = key
                         break
 
-            # Chuyển đổi kết quả thành dữ liệu biểu đồ
+            # Chuyển đổi kết quả thành dữ liệu biểu đồ và sắp xếp theo ngày
             revenue_by_day = []
             for item in day_data:
-                day_str = item.get('invoice_date:day')
-                if day_str:
-                    day = day_str.split(' ')[0]  # Lấy ngày từ chuỗi định dạng ngày
+                day_val = item.get('day')
+                month_val = item.get('month')
+                year_val = item.get('year')
+                if day_val and month_val and year_val:
+                    date_label = f"{day_val}/{month_val}/{year_val}"
                     revenue_by_day.append({
-                        'day': day,
+                        'day': date_label,
+                        'date_sort': f"{year_val}-{month_val}-{day_val}",  # Format for sorting
                         'total': item.get('amount_total', 0),
                         'service': item.get('service_amount', 0),
                         'medicine': item.get('medicine_amount', 0),
                         'count': item.get(count_key_day, 0)
                     })
 
+            # Sort by date
+            revenue_by_day.sort(key=lambda x: x['date_sort'])
+
+            # Remove the sorting field before JSON conversion
+            for item in revenue_by_day:
+                if 'date_sort' in item:
+                    del item['date_sort']
+
             record.revenue_by_day_data = json.dumps(revenue_by_day)
 
             # 2. Doanh thu theo tháng
             month_data = self.env['invoice.statistics'].read_group(
                 domain,
-                fields=['amount_total', 'service_amount', 'medicine_amount', 'invoice_date'],
-                groupby=['invoice_date:month'],
-                orderby='invoice_date asc'
+                fields=['amount_total', 'service_amount', 'medicine_amount', 'month', 'year'],
+                groupby=['month', 'year']
             )
 
             # Định nghĩa tên tháng
@@ -160,27 +169,33 @@ class InvoiceDashboard(models.Model):
             # Xác định khóa đếm cho tháng
             count_key_month = '__count'
             if month_data and len(month_data) > 0:
-                for key in ['__count', 'invoice_date_count', 'invoice_date_month_count']:
+                for key in ['__count', 'month_count']:
                     if key in month_data[0]:
                         count_key_month = key
                         break
 
             revenue_by_month = []
             for item in month_data:
-                month_year_str = item.get('invoice_date:month')
-                if month_year_str:
-                    parts = month_year_str.split(' ')
-                    if len(parts) >= 2:
-                        month = parts[0]
-                        year = parts[1]
-                        month_name = month_names.get(month, month)
-                        revenue_by_month.append({
-                            'month': f"{month_name}/{year}",
-                            'total': item.get('amount_total', 0),
-                            'service': item.get('service_amount', 0),
-                            'medicine': item.get('medicine_amount', 0),
-                            'count': item.get(count_key_month, 0)
-                        })
+                month = item.get('month')
+                year = item.get('year')
+                if month and year:
+                    month_name = month_names.get(month, month)
+                    revenue_by_month.append({
+                        'month': f"{month_name}/{year}",
+                        'month_sort': f"{year}-{month}",  # For sorting
+                        'total': item.get('amount_total', 0),
+                        'service': item.get('service_amount', 0),
+                        'medicine': item.get('medicine_amount', 0),
+                        'count': item.get(count_key_month, 0)
+                    })
+
+            # Sort by year and month
+            revenue_by_month.sort(key=lambda x: x['month_sort'])
+
+            # Remove the sorting field before JSON conversion
+            for item in revenue_by_month:
+                if 'month_sort' in item:
+                    del item['month_sort']
 
             record.revenue_by_month_data = json.dumps(revenue_by_month)
 
