@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <!-- Menu Root -->
-    <menuitem id="menu_clinic_root" name="Quản lý Bệnh viện" sequence="10"/>
+    <menuitem id="menu_clinic_root" name="Quản lý Phòng khám và Giường bệnh" sequence="10"/>
     <menuitem id="menu_clinic_room_management" name="Phòng và Giường bệnh" parent="menu_clinic_root" sequence="1"/>
 
     <!-- Room Views -->
@@ -20,8 +20,8 @@
                     <notebook>
                         <page string="Danh sách giường bệnh">
                             <field name="bed_ids">
-                                <list editble="bottom">
-                                    <field name="name"/>
+                                <list>
+                                     <field name="id"/>
                                     <field name="status"/>
                                     <field name="patient_id" string="Mã bệnh nhân"/>
                                     <field name="patient_name" string="Tên bệnh nhân"/>
@@ -58,7 +58,6 @@
             <form string="Giường bệnh">
                 <sheet>
                     <group>
-                        <field name="name"/>
                         <field name="room_id"/>
                         <field name="status"/>
                         <field name="patient_id" string="Mã bệnh nhân"/>
@@ -74,7 +73,7 @@
         <field name="model">clinic.bed</field>
         <field name="arch" type="xml">
             <list string="Giường bệnh">
-                <field name="name"/>
+                <field name="id"/>
                 <field name="patient_id"/>
                 <field name="room_id"/>
                 <field name="status"/>

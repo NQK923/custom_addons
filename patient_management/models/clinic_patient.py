@@ -1,6 +1,5 @@
-import datetime
-
 from odoo import models, fields, api
+from datetime import datetime, date
 from odoo.exceptions import ValidationError
 import uuid
 
@@ -11,18 +10,6 @@ class ClinicPatient(models.Model):
     _rec_name = 'code'
     _order = "date desc"
 
-
-    parent_id = fields.Many2one(
-        string="Lần khám gần đây",
-        comodel_name="clinic.patient",
-        ondelete="restrict",
-        domain="[('partner_id', '=', partner_id)]"
-    )
-    partner_id = fields.Many2one(
-        string="Bệnh nhân",
-        comodel_name="res.partner",
-        ondelete="restrict",
-    )
     code = fields.Char(
         string='Mã bệnh nhân',
         required=True,
@@ -31,42 +18,46 @@ class ClinicPatient(models.Model):
         default="New",
     )
     name = fields.Char(
-        related="partner_id.name",
-        readonly=False,
+        string="Họ và tên",
+        required=True,
     )
     email = fields.Char(
-        related="partner_id.email",
-        readonly=False,
+        string="Email"
     )
     gender = fields.Selection(
-        related="partner_id.gender",
-        readonly=False,
+        string="Giới tính",
+        selection=[
+            ('male', 'Nam'),
+            ('female', 'Nữ'),
+            ('other', 'Khác')
+        ],
+        required=True,
+        default="other"
     )
     age = fields.Integer(
-        related="partner_id.age",
-        readonly=False,
+        string="Tuổi",
+        compute="_compute_age",
     )
     date_of_birth = fields.Date(
-        related="partner_id.date_of_birth",
-        readonly=False,
+        string="Ngày sinh",
     )
     phone = fields.Char(
-        related="partner_id.phone",
-        readonly=False,
+        string="Số điện thoại",
     )
     date = fields.Datetime(
         string="Ngày đăng ký",
-        default=datetime.datetime.now(),
+        default=datetime.now(),
         required=True,
     )
-    patient_type = fields.Selection([
-        ('outpatient', 'Ngoại trú'),
-        ('inpatient', 'Nội trú')
-    ], string='Loại bệnh nhân', required=True, default='outpatient')
-    state = fields.Selection([
-        ('registered', 'Đã đăng ký'),
-        ('hospitalized', 'Đang nhập viện')
-    ], string='Trạng thái', default='registered')
+    patient_type = fields.Selection(
+        [
+            ('outpatient', 'Ngoại trú'),
+            ('inpatient', 'Nội trú')
+        ],
+        string='Loại bệnh nhân',
+        required=True,
+        default='outpatient',
+        readonly=True)
     note = fields.Text(string='Ghi chú')
 
     insurance_number = fields.Char(string='Số thẻ BHYT', compute='_compute_insurance_info')
@@ -107,6 +98,14 @@ class ClinicPatient(models.Model):
                 patient.insurance_expiry = False
                 patient.insurance_state = False
 
+    @api.depends('date_of_birth')
+    def _compute_age(self):
+        for record in self:
+            today = date.today()
+            if record.date_of_birth:
+                record.age = today.year - record.date_of_birth.year
+            else:
+                record.age = 0
 
     def action_hospitalize(self):
         """Cập nhật trạng thái thành 'Đang nhập viện' khi nhấn nút trong form."""
