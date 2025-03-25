@@ -19,6 +19,7 @@
         'views/invoice_statistics_view.xml',
         'views/invoice_dashboard_view.xml',
         'views/menu_views.xml',
+        'views/assets.xml',
     ],
     'demo': [],
     'installable': True,

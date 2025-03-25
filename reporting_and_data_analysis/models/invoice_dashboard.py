@@ -39,6 +39,12 @@ class InvoiceDashboard(models.Model):
     invoice_status_data = fields.Text(string='Trạng thái hóa đơn', compute='_compute_chart_data')
     insurance_vs_patient_data = fields.Text(string='Bảo hiểm vs Bệnh nhân', compute='_compute_chart_data')
 
+    # Dữ liệu phân tích chi tiết
+    top_services_data = fields.Text(string='Top dịch vụ', compute='_compute_top_data')
+    top_products_data = fields.Text(string='Top thuốc', compute='_compute_top_data')
+    top_patients_data = fields.Text(string='Top bệnh nhân', compute='_compute_top_data')
+    monthly_comparison_data = fields.Text(string='So sánh theo tháng', compute='_compute_comparison_data')
+
     @api.depends('date_from', 'date_to')
     def _compute_statistics(self):
         for record in self:
@@ -250,3 +256,184 @@ class InvoiceDashboard(models.Model):
                     })
 
             record.invoice_status_data = json.dumps(invoice_status)
+
+    @api.depends('date_from', 'date_to')
+    def _compute_top_data(self):
+        """Tính toán dữ liệu cho Top dịch vụ, thuốc và bệnh nhân"""
+        for record in self:
+            domain = [
+                ('invoice_date', '>=', record.date_from),
+                ('invoice_date', '<=', record.date_to),
+                ('state', '=', 'paid')
+            ]
+
+            # 1. Top dịch vụ
+            self.env.cr.execute("""
+                SELECT 
+                    s.service_name as name,
+                    COUNT(l.id) as count,
+                    SUM(l.price_subtotal) as total
+                FROM 
+                    clinic_invoice_line l
+                JOIN 
+                    clinic_service s ON l.service_id = s.id
+                JOIN 
+                    clinic_invoice i ON l.invoice_id = i.id
+                WHERE 
+                    i.invoice_date >= %s AND 
+                    i.invoice_date <= %s AND 
+                    i.state = 'paid' AND
+                    l.service_id IS NOT NULL
+                GROUP BY 
+                    s.service_name
+                ORDER BY 
+                    total DESC
+                LIMIT 10
+            """, (record.date_from, record.date_to))
+
+            top_services = []
+            for row in self.env.cr.dictfetchall():
+                top_services.append({
+                    'name': row['name'],
+                    'count': row['count'],
+                    'total': row['total']
+                })
+
+            record.top_services_data = json.dumps(top_services)
+
+            # 2. Top thuốc
+            self.env.cr.execute("""
+                SELECT 
+                    p.name as name,
+                    COUNT(l.id) as count,
+                    SUM(l.price_subtotal) as total
+                FROM 
+                    clinic_invoice_line l
+                JOIN 
+                    pharmacy_product p ON l.product_id = p.id
+                JOIN 
+                    clinic_invoice i ON l.invoice_id = i.id
+                WHERE 
+                    i.invoice_date >= %s AND 
+                    i.invoice_date <= %s AND 
+                    i.state = 'paid' AND
+                    l.product_id IS NOT NULL
+                GROUP BY 
+                    p.name
+                ORDER BY 
+                    total DESC
+                LIMIT 10
+            """, (record.date_from, record.date_to))
+
+            top_products = []
+            for row in self.env.cr.dictfetchall():
+                top_products.append({
+                    'name': row['name'],
+                    'count': row['count'],
+                    'total': row['total']
+                })
+
+            record.top_products_data = json.dumps(top_products)
+
+            # 3. Top bệnh nhân
+            self.env.cr.execute("""
+                SELECT 
+                    p.name as name,
+                    COUNT(i.id) as count,
+                    SUM(i.amount_total) as total
+                FROM 
+                    clinic_invoice i
+                JOIN 
+                    clinic_patient p ON i.patient_id = p.id
+                WHERE 
+                    i.invoice_date >= %s AND 
+                    i.invoice_date <= %s AND 
+                    i.state = 'paid'
+                GROUP BY 
+                    p.name
+                ORDER BY 
+                    total DESC
+                LIMIT 10
+            """, (record.date_from, record.date_to))
+
+            top_patients = []
+            for row in self.env.cr.dictfetchall():
+                top_patients.append({
+                    'name': row['name'],
+                    'count': row['count'],
+                    'total': row['total']
+                })
+
+            record.top_patients_data = json.dumps(top_patients)
+
+    @api.depends('date_from', 'date_to')
+    def _compute_comparison_data(self):
+        """So sánh doanh thu tháng hiện tại với tháng trước"""
+        for record in self:
+            # Tính số ngày trong khoảng thời gian đã chọn
+            delta = record.date_to - record.date_from
+            days = delta.days
+
+            # Tính thời gian của kỳ trước đó
+            previous_date_to = record.date_from - timedelta(days=1)
+            previous_date_from = previous_date_to - timedelta(days=days)
+
+            # Lấy dữ liệu doanh thu của kỳ hiện tại
+            current_data = self.env['invoice.statistics'].read_group(
+                [
+                    ('invoice_date', '>=', record.date_from),
+                    ('invoice_date', '<=', record.date_to),
+                    ('state', '=', 'paid')
+                ],
+                fields=['amount_total', 'service_amount', 'medicine_amount'],
+                groupby=[]
+            )
+
+            # Lấy dữ liệu doanh thu của kỳ trước
+            previous_data = self.env['invoice.statistics'].read_group(
+                [
+                    ('invoice_date', '>=', previous_date_from),
+                    ('invoice_date', '<=', previous_date_to),
+                    ('state', '=', 'paid')
+                ],
+                fields=['amount_total', 'service_amount', 'medicine_amount'],
+                groupby=[]
+            )
+
+            # Tính tỷ lệ tăng trưởng
+            current_total = current_data[0]['amount_total'] if current_data else 0
+            previous_total = previous_data[0]['amount_total'] if previous_data else 0
+
+            current_service = current_data[0]['service_amount'] if current_data else 0
+            previous_service = previous_data[0]['service_amount'] if previous_data else 0
+
+            current_medicine = current_data[0]['medicine_amount'] if current_data else 0
+            previous_medicine = previous_data[0]['medicine_amount'] if previous_data else 0
+
+            # Tính tỷ lệ % tăng trưởng
+            def calculate_growth(current, previous):
+                if previous == 0:
+                    return 100.0 if current > 0 else 0.0
+                return ((current - previous) / previous) * 100
+
+            comparison_data = {
+                'current_period': f"{record.date_from} - {record.date_to}",
+                'previous_period': f"{previous_date_from} - {previous_date_to}",
+                'total': {
+                    'current': current_total,
+                    'previous': previous_total,
+                    'growth': calculate_growth(current_total, previous_total)
+                },
+                'service': {
+                    'current': current_service,
+                    'previous': previous_service,
+                    'growth': calculate_growth(current_service, previous_service)
+                },
+                'medicine': {
+                    'current': current_medicine,
+                    'previous': previous_medicine,
+                    'growth': calculate_growth(current_medicine, previous_medicine)
+                }
+            }
+
+            record.monthly_comparison_data = json.dumps(comparison_data)
