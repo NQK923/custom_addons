@@ -28,6 +28,7 @@
               parent="menu_healthcare_customer_care_root"
               sequence="30"/>
 
+    <!-- Phản hồi -->
     <menuitem id="menu_healthcare_feedback_statistics"
               name="Thống kê phản hồi"
               parent="menu_healthcare_analytics"
@@ -39,4 +40,17 @@
               parent="menu_healthcare_analytics"
               action="action_feedback_dashboard"
               sequence="20"/>
+
+    <!-- Khiếu nại -->
+    <menuitem id="menu_healthcare_complaint_statistics"
+              name="Thống kê khiếu nại"
+              parent="menu_healthcare_analytics"
+              action="action_complaint_statistics"
+              sequence="30"/>
+
+    <menuitem id="menu_healthcare_complaint_dashboard"
+              name="Phân tích khiếu nại"
+              parent="menu_healthcare_analytics"
+              action="action_complaint_dashboard"
+              sequence="40"/>
 </odoo>

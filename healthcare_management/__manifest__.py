@@ -20,6 +20,8 @@
         'views/complaint_views.xml',
         'views/feedback_dashboard_view.xml',
         'views/feedback_statistics_view.xml',
+        'views/complaint_statistics_view.xml',
+        'views/complaint_dashboard_view.xml',
         'views/appointment_reminder_views.xml',
         'views/menu_views.xml',
         'data/sequence.xml',

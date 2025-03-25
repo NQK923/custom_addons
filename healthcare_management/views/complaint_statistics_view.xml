@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View for Complaint Statistics -->
+    <record id="view_complaint_statistics_tree" model="ir.ui.view">
+        <field name="name">healthcare.complaint.statistics.tree</field>
+        <field name="model">healthcare.complaint.statistics</field>
+        <field name="arch" type="xml">
+            <list string="Thống kê khiếu nại" create="0" edit="0" delete="0">
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="complaint_date"/>
+                <field name="category"/>
+                <field name="priority" widget="priority"/>
+                <field name="state"/>
+                <field name="user_id"/>
+                <field name="resolution_time"/>
+                <field name="satisfaction_rating" widget="priority"/>
+                <field name="satisfaction_numeric" invisible="1"/>
+                <field name="month" invisible="1"/>
+                <field name="year" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Graph View for Complaint Statistics -->
+    <record id="view_complaint_statistics_graph" model="ir.ui.view">
+        <field name="name">healthcare.complaint.statistics.graph</field>
+        <field name="model">healthcare.complaint.statistics</field>
+        <field name="arch" type="xml">
+            <graph string="Biểu đồ khiếu nại" type="bar" sample="1">
+                <field name="category"/>
+                <field name="satisfaction_numeric" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Search View for Complaint Statistics -->
+    <record id="view_complaint_statistics_search" model="ir.ui.view">
+        <field name="name">healthcare.complaint.statistics.search</field>
+        <field name="model">healthcare.complaint.statistics</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm thống kê khiếu nại">
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="complaint_date"/>
+                <field name="category"/>
+                <field name="state"/>
+                <filter string="Ngày hiện tại" name="today" date="complaint_date" domain="[]"/>
+                <filter string="Tuần này" name="this_week" date="complaint_date" domain="[]"/>
+                <filter string="Tháng này" name="this_month" date="complaint_date" domain="[]"/>
+                <filter string="Quý này" name="this_quarter" date="complaint_date" domain="[]"/>
+                <filter string="Năm nay" name="this_year" date="complaint_date" domain="[]"/>
+                <separator/>
+                <filter string="Ưu tiên cao" name="high_priority" domain="[('priority','=','2')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Bệnh nhân" name="group_partner" context="{'group_by':'patient_id'}"/>
+                    <filter string="Phân loại" name="group_category" context="{'group_by':'category'}"/>
+                    <filter string="Trạng thái" name="group_state" context="{'group_by':'state'}"/>
+                    <filter string="Ngày" name="group_date" context="{'group_by':'complaint_date:day'}"/>
+                    <filter string="Tháng" name="group_month" context="{'group_by':'complaint_date:month'}"/>
+                    <filter string="Quý" name="group_quarter" context="{'group_by':'complaint_date:quarter'}"/>
+                    <filter string="Năm" name="group_year" context="{'group_by':'complaint_date:year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action for Complaint Statistics -->
+    <record id="action_complaint_statistics" model="ir.actions.act_window">
+        <field name="name">Thống kê khiếu nại</field>
+        <field name="res_model">healthcare.complaint.statistics</field>
+        <field name="view_mode">graph,list</field>
+        <field name="search_view_id" ref="view_complaint_statistics_search"/>
+        <field name="context">{'search_default_this_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Không có dữ liệu thống kê khiếu nại
+            </p>
+        </field>
+    </record>
+</odoo>
