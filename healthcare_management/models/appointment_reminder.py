@@ -94,7 +94,12 @@ class AppointmentReminder(models.Model):
                 return False
 
             email_template = self.env.ref('healthcare_management.appointment_reminder_email_template')
-            email_template.send_mail(reminder.id, force_send=True)
+
+            email_values = {
+                'email_to': reminder.patient_id.email,
+            }
+
+            email_template.send_mail(reminder.id, force_send=True, email_values=email_values)
             reminder.write({'state': 'sent', 'email_status': 'Email đã được gửi thành công'})
 
             return True
