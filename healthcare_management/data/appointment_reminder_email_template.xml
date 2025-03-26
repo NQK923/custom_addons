@@ -4,6 +4,7 @@
         <field name="name">Nhắc nhở lịch hẹn khám</field>
         <field name="model_id" ref="model_appointment_reminder"/>
         <field name="subject">Nhắc nhở: Lịch hẹn khám</field>
+        <field name="email_from">nqk090203@gmail.com</field>
         <field name="body_html" type="html">
             <div style="margin: 0px; padding: 0px; font-size: 13px;">
                 <p style="margin: 0px; padding: 0px; font-size: 13px;">
@@ -30,6 +31,6 @@
                 </p>
             </div>
         </field>
-        <field name="auto_delete" eval="True"/>
+        <field name="auto_delete" eval="False"/>
     </record>
 </odoo>
