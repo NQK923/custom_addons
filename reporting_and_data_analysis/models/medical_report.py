@@ -70,6 +70,44 @@ class MedicalReport(models.Model):
         self.state = 'approved'
         return True
 
+    def action_export_pdf(self):
+        """Export medical report as PDF with error handling"""
+        self.ensure_one()
+
+        if self.state == 'draft':
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Thông báo',
+                    'message': 'Báo cáo chưa được tạo nên không thể xuất PDF.',
+                    'type': 'warning',
+                    'sticky': False,
+                }
+            }
+
+        try:
+            # Direct PDF export URL
+            return {
+                'type': 'ir.actions.act_url',
+                'url': f'/report/medical_pdf/{self.id}',
+                'target': 'new',
+            }
+        except Exception as e:
+            # Log error
+            _logger.error(f"Error exporting PDF for report {self.id}: {e}")
+
+            # Return user-friendly notification
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Lỗi',
+                    'message': 'Không thể xuất báo cáo PDF. Vui lòng thử lại sau.',
+                    'type': 'danger',
+                    'sticky': False,
+                }
+            }
     def _create_chart_image(self, plt_figure):
         """Convert matplotlib figure to binary data for storing in Odoo"""
         if not MATPLOTLIB_ENABLED:

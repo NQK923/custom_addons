@@ -18,6 +18,7 @@
         'security/ir.model.access.csv',
         'views/invoice_report_views.xml',
         'views/medical_report_view.xml',
+        'views/medical_report_template.xml',
         'views/menu_views.xml',
     ],
     'demo': [],
