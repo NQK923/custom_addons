@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Form View cho Báo cáo y tế với menu biểu đồ -->
+    <!-- Form View cho Báo cáo y tế với menu biểu đồ và xuất PDF -->
     <record id="view_hospital_medical_report_form" model="ir.ui.view">
         <field name="name">hospital.medical.report.form</field>
         <field name="model">hospital.medical.report</field>
@@ -10,6 +10,7 @@
                     <button name="generate_report" string="Tạo báo cáo" type="object" class="oe_highlight" invisible="state != 'draft'"/>
                     <button name="generate_report" string="Cập nhật báo cáo" type="object" invisible="state == 'draft'"/>
                     <button string="Xác nhận báo cáo" type="object" name="action_approve" invisible="state != 'generated'" class="oe_highlight"/>
+                    <button string="Xuất PDF" type="object" name="action_export_pdf" invisible="state == 'draft'" class="btn-secondary"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,generated,approved"/>
                 </header>
                 <sheet>
@@ -84,7 +85,7 @@
         </field>
     </record>
 
-    <!-- Tree View cho Báo cáo y tế -->
+    <!-- Tree View cho Báo cáo y tế with PDF button (fixed for Odoo 17.0+) -->
     <record id="view_hospital_medical_report_tree" model="ir.ui.view">
         <field name="name">hospital.medical.report.tree</field>
         <field name="model">hospital.medical.report</field>
@@ -97,6 +98,7 @@
                 <field name="department_id"/>
                 <field name="staff_id"/>
                 <field name="state"/>
+                <button name="action_export_pdf" string="PDF" type="object" icon="fa-file-pdf-o" invisible="state not in ('generated', 'approved')"/>
             </list>
         </field>
     </record>
@@ -126,6 +128,19 @@
         </field>
     </record>
 
+    <!-- Action cho Báo cáo y tế -->
+    <record id="action_hospital_medical_report" model="ir.actions.act_window">
+        <field name="name">Báo cáo y tế</field>
+        <field name="res_model">hospital.medical.report</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hospital_medical_report_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo báo cáo y tế đầu tiên
+            </p>
+        </field>
+    </record>
+
     <!-- Form View cho Wizard tạo báo cáo -->
     <record id="view_hospital_medical_report_wizard_form" model="ir.ui.view">
         <field name="name">hospital.medical.report.wizard.form</field>
@@ -150,19 +165,6 @@
         </field>
     </record>
 
-    <!-- Action cho Báo cáo y tế -->
-    <record id="action_hospital_medical_report" model="ir.actions.act_window">
-        <field name="name">Báo cáo y tế</field>
-        <field name="res_model">hospital.medical.report</field>
-        <field name="view_mode">list,form</field>
-        <field name="search_view_id" ref="view_hospital_medical_report_search"/>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Tạo báo cáo y tế đầu tiên
-            </p>
-        </field>
-    </record>
-
     <!-- Action cho Wizard tạo báo cáo -->
     <record id="action_hospital_medical_report_wizard" model="ir.actions.act_window">
         <field name="name">Tạo báo cáo mới</field>
@@ -170,5 +172,4 @@
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
-
 </odoo>
