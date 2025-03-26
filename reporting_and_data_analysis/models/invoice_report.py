@@ -22,9 +22,9 @@ class InvoiceReportMonthly(models.Model):
     insurance_amount = fields.Float(string='Bảo hiểm chi trả', readonly=True)
     patient_amount = fields.Float(string='Bệnh nhân chi trả', readonly=True)
 
-    avg_service_amount = fields.Float(string='Doanh thu dịch vụ TB', readonly=True, group_operator='avg')
-    avg_medicine_amount = fields.Float(string='Doanh thu thuốc TB', readonly=True, group_operator='avg')
-    avg_total_amount = fields.Float(string='Tổng doanh thu TB', readonly=True, group_operator='avg')
+    avg_service_amount = fields.Float(string='Doanh thu dịch vụ TB', readonly=True, aggregator='avg')
+    avg_medicine_amount = fields.Float(string='Doanh thu thuốc TB', readonly=True, aggregator='avg')
+    avg_total_amount = fields.Float(string='Tổng doanh thu TB', readonly=True, aggregator='avg')
 
     def init(self):
         tools.drop_view_if_exists(self._cr, self._table)
@@ -76,7 +76,7 @@ class InvoiceReportService(models.Model):
     insurance_covered = fields.Float(string='Bảo hiểm chi trả', readonly=True)
     patient_paid = fields.Float(string='Bệnh nhân chi trả', readonly=True)
     invoice_count = fields.Integer(string='Số hóa đơn', readonly=True)
-    avg_price = fields.Float(string='Giá trung bình', readonly=True, group_operator='avg')
+    avg_price = fields.Float(string='Giá trung bình', readonly=True, aggregator='avg')
 
     def init(self):
         tools.drop_view_if_exists(self._cr, self._table)
@@ -123,7 +123,7 @@ class InvoiceReportProduct(models.Model):
     insurance_covered = fields.Float(string='Bảo hiểm chi trả', readonly=True)
     patient_paid = fields.Float(string='Bệnh nhân chi trả', readonly=True)
     invoice_count = fields.Integer(string='Số hóa đơn', readonly=True)
-    avg_price = fields.Float(string='Giá trung bình', readonly=True, group_operator='avg')
+    avg_price = fields.Float(string='Giá trung bình', readonly=True, aggregator='avg')
 
     def init(self):
         tools.drop_view_if_exists(self._cr, self._table)

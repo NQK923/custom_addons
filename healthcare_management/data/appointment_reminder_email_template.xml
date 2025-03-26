@@ -3,22 +3,20 @@
     <record id="appointment_reminder_email_template" model="mail.template">
         <field name="name">Nhắc nhở lịch hẹn khám</field>
         <field name="model_id" ref="model_appointment_reminder"/>
-        <field name="subject">Nhắc nhở: Lịch hẹn khám ${object.name}</field>
-        <field name="email_from">${object.company_id.email or ''}</field>
-        <field name="partner_to">${object.patient_name.partner_id.id}</field>
+        <field name="subject">Nhắc nhở: Lịch hẹn khám</field>
         <field name="body_html" type="html">
             <div style="margin: 0px; padding: 0px; font-size: 13px;">
                 <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                    Kính gửi ${object.patient_name.name},
+                    Kính gửi <t t-out="object.patient_id.name or 'Quý khách'"/>,
                 </p>
                 <p style="margin: 0px; padding: 0px; font-size: 13px;">
                     Chúng tôi xin gửi lời nhắc nhở về lịch hẹn khám sắp tới của bạn:
                 </p>
                 <ul>
-                    <li>Mã lịch hẹn: <strong>${object.name}</strong></li>
-                    <li>Thời gian: <strong>${format_datetime(object.appointment_date, tz=user.tz)}</strong></li>
-                    <li>Bác sĩ: <strong>${object.note.staff_id.name}</strong></li>
-                    <li>Phòng khám: <strong>${object.note.room_id.name or 'Chưa xác định'}</strong></li>
+                    <li>Mã lịch hẹn: <strong><t t-out="object.name or ''"/></strong></li>
+                    <li>Thời gian: <strong><t t-out="format_datetime(object.appointment_date, tz=user.tz) or ''"/></strong></li>
+                    <li>Bác sĩ: <strong><t t-out="object.staff_id.staff_name or 'Chưa xác định'"/></strong></li>
+                    <li>Phòng khám: <strong><t t-out="object.room_id.name or 'Chưa xác định'"/></strong></li>
                 </ul>
                 <p style="margin: 0px; padding: 0px; font-size: 13px;">
                     Vui lòng đến trước 15 phút để hoàn tất thủ tục.
@@ -28,7 +26,7 @@
                 </p>
                 <p style="margin: 0px; padding: 0px; font-size: 13px;">
                     Trân trọng,<br/>
-                    Phòng khám ${object.company_id.name}
+                    Phòng khám <t t-out="user.company_id.name or ''"/>
                 </p>
             </div>
         </field>

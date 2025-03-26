@@ -12,6 +12,9 @@ class AppointmentReminder(models.Model):
     patient_id = fields.Many2one(related='appointment_id.patient_id', string='Bệnh nhân', store=True)
     appointment_date = fields.Datetime(related='appointment_id.appointment_date', string='Ngày giờ hẹn', store=True)
     notification_date = fields.Datetime(string='Ngày gửi thông báo', compute='_compute_notification_date', store=True)
+    staff_id = fields.Many2one(related='appointment_id.staff_id', string='Bác sĩ', store=True)
+    room_id = fields.Many2one(related='appointment_id.room_id', string='Phòng khám', store=True)
+    company_id = fields.Many2one('res.company', string='Công ty', default=lambda self: self.env.company)
     state = fields.Selection([
         ('to_send', 'Chờ gửi'),
         ('sent', 'Đã gửi'),
@@ -71,8 +74,6 @@ class AppointmentReminder(models.Model):
             email_template = self.env.ref('healthcare_management.appointment_reminder_email_template')
             email_template.send_mail(reminder.id, force_send=True)
             reminder.write({'state': 'sent', 'email_status': 'Email đã được gửi thành công'})
-
-            # Đã loại bỏ đoạn code thay đổi trạng thái lịch hẹn
 
             return True
         except Exception as e:
