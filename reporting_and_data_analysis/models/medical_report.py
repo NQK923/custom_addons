@@ -164,8 +164,8 @@ class MedicalReport(models.Model):
         Diagnosis = self.env['medical.test']
 
         diagnoses = Diagnosis.search([
-            ('date', '>=', self.date_from),
-            ('date', '<=', self.date_to)
+            ('test_date', '>=', self.date_from),
+            ('test_date', '<=', self.date_to)
         ])
 
         disease_stats = {}
@@ -244,9 +244,9 @@ class MedicalReport(models.Model):
                 feedback_types[feedback.feedback_type]['total'] += rating_value
                 feedback_types[feedback.feedback_type]['count'] += 1
 
-            if feedback.department_name:
-                dept_id = feedback.department_name.id
-                dept_name = feedback.department_name.name
+            if feedback.department_id:
+                dept_id = feedback.department_id.id
+                dept_name = feedback.department_id.department_name
                 if dept_id not in department_ratings:
                     department_ratings[dept_id] = {'name': dept_name, 'total': 0, 'count': 0}
                 department_ratings[dept_id]['total'] += rating_value
