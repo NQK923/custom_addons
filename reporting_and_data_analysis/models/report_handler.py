@@ -10,6 +10,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm, mm
 from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Frame, PageTemplate, Flowable
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image, PageBreak, KeepTogether
 
@@ -21,7 +22,7 @@ _logger = logging.getLogger(__name__)
 class VerticalText(Flowable):
     """Custom Flowable for vertical text in the sidebar"""
 
-    def __init__(self, text, font_name='Helvetica', font_size=8, color=colors.gray):
+    def __init__(self, text, font_name='Arial', font_size=8, color=colors.gray):
         Flowable.__init__(self)
         self.text = text
         self.font_name = font_name
@@ -43,16 +44,28 @@ class MedicalReportPDFHandler(models.AbstractModel):
     _description = 'Báo cáo y tế sử dụng Reportlab'
 
     def _register_fonts(self):
-        """Register fonts or use defaults if unavailable"""
-        # Always use Helvetica as a safe default
+        """Register Arial fonts for Vietnamese character support"""
         try:
-            # Use Helvetica (built into ReportLab) as our default font
+            # Register Arial fonts for better Vietnamese character support
+            pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
+            pdfmetrics.registerFont(TTFont('Arial-Bold', 'Arialbd.ttf'))
+            pdfmetrics.registerFont(TTFont('Arial-Italic', 'Ariali.ttf'))
+            pdfmetrics.registerFont(TTFont('Arial-BoldItalic', 'Arialbi.ttf'))
+
             pdfmetrics.registerFontFamily('Arial',
-                                          normal='Helvetica', bold='Helvetica-Bold',
-                                          italic='Helvetica-Oblique', boldItalic='Helvetica-BoldOblique')
+                                          normal='Arial', bold='Arial-Bold',
+                                          italic='Arial-Italic', boldItalic='Arial-BoldItalic')
 
         except Exception as e:
-            _logger.warning(f"Font registration error: {e}")
+            _logger.warning(f"Arial font registration error: {e}")
+            _logger.warning("Falling back to Helvetica (Vietnamese characters may not display correctly)")
+            # If Arial registration fails, fall back to built-in Helvetica
+            try:
+                pdfmetrics.registerFontFamily('Arial',
+                                              normal='Helvetica', bold='Helvetica-Bold',
+                                              italic='Helvetica-Oblique', boldItalic='Helvetica-BoldOblique')
+            except Exception as fallback_error:
+                _logger.error(f"Font fallback registration error: {fallback_error}")
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -125,11 +138,11 @@ class MedicalReportPDFHandler(models.AbstractModel):
 
         # Company name and info
         canvas.setFillColor(colors.white)
-        canvas.setFont('Helvetica-Bold', 12)
+        canvas.setFont('Arial-Bold', 12)
         canvas.drawString(doc.leftMargin + 2.5 * cm, doc.height + doc.topMargin + 1.5 * cm,
                           company_info.get('name', 'Healthcare Center'))
 
-        canvas.setFont('Helvetica', 8)
+        canvas.setFont('Arial', 8)
         address = f"{company_info.get('street', '')} {company_info.get('city', '')}"
         canvas.drawString(doc.leftMargin + 2.5 * cm, doc.height + doc.topMargin + 1.1 * cm, address)
 
@@ -137,14 +150,14 @@ class MedicalReportPDFHandler(models.AbstractModel):
         canvas.drawString(doc.leftMargin + 2.5 * cm, doc.height + doc.topMargin + 0.7 * cm, contact)
 
         # Report title on right side
-        canvas.setFont('Helvetica-Bold', 14)
+        canvas.setFont('Arial-Bold', 14)
         canvas.drawRightString(doc.width + doc.leftMargin, doc.height + doc.topMargin + 1.1 * cm,
                                report.name if report.name else "Medical Report")
 
         # Print date range
         if report.date_from and report.date_to:
             date_info = f"Thời gian: {report.date_from.strftime('%d/%m/%Y')} - {report.date_to.strftime('%d/%m/%Y')}"
-            canvas.setFont('Helvetica', 10)
+            canvas.setFont('Arial', 10)
             canvas.drawRightString(doc.width + doc.leftMargin, doc.height + doc.topMargin + 0.7 * cm, date_info)
 
         # Footer
@@ -153,7 +166,7 @@ class MedicalReportPDFHandler(models.AbstractModel):
 
         # Add page number
         canvas.setFillColor(colors.white)
-        canvas.setFont('Helvetica', 8)
+        canvas.setFont('Arial', 8)
         page_num = f"Trang {doc.page} / {doc.page}"  # This will be updated when all pages are rendered
         canvas.drawRightString(doc.width + doc.leftMargin - 0.5 * cm, 0.5 * cm, page_num)
 
@@ -168,7 +181,7 @@ class MedicalReportPDFHandler(models.AbstractModel):
         # Add vertical text to the ribbon
         canvas.saveState()
         canvas.setFillColor(colors.white)
-        canvas.setFont('Helvetica', 8)
+        canvas.setFont('Arial', 8)
         canvas.rotate(90)
         canvas.drawString(2 * cm, -0.3 * cm, "BÁO CÁO Y TẾ | HEALTHCARE REPORT")
         canvas.restoreState()
@@ -215,7 +228,7 @@ class MedicalReportPDFHandler(models.AbstractModel):
         title_style = ParagraphStyle(
             'Title',
             parent=styles['Title'],
-            fontName='Helvetica-Bold',
+            fontName='Arial-Bold',
             fontSize=16,
             leading=20,
             alignment=TA_CENTER,
@@ -226,7 +239,7 @@ class MedicalReportPDFHandler(models.AbstractModel):
         section_title_style = ParagraphStyle(
             'SectionTitle',
             parent=styles['Heading2'],
-            fontName='Helvetica-Bold',
+            fontName='Arial-Bold',
             fontSize=14,
             leading=18,
             spaceBefore=15,
@@ -241,7 +254,7 @@ class MedicalReportPDFHandler(models.AbstractModel):
         subsection_style = ParagraphStyle(
             'Subsection',
             parent=styles['Heading3'],
-            fontName='Helvetica-Bold',
+            fontName='Arial-Bold',
             fontSize=12,
             leading=16,
             spaceBefore=10,
@@ -252,7 +265,7 @@ class MedicalReportPDFHandler(models.AbstractModel):
         normal_style = ParagraphStyle(
             'Normal',
             parent=styles['Normal'],
-            fontName='Helvetica',
+            fontName='Arial',
             fontSize=10,
             leading=14,
             spaceBefore=4,
@@ -262,7 +275,7 @@ class MedicalReportPDFHandler(models.AbstractModel):
         data_style = ParagraphStyle(
             'DataText',
             parent=styles['Normal'],
-            fontName='Helvetica',
+            fontName='Arial',
             fontSize=9,
             leading=12
         )
@@ -270,7 +283,7 @@ class MedicalReportPDFHandler(models.AbstractModel):
         footer_style = ParagraphStyle(
             'Footer',
             parent=styles['Normal'],
-            fontName='Helvetica-Oblique',
+            fontName='Arial-Italic',
             fontSize=8,
             textColor=colors.gray
         )
