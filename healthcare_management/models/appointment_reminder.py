@@ -40,6 +40,20 @@ class AppointmentReminder(models.Model):
                 'appointment_id': appointment.id,
             })
 
+    def _check_can_send_email(self):
+        """Kiểm tra xem có thể gửi email không"""
+        self.ensure_one()
+        if not self.patient_id:
+            return False, "Không tìm thấy thông tin bệnh nhân"
+
+        if not self.patient_id.email:
+            return False, "Bệnh nhân không có địa chỉ email"
+
+        if not self.appointment_date:
+            return False, "Không có thông tin ngày giờ hẹn"
+
+        return True, "Có thể gửi email"
+
     @api.model
     def _cron_send_appointment_reminders(self):
         """Hàm gửi thông báo lịch hẹn tự động"""
@@ -47,11 +61,11 @@ class AppointmentReminder(models.Model):
         tomorrow = today + timedelta(days=1)
 
         appointments = self.env['clinic.appointment'].search([
-            ('appointment_date', '>=', today + timedelta(days=1)),  # Lịch hẹn trong tương lai
-            ('appointment_date', '<=', today + timedelta(days=7))  # Trong vòng 7 ngày tới
+            ('appointment_date', '>=', today + timedelta(days=1)),
+            ('appointment_date', '<=', today + timedelta(days=7)),
+            ('patient_id.email', '!=', False)
         ])
 
-        # Tạo reminder cho các lịch hẹn chưa có
         for appointment in appointments:
             existing = self.search([('appointment_id', '=', appointment.id)], limit=1)
             if not existing:
@@ -62,7 +76,8 @@ class AppointmentReminder(models.Model):
         reminders = self.search([
             ('state', '=', 'to_send'),
             ('notification_date', '>=', today),
-            ('notification_date', '<=', tomorrow)
+            ('notification_date', '<=', tomorrow),
+            ('patient_id.email', '!=', False)
         ])
 
         for reminder in reminders:
@@ -71,6 +86,13 @@ class AppointmentReminder(models.Model):
     def _send_reminder_email(self, reminder):
         """Gửi email thông báo cho lịch hẹn"""
         try:
+            if not reminder.patient_id.email:
+                reminder.write({
+                    'state': 'failed',
+                    'email_status': 'Không thể gửi email: Bệnh nhân không có địa chỉ email'
+                })
+                return False
+
             email_template = self.env.ref('healthcare_management.appointment_reminder_email_template')
             email_template.send_mail(reminder.id, force_send=True)
             reminder.write({'state': 'sent', 'email_status': 'Email đã được gửi thành công'})
