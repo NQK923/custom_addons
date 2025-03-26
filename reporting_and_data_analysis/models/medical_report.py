@@ -94,10 +94,6 @@ class MedicalReport(models.Model):
                 'target': 'new',
             }
         except Exception as e:
-            # Log error
-            _logger.error(f"Error exporting PDF for report {self.id}: {e}")
-
-            # Return user-friendly notification
             return {
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
