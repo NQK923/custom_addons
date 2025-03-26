@@ -31,12 +31,11 @@ class AppointmentReminder(models.Model):
     @api.model
     def create_from_appointment(self, appointment):
         """Tạo bản ghi reminder cho lịch hẹn mới"""
-        if appointment.state == 'draft':
-            existing = self.search([('appointment_id', '=', appointment.id)], limit=1)
-            if not existing:
-                self.create({
-                    'appointment_id': appointment.id,
-                })
+        existing = self.search([('appointment_id', '=', appointment.id)], limit=1)
+        if not existing:
+            self.create({
+                'appointment_id': appointment.id,
+            })
 
     @api.model
     def _cron_send_appointment_reminders(self):
@@ -44,9 +43,7 @@ class AppointmentReminder(models.Model):
         today = fields.Datetime.now()
         tomorrow = today + timedelta(days=1)
 
-        # Tìm các lịch hẹn cần thông báo mà chưa có reminder
         appointments = self.env['clinic.appointment'].search([
-            ('state', '=', 'draft'),
             ('appointment_date', '>=', today + timedelta(days=1)),  # Lịch hẹn trong tương lai
             ('appointment_date', '<=', today + timedelta(days=7))  # Trong vòng 7 ngày tới
         ])
@@ -59,12 +56,10 @@ class AppointmentReminder(models.Model):
                     'appointment_id': appointment.id,
                 })
 
-        # Gửi thông báo cho các reminder đến hạn
         reminders = self.search([
             ('state', '=', 'to_send'),
             ('notification_date', '>=', today),
-            ('notification_date', '<=', tomorrow),
-            ('appointment_id.state', '=', 'draft')
+            ('notification_date', '<=', tomorrow)
         ])
 
         for reminder in reminders:
@@ -77,9 +72,7 @@ class AppointmentReminder(models.Model):
             email_template.send_mail(reminder.id, force_send=True)
             reminder.write({'state': 'sent', 'email_status': 'Email đã được gửi thành công'})
 
-            # Cập nhật trạng thái lịch hẹn (nếu cần)
-            if hasattr(reminder.appointment_id, 'action_confirm'):
-                reminder.appointment_id.action_confirm()
+            # Đã loại bỏ đoạn code thay đổi trạng thái lịch hẹn
 
             return True
         except Exception as e:
@@ -98,7 +91,6 @@ class AppointmentReminder(models.Model):
     def action_sync_all_appointments(self):
         """Đồng bộ tất cả lịch hẹn vào hệ thống thông báo"""
         appointments = self.env['clinic.appointment'].search([
-            ('state', '=', 'draft'),
             ('appointment_date', '>=', fields.Datetime.now())  # Chỉ lịch hẹn trong tương lai
         ])
 

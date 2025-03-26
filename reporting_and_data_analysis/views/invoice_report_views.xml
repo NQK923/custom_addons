@@ -265,16 +265,9 @@
                 <field name="patient_name"/>
                 <field name="patient_id"/>
                 <separator/>
-                <!-- Loại bỏ các filter liên quan đến has_insurance -->
-                <!-- <filter string="Has Insurance" name="has_insurance" domain="[('has_insurance','=',True)]"/> -->
-                <!-- <filter string="No Insurance" name="no_insurance" domain="[('has_insurance','=',False)]"/> -->
-                <!-- <filter string="Valid Insurance" name="valid_insurance" domain="[('insurance_state','=','Hợp lệ')]"/> -->
                 <filter string="High Spending" name="high_spending" domain="[('total_amount','>',5000000)]"/>
                 <group expand="1" string="Group By">
                     <filter string="Patient" name="patient" context="{'group_by':'patient_id'}"/>
-                    <!-- Loại bỏ các filter group by liên quan đến insurance_state và has_insurance -->
-                    <!-- <filter string="Insurance Status" name="insurance_status" context="{'group_by':'insurance_state'}"/> -->
-                    <!-- <filter string="Has Insurance" name="group_insurance" context="{'group_by':'has_insurance'}"/> -->
                 </group>
             </search>
         </field>
@@ -412,16 +405,4 @@
             </p>
         </field>
     </record>
-
-    <!-- Menu Items -->
-    <!-- Tạo menu gốc riêng thay vì sử dụng menu của invoice_management -->
-    <menuitem id="menu_clinic_reporting_root" name="Báo cáo y tế"  sequence="50"/>
-    <menuitem id="menu_clinic_reporting" name="Báo cáo thống kê" parent="menu_clinic_reporting_root" sequence="10"/>
-
-    <menuitem id="menu_clinic_invoice_dashboard" name="Tổng quan" parent="menu_clinic_reporting" action="action_clinic_invoice_dashboard" sequence="10"/>
-    <menuitem id="menu_clinic_monthly_revenue" name="Doanh thu theo tháng" parent="menu_clinic_reporting" action="action_clinic_invoice_report_monthly" sequence="20"/>
-    <menuitem id="menu_clinic_service_revenue" name="Phân tích dịch vụ" parent="menu_clinic_reporting" action="action_clinic_invoice_report_service" sequence="30"/>
-    <menuitem id="menu_clinic_medicine_revenue" name="Phân tích thuốc" parent="menu_clinic_reporting" action="action_clinic_invoice_report_product" sequence="40"/>
-    <menuitem id="menu_clinic_patient_analysis" name="Phân tích bệnh nhân" parent="menu_clinic_reporting" action="action_clinic_invoice_report_patient" sequence="50"/>
-    <menuitem id="menu_clinic_invoice_status" name="Trạng thái hóa đơn" parent="menu_clinic_reporting" action="action_clinic_invoice_report_status" sequence="60"/>
 </odoo>

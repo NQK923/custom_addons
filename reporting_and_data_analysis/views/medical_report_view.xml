@@ -171,9 +171,4 @@
         <field name="target">new</field>
     </record>
 
-    <!-- Menu -->
-    <menuitem id="menu_hospital_root" name="Hospital" sequence="10"/>
-    <menuitem id="menu_hospital_reports" name="Báo cáo" parent="menu_hospital_root" sequence="40"/>
-    <menuitem id="menu_hospital_medical_reports" name="Báo cáo y tế" parent="menu_hospital_reports" action="action_hospital_medical_report" sequence="10"/>
-    <menuitem id="menu_hospital_medical_report_wizard" name="Tạo báo cáo mới" parent="menu_hospital_reports" action="action_hospital_medical_report_wizard" sequence="5"/>
 </odoo>

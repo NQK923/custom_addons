@@ -20,7 +20,7 @@ class ClinicAppointment(models.Model):
         if 'appointment_date' in vals:
             for record in self:
                 reminder = self.env['appointment.reminder'].search([
-                    ('note', '=', record.id),
+                    ('appointment_id', '=', record.id),
                     ('state', 'in', ['to_send', 'failed'])
                 ], limit=1)
 
