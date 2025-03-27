@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="patient_history_template" name="Patient History">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <h1>Lịch sử khám bệnh nhân</h1>
+                <form method="POST" action="/clinic/patient_history">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="form-group">
+                        <label for="search_value">Nhập mã hoặc tên bệnh nhân:</label>
+                        <input type="text" class="form-control" id="search_value" name="search_value" t-att-value="search_value or ''"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                </form>
+
+                <t t-if="patients">
+                    <h3 class="mt-4">Thông tin bệnh nhân</h3>
+                    <p><strong>Mã:</strong> <t t-esc="patients.code"/></p>
+                    <p><strong>Họ tên:</strong> <t t-esc="patients.name"/></p>
+                    <p><strong>Giới tính:</strong> <t t-esc="patients.gender"/></p>
+                    <p><strong>Tuổi:</strong> <t t-esc="patients.age"/></p>
+
+                    <t t-if="history">
+                        <h3>Lịch sử y tế</h3>
+                        <p><strong>Ngày ghi nhận:</strong> <t t-esc="history.history_date"/></p>
+
+                        <h4>Kế hoạch điều trị</h4>
+                        <ul>
+                            <t t-foreach="history.treatment_plans" t-as="plan">
+                                <li>
+                                    Mã: <t t-esc="plan.code"/> -
+                                    Ngày bắt đầu: <t t-esc="plan.start_date"/> -
+                                    Ngày kết thúc: <t t-esc="plan.end_date or 'Chưa xác định'"/>
+                                </li>
+                            </t>
+                        </ul>
+
+                        <h4>Quá trình điều trị</h4>
+                        <ul>
+                            <t t-foreach="history.treatment_processes" t-as="process">
+                                <li>
+                                    Mã: <t t-esc="process.code"/> -
+                                    Dịch vụ: <t t-esc="process.service_id.name"/> -
+                                    Trạng thái: <t t-esc="process.state"/> -
+                                    Thời gian: <t t-esc="process.execution_time or 'Chưa thực hiện'"/>
+                                </li>
+                            </t>
+                        </ul>
+
+                        <h4>Xét nghiệm</h4>
+                        <ul>
+                            <t t-foreach="history.medical_tests" t-as="test">
+                                <li>
+                                    Mã: <t t-esc="test.test_code"/> -
+                                    Loại: <t t-esc="test.test_type"/> -
+                                    Ngày: <t t-esc="test.test_date"/> -
+                                    Kết quả: <t t-esc="test.result or 'Chưa có'"/>
+                                </li>
+                            </t>
+                        </ul>
+
+                        <h4>Hình ảnh y tế</h4>
+                        <ul>
+                            <t t-foreach="history.medical_images" t-as="image">
+                                <li>
+                                    Mã: <t t-esc="image.test_code"/> -
+                                    Loại: <t t-esc="image.test_type_img"/> -
+                                    Ngày: <t t-esc="image.img_date"/> -
+                                    Kết quả: <t t-esc="image.result_Img or 'Chưa có'"/>
+                                </li>
+                            </t>
+                        </ul>
+
+                        <h4>Theo dõi chăm sóc</h4>
+                        <ul>
+                            <t t-foreach="history.care_trackings" t-as="tracking">
+                                <li>
+                                    Ngày: <t t-esc="tracking.tracking_date"/> -
+                                    Ghi chú: <t t-esc="tracking.note or 'Không có'"/>
+                                </li>
+                            </t>
+                        </ul>
+                    </t>
+                    <t t-else="">
+                        <p>Chưa có lịch sử y tế.</p>
+                    </t>
+                </t>
+                <t t-else="" t-if="search_value">
+                    <p class="mt-3">Không tìm thấy bệnh nhân nào.</p>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>
