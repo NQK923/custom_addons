@@ -166,14 +166,14 @@ class MedicalImages(models.Model):
         vals['test_code'] = str(next_code)
         return super().create(vals)
 
-# Model PatientCareTracking
-class PatientCareTracking(models.Model):
-    _name = 'patient.care.tracking'
-    _description = 'Patient Care Tracking'
-
-    patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True, ondelete='cascade')
-    tracking_date = fields.Datetime(string='Ngày theo dõi', default=fields.Datetime.now)
-    note = fields.Text(string='Ghi chú')
+# # Model PatientCareTracking
+# class PatientCareTracking(models.Model):
+#     _name = 'patient.care.tracking'
+#     _description = 'Patient Care Tracking'
+#
+#     patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True, ondelete='cascade')
+#     tracking_date = fields.Datetime(string='Ngày theo dõi', default=fields.Datetime.now)
+#     note = fields.Text(string='Ghi chú')
 
 # Model PatientMedicalHistory
 class PatientMedicalHistory(models.Model):
@@ -186,7 +186,7 @@ class PatientMedicalHistory(models.Model):
     medical_images = fields.One2many('medical.images', 'MedicalTest_id', string='Hình ảnh y tế', compute='_compute_medical_images', readonly=True)
     treatment_plans = fields.One2many('treatment.plan', 'patient_id', string='Kế hoạch điều trị', readonly=True)
     treatment_processes = fields.One2many('treatment.process', 'plan_id', string='Quá trình điều trị', compute='_compute_treatment_processes', readonly=True)
-    care_trackings = fields.One2many('patient.care.tracking', 'patient_id', string='Theo dõi chăm sóc', readonly=True)
+    # care_trackings = fields.One2many('patient.care.tracking', 'patient_id', string='Theo dõi chăm sóc', readonly=True)
 
     @api.depends('medical_tests')
     def _compute_medical_images(self):
