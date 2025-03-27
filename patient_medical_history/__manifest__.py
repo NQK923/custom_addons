@@ -1,5 +1,5 @@
 {
-    'name': 'Patient Medical History',
+    'name': 'Lịch sử bệnh nhân',
     'version': '1.0',
     'summary': 'Xem lịch sử khám bệnh của bệnh nhân',
     'depends': ['base', 'website'],

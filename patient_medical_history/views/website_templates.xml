@@ -1,0 +1,180 @@
+<odoo>
+    <!-- Template hiển thị lịch sử khám bệnh -->
+    <template id="patient_medical_history_website" name="Lịch sử khám bệnh">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <!-- Khu vực nhập mã bệnh nhân -->
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <h2 class="text-center mb-4">Xem lịch sử khám bệnh</h2>
+                        <form action="/medical/history" method="get" class="mb-5">
+                            <div class="form-group">
+                                <label for="patient_identifier">Nhập mã bệnh nhân (ID hoặc Tên)</label>
+                                <input type="text" name="patient_identifier" id="patient_identifier" class="form-control" placeholder="Nhập ID hoặc Tên bệnh nhân" required="1"/>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Xem lịch sử</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Hiển thị thông báo nếu có lỗi -->
+                <t t-if="error">
+                    <div class="alert alert-warning text-center">
+                        <t t-esc="error"/>
+                    </div>
+                </t>
+
+                <!-- Hiển thị lịch sử nếu có -->
+                <t t-if="history">
+                    <h3 class="mb-4">Lịch sử khám bệnh của: <t t-esc="history.patient_id.name"/></h3>
+
+                    <!-- Xét nghiệm -->
+                    <h4>Xét nghiệm</h4>
+                    <table class="table table-striped mb-5">
+                        <thead>
+                            <tr>
+                                <th>Mã xét nghiệm</th>
+                                <th>Loại</th>
+                                <th>Ngày thực hiện</th>
+                                <th>Trạng thái</th>
+                                <th>Kết quả</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="history.medical_tests" t-as="test">
+                                <tr>
+                                    <td><t t-esc="test.test_code"/></td>
+                                    <td><t t-esc="test.test_type"/></td>
+                                    <td><t t-esc="test.test_date"/></td>
+                                    <td><t t-esc="test.status"/></td>
+                                    <td><t t-esc="test.result"/></td>
+                                </tr>
+                            </t>
+                            <t t-if="not history.medical_tests">
+                                <tr>
+                                    <td colspan="5" class="text-center">Không có dữ liệu xét nghiệm.</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <!-- Hình ảnh y tế -->
+                    <h4>Hình ảnh y tế</h4>
+                    <table class="table table-striped mb-5">
+                        <thead>
+                            <tr>
+                                <th>Mã hình ảnh</th>
+                                <th>Xét nghiệm liên quan</th>
+                                <th>Loại</th>
+                                <th>Ngày chụp</th>
+                                <th>Hình ảnh</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="history.medical_images" t-as="image">
+                                <tr>
+                                    <td><t t-esc="image.test_code"/></td>
+                                    <td><t t-esc="image.MedicalTest_id.test_code"/></td>
+                                    <td><t t-esc="image.test_type_img"/></td>
+                                    <td><t t-esc="image.img_date"/></td>
+                                    <td>
+                                        <img t-att-src="'data:image/png;base64,' + image.Img.decode('utf-8') if image.Img else ''" style="max-width: 100px;"/>
+                                    </td>
+                                </tr>
+                            </t>
+                            <t t-if="not history.medical_images">
+                                <tr>
+                                    <td colspan="5" class="text-center">Không có dữ liệu hình ảnh y tế.</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <!-- Kế hoạch điều trị -->
+                    <h4>Kế hoạch điều trị</h4>
+                    <table class="table table-striped mb-5">
+                        <thead>
+                            <tr>
+                                <th>Mã kế hoạch</th>
+                                <th>Ngày bắt đầu</th>
+                                <th>Ngày kết thúc</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="history.treatment_plans" t-as="plan">
+                                <tr>
+                                    <td><t t-esc="plan.code"/></td>
+                                    <td><t t-esc="plan.start_date"/></td>
+                                    <td><t t-esc="plan.end_date"/></td>
+                                </tr>
+                            </t>
+                            <t t-if="not history.treatment_plans">
+                                <tr>
+                                    <td colspan="3" class="text-center">Không có dữ liệu kế hoạch điều trị.</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <!-- Quá trình điều trị -->
+                    <h4>Quá trình điều trị</h4>
+                    <table class="table table-striped mb-5">
+                        <thead>
+                            <tr>
+                                <th>Mã quá trình</th>
+                                <th>Dịch vụ</th>
+                                <th>Người thực hiện</th>
+                                <th>Trạng thái</th>
+                                <th>Thời gian</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="history.treatment_processes" t-as="process">
+                                <tr>
+                                    <td><t t-esc="process.code"/></td>
+                                    <td><t t-esc="process.service_id.name"/></td>
+                                    <td><t t-esc="process.executor_id.name"/></td>
+                                    <td><t t-esc="process.state"/></td>
+                                    <td><t t-esc="process.execution_time"/></td>
+                                </tr>
+                            </t>
+                            <t t-if="not history.treatment_processes">
+                                <tr>
+                                    <td colspan="5" class="text-center">Không có dữ liệu quá trình điều trị.</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </t>
+            </div>
+
+            <!-- CSS tùy chỉnh -->
+            <style>
+                .btn-primary {
+                    background-color: #6d4c41;
+                    border-color: #6d4c41;
+                }
+                .btn-primary:hover {
+                    background-color: #5a3e36;
+                    border-color: #5a3e36;
+                }
+                h2, h3, h4 {
+                    color: #333;
+                }
+                .table thead th {
+                    background-color: #f8f9fa;
+                }
+            </style>
+        </t>
+    </template>
+
+    <!-- Menu website -->
+    <record id="website_menu_medical_history" model="website.menu">
+        <field name="name">Lịch sử khám bệnh</field>
+        <field name="url">/medical/history</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">50</field>
+    </record>
+</odoo>
