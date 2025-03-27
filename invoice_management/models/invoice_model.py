@@ -29,8 +29,8 @@ class ClinicInvoice(models.Model):
     name = fields.Char(string='Mã hóa đơn', required=True, copy=False, readonly=True, default='New')
     display_name = fields.Char(string='Số hóa đơn', compute='_compute_display_name', store=True)
     patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True)
-    prescription_id = fields.Many2one('prescription.order', string='Đơn thuốc', 
-                                    domain="[('patient_id', '=', patient_id)]")
+    prescription_ids = fields.Many2many('prescription.order', string='Đơn thuốc',
+                                      domain="[('patient_id', '=', patient_id)]")
     invoice_date = fields.Date(string='Ngày lập', default=fields.Date.today, required=True)
     
     # Thay đổi định nghĩa của service_lines và product_lines
@@ -54,6 +54,10 @@ class ClinicInvoice(models.Model):
     insurance_amount = fields.Float(string='Bảo hiểm chi trả', compute='_compute_amounts', store=True)
     patient_amount = fields.Float(string='Bệnh nhân chi trả', compute='_compute_amounts', store=True)
     note = fields.Text(string='Ghi chú')
+
+    # Thêm trường treatment_plan_id
+    treatment_plan_id = fields.Many2one('treatment.plan', string='Kế hoạch điều trị',
+                                      domain="[('patient_id', '=', patient_id)]")
 
     @api.depends('name', 'invoice_date')
     def _compute_display_name(self):
@@ -95,37 +99,74 @@ class ClinicInvoice(models.Model):
     @api.onchange('patient_id')
     def _onchange_patient_id(self):
         """Reset prescription and invoice lines when patient changes"""
-        self.prescription_id = False
+        self.prescription_ids = [(5, 0, 0)]  # Clear prescriptions
+        self.treatment_plan_id = False  # Clear treatment plan
         self.service_lines = [(5, 0, 0)]  # Clear service lines
         self.product_lines = [(5, 0, 0)]  # Clear product lines
 
-    @api.onchange('prescription_id')
-    def _onchange_prescription_id(self):
-        if self.prescription_id:
+    @api.onchange('prescription_ids')
+    def _onchange_prescription_ids(self):
+        """Handle multiple prescriptions"""
+        if self.prescription_ids:
             # Clear existing product lines first
             self.product_lines = [(5, 0, 0)]
             new_lines = []
-            for line in self.prescription_id.prescription_line_ids:
-                product = line.product_id
-                if not product:
-                    continue
-                    
-                if not product.unit_price:
-                    raise ValidationError(
-                        f"Thuốc '{product.name}' chưa có đơn giá. Vui lòng thiết lập đơn giá trong 'Pharmacy Product' trước khi sử dụng."
-                    )
-                if product.unit_price <= 0:
-                    raise ValidationError(
-                        f"Đơn giá của thuốc '{product.name}' phải lớn hơn 0. Vui lòng cập nhật giá trong 'Pharmacy Product'."
-                    )
-                    
-                new_lines.append((0, 0, {
-                    'product_id': product.id,
-                    'quantity': line.quantity,
-                    'price_unit': product.unit_price,
-                }))
+            
+            for prescription in self.prescription_ids:
+                for line in prescription.prescription_line_ids:
+                    product = line.product_id
+                    if not product:
+                        continue
+                        
+                    if not product.unit_price:
+                        raise ValidationError(
+                            f"Thuốc '{product.name}' chưa có đơn giá. Vui lòng thiết lập đơn giá trong 'Pharmacy Product' trước khi sử dụng."
+                        )
+                    if product.unit_price <= 0:
+                        raise ValidationError(
+                            f"Đơn giá của thuốc '{product.name}' phải lớn hơn 0. Vui lòng cập nhật giá trong 'Pharmacy Product'."
+                        )
+                        
+                    # Kiểm tra xem thuốc đã tồn tại trong lines chưa
+                    existing_line = next((l for l in new_lines if l[2]['product_id'] == product.id), None)
+                    if existing_line:
+                        # Nếu đã tồn tại, cộng thêm số lượng
+                        existing_line[2]['quantity'] += line.quantity
+                    else:
+                        # Nếu chưa tồn tại, thêm line mới
+                        new_lines.append((0, 0, {
+                            'product_id': product.id,
+                            'quantity': line.quantity,
+                            'price_unit': product.unit_price,
+                        }))
                 
             self.product_lines = new_lines
+
+    @api.onchange('treatment_plan_id')
+    def _onchange_treatment_plan(self):
+        """Load services from treatment plan"""
+        if self.treatment_plan_id:
+            # Clear existing service lines first
+            self.service_lines = [(5, 0, 0)]
+            new_lines = []
+            
+            # Add services from treatment processes
+            for process in self.treatment_plan_id.treatment_process_ids:
+                service = process.service_id
+                if not service:
+                    continue
+                    
+                if not service.price:
+                    raise ValidationError(
+                        f"Dịch vụ '{service.service_name}' chưa có giá. Vui lòng thiết lập giá trước khi sử dụng."
+                    )
+                new_lines.append((0, 0, {
+                    'service_id': service.id,
+                    'quantity': 1,
+                    'price_unit': service.price,
+                }))
+                
+            self.service_lines = new_lines
 
     def action_confirm(self):
         self.write({'state': 'confirmed'})

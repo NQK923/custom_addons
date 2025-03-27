@@ -48,7 +48,10 @@
                     <group>
                         <group>
                             <field name="patient_id"/>
-                            <field name="prescription_id"/>
+                            <field name="treatment_plan_id" 
+                                   options="{'no_create': True, 'no_open': True}"
+                                   placeholder="Chọn kế hoạch điều trị..."/>
+                            <field name="prescription_ids" widget="many2many_tags"/>
                             <field name="invoice_date"/>
                         </group>
                         <group>
