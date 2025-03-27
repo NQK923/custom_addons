@@ -29,4 +29,5 @@ class MedicalHistoryController(http.Controller):
         history = request.env['patient.medical.history'].sudo().get_history_by_patient(patient.id)
         return request.render('patient_medical_history.patient_medical_history_website', {
             'history': history
+
         })

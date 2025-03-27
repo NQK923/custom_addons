@@ -20,6 +20,7 @@ class PatientMedicalHistory(models.Model):
             tests = record.medical_tests.mapped('id')
             record.medical_images = self.env['medical.images'].search([('MedicalTest_id', 'in', tests)])
 
+
     @api.depends('patient_id')
     def _compute_treatment_processes(self):
         for record in self:
