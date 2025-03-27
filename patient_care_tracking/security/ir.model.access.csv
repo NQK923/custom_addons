@@ -1,2 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_patient_care_tracking_user,access.patient.care.tracking.user,model_patient_care_tracking,,1,1,1,1
