@@ -1,3 +1,5 @@
+import uuid
+
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
@@ -113,3 +115,21 @@ class PrescriptionLine(models.Model):
                     raise models.ValidationError(
                         f"Thuốc {product.name} đã tồn tại trong đơn thuốc!"
                     )
+
+class ClinicService(models.Model):
+    _name = 'clinic.service'
+    _description = 'Dịch vụ phòng khám'
+    _rec_name = 'service_name'
+
+    name = fields.Char(string='Mã dịch vụ', required=True, copy=False, readonly=True, default='New')
+    service_name = fields.Char(string='Tên dịch vụ', required=True)
+    price = fields.Float(string='Giá dịch vụ', required=True)
+    description = fields.Text(string='Mô tả')
+    active = fields.Boolean(default=True)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)

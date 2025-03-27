@@ -26,52 +26,9 @@
                     </div>
                 </t>
 
-                <!-- Hiển thị thông tin bệnh nhân và lịch sử nếu có -->
+                <!-- Hiển thị lịch sử nếu có -->
                 <t t-if="history">
                     <h3 class="mb-4">Lịch sử khám bệnh của: <t t-esc="history.patient_id.name"/></h3>
-
-                    <!-- Thông tin bệnh nhân -->
-                    <div class="card mb-5">
-                        <div class="card-header">
-                            <h4 class="mb-0">Thông tin bệnh nhân</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Mã bệnh nhân:</strong> <t t-esc="history.patient_id.code"/></p>
-                                    <p><strong>Họ và tên:</strong> <t t-esc="history.patient_id.name"/></p>
-                                    <p><strong>Ngày sinh:</strong> <t t-esc="history.patient_id.date_of_birth"/></p>
-                                    <p><strong>Tuổi:</strong> <t t-esc="history.patient_id.age"/></p>
-                                    <p><strong>Giới tính:</strong> <t t-esc="dict(history.patient_id._fields['gender'].selection).get(history.patient_id.gender)"/></p>
-                                    <p><strong>Số điện thoại:</strong> <t t-esc="history.patient_id.phone"/></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Email:</strong> <t t-esc="history.patient_id.email"/></p>
-                                    <p><strong>Loại bệnh nhân:</strong> <t t-esc="dict(history.patient_id._fields['patient_type'].selection).get(history.patient_id.patient_type)"/></p>
-                                    <p><strong>Ngày đăng ký:</strong> <t t-esc="history.patient_id.date"/></p>
-                                    <p><strong>Ghi chú:</strong> <t t-esc="history.patient_id.note"/></p>
-                                </div>
-                            </div>
-                            <!-- Thông tin bảo hiểm -->
-                            <h5 class="mt-4">Thông tin bảo hiểm</h5>
-                            <t t-if="history.patient_id.has_insurance">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p><strong>Số thẻ BHYT:</strong> <t t-esc="history.patient_id.insurance_number"/></p>
-                                        <p><strong>Nơi ĐKKCB:</strong> <t t-esc="history.patient_id.insurance_facility"/></p>
-                                        <p><strong>Có giá trị đến:</strong> <t t-esc="history.patient_id.insurance_expiry"/></p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p><strong>Tuyến:</strong> <t t-esc="dict(history.patient_id._fields['insurance_tier'].selection).get(history.patient_id.insurance_tier)"/></p>
-                                        <p><strong>Trạng thái:</strong> <t t-esc="history.patient_id.insurance_state"/></p>
-                                    </div>
-                                </div>
-                            </t>
-                            <t t-else="">
-                                <p>Không có thông tin bảo hiểm.</p>
-                            </t>
-                        </div>
-                    </div>
 
                     <!-- Xét nghiệm -->
                     <h4>Xét nghiệm</h4>
@@ -148,7 +105,7 @@
                         <tbody>
                             <t t-foreach="history.treatment_plans" t-as="plan">
                                 <tr>
-                                    <td><t t-esc="plan.name"/></td>
+                                    <td><t t-esc="plan.code"/></td>
                                     <td><t t-esc="plan.start_date"/></td>
                                     <td><t t-esc="plan.end_date"/></td>
                                 </tr>
@@ -190,68 +147,8 @@
                             </t>
                         </tbody>
                     </table>
-
-                    <!-- Theo dõi chăm sóc -->
-                    <h4>Theo dõi chăm sóc</h4>
-                    <table class="table table-striped mb-5">
-                        <thead>
-                            <tr>
-                                <th>Ngày chăm sóc</th>
-                                <th>Nhân viên</th>
-                                <th>Trạng thái</th>
-                                <th>Nhiệt độ</th>
-                                <th>Huyết áp</th>
-                                <th>Nhịp tim</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="history.care_trackings" t-as="care">
-                                <tr>
-                                    <td><t t-esc="care.care_date"/></td>
-                                    <td><t t-esc="care.doctor_id.name"/></td>
-                                    <td><t t-esc="care.statenew"/></td>
-                                    <td><t t-esc="care.temperature"/></td>
-                                    <td><t t-esc="care.blood_pressure"/></td>
-                                    <td><t t-esc="care.heart_rate"/></td>
-                                </tr>
-                            </t>
-                            <t t-if="not history.care_trackings">
-                                <tr>
-                                    <td colspan="6" class="text-center">Không có dữ liệu theo dõi chăm sóc.</td>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
                 </t>
             </div>
-
-            <!-- Footer -->
-            <footer class="bg-dark text-white py-4 mt-5">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <h5>USEFUL LINKS</h5>
-                            <ul class="list-unstyled">
-                                <li><a href="#" class="text-white">Home</a></li>
-                                <li><a href="#" class="text-white">About us</a></li>
-                                <li><a href="#" class="text-white">Products</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h5>About us</h5>
-                            <p>We are a team of passionate people whose goal is to improve everyone's life through disruptive products. We build great products to solve your business problems.</p>
-                        </div>
-                        <div class="col-md-4">
-                            <h5>Connect with us</h5>
-                            <ul class="list-unstyled">
-                                <li><a href="#" class="text-white">Contact us</a></li>
-                                <li><a href="mailto:info@yourcompany.example.com" class="text-white">info@yourcompany.example.com</a></li>
-                                <li><a href="tel:+1555-555-5556" class="text-white">+1 555-555-5556</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </footer>
 
             <!-- CSS tùy chỉnh -->
             <style>
@@ -263,17 +160,10 @@
                     background-color: #5a3e36;
                     border-color: #5a3e36;
                 }
-                h2, h3, h4, h5 {
+                h2, h3, h4 {
                     color: #333;
                 }
                 .table thead th {
-                    background-color: #f8f9fa;
-                }
-                .card {
-                    border: 1px solid #ddd;
-                    border-radius: 5px;
-                }
-                .card-header {
                     background-color: #f8f9fa;
                 }
             </style>

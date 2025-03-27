@@ -82,18 +82,6 @@
                                 </list>
                             </field>
                         </page>
-                        <page string="Theo dõi chăm sóc">
-                            <field name="care_trackings">
-                                <list>
-                                    <field name="care_date"/>
-                                    <field name="doctor_id"/>
-                                    <field name="statenew"/>
-                                    <field name="temperature"/>
-                                    <field name="blood_pressure"/>
-                                    <field name="heart_rate"/>
-                                </list>
-                            </field>
-                        </page>
                     </notebook>
                 </sheet>
             </form>
