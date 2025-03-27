@@ -12,10 +12,10 @@ class MedicalHistoryController(http.Controller):
 
         # Kiểm tra xem patient_identifier có phải là số (ID) hay không
         if patient_identifier.isdigit():
-            domain = ['|', ('id', '=', int(patient_identifier)), ('patient_name', 'ilike', patient_identifier)]
+            domain = ['|', ('id', '=', int(patient_identifier)), ('name', 'ilike', patient_identifier)]
         else:
-            # Nếu không phải số, chỉ tìm kiếm theo patient_name
-            domain = [('patient_name', 'ilike', patient_identifier)]
+            # Tìm kiếm theo code hoặc name
+            domain = ['|', ('code', 'ilike', patient_identifier), ('name', 'ilike', patient_identifier)]
 
         # Tìm bệnh nhân
         patient = request.env['clinic.patient'].sudo().search(domain, limit=1)
