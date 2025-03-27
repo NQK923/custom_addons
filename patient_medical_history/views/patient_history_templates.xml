@@ -70,16 +70,6 @@
                                 </li>
                             </t>
                         </ul>
-
-                        <h4>Theo dõi chăm sóc</h4>
-                        <ul>
-                            <t t-foreach="history.care_trackings" t-as="tracking">
-                                <li>
-                                    Ngày: <t t-esc="tracking.tracking_date"/> -
-                                    Ghi chú: <t t-esc="tracking.note or 'Không có'"/>
-                                </li>
-                            </t>
-                        </ul>
                     </t>
                     <t t-else="">
                         <p>Chưa có lịch sử y tế.</p>

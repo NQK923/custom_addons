@@ -1,7 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_clinic_patient,access_clinic_patient,model_clinic_patient,,1,0,0,0
 access_patient_medical_history,access_patient_medical_history,model_patient_medical_history,,1,0,0,0
-access_patient_care_tracking,access_patient_care_tracking,model_patient_care_tracking,,1,0,0,0
 access_treatment_plan,access_treatment_plan,model_treatment_plan,,1,0,0,0
 access_treatment_process,access_treatment_process,model_treatment_process,,1,0,0,0
 access_medical_test,access_medical_test,model_medical_test,,1,0,0,0
