@@ -7,3 +7,4 @@ access_pharmacy_product,access.pharmacy.product,model_pharmacy_product,,1,1,1,1
 access_pharmacy_product_user,Pharmacy Product User Access,model_pharmacy_product,base.group_user,1,1,1,0
 access_prescription_order_user,Prescription Order User Access,model_prescription_order,base.group_user,1,1,1,0
 access_prescription_line_user,Prescription Line User Access,model_prescription_line,base.group_user,1,1,1,0
+access_clinic_service,access.clinic.service,model_clinic_service,base.group_user,1,1,1,1
