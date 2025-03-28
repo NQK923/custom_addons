@@ -47,12 +47,14 @@
                         </page>
                         <page string="Thông tin bảo hiểm y tế">
                             <group>
-                                <p invisible="has_insurance">Bệnh nhân chưa có bảo hiểm y tế</p>
+                                <group invisible="has_insurance">
+                                    <p>Bệnh nhân chưa có bảo hiểm y tế</p>
+                                </group>
                                 <group invisible="not has_insurance">
                                     <field name="name" invisible="1"/>
                                     <field name="insurance_number" readonly="1"/>
                                     <field name="insurance_facility" readonly="1"/>
-                                    <field name="insurance_tier" readonly="1"/>
+                                    <field name="insurance_coverage_rate" readonly="1"/>
                                     <field name="insurance_expiry" readonly="1"/>\
                                     <field name="insurance_state" readonly="1"/>
                                 </group>
