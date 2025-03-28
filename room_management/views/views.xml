@@ -20,11 +20,12 @@
                     <notebook>
                         <page string="Danh sách giường bệnh">
                             <field name="bed_ids">
-                                <list>
+                                <list create="0" editable="bottom" delete="0">
                                      <field name="id"/>
                                     <field name="status"/>
                                     <field name="patient_id" string="Mã bệnh nhân"/>
                                     <field name="patient_name" string="Tên bệnh nhân"/>
+                                    <button type="object" name="action_out" string="Xuất viện" icon="fa-sign-out" invisible="not patient_id"/>
                                 </list>
                             </field>
                         </page>
