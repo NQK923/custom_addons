@@ -1,7 +1,35 @@
+
 from odoo import models, fields, api
 from datetime import datetime, date
 from odoo.exceptions import ValidationError
 import uuid
+
+# Model ClinicInsurancePolicy (Thêm mới để quản lý bảo hiểm)
+class ClinicInsurancePolicy(models.Model):
+    _name = 'clinic.insurance.policy'
+    _description = 'Chính sách bảo hiểm'
+
+    patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True, ondelete='cascade')
+    number = fields.Char(string='Số thẻ BHYT', required=True)
+    facility = fields.Char(string='Nơi ĐKKCB', required=True)
+    tier = fields.Selection(
+        [('central', 'Trung ương'), ('province', 'Tỉnh'), ('district', 'Quận/Huyện'), ('commune', 'Xã')],
+        string='Tuyến', required=True
+    )
+    expiry_date = fields.Date(string='Có giá trị đến', required=True)
+    state = fields.Selection(
+        [('valid', 'Hợp lệ'), ('expired', 'Hết hạn')],
+        string='Trạng thái', compute='_compute_state', store=True
+    )
+
+    @api.depends('expiry_date')
+    def _compute_state(self):
+        today = fields.Date.today()
+        for record in self:
+            if record.expiry_date and record.expiry_date >= today:
+                record.state = 'valid'
+            else:
+                record.state = 'expired'
 
 # Model ClinicPatient
 class ClinicPatient(models.Model):
@@ -31,6 +59,8 @@ class ClinicPatient(models.Model):
         readonly=True
     )
     note = fields.Text(string='Ghi chú')
+    insurance_ids = fields.One2many('clinic.insurance.policy', 'patient_id', string='Thông tin bảo hiểm')
+    has_insurance = fields.Boolean(string='Có bảo hiểm', compute='_compute_insurance_info')
     insurance_number = fields.Char(string='Số thẻ BHYT', compute='_compute_insurance_info')
     insurance_facility = fields.Char(string='Nơi ĐKKCB', compute='_compute_insurance_info')
     insurance_expiry = fields.Date(string='Có giá trị đến', compute='_compute_insurance_info')
@@ -40,14 +70,13 @@ class ClinicPatient(models.Model):
         compute='_compute_insurance_info'
     )
     insurance_state = fields.Char(string='Trạng thái', compute='_compute_insurance_info')
-    has_insurance = fields.Boolean(string='Có bảo hiểm', compute='_compute_insurance_info')
     medical_history_ids = fields.One2many('patient.medical.history', 'patient_id', string='Lịch sử y tế')
-    treatment_plan_ids = fields.One2many('treatment.plan', 'patient_id', string='Kế hoạch điều trị')  # Thêm trường này
+    treatment_plan_ids = fields.One2many('treatment.plan', 'patient_id', string='Kế hoạch điều trị')
 
-    @api.depends('name')
+    @api.depends('insurance_ids')
     def _compute_insurance_info(self):
         for patient in self:
-            insurance = self.env['clinic.insurance.policy'].search([('patient_id', '=', patient.id)], limit=1)
+            insurance = patient.insurance_ids and patient.insurance_ids[0]  # Lấy chính sách bảo hiểm đầu tiên (nếu có)
             if insurance:
                 patient.has_insurance = True
                 patient.insurance_number = insurance.number
@@ -68,7 +97,8 @@ class ClinicPatient(models.Model):
         for record in self:
             today = date.today()
             if record.date_of_birth:
-                record.age = today.year - record.date_of_birth.year
+                record.age = today.year - record.date_of_birth.year - (
+                    (today.month, today.day) < (record.date_of_birth.month, record.date_of_birth.day))
             else:
                 record.age = 0
 
@@ -78,13 +108,12 @@ class ClinicPatient(models.Model):
             if vals.get('code', 'New') == 'New':
                 vals['code'] = str(uuid.uuid4())[:8]
         return super().create(vals_list)
-
 # Model TreatmentPlan
 class TreatmentPlan(models.Model):
     _name = 'treatment.plan'
     _description = 'Treatment Plan'
 
-    code = fields.Char(string='Mã kế hoạch điều trị', required=True)
+    code = fields.Char(string='Mã kế hoạch điều trị', required=True, copy=False, default="New")
     patient_id = fields.Many2one('clinic.patient', string='Mã bệnh nhân', required=True)
     start_date = fields.Date(string='Ngày bắt đầu', required=True)
     end_date = fields.Date(string='Ngày kết thúc')
@@ -93,7 +122,7 @@ class TreatmentPlan(models.Model):
     @api.model
     def create(self, vals):
         if vals.get('code', 'New') == 'New':
-            vals['code'] = self.env['ir.sequence'].next_by_code('treatment.plan') or '1'
+            vals['code'] = self.env['ir.sequence'].next_by_code('treatment.plan') or 'TP001'
         return super().create(vals)
 
 # Model TreatmentProcess
@@ -101,7 +130,7 @@ class TreatmentProcess(models.Model):
     _name = 'treatment.process'
     _description = 'Treatment Process'
 
-    code = fields.Char(string='Mã quá trình', required=True)
+    code = fields.Char(string='Mã quá trình', required=True, copy=False, default="New")
     plan_id = fields.Many2one('treatment.plan', string='Kế hoạch điều trị', required=True, ondelete='cascade')
     service_id = fields.Many2one('clinic.service', string='Loại dịch vụ', required=True)
     executor_id = fields.Many2one('clinic.staff', string='Người thực hiện', required=True)
@@ -117,7 +146,7 @@ class TreatmentProcess(models.Model):
         if not vals.get('executor_id'):
             raise ValidationError("Người thực hiện không được để trống.")
         if vals.get('code', 'New') == 'New':
-            vals['code'] = self.env['ir.sequence'].next_by_code('treatment.process') or '1'
+            vals['code'] = self.env['ir.sequence'].next_by_code('treatment.process') or 'TR001'
         return super().create(vals)
 
     def write(self, vals):
@@ -130,13 +159,13 @@ class MedicalTest(models.Model):
     _name = 'medical.test'
     _description = 'Medical Test Management'
 
-    test_code = fields.Char(string='Mã xét nghiệm và chuẩn đoán', required=True)
+    test_code = fields.Char(string='Mã xét nghiệm và chuẩn đoán', required=True, copy=False, default="New")
     patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True)
     test_type = fields.Selection(
         [('test', 'Chuẩn đoán'), ('blood', 'Máu'), ('urine', 'Nước tiểu'), ('xray', 'X-Quang'), ('ecg', 'ECG'), ('other', 'Khác')],
         string='Loại xét nghiệm hoặc chuẩn đoán', required=True
     )
-    test_date = fields.Datetime(string='Ngày thực hiện', required=True)
+    test_date = fields.Datetime(string='Ngày thực hiện', required=True, default=fields.Datetime.now)
     status = fields.Selection(
         [('request', 'Yêu cầu'), ('processing', 'Đang xử lý'), ('completed', 'Hoàn tất')],
         string='Trạng thái', default='request'
@@ -144,36 +173,32 @@ class MedicalTest(models.Model):
     result = fields.Text(string='Kết quả xét nghiệm hoặc chuẩn đoán')
     medical_images = fields.One2many('medical.images', 'MedicalTest_id', string='Hình ảnh y tế')
 
+    @api.model
+    def create(self, vals):
+        if vals.get('test_code', 'New') == 'New':
+            vals['test_code'] = self.env['ir.sequence'].next_by_code('medical.test') or 'MT001'
+        return super().create(vals)
+
 # Model MedicalImages
 class MedicalImages(models.Model):
     _name = 'medical.images'
     _description = 'Medical Images'
 
-    test_code = fields.Char(string='Mã hình ảnh xét nghiệm', required=True, copy=False)
-    MedicalTest_id = fields.Many2one('medical.test', string='Mã xét nghiệm', required=True)
+    test_code = fields.Char(string='Mã hình ảnh xét nghiệm', required=True, copy=False, default="New")
+    MedicalTest_id = fields.Many2one('medical.test', string='Mã xét nghiệm', required=True, ondelete='cascade')
     test_type_img = fields.Selection(
         [('test', 'Chuẩn đoán'), ('blood', 'Máu'), ('urine', 'Nước tiểu'), ('xray', 'X-Quang'), ('ecg', 'ECG'), ('other', 'Khác')],
         string='Loại xét nghiệm hoặc chuẩn đoán', required=True
     )
-    img_date = fields.Datetime(string='Ngày thực hiện', required=True)
+    img_date = fields.Datetime(string='Ngày thực hiện', required=True, default=fields.Datetime.now)
     result_Img = fields.Text(string='Kết quả chuẩn đoán hoặc xét nghiệm')
     Img = fields.Binary(string='Hình ảnh', attachment=True)
 
     @api.model
     def create(self, vals):
-        last_record = self.search([], order='id desc', limit=1)
-        next_code = int(last_record.test_code) + 1 if last_record and last_record.test_code.isdigit() else 1
-        vals['test_code'] = str(next_code)
+        if vals.get('test_code', 'New') == 'New':
+            vals['test_code'] = self.env['ir.sequence'].next_by_code('medical.images') or 'MI001'
         return super().create(vals)
-
-# # Model PatientCareTracking
-# class PatientCareTracking(models.Model):
-#     _name = 'patient.care.tracking'
-#     _description = 'Patient Care Tracking'
-#
-#     patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True, ondelete='cascade')
-#     tracking_date = fields.Datetime(string='Ngày theo dõi', default=fields.Datetime.now)
-#     note = fields.Text(string='Ghi chú')
 
 # Model PatientMedicalHistory
 class PatientMedicalHistory(models.Model):
@@ -185,8 +210,7 @@ class PatientMedicalHistory(models.Model):
     medical_tests = fields.One2many('medical.test', 'patient_id', string='Xét nghiệm', readonly=True)
     medical_images = fields.One2many('medical.images', 'MedicalTest_id', string='Hình ảnh y tế', compute='_compute_medical_images', readonly=True)
     treatment_plans = fields.One2many('treatment.plan', 'patient_id', string='Kế hoạch điều trị', readonly=True)
-    treatment_processes = fields.One2many('treatment.process', 'plan_id', string='Quá trình điều trị', compute='_compute_treatment_processes', readonly=True)
-    # care_trackings = fields.One2many('patient.care.tracking', 'patient_id', string='Theo dõi chăm sóc', readonly=True)
+    treatment_processes = fields.One2many('treatment.process', compute='_compute_treatment_processes', string='Quá trình điều trị', readonly=True)
 
     @api.depends('medical_tests')
     def _compute_medical_images(self):
@@ -197,5 +221,8 @@ class PatientMedicalHistory(models.Model):
     @api.depends('treatment_plans')
     def _compute_treatment_processes(self):
         for record in self:
-            plan_ids = record.treatment_plans.mapped('id')
-            record.treatment_processes = self.env['treatment.process'].search([('plan_id', 'in', plan_ids)])
+            if record.treatment_plans:
+                plan_ids = record.treatment_plans.mapped('id')
+                record.treatment_processes = self.env['treatment.process'].search([('plan_id', 'in', plan_ids)])
+            else:
+                record.treatment_processes = False
