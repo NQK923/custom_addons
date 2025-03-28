@@ -88,7 +88,7 @@
                 <field name="quantity"/>
                 <field name="date"/>
                 <field name="expiry"/>
-
+                <field name="insurance_covered"/>
             </list>
         </field>
     </record>
@@ -105,6 +105,7 @@
                 <field name="purchase_price"/>
                 <field name="unit_price"/>
                 <field name="profit_margin"/>
+                <field name="insurance_covered"/>
             </list>
         </field>
     </record>
@@ -126,6 +127,7 @@
                             <field name="purchase_price"/>
                             <field name="unit_price"/>
                             <field name="profit_margin"/>
+                            <field name="insurance_covered"/>
                             <field name="active"/>
                         </group>
                     </group>
@@ -148,6 +150,7 @@
             <list>
                 <field name="service_name"/>
                 <field name="price"/>
+                <field name="insurance_covered"/>
             </list>
         </field>
     </record>
@@ -163,6 +166,7 @@
                         <field name="service_name"/>
                         <field name="price"/>
                         <field name="description"/>
+                        <field name="insurance_covered"/>
                         <field name="active"/>
                     </group>
                 </sheet>
