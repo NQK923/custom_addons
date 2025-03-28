@@ -28,11 +28,6 @@ class ClinicInsurance(models.Model):
         ('95', '95%'),
         ('100', '100%')
     ], string='Mức chi trả', default='100', required=True)
-    is_under_six = fields.Boolean(
-        string='Dưới 6 tuổi',
-        compute='_compute_is_under_six',
-        store=True
-    )
 
     _sql_constraints = [
         ('unique_patient', 'unique(patient_id)', 'Bệnh nhân này đã có bảo hiểm y tế!'),
