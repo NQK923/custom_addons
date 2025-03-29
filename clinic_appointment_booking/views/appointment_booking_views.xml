@@ -80,21 +80,4 @@
             </list>
         </field>
     </record>
-
-    <!-- Menu Items -->
-    <menuitem id="menu_patient_appointment_booking_root"
-              name="Đặt lịch hẹn khám"
-              sequence="10"/>
-
-    <menuitem id="menu_patient_appointment_booking"
-              name="Đặt lịch hẹn"
-              parent="menu_patient_appointment_booking_root"
-              action="action_appointment_booking"
-              sequence="10"/>
-
-    <menuitem id="menu_patient_appointment_check"
-              name="Kiểm tra lịch hẹn"
-              parent="menu_patient_appointment_booking_root"
-              action="action_appointment_check"
-              sequence="20"/>
 </odoo>

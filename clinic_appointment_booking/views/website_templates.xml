@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template for appointment booking form -->
+    <template id="appointment_booking_form" name="Đặt lịch hẹn khám">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <h2 class="text-center mb-4">Đặt lịch hẹn khám</h2>
+                        <form action="/appointment/submit" method="post" class="mb-5">
+                            <div class="row">
+                                <!-- Patient Information -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="patient_name">Họ và tên</label>
+                                        <input type="text" name="patient_name" id="patient_name" class="form-control" required="1"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phone">Số điện thoại</label>
+                                        <input type="tel" name="phone" id="phone" class="form-control" required="1"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">Email</label>
+                                        <input type="email" name="email" id="email" class="form-control"/>
+                                    </div>
+                                </div>
+                                <!-- Appointment Details -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="appointment_date">Ngày hẹn</label>
+                                        <input type="date" name="appointment_date" id="appointment_date" class="form-control" required="1" t-att-min="datetime.date.today().strftime('%Y-%m-%d')"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="appointment_time">Giờ hẹn</label>
+                                        <input type="time" name="appointment_time" id="appointment_time" class="form-control" required="1"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="doctor_id">Bác sĩ</label>
+                                        <select name="doctor_id" id="doctor_id" class="form-control" required="1">
+                                            <option value="">Chọn bác sĩ</option>
+                                            <t t-foreach="doctors" t-as="doctor">
+                                                <option t-att-value="doctor.id"><t t-esc="doctor.staff_name"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="note">Ghi chú</label>
+                                <textarea name="note" id="note" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Đặt lịch hẹn</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CSS tùy chỉnh -->
+            <style>
+                .btn-primary {
+                    background-color: #6d4c41;
+                    border-color: #6d4c41;
+                }
+                .btn-primary:hover {
+                    background-color: #5a3e36;
+                    border-color: #5a3e36;
+                }
+                h2, h3, h4 {
+                    color: #333;
+                }
+            </style>
+        </t>
+    </template>
+
+    <!-- Template for appointment thank you page -->
+    <template id="appointment_booking_thankyou" name="Đặt lịch hẹn thành công">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h2 class="text-success mb-4">Đặt lịch hẹn thành công!</h2>
+                                <div class="alert alert-info">
+                                    <p>Cảm ơn bạn đã đặt lịch hẹn khám. Dưới đây là thông tin lịch hẹn của bạn:</p>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Mã lịch hẹn:</strong> <t t-esc="appointment_name"/></li>
+                                        <li><strong>Thời gian:</strong> <t t-esc="appointment_date"/></li>
+                                        <li><strong>Bác sĩ:</strong> <t t-esc="doctor_name"/></li>
+                                    </ul>
+                                </div>
+                                <p>Vui lòng đến đúng giờ. Nếu bạn cần thay đổi lịch hẹn, vui lòng liên hệ với chúng tôi.</p>
+                                <div class="mt-4">
+                                    <a href="/" class="btn btn-primary">Về trang chủ</a>
+                                    <a href="/appointment/check" class="btn btn-outline-primary ml-2">Kiểm tra lịch hẹn</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Template for appointment check form -->
+    <template id="appointment_check_form" name="Kiểm tra lịch hẹn">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <h2 class="text-center mb-4">Kiểm tra lịch hẹn</h2>
+                        <form action="/appointment/check/result" method="post" class="mb-5">
+                            <div class="form-group">
+                                <label for="phone">Số điện thoại đã đăng ký</label>
+                                <input type="tel" name="phone" id="phone" class="form-control" required="1"/>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Kiểm tra</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CSS tùy chỉnh -->
+            <style>
+                .btn-primary {
+                    background-color: #6d4c41;
+                    border-color: #6d4c41;
+                }
+                .btn-primary:hover {
+                    background-color: #5a3e36;
+                    border-color: #5a3e36;
+                }
+                h2, h3, h4 {
+                    color: #333;
+                }
+            </style>
+        </t>
+    </template>
+
+    <!-- Template for appointment check results -->
+    <template id="appointment_check_results" name="Kết quả kiểm tra lịch hẹn">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-10">
+                        <h2 class="text-center mb-4">Lịch hẹn của bạn</h2>
+
+                        <t t-if="error">
+                            <div class="alert alert-warning text-center">
+                                <t t-esc="error"/>
+                            </div>
+                            <div class="text-center mt-4">
+                                <a href="/appointment" class="btn btn-primary">Đặt lịch hẹn mới</a>
+                                <a href="/appointment/check" class="btn btn-outline-primary ml-2">Thử lại</a>
+                            </div>
+                        </t>
+
+                        <t t-if="appointments">
+                            <div class="card mb-5">
+                                <div class="card-body">
+                                    <h5 class="card-title">Thông tin bệnh nhân</h5>
+                                    <p><strong>Họ tên:</strong> <t t-esc="patient.name"/></p>
+                                    <p><strong>Số điện thoại:</strong> <t t-esc="patient.phone"/></p>
+                                </div>
+                            </div>
+
+                            <h4>Danh sách lịch hẹn</h4>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Mã lịch hẹn</th>
+                                        <th>Ngày giờ</th>
+                                        <th>Bác sĩ</th>
+                                        <th>Phòng khám</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="appointments" t-as="appointment">
+                                        <tr>
+                                            <td><t t-esc="appointment.name"/></td>
+                                            <td><t t-esc="appointment.appointment_date"/></td>
+                                            <td><t t-esc="appointment.staff_id.staff_name"/></td>
+                                            <td><t t-esc="appointment.room_id.name if appointment.room_id else ''"/></td>
+                                            <td>
+                                                <span t-att-class="'badge ' + ('badge-success' if appointment.state == 'confirmed' else 'badge-warning' if appointment.state == 'draft' else 'badge-danger')">
+                                                    <t t-esc="dict(appointment._fields['state'].selection).get(appointment.state)"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+
+                            <div class="text-center mt-4">
+                                <a href="/appointment" class="btn btn-primary">Đặt lịch hẹn mới</a>
+                                <a href="/" class="btn btn-outline-primary ml-2">Về trang chủ</a>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Website menu -->
+    <record id="website_menu_appointment_booking" model="website.menu">
+        <field name="name">Đặt lịch hẹn khám</field>
+        <field name="url">/appointment</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">40</field>
+    </record>
+
+    <record id="website_menu_appointment_check" model="website.menu">
+        <field name="name">Kiểm tra lịch hẹn</field>
+        <field name="url">/appointment/check</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">45</field>
+    </record>
+</odoo>
