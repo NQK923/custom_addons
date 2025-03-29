@@ -3,56 +3,134 @@
     <!-- Template for appointment booking form -->
     <template id="appointment_booking_form" name="Đặt lịch hẹn khám">
         <t t-call="website.layout">
-            <div class="container mt-5">
+            <div class="container py-5">
                 <div class="row justify-content-center">
-                    <div class="col-md-8">
-                        <h2 class="text-center mb-4">Đặt lịch hẹn khám</h2>
-                        <form action="/appointment/submit" method="post" class="mb-5">
-                            <div class="row">
-                                <!-- Patient Information -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="patient_name">Họ và tên</label>
-                                        <input type="text" name="patient_name" id="patient_name" class="form-control" required="1"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="phone">Số điện thoại</label>
-                                        <input type="tel" name="phone" id="phone" class="form-control" required="1"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="email">Email</label>
-                                        <input type="email" name="email" id="email" class="form-control"/>
-                                    </div>
+                    <div class="col-lg-8 col-md-10">
+                        <!-- Header Section -->
+                        <div class="card shadow-sm mb-5 border-0">
+                            <div class="card-header text-center bg-primary text-white py-3">
+                                <h2 class="mb-0">Đặt lịch hẹn khám</h2>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="text-center mb-4">
+                                    <i class="fa fa-calendar-check-o fa-3x text-primary mb-3"></i>
+                                    <p class="text-muted">Vui lòng điền đầy đủ thông tin để đặt lịch hẹn khám</p>
                                 </div>
-                                <!-- Appointment Details -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="appointment_date">Ngày hẹn</label>
-                                        <input type="date" name="appointment_date" id="appointment_date" class="form-control" required="1" t-att-min="datetime.date.today().strftime('%Y-%m-%d')"/>
+
+                                <form action="/appointment/submit" method="post" class="mb-3" id="appointment_form">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                    <!-- Progress Stepper -->
+                                    <div class="d-flex justify-content-between mb-4">
+                                        <div class="text-center">
+                                            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">1</div>
+                                            <div class="mt-1"><small>Thông tin</small></div>
+                                        </div>
+                                        <div class="progress mt-3" style="height: 2px; width: 25%;">
+                                            <div class="progress-bar bg-primary" style="width: 100%;"></div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">2</div>
+                                            <div class="mt-1"><small>Lịch hẹn</small></div>
+                                        </div>
+                                        <div class="progress mt-3" style="height: 2px; width: 25%;">
+                                            <div class="progress-bar bg-primary" style="width: 100%;"></div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">3</div>
+                                            <div class="mt-1"><small>Hoàn tất</small></div>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="appointment_time">Giờ hẹn</label>
-                                        <input type="time" name="appointment_time" id="appointment_time" class="form-control" required="1"/>
+
+                                    <div class="row">
+                                        <!-- Patient Information -->
+                                        <div class="col-md-6">
+                                            <h5 class="mb-3 border-bottom pb-2"><i class="fa fa-user-circle mr-2"></i>Thông tin cá nhân</h5>
+                                            <div class="form-group mb-3">
+                                                <label for="patient_name" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="fa fa-user"></i></span>
+                                                    </div>
+                                                    <input type="text" name="patient_name" id="patient_name" class="form-control" required="1" placeholder="Nguyễn Văn A"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                                                    </div>
+                                                    <input type="tel" name="phone" id="phone" class="form-control" required="1" placeholder="0912345678"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="email" class="form-label">Email</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                                                    </div>
+                                                    <input type="email" name="email" id="email" class="form-control" placeholder="example@email.com"/>
+                                                </div>
+                                                <small class="text-muted">Nhận thông báo xác nhận qua email</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Appointment Details -->
+                                        <div class="col-md-6">
+                                            <h5 class="mb-3 border-bottom pb-2"><i class="fa fa-calendar mr-2"></i>Thông tin lịch hẹn</h5>
+                                            <div class="form-group mb-3">
+                                                <label for="appointment_date" class="form-label">Ngày hẹn <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                                    </div>
+                                                    <input type="date" name="appointment_date" id="appointment_date" class="form-control" required="1" t-att-min="datetime.date.today().strftime('%Y-%m-%d')"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="appointment_time" class="form-label">Giờ hẹn <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                                    </div>
+                                                    <input type="time" name="appointment_time" id="appointment_time" class="form-control" required="1"/>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="doctor_id" class="form-label">Bác sĩ <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="fa fa-user-md"></i></span>
+                                                    </div>
+                                                    <select name="doctor_id" id="doctor_id" class="form-control" required="1">
+                                                        <option value="">Chọn bác sĩ</option>
+                                                        <t t-foreach="doctors" t-as="doctor">
+                                                            <option t-att-value="doctor.id"><t t-esc="doctor.staff_name"/></option>
+                                                        </t>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="doctor_id">Bác sĩ</label>
-                                        <select name="doctor_id" id="doctor_id" class="form-control" required="1">
-                                            <option value="">Chọn bác sĩ</option>
-                                            <t t-foreach="doctors" t-as="doctor">
-                                                <option t-att-value="doctor.id"><t t-esc="doctor.staff_name"/></option>
-                                            </t>
-                                        </select>
+
+                                    <div class="form-group mt-3">
+                                        <label for="note" class="form-label">Triệu chứng / Ghi chú</label>
+                                        <textarea name="note" id="note" class="form-control" rows="3" placeholder="Mô tả triệu chứng hoặc lý do khám..."></textarea>
                                     </div>
-                                </div>
+
+                                    <div class="alert alert-info mt-4">
+                                        <i class="fa fa-info-circle mr-2"></i> Lưu ý: Vui lòng đến trước giờ hẹn 15 phút để làm thủ tục
+                                    </div>
+
+                                    <div class="text-center mt-4">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                                            <i class="fa fa-calendar-check-o mr-2"></i>Đặt lịch hẹn
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="form-group">
-                                <label for="note">Ghi chú</label>
-                                <textarea name="note" id="note" class="form-control" rows="3"></textarea>
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary">Đặt lịch hẹn</button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -60,66 +138,145 @@
             <!-- CSS tùy chỉnh -->
             <style>
                 .btn-primary {
-                    background-color: #6d4c41;
-                    border-color: #6d4c41;
+                    background-color: #3498db;
+                    border-color: #3498db;
                 }
                 .btn-primary:hover {
-                    background-color: #5a3e36;
-                    border-color: #5a3e36;
+                    background-color: #2980b9;
+                    border-color: #2980b9;
                 }
-                h2, h3, h4 {
-                    color: #333;
+                .bg-primary {
+                    background-color: #3498db !important;
+                }
+                .text-primary {
+                    color: #3498db !important;
+                }
+                .card {
+                    border-radius: 10px;
+                    overflow: hidden;
+                }
+                .form-control {
+                    border-radius: 4px;
+                }
+                .form-control:focus {
+                    border-color: #3498db;
+                    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+                }
+                .card-header {
+                    border-bottom: none;
+                }
+                /* Responsive adjustments */
+                @media (max-width: 768px) {
+                    .container {
+                        padding-left: 20px;
+                        padding-right: 20px;
+                    }
                 }
             </style>
+
+            <!-- JavaScript Validation -->
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    // Form validation
+                    $("#appointment_form").on('submit', function(e) {
+                        var isValid = true;
+
+                        // Reset validation
+                        $(this).find('.is-invalid').removeClass('is-invalid');
+
+                        // Validate required fields
+                        $(this).find('[required]').each(function() {
+                            if (!$(this).val()) {
+                                $(this).addClass('is-invalid');
+                                isValid = false;
+                            }
+                        });
+
+                        // Phone validation (simple)
+                        var phone = $('#phone').val();
+                        if (phone &amp;&amp; !phone.match(/^[0-9]{10,11}$/)) {
+                            $('#phone').addClass('is-invalid');
+                            isValid = false;
+                        }
+
+                        // Validate email if provided
+                        var email = $('#email').val();
+                        if (email &amp;&amp; !email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+                            $('#email').addClass('is-invalid');
+                            isValid = false;
+                        }
+
+                        if (!isValid) {
+                            e.preventDefault();
+                            $('html, body').animate({
+                                scrollTop: $('.is-invalid').first().offset().top - 100
+                            }, 500);
+                        }
+                    });
+                });
+            </script>
         </t>
     </template>
 
     <!-- Template for appointment thank you page -->
     <template id="appointment_booking_thankyou" name="Đặt lịch hẹn thành công">
         <t t-call="website.layout">
-            <div class="container mt-5">
+            <div class="container py-5">
                 <div class="row justify-content-center">
                     <div class="col-md-8">
-                        <div class="card">
-                            <div class="card-body text-center">
+                        <div class="card shadow border-0">
+                            <div class="card-body text-center p-5">
+                                <div class="mb-4">
+                                    <i class="fa fa-check-circle fa-5x text-success"></i>
+                                </div>
                                 <h2 class="text-success mb-4">Đặt lịch hẹn thành công!</h2>
-                                <div class="alert alert-info">
-                                    <p>Cảm ơn bạn đã đặt lịch hẹn khám. Dưới đây là thông tin lịch hẹn của bạn:</p>
-                                    <ul class="list-unstyled">
-                                        <li><strong>Mã lịch hẹn:</strong> <t t-esc="appointment_name"/></li>
-                                        <li><strong>Thời gian:</strong> <t t-esc="appointment_date"/></li>
-                                        <li><strong>Bác sĩ:</strong> <t t-esc="doctor_name"/></li>
+                                <div class="alert alert-info py-4 px-4 mb-4">
+                                    <h5 class="mb-3">Thông tin lịch hẹn của bạn</h5>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-2">
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <i class="fa fa-id-card-o mr-2 text-primary"></i>
+                                                <strong>Mã lịch hẹn:</strong>
+                                            </div>
+                                            <div class="mt-1"><t t-esc="appointment_name"/></div>
+                                        </div>
+                                        <div class="col-md-4 mb-2">
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <i class="fa fa-calendar mr-2 text-primary"></i>
+                                                <strong>Thời gian:</strong>
+                                            </div>
+                                            <div class="mt-1"><t t-esc="appointment_date"/></div>
+                                        </div>
+                                        <div class="col-md-4 mb-2">
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <i class="fa fa-user-md mr-2 text-primary"></i>
+                                                <strong>Bác sĩ:</strong>
+                                            </div>
+                                            <div class="mt-1"><t t-esc="doctor_name"/></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-light border py-3 mb-4">
+                                    <h5 class="mb-3"><i class="fa fa-info-circle mr-2"></i>Hướng dẫn</h5>
+                                    <ul class="text-left">
+                                        <li>Vui lòng đến trước giờ hẹn 15 phút để làm thủ tục</li>
+                                        <li>Mang theo CMND/CCCD và thẻ BHYT (nếu có)</li>
+                                        <li>Mang theo các kết quả xét nghiệm, đơn thuốc gần đây (nếu có)</li>
+                                        <li>Nếu cần thay đổi lịch hẹn, vui lòng liên hệ trước 24 giờ</li>
                                     </ul>
                                 </div>
-                                <p>Vui lòng đến đúng giờ. Nếu bạn cần thay đổi lịch hẹn, vui lòng liên hệ với chúng tôi.</p>
+
                                 <div class="mt-4">
-                                    <a href="/" class="btn btn-primary">Về trang chủ</a>
-                                    <a href="/appointment/check" class="btn btn-outline-primary ml-2">Kiểm tra lịch hẹn</a>
+                                    <a href="/" class="btn btn-primary">
+                                        <i class="fa fa-home mr-2"></i>Về trang chủ
+                                    </a>
+                                    <a href="/appointment/check" class="btn btn-outline-primary ml-2">
+                                        <i class="fa fa-search mr-2"></i>Kiểm tra lịch hẹn
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </t>
-    </template>
-
-    <!-- Template for appointment check form -->
-    <template id="appointment_check_form" name="Kiểm tra lịch hẹn">
-        <t t-call="website.layout">
-            <div class="container mt-5">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <h2 class="text-center mb-4">Kiểm tra lịch hẹn</h2>
-                        <form action="/appointment/check/result" method="post" class="mb-5">
-                            <div class="form-group">
-                                <label for="phone">Số điện thoại đã đăng ký</label>
-                                <input type="tel" name="phone" id="phone" class="form-control" required="1"/>
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary">Kiểm tra</button>
-                            </div>
-                        </form>
                     </div>
                 </div>
             </div>
@@ -127,83 +284,254 @@
             <!-- CSS tùy chỉnh -->
             <style>
                 .btn-primary {
-                    background-color: #6d4c41;
-                    border-color: #6d4c41;
+                    background-color: #3498db;
+                    border-color: #3498db;
                 }
                 .btn-primary:hover {
-                    background-color: #5a3e36;
-                    border-color: #5a3e36;
+                    background-color: #2980b9;
+                    border-color: #2980b9;
                 }
-                h2, h3, h4 {
-                    color: #333;
+                .text-primary {
+                    color: #3498db !important;
+                }
+                .text-success {
+                    color: #2ecc71 !important;
+                }
+                .card {
+                    border-radius: 10px;
+                    overflow: hidden;
                 }
             </style>
+        </t>
+    </template>
+
+    <!-- Template for appointment check form -->
+    <template id="appointment_check_form" name="Kiểm tra lịch hẹn">
+        <t t-call="website.layout">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card shadow border-0">
+                            <div class="card-header text-center bg-primary text-white py-3">
+                                <h2 class="mb-0">Kiểm tra lịch hẹn</h2>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="text-center mb-4">
+                                    <i class="fa fa-search fa-3x text-primary mb-3"></i>
+                                    <p class="text-muted">Nhập số điện thoại đã đăng ký để kiểm tra lịch hẹn của bạn</p>
+                                </div>
+
+                                <form action="/appointment/check/result" method="post" class="mb-4" id="check_form">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                    <div class="form-group mb-4">
+                                        <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                                            </div>
+                                            <input type="tel" name="phone" id="check_phone" class="form-control" required="1" placeholder="Nhập số điện thoại của bạn"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center mt-4">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                                            <i class="fa fa-search mr-2"></i>Kiểm tra
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <div class="text-center mt-4 pt-3 border-top">
+                                    <p class="text-muted">Bạn muốn đặt lịch hẹn mới?</p>
+                                    <a href="/appointment" class="btn btn-outline-primary">
+                                        <i class="fa fa-calendar-plus-o mr-2"></i>Đặt lịch hẹn
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CSS tùy chỉnh -->
+            <style>
+                .btn-primary {
+                    background-color: #3498db;
+                    border-color: #3498db;
+                }
+                .btn-primary:hover {
+                    background-color: #2980b9;
+                    border-color: #2980b9;
+                }
+                .bg-primary {
+                    background-color: #3498db !important;
+                }
+                .text-primary {
+                    color: #3498db !important;
+                }
+                .card {
+                    border-radius: 10px;
+                    overflow: hidden;
+                }
+                .form-control {
+                    border-radius: 4px;
+                }
+                .form-control:focus {
+                    border-color: #3498db;
+                    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+                }
+            </style>
+
+            <!-- JavaScript Validation -->
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    // Form validation
+                    $("#check_form").on('submit', function(e) {
+                        var phone = $('#check_phone').val();
+                        if (!phone || !phone.match(/^[0-9]{10,11}$/)) {
+                            $('#check_phone').addClass('is-invalid');
+                            e.preventDefault();
+                        } else {
+                            $('#check_phone').removeClass('is-invalid');
+                        }
+                    });
+                });
+            </script>
         </t>
     </template>
 
     <!-- Template for appointment check results -->
     <template id="appointment_check_results" name="Kết quả kiểm tra lịch hẹn">
         <t t-call="website.layout">
-            <div class="container mt-5">
+            <div class="container py-5">
                 <div class="row justify-content-center">
-                    <div class="col-md-10">
-                        <h2 class="text-center mb-4">Lịch hẹn của bạn</h2>
-
-                        <t t-if="error">
-                            <div class="alert alert-warning text-center">
-                                <t t-esc="error"/>
+                    <div class="col-lg-10 col-md-12">
+                        <div class="card shadow border-0">
+                            <div class="card-header text-center bg-primary text-white py-3">
+                                <h2 class="mb-0">Lịch hẹn của bạn</h2>
                             </div>
-                            <div class="text-center mt-4">
-                                <a href="/appointment" class="btn btn-primary">Đặt lịch hẹn mới</a>
-                                <a href="/appointment/check" class="btn btn-outline-primary ml-2">Thử lại</a>
-                            </div>
-                        </t>
+                            <div class="card-body p-4">
+                                <!-- Error message if no appointments found -->
+                                <t t-if="error">
+                                    <div class="text-center py-5">
+                                        <i class="fa fa-exclamation-circle fa-4x text-warning mb-3"></i>
+                                        <h4 class="text-warning mb-3"><t t-esc="error"/></h4>
+                                        <div class="mt-4">
+                                            <a href="/appointment" class="btn btn-primary">
+                                                <i class="fa fa-calendar-plus-o mr-2"></i>Đặt lịch hẹn mới
+                                            </a>
+                                            <a href="/appointment/check" class="btn btn-outline-primary ml-2">
+                                                <i class="fa fa-arrow-left mr-2"></i>Thử lại
+                                            </a>
+                                        </div>
+                                    </div>
+                                </t>
 
-                        <t t-if="appointments">
-                            <div class="card mb-5">
-                                <div class="card-body">
-                                    <h5 class="card-title">Thông tin bệnh nhân</h5>
-                                    <p><strong>Họ tên:</strong> <t t-esc="patient.name"/></p>
-                                    <p><strong>Số điện thoại:</strong> <t t-esc="patient.phone"/></p>
-                                </div>
-                            </div>
+                                <!-- Display appointments if found -->
+                                <t t-if="appointments">
+                                    <!-- Patient information card -->
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <h5 class="card-title border-bottom pb-2 mb-3">
+                                                <i class="fa fa-user-circle mr-2 text-primary"></i>Thông tin bệnh nhân
+                                            </h5>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <p><i class="fa fa-user mr-2 text-muted"></i><strong>Họ tên:</strong> <t t-esc="patient.name"/></p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><i class="fa fa-phone mr-2 text-muted"></i><strong>Số điện thoại:</strong> <t t-esc="patient.phone"/></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                            <h4>Danh sách lịch hẹn</h4>
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Mã lịch hẹn</th>
-                                        <th>Ngày giờ</th>
-                                        <th>Bác sĩ</th>
-                                        <th>Phòng khám</th>
-                                        <th>Trạng thái</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-foreach="appointments" t-as="appointment">
-                                        <tr>
-                                            <td><t t-esc="appointment.name"/></td>
-                                            <td><t t-esc="appointment.appointment_date"/></td>
-                                            <td><t t-esc="appointment.staff_id.staff_name"/></td>
-                                            <td><t t-esc="appointment.room_id.name if appointment.room_id else ''"/></td>
-                                            <td>
-                                                <span t-att-class="'badge ' + ('badge-success' if appointment.state == 'confirmed' else 'badge-warning' if appointment.state == 'draft' else 'badge-danger')">
-                                                    <t t-esc="dict(appointment._fields['state'].selection).get(appointment.state)"/>
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </tbody>
-                            </table>
+                                    <!-- Appointments list -->
+                                    <h5 class="mb-3">
+                                        <i class="fa fa-list-alt mr-2 text-primary"></i>Danh sách lịch hẹn sắp tới
+                                    </h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th><i class="fa fa-id-card-o mr-1"></i>Mã lịch hẹn</th>
+                                                    <th><i class="fa fa-calendar mr-1"></i>Ngày giờ</th>
+                                                    <th><i class="fa fa-user-md mr-1"></i>Bác sĩ</th>
+                                                    <th><i class="fa fa-hospital-o mr-1"></i>Phòng khám</th>
+                                                    <th><i class="fa fa-info-circle mr-1"></i>Trạng thái</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="appointments" t-as="appointment">
+                                                    <tr>
+                                                        <td><strong><t t-esc="appointment.name"/></strong></td>
+                                                        <td><t t-esc="appointment.appointment_date"/></td>
+                                                        <td><t t-esc="appointment.staff_id.staff_name"/></td>
+                                                        <td><t t-esc="appointment.room_id.name if appointment.room_id else 'Chưa phân phòng'"/></td>
+                                                        <td>
+                                                            <span t-att-class="'badge ' + ('badge-success' if appointment.state == 'confirmed' else 'badge-warning' if appointment.state == 'draft' else 'badge-danger')">
+                                                                <t t-esc="dict(appointment._fields['state'].selection).get(appointment.state)"/>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
 
-                            <div class="text-center mt-4">
-                                <a href="/appointment" class="btn btn-primary">Đặt lịch hẹn mới</a>
-                                <a href="/" class="btn btn-outline-primary ml-2">Về trang chủ</a>
+                                    <div class="alert alert-info mt-4">
+                                        <i class="fa fa-info-circle mr-2"></i> Vui lòng đến đúng giờ và mang theo giấy tờ tùy thân khi đi khám.
+                                    </div>
+
+                                    <div class="text-center mt-4">
+                                        <a href="/appointment" class="btn btn-primary">
+                                            <i class="fa fa-calendar-plus-o mr-2"></i>Đặt lịch hẹn mới
+                                        </a>
+                                        <a href="/" class="btn btn-outline-primary ml-2">
+                                            <i class="fa fa-home mr-2"></i>Về trang chủ
+                                        </a>
+                                    </div>
+                                </t>
                             </div>
-                        </t>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- CSS tùy chỉnh -->
+            <style>
+                .btn-primary {
+                    background-color: #3498db;
+                    border-color: #3498db;
+                }
+                .btn-primary:hover {
+                    background-color: #2980b9;
+                    border-color: #2980b9;
+                }
+                .bg-primary {
+                    background-color: #3498db !important;
+                }
+                .text-primary {
+                    color: #3498db !important;
+                }
+                .badge-success {
+                    background-color: #2ecc71;
+                }
+                .badge-warning {
+                    background-color: #f39c12;
+                    color: white;
+                }
+                .badge-danger {
+                    background-color: #e74c3c;
+                }
+                .card {
+                    border-radius: 10px;
+                    overflow: hidden;
+                }
+                .table th {
+                    font-weight: 600;
+                }
+            </style>
         </t>
     </template>
 

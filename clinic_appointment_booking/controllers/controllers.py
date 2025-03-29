@@ -32,7 +32,12 @@ class AppointmentBookingController(http.Controller):
         try:
             # Chuyển đổi ngày giờ
             appointment_datetime_str = f"{post.get('appointment_date')} {post.get('appointment_time')}"
-            appointment_datetime = datetime.strptime(appointment_datetime_str, '%Y-%m-%d %H:%M:%S')
+            try:
+                # First try with HH:MM format (no seconds)
+                appointment_datetime = datetime.strptime(appointment_datetime_str, '%Y-%m-%d %H:%M')
+            except ValueError:
+                # If that fails, try with HH:MM:SS format
+                appointment_datetime = datetime.strptime(appointment_datetime_str, '%Y-%m-%d %H:%M:%S')
 
             # Tìm bệnh nhân theo số điện thoại, nếu không có thì tạo mới
             Patient = request.env['clinic.patient'].sudo()
