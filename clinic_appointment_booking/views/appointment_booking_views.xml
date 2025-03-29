@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Đặt lịch hẹn -->
+    <record id="view_appointment_booking_form" model="ir.ui.view">
+        <field name="name">appointment.booking.wizard.form</field>
+        <field name="model">appointment.booking.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Đặt lịch hẹn">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="Nhập họ tên"/>
+                            <field name="phone" placeholder="Nhập số điện thoại"/>
+                            <field name="email" placeholder="Nhập email"/>
+                        </group>
+                        <group>
+                            <field name="appointment_date"/>
+                            <field name="doctor_id" options="{'no_create': True}"/>
+                            <field name="room_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="note" placeholder="Ghi chú thêm nếu cần..."/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_book_appointment" string="Đặt lịch hẹn" type="object" class="btn-primary"/>
+                    <button string="Hủy" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Kiểm tra lịch hẹn -->
+    <record id="view_appointment_check_form" model="ir.ui.view">
+        <field name="name">appointment.check.wizard.form</field>
+        <field name="model">appointment.check.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Kiểm tra lịch hẹn">
+                <sheet>
+                    <group>
+                        <field name="phone" placeholder="Nhập số điện thoại để kiểm tra lịch hẹn"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_check_appointments" string="Kiểm tra" type="object" class="btn-primary"/>
+                    <button string="Hủy" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action Đặt lịch hẹn -->
+    <record id="action_appointment_booking" model="ir.actions.act_window">
+        <field name="name">Đặt lịch hẹn</field>
+        <field name="res_model">appointment.booking.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Action Kiểm tra lịch hẹn -->
+    <record id="action_appointment_check" model="ir.actions.act_window">
+        <field name="name">Kiểm tra lịch hẹn</field>
+        <field name="res_model">appointment.check.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Hiển thị lịch hẹn đã đặt -->
+    <record id="view_patient_appointment_tree" model="ir.ui.view">
+        <field name="name">clinic.appointment.tree.patient</field>
+        <field name="model">clinic.appointment</field>
+        <field name="arch" type="xml">
+            <list string="Lịch hẹn của bạn" create="false" edit="false" delete="false">
+                <field name="name"/>
+                <field name="appointment_date"/>
+                <field name="staff_id"/>
+                <field name="room_id"/>
+                <field name="state" widget="badge" decoration-success="state == 'confirmed'" decoration-info="state == 'draft'" decoration-danger="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_patient_appointment_booking_root"
+              name="Đặt lịch hẹn khám"
+              sequence="10"/>
+
+    <menuitem id="menu_patient_appointment_booking"
+              name="Đặt lịch hẹn"
+              parent="menu_patient_appointment_booking_root"
+              action="action_appointment_booking"
+              sequence="10"/>
+
+    <menuitem id="menu_patient_appointment_check"
+              name="Kiểm tra lịch hẹn"
+              parent="menu_patient_appointment_booking_root"
+              action="action_appointment_check"
+              sequence="20"/>
+</odoo>
