@@ -39,6 +39,7 @@
             <list string="Medical Tests">
                 <field name="test_code"/>
                 <field name="patient_id"/>
+                <field name="doctor_id"/>
                 <field name="test_type"/>
                 <field name="test_date"/>
                 <field name="status"/>
@@ -56,6 +57,7 @@
                     <group>
                         <field name="test_code"/>
                         <field name="patient_id"/>
+                        <field name="doctor_id"/>
                         <field name="test_type"/>
                         <field name="test_date"/>
                         <field name="status"/>

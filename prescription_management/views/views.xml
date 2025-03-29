@@ -105,6 +105,8 @@
                 <field name="purchase_price"/>
                 <field name="unit_price"/>
                 <field name="profit_margin"/>
+                <field name="date"/>
+                <field name="expiry"/>
             </list>
         </field>
     </record>
@@ -127,6 +129,8 @@
                             <field name="unit_price"/>
                             <field name="profit_margin"/>
                             <field name="active"/>
+                            <field name="date"/>
+                            <field name="expiry"/>
                         </group>
                     </group>
                     <notebook>
