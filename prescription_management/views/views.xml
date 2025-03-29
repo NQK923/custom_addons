@@ -101,6 +101,7 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="quantity"/>
+                <field name="is_quantity" widget="boolean_toggle"/>
                 <field name="uom_id"/>
                 <field name="purchase_price"/>
                 <field name="unit_price"/>
