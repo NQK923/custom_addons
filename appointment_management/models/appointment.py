@@ -50,10 +50,8 @@ class ClinicAppointment(models.Model):
         for record in self:
             if record.appointment_date and record.appointment_date < fields.Datetime.now():
                 raise ValidationError("Không thể đặt lịch hẹn trong quá khứ!")
-
-            # Check if appointment is between 8 AM and 4 PM
             appointment_hour = record.appointment_date.hour
-            if appointment_hour > 8 or appointment_hour <= 21:
+            if appointment_hour < 8 or appointment_hour >= 21:
                 raise ValidationError("Lịch hẹn chỉ có thể được đặt từ 8:00 sáng đến 21:00 tối!")
 
     @api.constrains('staff_id', 'appointment_date')
