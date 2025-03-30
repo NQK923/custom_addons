@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form tạo xét nghiệm mới -->
+    <template id="medical_test_create_form" name="Create Medical Test">
+        <t t-call="medical_management.medical_layout">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Tạo Xét nghiệm Mới</h3>
+                </div>
+                <div class="card-body">
+                    <form action="/medical/test/save" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <div class="form-group row">
+                            <label for="test_code" class="col-sm-3 col-form-label">Mã xét nghiệm</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="test_code" id="test_code" required="required"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="patient_id" class="col-sm-3 col-form-label">Bệnh nhân</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="patient_id" id="patient_id" required="required">
+                                    <option value="">-- Chọn bệnh nhân --</option>
+                                    <t t-foreach="patients" t-as="patient">
+                                        <option t-att-value="patient.id">
+                                            <t t-esc="patient.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="doctor_id" class="col-sm-3 col-form-label">Người thực hiện</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="doctor_id" id="doctor_id" required="required">
+                                    <option value="">-- Chọn người thực hiện --</option>
+                                    <t t-foreach="doctors" t-as="doctor">
+                                        <option t-att-value="doctor.id">
+                                            <t t-esc="doctor.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="test_type" class="col-sm-3 col-form-label">Loại xét nghiệm</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="test_type" id="test_type" required="required">
+                                    <option value="">-- Chọn loại --</option>
+                                    <t t-foreach="test_types.items()" t-as="test_type">
+                                        <option t-att-value="test_type[0]">
+                                            <t t-esc="test_type[1]"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="result" class="col-sm-3 col-form-label">Kết quả</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" name="result" id="result" rows="4"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <a href="/medical/tests" class="btn btn-secondary">Hủy</a>
+                            <button type="submit" class="btn btn-primary ms-2">Lưu</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Form chỉnh sửa xét nghiệm -->
+    <template id="medical_test_edit_form" name="Edit Medical Test">
+        <t t-call="medical_management.medical_layout">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Chỉnh sửa Xét nghiệm</h3>
+                </div>
+                <div class="card-body">
+                    <form action="/medical/test/update" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="test_id" t-att-value="test.id"/>
+
+                        <div class="form-group row">
+                            <label for="test_code" class="col-sm-3 col-form-label">Mã xét nghiệm</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="test_code" id="test_code" t-att-value="test.test_code" required="required"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="patient_id" class="col-sm-3 col-form-label">Bệnh nhân</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="patient_id" id="patient_id" required="required">
+                                    <t t-foreach="patients" t-as="patient">
+                                        <option t-att-value="patient.id" t-att-selected="patient.id == test.patient_id.id">
+                                            <t t-esc="patient.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="doctor_id" class="col-sm-3 col-form-label">Người thực hiện</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="doctor_id" id="doctor_id" required="required">
+                                    <t t-foreach="doctors" t-as="doctor">
+                                        <option t-att-value="doctor.id" t-att-selected="doctor.id == test.doctor_id.id">
+                                            <t t-esc="doctor.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="test_type" class="col-sm-3 col-form-label">Loại xét nghiệm</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="test_type" id="test_type" required="required">
+                                    <t t-foreach="test_types.items()" t-as="test_type">
+                                        <option t-att-value="test_type[0]" t-att-selected="test_type[0] == test.test_type">
+                                            <t t-esc="test_type[1]"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="status" class="col-sm-3 col-form-label">Trạng thái</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="status" id="status" required="required">
+                                    <t t-foreach="status_types.items()" t-as="status_type">
+                                        <option t-att-value="status_type[0]" t-att-selected="status_type[0] == test.status">
+                                            <t t-esc="status_type[1]"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="result" class="col-sm-3 col-form-label">Kết quả</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" name="result" id="result" rows="4"><t t-esc="test.result or ''"/></textarea>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <a t-attf-href="/medical/test/{{test.id}}" class="btn btn-secondary">Hủy</a>
+                            <button type="submit" class="btn btn-primary ms-2">Cập nhật</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

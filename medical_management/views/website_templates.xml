@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Layout chung cho tất cả các trang -->
+    <template id="medical_layout" name="Medical Layout">
+        <t t-call="website.layout">
+            <div class="container mt-4 mb-4">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Menu Y tế</h4>
+                            </div>
+                            <div class="card-body p-0">
+                                <ul class="nav flex-column nav-pills">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/medical/tests">Danh sách xét nghiệm</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/medical/test/create">Tạo xét nghiệm mới</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/medical/images">Hình ảnh xét nghiệm</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/medical/image/create">Thêm hình ảnh mới</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <t t-raw="0"/>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Danh sách xét nghiệm -->
+    <template id="medical_tests_list" name="Medical Tests">
+        <t t-call="medical_management.medical_layout">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3>Danh sách Xét nghiệm và Chẩn đoán</h3>
+                    <a href="/medical/test/create" class="btn btn-primary">
+                        <i class="fa fa-plus"/> Tạo mới
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Mã xét nghiệm</th>
+                                    <th>Bệnh nhân</th>
+                                    <th>Người thực hiện</th>
+                                    <th>Loại xét nghiệm</th>
+                                    <th>Ngày thực hiện</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="tests" t-as="test">
+                                    <tr>
+                                        <td>
+                                            <t t-esc="test.test_code"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="test.patient_id.name"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="test.doctor_id.name"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="dict(test._fields['test_type'].selection).get(test.test_type)"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="test.test_date" t-options="{'widget': 'datetime'}"/>
+                                        </td>
+                                        <td>
+                                            <span t-attf-class="badge {{ 'badge-warning' if test.status == 'request' else 'badge-info' if test.status == 'processing' else 'badge-success' }}">
+                                                <t t-esc="dict(test._fields['status'].selection).get(test.status)"/>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a t-attf-href="/medical/test/{{test.id}}" class="btn btn-sm btn-info">
+                                                <i class="fa fa-eye"/> Xem
+                                            </a>
+                                            <a t-attf-href="/medical/test/edit/{{test.id}}" class="btn btn-sm btn-primary ms-1">
+                                                <i class="fa fa-edit"/> Sửa
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Chi tiết xét nghiệm -->
+    <template id="medical_test_detail" name="Medical Test Detail">
+        <t t-call="medical_management.medical_layout">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3>Chi tiết Xét nghiệm</h3>
+                    <div>
+                        <a t-attf-href="/medical/test/edit/{{test.id}}" class="btn btn-primary">
+                            <i class="fa fa-edit"/> Sửa
+                        </a>
+                        <a href="/medical/tests" class="btn btn-secondary ms-2">
+                            <i class="fa fa-arrow-left"/> Quay lại
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Mã xét nghiệm:</label>
+                                <div class="col-sm-8">
+                                    <p class="form-control-plaintext"><t t-esc="test.test_code"/></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Bệnh nhân:</label>
+                                <div class="col-sm-8">
+                                    <p class="form-control-plaintext"><t t-esc="test.patient_id.name"/></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Người thực hiện:</label>
+                                <div class="col-sm-8">
+                                    <p class="form-control-plaintext"><t t-esc="test.doctor_id.name"/></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Loại xét nghiệm:</label>
+                                <div class="col-sm-8">
+                                    <p class="form-control-plaintext">
+                                        <t t-esc="dict(test._fields['test_type'].selection).get(test.test_type)"/>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Ngày thực hiện:</label>
+                                <div class="col-sm-8">
+                                    <p class="form-control-plaintext">
+                                        <t t-esc="test.test_date" t-options="{'widget': 'datetime'}"/>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Trạng thái:</label>
+                                <div class="col-sm-8">
+                                    <p class="form-control-plaintext">
+                                        <span t-attf-class="badge {{ 'badge-warning' if test.status == 'request' else 'badge-info' if test.status == 'processing' else 'badge-success' }}">
+                                            <t t-esc="dict(test._fields['status'].selection).get(test.status)"/>
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Kết quả xét nghiệm:</label>
+                                <div class="border p-3 bg-light rounded">
+                                    <t t-if="test.result">
+                                        <t t-esc="test.result"/>
+                                    </t>
+                                    <t t-else="">
+                                        <em>Chưa có kết quả</em>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hiển thị hình ảnh liên quan -->
+                    <div class="mt-4">
+                        <h4>Hình ảnh liên quan</h4>
+                        <t t-if="related_images">
+                            <div class="row">
+                                <t t-foreach="related_images" t-as="image">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <t t-if="image.Img">
+                                                    <img t-att-src="'data:image/png;base64,%s' % image.Img" class="img-fluid"/>
+                                                </t>
+                                                <p class="mt-2"><t t-esc="image.test_code"/></p>
+                                                <a t-attf-href="/medical/image/{{image.id}}" class="btn btn-sm btn-info">Xem chi tiết</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="alert alert-info">Không có hình ảnh liên quan</div>
+                            <a t-attf-href="/medical/image/create?test_id={{test.id}}" class="btn btn-primary">
+                                <i class="fa fa-plus"/> Thêm hình ảnh
+                            </a>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
