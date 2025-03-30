@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_compliance_dashboard" model="ir.actions.act_url">
+        <field name="name">Compliance Dashboard</field>
+        <field name="url">/compliance/dashboard</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="action_compliance_assessments" model="ir.actions.act_url">
+        <field name="name">Compliance Assessments</field>
+        <field name="url">/compliance/assessments</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="action_compliance_regulations" model="ir.actions.act_url">
+        <field name="name">Health Regulations</field>
+        <field name="url">/compliance/regulations</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="action_compliance_authorities" model="ir.actions.act_url">
+        <field name="name">Health Authorities</field>
+        <field name="url">/compliance/authorities</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="website_menu_compliance" model="website.menu">
+        <field name="name">Quản lý Tuân thủ Y tế</field>
+        <field name="url">/compliance/dashboard</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">45</field>
+    </record>
+</odoo>

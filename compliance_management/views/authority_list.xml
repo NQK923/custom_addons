@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template danh sách cơ quan quản lý -->
+    <template id="authority_list_template" name="Health Authority List">
+        <t t-call="compliance_management.compliance_layout">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Cơ quan Quản lý Y tế</h1>
+                <a href="/compliance/authority/new" class="btn btn-primary">
+                    <i class="fa fa-plus"></i> Tạo mới
+                </a>
+            </div>
+
+            <!-- Bộ lọc và tìm kiếm -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Tìm kiếm</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="/compliance/authorities" class="row">
+                        <div class="col-md-6 mb-2">
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" placeholder="Tìm theo tên hoặc mã..."
+                                       t-att-value="search or ''"/>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                Áp dụng
+                            </button>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <a href="/compliance/authorities" class="btn btn-secondary w-100">
+                                Đặt lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Danh sách cơ quan -->
+            <div class="card shadow">
+                <div class="card-body">
+                    <t t-if="authorities">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Tên</th>
+                                        <th>Mã</th>
+                                        <th>Quốc gia</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="authorities" t-as="authority">
+                                        <tr>
+                                            <td>
+                                                <a t-att-href="'/compliance/authority/%s' % authority.id">
+                                                    <t t-esc="authority.name"/>
+                                                </a>
+                                            </td>
+                                            <td><t t-esc="authority.code"/></td>
+                                            <td><t t-esc="authority.country_id.name or '-'"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info">Không tìm thấy cơ quan quản lý nào.</div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template danh sách quy định y tế -->
+    <template id="regulation_list_template" name="Health Regulation List">
+        <t t-call="compliance_management.compliance_layout">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Quy định Y tế</h1>
+                <a href="/compliance/regulation/new" class="btn btn-primary">
+                    <i class="fa fa-plus"></i> Tạo mới
+                </a>
+            </div>
+
+            <!-- Bộ lọc và tìm kiếm -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Tìm kiếm và Lọc</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="/compliance/regulations" class="row">
+                        <div class="col-md-5 mb-2">
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" placeholder="Tìm theo tên, mã hoặc cơ quan..."
+                                       t-att-value="search or ''"/>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <select name="scope" class="form-select">
+                                <option value="">-- Tất cả phạm vi --</option>
+                                <option t-att-selected="filter_scope == 'national'" value="national">Quốc gia</option>
+                                <option t-att-selected="filter_scope == 'international'" value="international">Quốc tế</option>
+                                <option t-att-selected="filter_scope == 'local'" value="local">Địa phương</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                Áp dụng
+                            </button>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <a href="/compliance/regulations" class="btn btn-secondary w-100">
+                                Đặt lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Danh sách quy định -->
+            <div class="card shadow">
+                <div class="card-body">
+                    <t t-if="regulations">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Tên</th>
+                                        <th>Mã</th>
+                                        <th>Cơ quan ban hành</th>
+                                        <th>Phạm vi</th>
+                                        <th>Ngày có hiệu lực</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="regulations" t-as="regulation">
+                                        <tr>
+                                            <td>
+                                                <a t-att-href="'/compliance/regulation/%s' % regulation.id">
+                                                    <t t-esc="regulation.name"/>
+                                                </a>
+                                            </td>
+                                            <td><t t-esc="regulation.code"/></td>
+                                            <td><t t-esc="regulation.authority_id.name or '-'"/></td>
+                                            <td>
+                                                <span t-att-class="'badge ' + (
+                                                    'bg-primary' if regulation.scope == 'national' else
+                                                    'bg-info' if regulation.scope == 'international' else
+                                                    'bg-secondary'
+                                                )">
+                                                    <t t-esc="dict(regulation._fields['scope'].selection).get(regulation.scope)"/>
+                                                </span>
+                                            </td>
+                                            <td><t t-esc="regulation.effective_date"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info">Không tìm thấy quy định y tế nào.</div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
