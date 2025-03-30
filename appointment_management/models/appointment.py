@@ -12,7 +12,7 @@ class ClinicAppointment(models.Model):
     patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True)
     appointment_date = fields.Datetime(string='Ngày giờ hẹn', required=True)
     staff_id = fields.Many2one('clinic.staff', string='Bác sĩ', required=True,
-                               domain=[('staff_type', '=', 'doctor')])
+                               domain=[('staff_type', '=', 'Bác sĩ')])
     room_id = fields.Many2one('clinic.room', string='Phòng khám',
                               domain=[('room_type', '=', 'exam')])
     state = fields.Selection([
@@ -51,7 +51,7 @@ class ClinicAppointment(models.Model):
             if record.appointment_date and record.appointment_date < fields.Datetime.now():
                 raise ValidationError("Không thể đặt lịch hẹn trong quá khứ!")
             appointment_hour = record.appointment_date.hour
-            if appointment_hour < 8 or appointment_hour >= 21:
+            if appointment_hour < 1 or appointment_hour >= 14:
                 raise ValidationError("Lịch hẹn chỉ có thể được đặt từ 8:00 sáng đến 21:00 tối!")
 
     @api.constrains('staff_id', 'appointment_date')

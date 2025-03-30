@@ -30,7 +30,7 @@
                         <group>
                             <field name="patient_id" options="{'no_create': True}"/>
                             <field name="patient_name"/>
-                            <field name="staff_id" options="{'no_create': True}" domain="[('staff_type', '=', 'doctor')]"/>
+                            <field name="staff_id" options="{'no_create': True}" domain="[('staff_type', '=', 'Bác sĩ')]"/>
                             <field name="appointment_date" help="Chỉ có thể đặt lịch từ 8:00 sáng đến 21:00 tối"/>
                             <field name="room_id" options="{'no_create': True}" domain="[('room_type', '=', 'exam')]"/>
                         </group>
