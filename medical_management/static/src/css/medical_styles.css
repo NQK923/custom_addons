@@ -1,0 +1,98 @@
+/* Định dạng chung */
+.medical-layout {
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Định dạng thẻ */
+.medical-card {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.medical-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Định dạng badge trạng thái */
+.status-request {
+    background-color: #FFC107;
+    color: #000;
+}
+
+.status-processing {
+    background-color: #17A2B8;
+    color: #fff;
+}
+
+.status-completed {
+    background-color: #28A745;
+    color: #fff;
+}
+
+/* Định dạng form */
+.medical-form label {
+    font-weight: 500;
+}
+
+.medical-form .form-control {
+    border-radius: 4px;
+}
+
+.medical-form .form-control:focus {
+    border-color: #17A2B8;
+    box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+}
+
+/* Định dạng nút */
+.btn-medical {
+    background-color: #17A2B8;
+    border-color: #17A2B8;
+    color: #fff;
+}
+
+.btn-medical:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+}
+
+/* Định dạng sidebar */
+.medical-sidebar {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.medical-sidebar .nav-link {
+    color: #495057;
+    border-radius: 0;
+    padding: 0.75rem 1.25rem;
+}
+
+.medical-sidebar .nav-link:hover {
+    background-color: #e9ecef;
+}
+
+.medical-sidebar .nav-link.active {
+    background-color: #17A2B8;
+    color: #fff;
+}
+
+/* Định dạng khung hình ảnh */
+.image-frame {
+    border: 1px solid #dee2e6;
+    padding: 0.5rem;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+/* Định dạng bảng */
+.medical-table th {
+    background-color: #f8f9fa;
+    border-top: 2px solid #dee2e6;
+}
+
+/* Hiệu ứng khi hover hàng trong bảng */
+.medical-table tbody tr:hover {
+    background-color: rgba(23, 162, 184, 0.1);
+}
