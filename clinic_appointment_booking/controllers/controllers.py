@@ -53,8 +53,7 @@ class AppointmentBookingController(http.Controller):
 
         if conflicting_doctor_appointments:
             earliest = min(conflicting_doctor_appointments.mapped('appointment_date'))
-            earliest_local = self._convert_utc_to_local(earliest)
-            return False, f"Bác sĩ đã có lịch hẹn vào khoảng thời gian này (lúc {earliest_local.strftime('%H:%M')}). Vui lòng chọn thời gian khác."
+            return False, f"Bác sĩ đã có lịch hẹn vào khoảng thời gian này (lúc {earliest.strftime('%H:%M')}). Vui lòng chọn thời gian khác."
 
         if room_id:
             conflicting_room_appointments = Appointment.search([
@@ -67,8 +66,7 @@ class AppointmentBookingController(http.Controller):
 
             if conflicting_room_appointments:
                 earliest = min(conflicting_room_appointments.mapped('appointment_date'))
-                earliest_local = self._convert_utc_to_local(earliest)
-                return False, f"Phòng khám đã được sử dụng vào khoảng thời gian này (lúc {earliest_local.strftime('%H:%M')}). Vui lòng chọn phòng khác hoặc đổi thời gian."
+                return False, f"Phòng khám đã được sử dụng vào khoảng thời gian này (lúc {earliest.strftime('%H:%M')}). Vui lòng chọn phòng khác hoặc đổi thời gian."
 
         return True, ""
 
