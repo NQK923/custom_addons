@@ -30,7 +30,6 @@ class InsuranceController(http.Controller):
 
         error = {}
         if request.httprequest.method == 'POST':
-            # Lấy dữ liệu từ form
             patient_id = int(kwargs.get('patient_id', 0))
             number = kwargs.get('number', '')
             facility = kwargs.get('facility', '')

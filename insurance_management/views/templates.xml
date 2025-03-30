@@ -95,7 +95,7 @@
                                 <i class="fa fa-clipboard"></i>
                                 <p>Không có dữ liệu bảo hiểm y tế nào.</p>
                                 <a href="/clinic/insurance/create" class="btn-insurance-primary mt-3">
-                                    <i class="fa fa-plus-circle mr-1"></i> Tạo bảo hiểm mới
+                                     Tạo bảo hiểm mới
                                 </a>
                             </div>
                         </t>
@@ -387,141 +387,162 @@
                                       method="post" class="form-insurance">
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
-                                    <!-- Bệnh nhân -->
-                                    <div class="form-group">
-                                        <label for="patient_id" class="d-flex align-items-center">
-                                            <i class="fa fa-user text-primary mr-2"></i>
-                                            Bệnh nhân <span class="text-danger ml-1">*</span>
-                                        </label>
-                                        <select name="patient_id" id="patient_id" class="form-control"
-                                                t-att-class="'is-invalid' if error.get('patient_id') else ''">
-                                            <option value="">-- Chọn bệnh nhân --</option>
-                                            <t t-foreach="patients" t-as="patient">
-                                                <option t-att-value="patient.id"
-                                                       t-att-selected="'selected' if (insurance and insurance.patient_id.id == patient.id) or (kwargs.get('patient_id') == str(patient.id)) else None">
-                                                    <t t-esc="patient.code"/> - <t t-esc="patient.name"/>
-                                                </option>
+                                    <!-- Thông tin chính -->
+                                    <div class="form-section">
+                                        <div class="form-section-title">
+                                            <i class="fa fa-user-circle"></i> Thông tin chính
+                                        </div>
+
+                                        <!-- Bệnh nhân -->
+                                        <div class="form-group">
+                                            <label for="patient_id">
+                                                Bệnh nhân <span class="field-required">*</span>
+                                            </label>
+                                            <select name="patient_id" id="patient_id" class="form-control"
+                                                    t-att-class="'is-invalid' if error.get('patient_id') else ''">
+                                                <option value="">-- Chọn bệnh nhân --</option>
+                                                <t t-foreach="patients" t-as="patient">
+                                                    <option t-att-value="patient.id"
+                                                           t-att-selected="'selected' if (insurance and insurance.patient_id.id == patient.id) or (kwargs.get('patient_id') == str(patient.id)) else None">
+                                                        <t t-esc="patient.code"/> - <t t-esc="patient.name"/>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                            <t t-if="error.get('patient_id')">
+                                                <div class="invalid-feedback">
+                                                    <i class="fa fa-exclamation-circle mr-1"></i>
+                                                    <t t-esc="error.get('patient_id')"/>
+                                                </div>
                                             </t>
-                                        </select>
-                                        <t t-if="error.get('patient_id')">
-                                            <div class="invalid-feedback">
-                                                <i class="fa fa-exclamation-circle mr-1"></i>
-                                                <t t-esc="error.get('patient_id')"/>
-                                            </div>
-                                        </t>
-                                    </div>
-
-                                    <div class="row">
-                                        <!-- Số thẻ BHYT -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="number" class="d-flex align-items-center">
-                                                    <i class="fa fa-id-card text-primary mr-2"></i>
-                                                    Số thẻ BHYT <span class="text-danger ml-1">*</span>
-                                                </label>
-                                                <div class="input-group">
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text"><i class="fa fa-hashtag"></i></span>
-                                                    </div>
-                                                    <input type="text" name="number" id="number" class="form-control"
-                                                           t-att-class="'is-invalid' if error.get('number') else ''"
-                                                           placeholder="Ví dụ: 0123456789" maxlength="10" pattern="[0-9]{10}"
-                                                           t-att-value="insurance.number if insurance else kwargs.get('number', '')"/>
-                                                </div>
-                                                <small class="form-text text-muted">
-                                                    <i class="fa fa-info-circle mr-1"></i>
-                                                    Số thẻ BHYT phải gồm 10 chữ số.
-                                                </small>
-                                                <t t-if="error.get('number')">
-                                                    <div class="invalid-feedback">
-                                                        <i class="fa fa-exclamation-circle mr-1"></i>
-                                                        <t t-esc="error.get('number')"/>
-                                                    </div>
-                                                </t>
-                                            </div>
-                                        </div>
-
-                                        <!-- Nơi ĐKKCB -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="facility" class="d-flex align-items-center">
-                                                    <i class="fa fa-hospital text-primary mr-2"></i>
-                                                    Nơi ĐKKCB <span class="text-danger ml-1">*</span>
-                                                </label>
-                                                <div class="input-group">
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text"><i class="fa fa-map-marker-alt"></i></span>
-                                                    </div>
-                                                    <input type="text" name="facility" id="facility" class="form-control"
-                                                           t-att-class="'is-invalid' if error.get('facility') else ''"
-                                                           placeholder="Ví dụ: Bệnh viện A"
-                                                           t-att-value="insurance.facility if insurance else kwargs.get('facility', '')"/>
-                                                </div>
-                                                <t t-if="error.get('facility')">
-                                                    <div class="invalid-feedback">
-                                                        <i class="fa fa-exclamation-circle mr-1"></i>
-                                                        <t t-esc="error.get('facility')"/>
-                                                    </div>
-                                                </t>
-                                            </div>
+                                            <small class="form-text">Chọn bệnh nhân cần cấp thẻ bảo hiểm y tế</small>
                                         </div>
                                     </div>
 
-                                    <div class="row">
-                                        <!-- Mức chi trả -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="coverage_rate" class="d-flex align-items-center">
-                                                    <i class="fa fa-percentage text-primary mr-2"></i>
-                                                    Mức chi trả <span class="text-danger ml-1">*</span>
-                                                </label>
-                                                <div class="input-group">
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text"><i class="fa fa-money-bill"></i></span>
-                                                    </div>
-                                                    <select name="coverage_rate" id="coverage_rate" class="form-control"
-                                                            t-att-class="'is-invalid' if error.get('coverage_rate') else ''">
-                                                        <option value="">-- Chọn mức chi trả --</option>
-                                                        <option value="80" t-att-selected="'selected' if (insurance and insurance.coverage_rate == '80') or kwargs.get('coverage_rate') == '80' else None">80%</option>
-                                                        <option value="95" t-att-selected="'selected' if (insurance and insurance.coverage_rate == '95') or kwargs.get('coverage_rate') == '95' else None">95%</option>
-                                                        <option value="100" t-att-selected="'selected' if (insurance and insurance.coverage_rate == '100') or kwargs.get('coverage_rate') == '100' else None">100%</option>
-                                                    </select>
-                                                </div>
-                                                <t t-if="error.get('coverage_rate')">
-                                                    <div class="invalid-feedback">
-                                                        <i class="fa fa-exclamation-circle mr-1"></i>
-                                                        <t t-esc="error.get('coverage_rate')"/>
-                                                    </div>
-                                                </t>
-                                            </div>
+                                    <!-- Thông tin thẻ bảo hiểm -->
+                                    <div class="form-section">
+                                        <div class="form-section-title">
+                                            <i class="fa fa-id-card"></i> Thông tin thẻ bảo hiểm
                                         </div>
 
-                                        <!-- Có giá trị đến -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="expiry_date" class="d-flex align-items-center">
-                                                    <i class="fa fa-calendar-alt text-primary mr-2"></i>
-                                                    Có giá trị đến <span class="text-danger ml-1">*</span>
-                                                </label>
-                                                <div class="input-group">
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                        <div class="row">
+                                            <!-- Số thẻ BHYT -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="number">
+                                                        Số thẻ BHYT <span class="field-required">*</span>
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><i class="fa fa-hashtag"></i></span>
+                                                        </div>
+                                                        <input type="text" name="number" id="number" class="form-control"
+                                                               t-att-class="'is-invalid' if error.get('number') else ''"
+                                                               placeholder="Ví dụ: 0123456789" maxlength="10" pattern="[0-9]{10}"
+                                                               t-att-value="insurance.number if insurance else kwargs.get('number', '')"/>
                                                     </div>
-                                                    <input type="date" name="expiry_date" id="expiry_date" class="form-control"
-                                                           t-att-class="'is-invalid' if error.get('expiry_date') else ''"
-                                                           t-att-value="insurance.expiry_date if insurance else kwargs.get('expiry_date', '')"/>
+                                                    <small class="form-text">
+                                                        <i class="fa fa-info-circle"></i>
+                                                        Số thẻ BHYT phải gồm 10 chữ số.
+                                                    </small>
+                                                    <t t-if="error.get('number')">
+                                                        <div class="invalid-feedback">
+                                                            <i class="fa fa-exclamation-circle mr-1"></i>
+                                                            <t t-esc="error.get('number')"/>
+                                                        </div>
+                                                    </t>
                                                 </div>
-                                                <t t-if="error.get('expiry_date')">
-                                                    <div class="invalid-feedback">
-                                                        <i class="fa fa-exclamation-circle mr-1"></i>
-                                                        <t t-esc="error.get('expiry_date')"/>
+                                            </div>
+
+                                            <!-- Nơi ĐKKCB -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="facility">
+                                                        Nơi ĐKKCB <span class="field-required">*</span>
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><i class="fa fa-hospital"></i></span>
+                                                        </div>
+                                                        <input type="text" name="facility" id="facility" class="form-control"
+                                                               t-att-class="'is-invalid' if error.get('facility') else ''"
+                                                               placeholder="Ví dụ: Bệnh viện A"
+                                                               t-att-value="insurance.facility if insurance else kwargs.get('facility', '')"/>
                                                     </div>
-                                                </t>
+                                                    <small class="form-text">Nơi đăng ký khám chữa bệnh ban đầu</small>
+                                                    <t t-if="error.get('facility')">
+                                                        <div class="invalid-feedback">
+                                                            <i class="fa fa-exclamation-circle mr-1"></i>
+                                                            <t t-esc="error.get('facility')"/>
+                                                        </div>
+                                                    </t>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="form-group mt-4 d-flex justify-content-between">
+                                    <!-- Quyền lợi và thời hạn -->
+                                    <div class="form-section">
+                                        <div class="form-section-title">
+                                            <i class="fa fa-shield-alt"></i> Quyền lợi và thời hạn
+                                        </div>
+
+                                        <div class="row">
+                                            <!-- Mức chi trả -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="coverage_rate">
+                                                        Mức chi trả <span class="field-required">*</span>
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><i class="fa fa-percentage"></i></span>
+                                                        </div>
+                                                        <select name="coverage_rate" id="coverage_rate" class="form-control"
+                                                                t-att-class="'is-invalid' if error.get('coverage_rate') else ''">
+                                                            <option value="">-- Chọn mức chi trả --</option>
+                                                            <option value="80" t-att-selected="'selected' if (insurance and insurance.coverage_rate == '80') or kwargs.get('coverage_rate') == '80' else None">80%</option>
+                                                            <option value="95" t-att-selected="'selected' if (insurance and insurance.coverage_rate == '95') or kwargs.get('coverage_rate') == '95' else None">95%</option>
+                                                            <option value="100" t-att-selected="'selected' if (insurance and insurance.coverage_rate == '100') or kwargs.get('coverage_rate') == '100' else None">100%</option>
+                                                        </select>
+                                                    </div>
+                                                    <small class="form-text">Tỷ lệ phần trăm chi trả của bảo hiểm</small>
+                                                    <t t-if="error.get('coverage_rate')">
+                                                        <div class="invalid-feedback">
+                                                            <i class="fa fa-exclamation-circle mr-1"></i>
+                                                            <t t-esc="error.get('coverage_rate')"/>
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                            </div>
+
+                                            <!-- Có giá trị đến -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="expiry_date">
+                                                        Có giá trị đến <span class="field-required">*</span>
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                                        </div>
+                                                        <input type="date" name="expiry_date" id="expiry_date" class="form-control"
+                                                               t-att-class="'is-invalid' if error.get('expiry_date') else ''"
+                                                               t-att-value="insurance.expiry_date if insurance else kwargs.get('expiry_date', '')"/>
+                                                    </div>
+                                                    <small class="form-text">Ngày hết hạn của thẻ bảo hiểm</small>
+                                                    <t t-if="error.get('expiry_date')">
+                                                        <div class="invalid-feedback">
+                                                            <i class="fa fa-exclamation-circle mr-1"></i>
+                                                            <t t-esc="error.get('expiry_date')"/>
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Nút tác vụ -->
+                                    <div class="form-actions">
                                         <a href="/clinic/insurance" class="btn-insurance-secondary">
                                             <i class="fa fa-times mr-1"></i> Hủy
                                         </a>
@@ -535,18 +556,37 @@
                             </div>
                         </div>
 
-                        <!-- Quick tips -->
+                        <!-- Tips và hướng dẫn -->
                         <div class="card mb-4">
                             <div class="card-header bg-light">
-                                <h5 class="mb-0"><i class="fa fa-lightbulb text-warning mr-2"></i> Lưu ý khi nhập liệu</h5>
+                                <h5 class="mb-0"><i class="fa fa-lightbulb text-warning mr-2"></i> Hướng dẫn nhập liệu</h5>
                             </div>
                             <div class="card-body">
-                                <ul class="mb-0">
-                                    <li class="mb-2">Số thẻ BHYT phải gồm đúng 10 chữ số.</li>
-                                    <li class="mb-2">Nơi ĐKKCB là nơi đăng ký khám chữa bệnh ban đầu của bệnh nhân.</li>
-                                    <li class="mb-2">Mức chi trả tùy thuộc vào đối tượng và loại thẻ BHYT.</li>
-                                    <li>Ngày hết hạn thẻ BHYT sẽ xác định trạng thái của thẻ (hợp lệ hoặc hết hạn).</li>
-                                </ul>
+                                <div class="alert alert-info">
+                                    <h6 class="font-weight-bold"><i class="fa fa-info-circle mr-1"></i> Lưu ý quan trọng</h6>
+                                    <p class="mb-0">Vui lòng điền đầy đủ và chính xác thông tin thẻ bảo hiểm y tế để đảm bảo quyền lợi cho bệnh nhân.</p>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <h6 class="font-weight-bold text-primary"><i class="fa fa-check-circle mr-1"></i> Yêu cầu bắt buộc</h6>
+                                        <ul class="mb-0">
+                                            <li class="mb-2">Thông tin bệnh nhân phải chính xác</li>
+                                            <li class="mb-2">Số thẻ BHYT gồm đúng 10 chữ số</li>
+                                            <li class="mb-2">Nơi ĐKKCB phải đúng với thẻ</li>
+                                            <li>Ngày hết hạn phải trong tương lai</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="font-weight-bold text-success"><i class="fa fa-lightbulb mr-1"></i> Mẹo</h6>
+                                        <ul class="mb-0">
+                                            <li class="mb-2">Kiểm tra kỹ số thẻ BHYT</li>
+                                            <li class="mb-2">Nhập đúng tên cơ sở ĐKKCB</li>
+                                            <li class="mb-2">Chọn mức chi trả theo chính sách</li>
+                                            <li>Xác nhận ngày hết hạn từ thẻ gốc</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
