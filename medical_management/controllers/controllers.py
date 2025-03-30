@@ -84,21 +84,38 @@ class MedicalWebsite(http.Controller):
             'test_types': test_types,
         })
 
-    # Lưu hình ảnh mới
+    # Lưu hình ảnh mới - Updated with fixes
     @http.route('/medical/image/save', auth='user', website=True, type='http', methods=['POST'])
     def medical_image_save(self, **post):
         image_data = False
         if post.get('image_file'):
-            image_data = base64.b64encode(post.get('image_file').read())
+            # Properly encode image file
+            image_file = post.get('image_file')
+            image_data = base64.b64encode(image_file.read())
+
+            # Store as string for proper template rendering
+            if isinstance(image_data, bytes):
+                image_data = image_data.decode('utf-8')
+
+        # Create a test_code if empty
+        test_code = post.get('test_code')
+        if not test_code or test_code.strip() == '':
+            # Find the last record to generate a sequential code
+            last_record = request.env['medical.images'].sudo().search([], order='id desc', limit=1)
+            if last_record and last_record.test_code and last_record.test_code.isdigit():
+                test_code = str(int(last_record.test_code) + 1)
+            else:
+                test_code = '1001'  # Starting code
 
         vals = {
-            'test_code': post.get('test_code'),
+            'test_code': test_code,
             'MedicalTest_id': int(post.get('MedicalTest_id')),
             'test_type_img': post.get('test_type_img'),
             'img_date': fields.Datetime.now(),
             'result_Img': post.get('result_Img', ''),
             'Img': image_data
         }
+
         new_image = request.env['medical.images'].sudo().create(vals)
         return request.redirect('/medical/image/%s' % new_image.id)
 

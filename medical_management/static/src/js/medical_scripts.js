@@ -18,7 +18,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (previewElement) {
                         reader.onload = function(e) {
-                            previewElement.innerHTML = `<img src="${e.target.result}" class="img-fluid" />`;
+                            previewElement.innerHTML = `
+                                <div class="card p-2 border">
+                                    <p class="mb-1"><strong>Xem trước:</strong></p>
+                                    <img src="${e.target.result}" class="img-fluid" style="max-height: 200px; width: auto;"/>
+                                </div>
+                            `;
                         };
                         reader.readAsDataURL(this.files[0]);
                     }

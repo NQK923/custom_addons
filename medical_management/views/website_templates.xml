@@ -101,7 +101,7 @@
         </t>
     </template>
 
-    <!-- Chi tiết xét nghiệm -->
+    <!-- Chi tiết xét nghiệm - Updated for image display -->
     <template id="medical_test_detail" name="Medical Test Detail">
         <t t-call="medical_management.medical_layout">
             <div class="card">
@@ -195,7 +195,7 @@
                         </div>
                     </div>
 
-                    <!-- Hiển thị hình ảnh liên quan -->
+                    <!-- Updated image display section -->
                     <div class="mt-4">
                         <h4>Hình ảnh liên quan</h4>
                         <t t-if="related_images">
@@ -205,7 +205,8 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <t t-if="image.Img">
-                                                    <img t-att-src="'data:image/png;base64,%s' % image.Img" class="img-fluid"/>
+                                                    <!-- Correct image rendering with proper image format specification -->
+                                                    <img t-att-src="image.Img and ('data:image/*;base64,%s' % (image.Img.decode('utf-8') if isinstance(image.Img, bytes) else image.Img))" class="img-fluid"/>
                                                 </t>
                                                 <p class="mt-2"><t t-esc="image.test_code"/></p>
                                                 <a t-attf-href="/medical/image/{{image.id}}" class="btn btn-sm btn-info">Xem chi tiết</a>

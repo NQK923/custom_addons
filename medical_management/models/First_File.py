@@ -37,7 +37,6 @@ class MedicalImages(models.Model):
         string='Mã Hình ảnh xét nghiệm',
         required=True,
         copy=False,
-
     )
     MedicalTest_id = fields.Many2one('medical.test', string='Mã xét nghiệm', required=True)
     test_type_img = fields.Selection([
@@ -49,13 +48,27 @@ class MedicalImages(models.Model):
         ('other', 'Khác')
     ], string='Loại xét nghiệm hoặc chuẩn đoán', required=True)
     img_date = fields.Datetime(string='Ngày thực hiện', required=True)
-    result_Img = fields.Text(string='Kết quả Chuẩn đoán hoăc chuẩn đoán')
+    result_Img = fields.Text(string='Kết quả Chuẩn đoán hoặc chuẩn đoán')
+
+    # Updated field definition with proper attachment settings
     Img = fields.Binary(string='Prescription Image', attachment=True)
 
+    # Method to ensure test_code is always populated
     @api.model
     def create(self, vals):
-        # Tự động tăng mã `test_code` theo số lượng bản ghi đã có
-        last_record = self.search([], order='id desc', limit=1)
-        next_code = int(last_record.test_code) + 1 if last_record and last_record.test_code.isdigit() else 1
-        vals['test_code'] = str(next_code)
+        # Check if test_code is provided
+        if not vals.get('test_code') or vals.get('test_code').strip() == '':
+            # Auto-generate code based on existing records
+            last_record = self.search([], order='id desc', limit=1)
+            next_code = 1001  # Default starting number
+
+            if last_record and last_record.test_code:
+                try:
+                    next_code = int(last_record.test_code) + 1
+                except (ValueError, TypeError):
+                    # If conversion fails, use default
+                    pass
+
+            vals['test_code'] = str(next_code)
+
         return super(MedicalImages, self).create(vals)
