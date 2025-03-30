@@ -2,11 +2,15 @@
 {
      'name': "Quản lý bảo hiểm y tế",
 
-    'summary': "Short (1 phrase/line) summary of the module's purpose",
+    'summary': "Quản lý thông tin bảo hiểm y tế của bệnh nhân",
 
 
     'description': """
-Long description of module's purpose
+Module quản lý thông tin bảo hiểm y tế của bệnh nhân, hỗ trợ:
+- Quản lý số thẻ bảo hiểm
+- Kiểm tra hiệu lực
+- Thông tin nơi đăng ký khám chữa bệnh
+- Mức chi trả bảo hiểm
     """,
 
     'author': "My Company",
@@ -20,15 +24,15 @@ Long description of module's purpose
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'patient_management'],
+    'depends': ['base', 'patient_management', 'website'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
+        'views/templates.xml',
     ],
     'installable': True,
     'application': True,
 
 }
-
