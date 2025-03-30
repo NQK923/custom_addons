@@ -7,9 +7,12 @@ import uuid
 class ClinicPatient(models.Model):
     _name = 'clinic.patient'
     _description = 'Thông tin bệnh nhân'
-    _rec_name = 'code'
+    _rec_name = 'display_name'
     _order = "date desc"
 
+    display_name = fields.Char(
+        compute='_compute_display_name',
+    )
     code = fields.Char(
         string='Mã bệnh nhân',
         required=True,
@@ -63,40 +66,55 @@ class ClinicPatient(models.Model):
     insurance_number = fields.Char(string='Số thẻ BHYT', compute='_compute_insurance_info')
     insurance_facility = fields.Char(string='Nơi ĐKKCB', compute='_compute_insurance_info')
     insurance_expiry = fields.Date(c='Có giá trị đến', compute='_compute_insurance_info')
-    insurance_tier = fields.Selection([
-        ('central', 'Trung ương'),
-        ('province', 'Tỉnh'),
-        ('district', 'Quận/Huyện'),
-        ('commune', 'Xã')
-    ], string='Tuyến', compute='_compute_insurance_info')
+    insurance_coverage_rate = fields.Selection([
+        ('80', '80%'),
+        ('95', '95%'),
+        ('100', '100%')
+    ], string='Mức chi trả', compute='_compute_insurance_info')
     insurance_state = fields.Char(string='Trạng thái', compute='_compute_insurance_info')
     has_insurance = fields.Boolean(string='Có bảo hiểm', compute='_compute_insurance_info')
 
-    # dùng cái hàm này để tìm kiếm bảo hiểm của bệnh nhân
     @api.depends('name')
+    def _compute_display_name(self):
+        for record in self:
+            record.display_name = f"{record.code} - {record.name}"
+
     def _compute_insurance_info(self):
+        # InsuranceModel = self.env.get('clinic.insurance.policy', False)
         for patient in self:
+            # if not InsuranceModel:
+            #     # Nếu module bảo hiểm không tồn tại, xóa các trường bảo hiểm
+            #     print(f"No module insurance")
+            #     patient._clear_insurance_fields()
+            #     continue            
+            # Tìm bản ghi bảo hiểm liên quan đến bệnh nhân
+            # insurance = InsuranceModel.search([
+            #     ('patient_id', '=', patient.id)
+            # ], limit=1)
             insurance = self.env['clinic.insurance.policy'].search([
                 ('patient_id', '=', patient.id)
             ], limit=1)
-
+            
             if insurance:
+                # Nếu có bảo hiểm, cập nhật thông tin
                 patient.has_insurance = True
                 patient.insurance_number = insurance.number
                 patient.insurance_facility = insurance.facility
-                patient.insurance_tier = insurance.tier
                 patient.insurance_expiry = insurance.expiry_date
-                if insurance.state == 'valid':
-                    patient.insurance_state = 'Hợp lệ'
-                else:
-                    patient.insurance_state = 'Hết hạn'
+                patient.insurance_coverage_rate = insurance.coverage_rate
+                patient.insurance_state = 'Hợp lệ' if insurance.state == 'valid' else 'Hết hạn'
             else:
-                patient.has_insurance = False
-                patient.insurance_number = False
-                patient.insurance_facility = False
-                patient.insurance_tier = False
-                patient.insurance_expiry = False
-                patient.insurance_state = False
+                # Nếu không có bảo hiểm, xóa các trường
+                print(f"No insurance information found for {patient.name}")
+                patient._clear_insurance_fields()
+
+    def _clear_insurance_fields(self):
+        self.has_insurance = False
+        self.insurance_number = False
+        self.insurance_facility = False
+        self.insurance_coverage_rate = False
+        self.insurance_expiry = False
+        self.insurance_state = False
 
     @api.depends('date_of_birth')
     def _compute_age(self):
@@ -120,16 +138,4 @@ class ClinicPatient(models.Model):
                 vals['code'] = str(uuid.uuid4())[:8]
         return super().create(vals_list)
 
-    # def get_insurance_info(self):
-    #     for patient in self:
-    #         # Search for insurance records linked to this patient
-    #         insurance_records = self.env['clinic.insurance.policy'].search([
-    #             ('patient_id', '=', patient.id)
-    #         ])
 
-    #         print(f"Insurance information for {patient.patient_name}:")
-    #         for insurance in insurance_records:
-    #             print(f"  - Insurance Number: {insurance.number}")
-    #             print(f"  - Facility: {insurance.facility}")
-    #             print(f"  - Expiry Date: {insurance.expiry_date}")
-    #             print(f"  - State: {insurance.state}")

@@ -4,11 +4,15 @@ import uuid  # Add this at the top
 
 
 
+from odoo import models, fields, api
+from odoo.exceptions import ValidationError, UserError
+import uuid
+
 class ClinicInvoice(models.Model):
     _name = 'clinic.invoice'
     _description = 'Hóa đơn phòng khám'
     _order = 'invoice_date desc, id desc'
-    _rec_name = 'display_name'  # Add this
+    _rec_name = 'name'
 
     name = fields.Char(string='Mã hóa đơn', required=True, copy=False, readonly=True, default='New')
     display_name = fields.Char(string='Số hóa đơn', compute='_compute_display_name', store=True)
@@ -17,7 +21,6 @@ class ClinicInvoice(models.Model):
                                       domain="[('patient_id', '=', patient_id)]")
     invoice_date = fields.Date(string='Ngày lập', default=fields.Date.today, required=True)
     
-    # Thay đổi định nghĩa của service_lines và product_lines
     service_lines = fields.One2many('clinic.invoice.line', 'invoice_id', 
                                    string='Dịch vụ',
                                    domain=[('product_id', '=', False)])
@@ -39,17 +42,9 @@ class ClinicInvoice(models.Model):
     patient_amount = fields.Float(string='Bệnh nhân chi trả', compute='_compute_amounts', store=True)
     note = fields.Text(string='Ghi chú')
 
-    # Thêm trường treatment_plan_id
-    treatment_plan_id = fields.Many2one('treatment.plan', string='Kế hoạch điều trị',
-                                      domain="[('patient_id', '=', patient_id)]")
+    # treatment_plan_id = fields.Many2one('treatment.plan', string='Kế hoạch điều trị',
+    #                                   domain="[('patient_id', '=', patient_id)]")
 
-    @api.depends('name', 'invoice_date')
-    def _compute_display_name(self):
-        for record in self:
-            if record.invoice_date:
-                record.display_name = f'HD{record.invoice_date.strftime("%Y%m%d")}-{record.name}'
-            else:
-                record.display_name = record.name
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -58,7 +53,8 @@ class ClinicInvoice(models.Model):
                 vals['name'] = str(uuid.uuid4())[:8]
         return super().create(vals_list)
 
-    @api.depends('service_lines.price_subtotal', 'product_lines.price_subtotal', 'patient_id')
+    @api.depends('service_lines.price_subtotal', 'product_lines.price_subtotal', 
+                 'service_lines.insurance_amount', 'product_lines.insurance_amount')
     def _compute_amounts(self):
         for invoice in self:
             # Tính tổng tiền dịch vụ và thuốc
@@ -66,25 +62,16 @@ class ClinicInvoice(models.Model):
             invoice.medicine_amount = sum(line.price_subtotal for line in invoice.product_lines)
             invoice.amount_total = invoice.service_amount + invoice.medicine_amount
             
-            # Kiểm tra bảo hiểm hợp lệ
-            has_valid_insurance = False
-            if invoice.patient_id and invoice.patient_id.has_insurance:
-                if invoice.patient_id.insurance_state == 'Hợp lệ':
-                    has_valid_insurance = True
-
-            # Tính tiền bảo hiểm chi trả và bệnh nhân trả
-            if has_valid_insurance:
-                invoice.insurance_amount = invoice.amount_total * 0.8  # 80%
-                invoice.patient_amount = invoice.amount_total * 0.2    # 20%
-            else:
-                invoice.insurance_amount = 0
-                invoice.patient_amount = invoice.amount_total         # 100%
+            # Tổng hợp số tiền bảo hiểm và bệnh nhân chi trả từ các dòng
+            invoice.insurance_amount = (sum(line.insurance_amount for line in invoice.service_lines) + 
+                                      sum(line.insurance_amount for line in invoice.product_lines))
+            invoice.patient_amount = invoice.amount_total - invoice.insurance_amount
 
     @api.onchange('patient_id')
     def _onchange_patient_id(self):
         """Reset prescription and invoice lines when patient changes"""
         self.prescription_ids = [(5, 0, 0)]  # Clear prescriptions
-        self.treatment_plan_id = False  # Clear treatment plan
+        # self.treatment_plan_id = False  # Clear treatment plan
         self.service_lines = [(5, 0, 0)]  # Clear service lines
         self.product_lines = [(5, 0, 0)]  # Clear product lines
 
@@ -92,16 +79,13 @@ class ClinicInvoice(models.Model):
     def _onchange_prescription_ids(self):
         """Handle multiple prescriptions"""
         if self.prescription_ids:
-            # Clear existing product lines first
             self.product_lines = [(5, 0, 0)]
             new_lines = []
-            
             for prescription in self.prescription_ids:
                 for line in prescription.prescription_line_ids:
                     product = line.product_id
                     if not product:
                         continue
-                        
                     if not product.unit_price:
                         raise ValidationError(
                             f"Thuốc '{product.name}' chưa có đơn giá. Vui lòng thiết lập đơn giá trong 'Pharmacy Product' trước khi sử dụng."
@@ -110,80 +94,62 @@ class ClinicInvoice(models.Model):
                         raise ValidationError(
                             f"Đơn giá của thuốc '{product.name}' phải lớn hơn 0. Vui lòng cập nhật giá trong 'Pharmacy Product'."
                         )
-                        
-                    # Kiểm tra xem thuốc đã tồn tại trong lines chưa
                     existing_line = next((l for l in new_lines if l[2]['product_id'] == product.id), None)
                     if existing_line:
-                        # Nếu đã tồn tại, cộng thêm số lượng
                         existing_line[2]['quantity'] += line.quantity
                     else:
-                        # Nếu chưa tồn tại, thêm line mới
                         new_lines.append((0, 0, {
                             'product_id': product.id,
                             'quantity': line.quantity,
                             'price_unit': product.unit_price,
                         }))
-                
             self.product_lines = new_lines
 
-    @api.onchange('treatment_plan_id')
-    def _onchange_treatment_plan(self):
-        """Load services from treatment plan"""
-        if self.treatment_plan_id:
-            # Clear existing service lines first
-            self.service_lines = [(5, 0, 0)]
-            new_lines = []
-            
-            # Add services from treatment processes
-            for process in self.treatment_plan_id.treatment_process_ids:
-                service = process.service_id
-                if not service:
-                    continue
-                    
-                if not service.price:
-                    raise ValidationError(
-                        f"Dịch vụ '{service.service_name}' chưa có giá. Vui lòng thiết lập giá trước khi sử dụng."
-                    )
-                new_lines.append((0, 0, {
-                    'service_id': service.id,
-                    'quantity': 1,
-                    'price_unit': service.price,
-                }))
-                
-            self.service_lines = new_lines
+    # @api.onchange('treatment_plan_id')
+    # def _onchange_treatment_plan(self):
+    #     """Load services from treatment plan"""
+    #     if self.treatment_plan_id:
+    #         self.service_lines = [(5, 0, 0)]
+    #         new_lines = []
+    #         for process in self.treatment_plan_id.treatment_process_ids:
+    #             service = process.service_id
+    #             if not service:
+    #                 continue
+    #             if not service.price:
+    #                 raise ValidationError(
+    #                     f"Dịch vụ '{service.service_name}' chưa có giá. Vui lòng thiết lập giá trước khi sử dụng."
+    #                 )
+    #             new_lines.append((0, 0, {
+    #                 'service_id': service.id,
+    #                 'quantity': 1,
+    #                 'price_unit': service.price,
+    #             }))
+    #         self.service_lines = new_lines
 
     def action_confirm(self):
         self.write({'state': 'confirmed'})
 
     def action_mark_as_paid(self):
         for invoice in self:
-            # Kiểm tra số lượng tồn kho trước khi thanh toán
             for line in invoice.product_lines:
                 if line.product_id.quantity < line.quantity:
                     raise ValidationError(
                         f'Không đủ số lượng thuốc {line.product_id.name} trong kho! '
                         f'(Còn {line.product_id.quantity}, cần {line.quantity})'
                     )
-            
-            # Cập nhật trạng thái và trừ số lượng trong kho
             invoice.write({'state': 'paid'})
-            
-            # Trừ số lượng thuốc trong kho
             for line in invoice.product_lines:
                 line.product_id.quantity -= line.quantity
 
     def action_cancel(self):
         for invoice in self:
-            # Nếu hóa đơn đã thanh toán, cộng lại số lượng thuốc vào kho
             if invoice.state == 'paid':
                 for line in invoice.product_lines:
                     line.product_id.quantity += line.quantity
-            
             invoice.write({'state': 'cancelled'})
 
     def action_reset_to_draft(self):
         for invoice in self:
-            # Chỉ cho phép đặt lại về nháp nếu chưa thanh toán
             if invoice.state == 'paid':
                 raise ValidationError(
                     'Không thể đặt lại hóa đơn đã thanh toán về trạng thái nháp!'
@@ -211,7 +177,7 @@ class ClinicInvoiceLine(models.Model):
                     f"Dịch vụ '{self.service_id.service_name}' chưa có giá. Vui lòng thiết lập giá trước khi sử dụng."
                 )
             self.price_unit = self.service_id.price
-            self.product_id = False  # Xóa thuốc nếu chọn dịch vụ
+            self.product_id = False
         else:
             self.price_unit = 0.0
 
@@ -223,25 +189,28 @@ class ClinicInvoiceLine(models.Model):
                     f"Thuốc '{self.product_id.name}' chưa có đơn giá. Vui lòng thiết lập đơn giá trước khi sử dụng."
                 )
             self.price_unit = self.product_id.unit_price
-            self.service_id = False  # Xóa dịch vụ nếu chọn thuốc
+            self.service_id = False
         else:
             self.price_unit = 0.0
 
-    @api.depends('quantity', 'price_unit', 'invoice_id.patient_id')
+    @api.depends('quantity', 'price_unit', 'invoice_id.patient_id', 'service_id', 'product_id')
     def _compute_price_subtotal(self):
         for line in self:
             line.price_subtotal = line.quantity * line.price_unit
             
-            # Kiểm tra bảo hiểm của bệnh nhân
-            has_valid_insurance = False
-            if line.invoice_id.patient_id and line.invoice_id.patient_id.has_insurance:
-                if line.invoice_id.patient_id.insurance_state == 'Hợp lệ':
-                    has_valid_insurance = True
+            # Kiểm tra bảo hiểm hợp lệ và lấy tỷ lệ chi trả
+            has_valid_insurance = (line.invoice_id.patient_id and 
+                                 line.invoice_id.patient_id.has_insurance and 
+                                 line.invoice_id.patient_id.insurance_state == 'Hợp lệ')
+            coverage_rate = float(line.invoice_id.patient_id.insurance_coverage_rate or 0) / 100 if has_valid_insurance else 0
 
-            # Tính toán số tiền bảo hiểm và bệnh nhân chi trả
-            if has_valid_insurance:
-                line.insurance_amount = line.price_subtotal * 0.8
-                line.patient_amount = line.price_subtotal * 0.2
+            # Kiểm tra xem dịch vụ/thuốc có được bảo hiểm chi trả không
+            is_covered = ((line.service_id and line.service_id.insurance_covered) or 
+                         (line.product_id and line.product_id.insurance_covered))
+            
+            if has_valid_insurance and is_covered:
+                line.insurance_amount = line.price_subtotal * coverage_rate
+                line.patient_amount = line.price_subtotal * (1 - coverage_rate)
             else:
                 line.insurance_amount = 0
                 line.patient_amount = line.price_subtotal

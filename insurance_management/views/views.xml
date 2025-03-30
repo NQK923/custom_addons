@@ -8,8 +8,8 @@
             <list>
                 <field name="number"/>
                 <field name="patient_id" string="Bệnh nhân"/>
+                <field name="coverage_rate"/>
                 <field name="facility"/>
-                <field name="tier"/>
                 <field name="expiry_date"/>
                 <field name="state" decoration-danger="state == 'expired'" 
                                   decoration-success="state == 'valid'"/>
@@ -26,12 +26,12 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="number" placeholder="Ví dụ: DN119123456789"/>
+                            <field name="number" placeholder="Ví dụ: 0123456789"/>
                             <field name="patient_id" string="Bệnh nhân"/>
                             <field name="facility"/>
                         </group>
                         <group>
-                            <field name="tier"/>
+                            <field name="coverage_rate"/>
                             <field name="expiry_date"/>
                             <field name="state" widget="statusbar" statusbar_visible="valid,expired"/>
                         </group>

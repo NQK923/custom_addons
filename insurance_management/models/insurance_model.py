@@ -12,12 +12,6 @@ class ClinicInsurance(models.Model):
     name = fields.Char(string='Mã bảo hiểm', required=True, copy=False, readonly=True)
     number = fields.Char(string='Số thẻ BHYT', required=True)
     facility = fields.Char(string='Nơi ĐKKCB')
-    tier = fields.Selection([
-        ('central', 'Trung ương'),
-        ('province', 'Tỉnh'),
-        ('district', 'Quận/Huyện'),
-        ('commune', 'Xã')
-    ], string='Tuyến', default='district')
     patient_id = fields.Many2one(
         'clinic.patient', 
         string='Bệnh nhân', 
@@ -29,6 +23,11 @@ class ClinicInsurance(models.Model):
         ('valid', 'Hợp lệ'),
         ('expired', 'Hết hạn')
     ], string='Trạng thái', compute='_compute_state', store=True, tracking=True)
+    coverage_rate = fields.Selection([
+        ('80', '80%'),
+        ('95', '95%'),
+        ('100', '100%')
+    ], string='Mức chi trả', default='100', required=True)
 
     _sql_constraints = [
         ('unique_patient', 'unique(patient_id)', 'Bệnh nhân này đã có bảo hiểm y tế!'),
@@ -49,16 +48,12 @@ class ClinicInsurance(models.Model):
     @api.constrains('number')
     def _check_number(self):
         for record in self:
-            # Kiểm tra định dạng: 2 chữ cái + 1 số + 2 số + 10 số
-            pattern = r'^[A-Z]{2}[1-5][0-9]{2}[0-9]{10}$'
+            # Kiểm tra định dạng: 10 số
+            pattern = r'^[0-9]{10}$'
             if not re.match(pattern, record.number):
                 raise ValidationError('''Số thẻ BHYT không hợp lệ! 
-                    Định dạng phải là: 
-                    - 2 chữ cái in hoa (mã đối tượng)
-                    - 1 chữ số từ 1-5 (mức hưởng)
-                    - 2 chữ số (mã tỉnh)
-                    - 10 chữ số (số định danh)
-                    Ví dụ: DN119123456789''')
+                    Định dạng phải là 10 chữ số
+                    Ví dụ: 0123456789''')
             
             duplicate = self.search([
                 ('id', '!=', record.id),
@@ -80,4 +75,6 @@ class ClinicInsurance(models.Model):
         default = dict(default or {})
         default.update(name='New')
         return super().copy(default)
+
+   
 
