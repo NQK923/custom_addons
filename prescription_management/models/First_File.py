@@ -36,6 +36,8 @@ class PharmacyProduct(models.Model):
     category = fields.Char(string='Loại thuốc')
     manufacturer = fields.Char(string='Nhà sản xuất')
     quantity = fields.Integer(string='Số lượng tồn kho', default=0)
+    is_quantity = fields.Boolean(string="Cảnh báo tồn kho", compute='
+                                 ', store=True)
     uom_id = fields.Selection([
         ('pill', 'Viên'),
         ('bottle', 'Chai'),
@@ -52,10 +54,17 @@ class PharmacyProduct(models.Model):
     active = fields.Boolean(default=True)
     insurance_covered = fields.Boolean(string='Được bảo hiểm chi trả', default=False)  # Thêm trường này
 
+
+    @api.depends('quantity')
+    def _compute_is_quantity(self):
+        for record in self:
+            record.is_quantity = record.quantity < 10
+
     def _compute_display_name(self):
         for record in self:
             record.display_name = f"{record.code} - {record.name}"
         
+
     @api.constrains('purchase_price', 'unit_price')
     def _check_prices(self):
         for record in self:

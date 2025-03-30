@@ -101,10 +101,13 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="quantity"/>
+                <field name="is_quantity" widget="boolean_toggle"/>
                 <field name="uom_id"/>
                 <field name="purchase_price"/>
                 <field name="unit_price"/>
                 <field name="profit_margin"/>
+                <field name="date"/>
+                <field name="expiry"/>
                 <field name="insurance_covered"/>
             </list>
         </field>
@@ -129,6 +132,8 @@
                             <field name="profit_margin"/>
                             <field name="insurance_covered"/>
                             <field name="active"/>
+                            <field name="date"/>
+                            <field name="expiry"/>
                         </group>
                     </group>
                     <notebook>
