@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Định nghĩa action (đã có từ trước) -->
+    <record id="clinic_patient_history_action" model="ir.actions.act_url">
+        <field name="name">Patient History</field>
+        <field name="url">/clinic/patient_history</field>
+        <field name="target">self</field>
+    </record>
+
+    <!-- Thêm menu vào website -->
+    <record id="website_menu_medical_history" model="website.menu">
+        <field name="name">Lịch sử khám bệnh</field>
+        <field name="url">/clinic/patient_history</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">50</field>
+    </record>
+</odoo>
