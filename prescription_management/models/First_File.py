@@ -3,16 +3,41 @@ import uuid
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
+import uuid
+from odoo import models, fields, api
+from odoo.exceptions import ValidationError
+
+class ClinicService(models.Model):
+    _name = 'clinic.service'
+    _description = 'Dịch vụ phòng khám'
+    _rec_name = 'service_name'
+
+    name = fields.Char(string='Mã dịch vụ', required=True, copy=False, readonly=True, default='New')
+    service_name = fields.Char(string='Tên dịch vụ', required=True)
+    price = fields.Float(string='Giá dịch vụ', required=True)
+    description = fields.Text(string='Mô tả')
+    active = fields.Boolean(default=True)
+    insurance_covered = fields.Boolean(string='Được bảo hiểm chi trả', default=False)  # Thêm trường này
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = str(uuid.uuid4())[:8]
+        return super().create(vals_list)
 class PharmacyProduct(models.Model):
     _name = 'pharmacy.product'
     _description = 'Dược phẩm'
+    _rec_name = 'display_name'
 
+    display_name = fields.Char(string='Tên thuốc', compute='_compute_display_name', store=True)
     name = fields.Char(string='Tên thuốc', required=True)
     code = fields.Char(string='Mã thuốc', required=True)
     category = fields.Char(string='Loại thuốc')
     manufacturer = fields.Char(string='Nhà sản xuất')
     quantity = fields.Integer(string='Số lượng tồn kho', default=0)
-    is_quantity = fields.Boolean(string="Cảnh báo tồn kho", compute='_compute_is_quantity', store=True)
+    is_quantity = fields.Boolean(string="Cảnh báo tồn kho", compute='
+                                 ', store=True)
     uom_id = fields.Selection([
         ('pill', 'Viên'),
         ('bottle', 'Chai'),
@@ -27,11 +52,19 @@ class PharmacyProduct(models.Model):
     expiry = fields.Datetime(string='Hạn sử dụng')
     description = fields.Text(string='Mô tả')
     active = fields.Boolean(default=True)
+    insurance_covered = fields.Boolean(string='Được bảo hiểm chi trả', default=False)  # Thêm trường này
+
 
     @api.depends('quantity')
     def _compute_is_quantity(self):
         for record in self:
             record.is_quantity = record.quantity < 10
+
+    def _compute_display_name(self):
+        for record in self:
+            record.display_name = f"{record.code} - {record.name}"
+        
+
     @api.constrains('purchase_price', 'unit_price')
     def _check_prices(self):
         for record in self:
@@ -121,20 +154,3 @@ class PrescriptionLine(models.Model):
                         f"Thuốc {product.name} đã tồn tại trong đơn thuốc!"
                     )
 
-class ClinicService(models.Model):
-    _name = 'clinic.service'
-    _description = 'Dịch vụ phòng khám'
-    _rec_name = 'service_name'
-
-    name = fields.Char(string='Mã dịch vụ', required=True, copy=False, readonly=True, default='New')
-    service_name = fields.Char(string='Tên dịch vụ', required=True)
-    price = fields.Float(string='Giá dịch vụ', required=True)
-    description = fields.Text(string='Mô tả')
-    active = fields.Boolean(default=True)
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get('name', 'New') == 'New':
-                vals['name'] = str(uuid.uuid4())[:8]
-        return super().create(vals_list)

@@ -18,7 +18,6 @@
         </field>
     </record>
 
-
     <!-- Action to open this model -->
     <record id="action_my_custom_model" model="ir.actions.act_window">
         <field name="name">My Custom Model</field>
