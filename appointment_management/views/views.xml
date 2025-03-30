@@ -30,9 +30,9 @@
                         <group>
                             <field name="patient_id" options="{'no_create': True}"/>
                             <field name="patient_name"/>
-                            <field name="staff_id" options="{'no_create': True}"/>
-                            <field name="appointment_date"/>
-                            <field name="room_id" options="{'no_create': True}"/>
+                            <field name="staff_id" options="{'no_create': True}" domain="[('staff_type', '=', 'doctor')]"/>
+                            <field name="appointment_date" help="Chỉ có thể đặt lịch từ 8:00 sáng đến 21:00 tối"/>
+                            <field name="room_id" options="{'no_create': True}" domain="[('room_type', '=', 'exam')]"/>
                         </group>
                     </group>
                     <notebook>
@@ -56,7 +56,7 @@
                 <field name="staff_id"/>
                 <field name="appointment_date"/>
                 <field name="room_id"/>
-                <field name="state" 
+                <field name="state"
                        decoration-info="state == 'draft'"
                        decoration-success="state == 'confirmed'"
                        decoration-warning="state == 'done'"
@@ -70,8 +70,8 @@
         <field name="name">clinic.appointment.calendar</field>
         <field name="model">clinic.appointment</field>
         <field name="arch" type="xml">
-            <calendar string="Lịch hẹn" 
-                     date_start="appointment_date" 
+            <calendar string="Lịch hẹn"
+                     date_start="appointment_date"
                      color="staff_id">
                 <field name="patient_id"/>
                 <field name="staff_id"/>
@@ -112,14 +112,14 @@
     </record>
 
     <!-- Menu -->
-    <menuitem id="menu_clinic_appointment_root" 
-              name="Quản lý lịch hẹn" 
+    <menuitem id="menu_clinic_appointment_root"
+              name="Quản lý lịch hẹn"
               sequence="10"/>
 
-    <menuitem id="menu_clinic_appointment" 
-              name="Lịch hẹn khám" 
-              parent="menu_clinic_appointment_root" 
-              action="action_clinic_appointment" 
+    <menuitem id="menu_clinic_appointment"
+              name="Lịch hẹn khám"
+              parent="menu_clinic_appointment_root"
+              action="action_clinic_appointment"
               sequence="1"/>
 
     <!-- Sequence -->

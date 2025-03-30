@@ -2,6 +2,7 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta
 
+
 class ClinicAppointment(models.Model):
     _name = 'clinic.appointment'
     _description = 'Lịch hẹn khám'
@@ -10,8 +11,10 @@ class ClinicAppointment(models.Model):
     name = fields.Char(string='Mã lịch hẹn', required=True, copy=False, readonly=True, default='New')
     patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True)
     appointment_date = fields.Datetime(string='Ngày giờ hẹn', required=True)
-    staff_id = fields.Many2one('clinic.staff', string='Bác sĩ', required=True)
-    room_id = fields.Many2one('clinic.room', string='Phòng khám')
+    staff_id = fields.Many2one('clinic.staff', string='Bác sĩ', required=True,
+                               domain=[('staff_type', '=', 'doctor')])
+    room_id = fields.Many2one('clinic.room', string='Phòng khám',
+                              domain=[('room_type', '=', 'exam')])
     state = fields.Selection([
         ('draft', 'Nháp'),
         ('confirmed', 'Đã xác nhận'),
@@ -22,6 +25,7 @@ class ClinicAppointment(models.Model):
     patient_name = fields.Char(
         related="patient_id.name"
     )
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -41,34 +45,47 @@ class ClinicAppointment(models.Model):
     def action_draft(self):
         self.write({'state': 'draft'})
 
-    # @api.constrains('appointment_date')
-    # def _check_appointment_date(self):
-    #     for record in self:
-    #         if record.appointment_date and record.appointment_date < fields.Datetime.now():
-    #             raise ValidationError("Không thể đặt lịch hẹn trong quá khứ!")
+    @api.constrains('appointment_date')
+    def _check_appointment_date(self):
+        for record in self:
+            if record.appointment_date and record.appointment_date < fields.Datetime.now():
+                raise ValidationError("Không thể đặt lịch hẹn trong quá khứ!")
 
-    # @api.constrains('staff_id', 'appointment_date')
-    # def _check_doctor_availability(self):
-    #     for record in self:
-    #         # Kiểm tra xem bác sĩ có lịch hẹn khác trong cùng thời điểm không
-    #         domain = [
-    #             ('staff_id', '=', record.staff_id.id),
-    #             ('appointment_date', '=', record.appointment_date),
-    #             ('state', 'not in', ['cancelled']),
-    #             ('room_id', '!=', record.id)
-    #         ]
-    #         if self.search_count(domain) > 0:
-    #             raise ValidationError(f"Bác sĩ {record.staff_id.name} đã có lịch hẹn khác vào thời điểm này!")
+            # Check if appointment is between 8 AM and 4 PM
+            appointment_hour = record.appointment_date.hour
+            if appointment_hour > 8 or appointment_hour <= 21:
+                raise ValidationError("Lịch hẹn chỉ có thể được đặt từ 8:00 sáng đến 21:00 tối!")
 
-    # @api.constrains('room_id', 'appointment_date')
-    # def _check_room_availability(self):
-    #     for record in self:
-    #         if record.room_id:
-    #             domain = [
-    #                 ('room_id', '=', record.room_id),
-    #                 ('appointment_date', '=', record.appointment_date),
-    #                 ('state', 'not in', ['cancelled']),
-    #                 ('room_id', '!=', record.room_id)
-    #             ]
-    #             if self.search_count(domain) > 0:
-    #                 raise ValidationError(f"Phòng {record.room_id.name} đã được đặt vào thời điểm này!")
+    @api.constrains('staff_id', 'appointment_date')
+    def _check_doctor_availability(self):
+        for record in self:
+            one_hour_before = record.appointment_date - timedelta(hours=1)
+            one_hour_after = record.appointment_date + timedelta(hours=1)
+            domain = [
+                ('staff_id', '=', record.staff_id.id),
+                ('appointment_date', '>=', one_hour_before),
+                ('appointment_date', '<=', one_hour_after),
+                ('state', 'not in', ['cancelled']),
+                ('id', '!=', record.id)
+            ]
+            if self.search_count(domain) > 0:
+                raise ValidationError(
+                    f"Bác sĩ {record.staff_id.name} đã có lịch hẹn khác trong vòng 1 tiếng của thời điểm này!")
+
+    @api.constrains('room_id', 'appointment_date')
+    def _check_room_availability(self):
+        for record in self:
+            if record.room_id:
+                one_hour_before = record.appointment_date - timedelta(hours=1)
+                one_hour_after = record.appointment_date + timedelta(hours=1)
+
+                domain = [
+                    ('room_id', '=', record.room_id.id),
+                    ('appointment_date', '>=', one_hour_before),
+                    ('appointment_date', '<=', one_hour_after),
+                    ('state', 'not in', ['cancelled']),
+                    ('id', '!=', record.id)
+                ]
+                if self.search_count(domain) > 0:
+                    raise ValidationError(
+                        f"Phòng {record.room_id.name} đã được đặt trong vòng 1 tiếng của thời điểm này!")

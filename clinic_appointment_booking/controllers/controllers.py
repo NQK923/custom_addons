@@ -29,43 +29,46 @@ class AppointmentBookingController(http.Controller):
         return request.render("clinic_appointment_booking.appointment_booking_form", values)
 
     def _is_time_valid(self, appointment_time):
-        """Check if appointment time is between 8:00 and 16:00"""
+        """Check if appointment time is between 8:00 and 21:00"""
         hour = appointment_time.hour
-        return 8 <= hour < 16
+        return 8 <= hour < 21
 
     def _check_availability(self, doctor_id, room_id, appointment_datetime):
-        """Check if doctor and room are available at the specified time"""
+        """
+        Kiểm tra xem bác sĩ và phòng khám có rảnh vào thời gian đã chọn không
+        Nguyên tắc: Nếu có bất kỳ lịch hẹn nào trong khoảng ±1 giờ, coi như đã bận
+        """
         Appointment = request.env['clinic.appointment'].sudo()
 
-        # Add 1 hour buffer for appointments (assuming appointments last for 1 hour)
-        start_datetime = appointment_datetime
-        end_datetime = appointment_datetime + timedelta(hours=1)
+        one_hour_before = appointment_datetime - timedelta(hours=1)
+        one_hour_after = appointment_datetime + timedelta(hours=1)
 
-        # Check doctor availability
         conflicting_doctor_appointments = Appointment.search([
             ('staff_id', '=', doctor_id),
             ('state', 'in', ['draft', 'confirmed']),
-            '|',
-            '&', ('appointment_date', '<=', start_datetime),
-            ('appointment_date', '>', start_datetime - timedelta(hours=1)),
-            '&', ('appointment_date', '>=', start_datetime), ('appointment_date', '<', end_datetime)
+            '&',
+            ('appointment_date', '>=', one_hour_before),
+            ('appointment_date', '<=', one_hour_after)
         ])
 
         if conflicting_doctor_appointments:
-            return False, f"Bác sĩ đã có lịch hẹn vào thời gian này. Vui lòng chọn thời gian khác."
+            earliest = min(conflicting_doctor_appointments.mapped('appointment_date'))
+            earliest_local = self._convert_utc_to_local(earliest)
+            return False, f"Bác sĩ đã có lịch hẹn vào khoảng thời gian này (lúc {earliest_local.strftime('%H:%M')}). Vui lòng chọn thời gian khác."
 
         if room_id:
             conflicting_room_appointments = Appointment.search([
                 ('room_id', '=', room_id),
                 ('state', 'in', ['draft', 'confirmed']),
-                '|',
-                '&', ('appointment_date', '<=', start_datetime),
-                ('appointment_date', '>', start_datetime - timedelta(hours=1)),
-                '&', ('appointment_date', '>=', start_datetime), ('appointment_date', '<', end_datetime)
+                '&',
+                ('appointment_date', '>=', one_hour_before),
+                ('appointment_date', '<=', one_hour_after)
             ])
 
             if conflicting_room_appointments:
-                return False, f"Phòng khám đã được sử dụng vào thời gian này. Vui lòng chọn phòng khác hoặc đổi thời gian."
+                earliest = min(conflicting_room_appointments.mapped('appointment_date'))
+                earliest_local = self._convert_utc_to_local(earliest)
+                return False, f"Phòng khám đã được sử dụng vào khoảng thời gian này (lúc {earliest_local.strftime('%H:%M')}). Vui lòng chọn phòng khác hoặc đổi thời gian."
 
         return True, ""
 
@@ -88,11 +91,11 @@ class AppointmentBookingController(http.Controller):
             except ValueError:
                 return {'status': 'error', 'message': 'Định dạng thời gian không hợp lệ.'}
 
-            # Check if time is between 8:00 and 16:00
+            # Check if time is between 8:00 and 21:00
             if not self._is_time_valid(appointment_datetime):
                 return {
                     'status': 'error',
-                    'message': 'Thời gian hẹn phải từ 8:00 sáng đến 16:00 chiều.'
+                    'message': 'Thời gian hẹn phải từ 8:00 sáng đến 21:00 tối.'
                 }
 
             is_available, message = self._check_availability(doctor_id, room_id, appointment_datetime)
@@ -121,7 +124,7 @@ class AppointmentBookingController(http.Controller):
                 appointment_datetime = datetime.strptime(appointment_datetime_str, '%Y-%m-%d %H:%M:%S')
 
             if not self._is_time_valid(appointment_datetime):
-                return request.redirect('/appointment?error=Thời gian hẹn phải từ 8:00 sáng đến 16:00 chiều.')
+                return request.redirect('/appointment?error=Thời gian hẹn phải từ 8:00 sáng đến 21:00 tối.')
 
             doctor_id = int(post.get('doctor_id'))
             room_id = post.get('room_id') and int(post.get('room_id')) or False
@@ -138,8 +141,8 @@ class AppointmentBookingController(http.Controller):
                     'name': post.get('patient_name'),
                     'phone': post.get('phone'),
                     'email': post.get('email'),
-                    'gender': 'other',  # Giá trị mặc định
-                    'patient_type': 'outpatient',  # Ngoại trú
+                    'gender': 'other',
+                    'patient_type': 'outpatient',
                     'date': fields.Datetime.now(),
                 }
                 patient = Patient.create(patient_vals)
@@ -164,7 +167,6 @@ class AppointmentBookingController(http.Controller):
                 'doctor_name': doctor.staff_name,
                 'room_name': room and room.name or "Chưa phân phòng"
             }
-
             if post.get('email'):
                 template = request.env.ref('clinic_appointment_booking.email_template_appointment',
                                            raise_if_not_found=False)
