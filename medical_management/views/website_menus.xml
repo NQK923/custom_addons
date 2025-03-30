@@ -8,19 +8,4 @@
         <field name="sequence" type="int">50</field>
     </record>
 
-    <!-- Submenu for Tests -->
-    <record id="menu_medical_tests_portal" model="website.menu">
-        <field name="name">Danh sách xét nghiệm</field>
-        <field name="url">/medical/tests</field>
-        <field name="parent_id" ref="menu_medical_portal"/>
-        <field name="sequence" type="int">10</field>
-    </record>
-
-    <!-- Submenu for Images -->
-    <record id="menu_medical_images_portal" model="website.menu">
-        <field name="name">Hình ảnh xét nghiệm</field>
-        <field name="url">/medical/images</field>
-        <field name="parent_id" ref="menu_medical_portal"/>
-        <field name="sequence" type="int">20</field>
-    </record>
 </odoo>

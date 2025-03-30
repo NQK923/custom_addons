@@ -150,7 +150,7 @@
                         <div class="form-group row">
                             <label for="test_code" class="col-sm-3 col-form-label">Mã hình ảnh</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" name="test_code" id="test_code" required="required"/>
+                                <input type="text" class="form-control" name="test_code" id="test_code"/>
                                 <small class="text-muted">Để trống để tự động tạo mã</small>
                             </div>
                         </div>
