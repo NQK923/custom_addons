@@ -36,8 +36,7 @@ class PharmacyProduct(models.Model):
     category = fields.Char(string='Loại thuốc')
     manufacturer = fields.Char(string='Nhà sản xuất')
     quantity = fields.Integer(string='Số lượng tồn kho', default=0)
-    is_quantity = fields.Boolean(string="Cảnh báo tồn kho", compute='
-                                 ', store=True)
+    is_quantity = fields.Boolean(string="Cảnh báo tồn kho", compute='_compute_is_quantity', store=True)
     uom_id = fields.Selection([
         ('pill', 'Viên'),
         ('bottle', 'Chai'),
