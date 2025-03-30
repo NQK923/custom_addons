@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template danh sách đánh giá tuân thủ -->
+    <template id="compliance_list_template" name="Compliance Assessment List">
+        <t t-call="compliance_management.compliance_layout">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Đánh giá Tuân thủ</h1>
+                <a href="/compliance/assessment/new" class="btn btn-primary">
+                    <i class="fa fa-plus"></i> Tạo mới
+                </a>
+            </div>
+
+            <!-- Bộ lọc và tìm kiếm -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Tìm kiếm và Lọc</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="/compliance/assessments" class="row">
+                        <div class="col-md-4 mb-2">
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" placeholder="Tìm theo tên hoặc quy định..."
+                                       t-att-value="search or ''"/>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <select name="state" class="form-select">
+                                <option value="">-- Tất cả trạng thái --</option>
+                                <option t-att-selected="filter_state == 'draft'" value="draft">Nháp</option>
+                                <option t-att-selected="filter_state == 'in_progress'" value="in_progress">Đang thực hiện</option>
+                                <option t-att-selected="filter_state == 'compliant'" value="compliant">Tuân thủ</option>
+                                <option t-att-selected="filter_state == 'non_compliant'" value="non_compliant">Không tuân thủ</option>
+                                <option t-att-selected="filter_state == 'partly_compliant'" value="partly_compliant">Tuân thủ một phần</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                Áp dụng
+                            </button>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <a href="/compliance/assessments" class="btn btn-secondary w-100">
+                                Đặt lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Danh sách đánh giá -->
+            <div class="card shadow">
+                <div class="card-body">
+                    <t t-if="compliances">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Tên</th>
+                                        <th>Quy định</th>
+                                        <th>Phòng ban</th>
+                                        <th>Ngày đánh giá</th>
+                                        <th>Đánh giá tiếp theo</th>
+                                        <th>Trạng thái</th>
+                                        <th>Người phụ trách</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="compliances" t-as="compliance">
+                                        <tr>
+                                            <td>
+                                                <a t-att-href="'/compliance/assessment/%s' % compliance.id">
+                                                    <t t-esc="compliance.name"/>
+                                                </a>
+                                            </td>
+                                            <td><t t-esc="compliance.regulation_id.name"/></td>
+                                            <td><t t-esc="compliance.department_id.name or '-'"/></td>
+                                            <td><t t-esc="compliance.date_assessment"/></td>
+                                            <td><t t-esc="compliance.next_assessment"/></td>
+                                            <td>
+                                                <span t-att-class="'badge ' + (
+                                                    'bg-success' if compliance.state == 'compliant' else
+                                                    'bg-danger' if compliance.state == 'non_compliant' else
+                                                    'bg-warning' if compliance.state == 'partly_compliant' else
+                                                    'bg-info' if compliance.state == 'in_progress' else
+                                                    'bg-secondary'
+                                                )">
+                                                    <t t-esc="dict(compliance._fields['state'].selection).get(compliance.state)"/>
+                                                </span>
+                                            </td>
+                                            <td><t t-esc="compliance.responsible_id.name"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info">Không tìm thấy đánh giá tuân thủ nào.</div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Template form đánh giá tuân thủ -->
+    <template id="compliance_form_template" name="Compliance Assessment Form">
+        <t t-call="compliance_management.compliance_layout">
+            <div class="mb-4">
+                <a href="/compliance/assessments" class="btn btn-secondary">
+                    <i class="fa fa-arrow-left"></i> Quay lại
+                </a>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <t t-if="compliance">
+                            Chi tiết Đánh giá: <t t-esc="compliance.name"/>
+                        </t>
+                        <t t-else="">
+                            Tạo Đánh giá Tuân thủ Mới
+                        </t>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Hiển thị lỗi nếu có -->
+                    <t t-if="error_message">
+                        <div class="alert alert-danger" role="alert">
+                            <t t-esc="error_message"/>
+                        </div>
+                    </t>
+
+                    <form method="POST" t-att-action="'/compliance/assessment/%s' % compliance.id if compliance else '/compliance/assessment/new'">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="name">Tên đánh giá</label>
+                                <input type="text" class="form-control" id="name" name="name" required="required"
+                                       t-att-value="compliance.name if compliance else form_data.get('name', '')"/>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="regulation_id">Quy định</label>
+                                <select class="form-select" id="regulation_id" name="regulation_id" required="required">
+                                    <option value="">-- Chọn quy định --</option>
+                                    <t t-foreach="regulations" t-as="regulation">
+                                        <option t-att-value="regulation.id" t-att-selected="compliance and compliance.regulation_id.id == regulation.id">
+                                            <t t-esc="regulation.name"/> (<t t-esc="regulation.code"/>)
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="department_id">Phòng ban</label>
+                                <select class="form-select" id="department_id" name="department_id">
+                                    <option value="">-- Chọn phòng ban --</option>
+                                    <t t-foreach="departments" t-as="department">
+                                        <option t-att-value="department.id" t-att-selected="compliance and compliance.department_id.id == department.id">
+                                            <t t-esc="department.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="responsible_id">Người phụ trách</label>
+                                <select class="form-select" id="responsible_id" name="responsible_id" required="required">
+                                    <option value="">-- Chọn người phụ trách --</option>
+                                    <t t-foreach="users" t-as="user">
+                                        <option t-att-value="user.id" t-att-selected="compliance and compliance.responsible_id.id == user.id">
+                                            <t t-esc="user.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="date_assessment">Ngày đánh giá</label>
+                                <input type="date" class="form-control" id="date_assessment" name="date_assessment" required="required"
+                                       t-att-value="compliance.date_assessment if compliance else form_data.get('date_assessment', '')"/>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="next_assessment">Đánh giá tiếp theo</label>
+                                <input type="date" class="form-control" id="next_assessment" name="next_assessment"
+                                       t-att-value="compliance.next_assessment if compliance else form_data.get('next_assessment', '')"/>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="state">Trạng thái</label>
+                                <select class="form-select" id="state" name="state" required="required">
+                                    <option value="draft" t-att-selected="compliance and compliance.state == 'draft'">Nháp</option>
+                                    <option value="in_progress" t-att-selected="compliance and compliance.state == 'in_progress'">Đang thực hiện</option>
+                                    <option value="compliant" t-att-selected="compliance and compliance.state == 'compliant'">Tuân thủ</option>
+                                    <option value="non_compliant" t-att-selected="compliance and compliance.state == 'non_compliant'">Không tuân thủ</option>
+                                    <option value="partly_compliant" t-att-selected="compliance and compliance.state == 'partly_compliant'">Tuân thủ một phần</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="notes">Ghi chú</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="5"><t t-esc="compliance.notes if compliance else form_data.get('notes', '')"/></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="/compliance/assessments" class="btn btn-secondary">Hủy</a>
+                            <button type="submit" class="btn btn-primary">
+                                <t t-if="compliance">Cập nhật</t>
+                                <t t-else="">Tạo mới</t>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Phần hiển thị Hành động khắc phục (nếu có) -->
+            <t t-if="compliance">
+                <div class="card shadow mt-4">
+                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Hành động khắc phục</h4>
+                    </div>
+                    <div class="card-body">
+                        <t t-if="compliance.action_ids">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Tên</th>
+                                            <th>Mô tả</th>
+                                            <th>Người phụ trách</th>
+                                            <th>Hạn chót</th>
+                                            <th>Trạng thái</th>
+                                            <th>Ngày hoàn thành</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="compliance.action_ids" t-as="action">
+                                            <tr>
+                                                <td><t t-esc="action.name"/></td>
+                                                <td><t t-esc="action.description or '-'"/></td>
+                                                <td><t t-esc="action.responsible_id.name"/></td>
+                                                <td><t t-esc="action.deadline"/></td>
+                                                <td>
+                                                    <span t-att-class="'badge ' + (
+                                                        'bg-success' if action.state == 'done' else
+                                                        'bg-warning' if action.state == 'in_progress' else
+                                                        'bg-secondary' if action.state == 'cancelled' else
+                                                        'bg-primary'
+                                                    )">
+                                                        <t t-esc="dict(action._fields['state'].selection).get(action.state)"/>
+                                                    </span>
+                                                </td>
+                                                <td><t t-esc="action.completion_date or '-'"/></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="alert alert-info">Chưa có hành động khắc phục nào được tạo.</div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

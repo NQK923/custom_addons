@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template form quy định y tế -->
+    <template id="regulation_form_template" name="Health Regulation Form">
+        <t t-call="compliance_management.compliance_layout">
+            <div class="mb-4">
+                <a href="/compliance/regulations" class="btn btn-secondary">
+                    <i class="fa fa-arrow-left"></i> Quay lại
+                </a>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <t t-if="regulation">
+                            Chi tiết Quy định: <t t-esc="regulation.name"/>
+                        </t>
+                        <t t-else="">
+                            Tạo Quy định Y tế Mới
+                        </t>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Hiển thị lỗi nếu có -->
+                    <t t-if="error_message">
+                        <div class="alert alert-danger" role="alert">
+                            <t t-esc="error_message"/>
+                        </div>
+                    </t>
+
+                    <form method="POST" t-att-action="'/compliance/regulation/%s' % regulation.id if regulation else '/compliance/regulation/new'">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="name">Tên quy định</label>
+                                <input type="text" class="form-control" id="name" name="name" required="required"
+                                       t-att-value="regulation.name if regulation else form_data.get('name', '')"/>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="code">Mã quy định</label>
+                                <input type="text" class="form-control" id="code" name="code" required="required"
+                                       t-att-value="regulation.code if regulation else form_data.get('code', '')"/>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="authority_id">Cơ quan ban hành</label>
+                                <select class="form-select" id="authority_id" name="authority_id">
+                                    <option value="">-- Chọn cơ quan --</option>
+                                    <t t-foreach="authorities" t-as="authority">
+                                        <option t-att-value="authority.id" t-att-selected="regulation and regulation.authority_id.id == authority.id">
+                                            <t t-esc="authority.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="scope">Phạm vi</label>
+                                <select class="form-select" id="scope" name="scope" required="required">
+                                    <option value="national" t-att-selected="regulation and regulation.scope == 'national'">Quốc gia</option>
+                                    <option value="international" t-att-selected="regulation and regulation.scope == 'international'">Quốc tế</option>
+                                    <option value="local" t-att-selected="regulation and regulation.scope == 'local'">Địa phương</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="issue_date">Ngày ban hành</label>
+                                <input type="date" class="form-control" id="issue_date" name="issue_date"
+                                       t-att-value="regulation.issue_date if regulation else form_data.get('issue_date', '')"/>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="effective_date">Ngày có hiệu lực</label>
+                                <input type="date" class="form-control" id="effective_date" name="effective_date"
+                                       t-att-value="regulation.effective_date if regulation else form_data.get('effective_date', '')"/>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="description">Mô tả</label>
+                            <textarea class="form-control" id="description" name="description" rows="5"><t t-esc="regulation.description if regulation else form_data.get('description', '')"/></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="/compliance/regulations" class="btn btn-secondary">Hủy</a>
+                            <button type="submit" class="btn btn-primary">
+                                <t t-if="regulation">Cập nhật</t>
+                                <t t-else="">Tạo mới</t>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Phần hiển thị Đánh giá tuân thủ (nếu có) -->
+            <t t-if="regulation and regulation.compliance_ids">
+                <div class="card shadow mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="mb-0">Đánh giá Tuân thủ</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Tên</th>
+                                        <th>Ngày đánh giá</th>
+                                        <th>Ngày tiếp theo</th>
+                                        <th>Trạng thái</th>
+                                        <th>Người phụ trách</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="regulation.compliance_ids" t-as="compliance">
+                                        <tr>
+                                            <td>
+                                                <a t-att-href="'/compliance/assessment/%s' % compliance.id">
+                                                    <t t-esc="compliance.name"/>
+                                                </a>
+                                            </td>
+                                            <td><t t-esc="compliance.date_assessment"/></td>
+                                            <td><t t-esc="compliance.next_assessment"/></td>
+                                            <td>
+                                                <span t-att-class="'badge ' + (
+                                                    'bg-success' if compliance.state == 'compliant' else
+                                                    'bg-danger' if compliance.state == 'non_compliant' else
+                                                    'bg-warning' if compliance.state == 'partly_compliant' else
+                                                    'bg-info' if compliance.state == 'in_progress' else
+                                                    'bg-secondary'
+                                                )">
+                                                    <t t-esc="dict(compliance._fields['state'].selection).get(compliance.state)"/>
+                                                </span>
+                                            </td>
+                                            <td><t t-esc="compliance.responsible_id.name"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
