@@ -16,12 +16,7 @@
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.insurance-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+    /* Đã bỏ hiệu ứng hover */
 }
 
 .insurance-card .card-header {
@@ -31,33 +26,22 @@
 
 /* Button styles */
 .btn-insurance-primary {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    background: var(--primary-color);
     border: none;
-    border-radius: 30px;
+    border-radius: 6px;
     padding: 0.6rem 1.5rem;
     color: white;
     font-weight: 500;
-    transition: all 0.3s;
-    box-shadow: 0 4px 6px rgba(0,123,255,0.25);
-}
-
-.btn-insurance-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(0,123,255,0.3);
+    box-shadow: 0 3px 5px rgba(0,123,255,0.15);
 }
 
 .btn-insurance-secondary {
     background: white;
     border: 1px solid var(--primary-color);
-    border-radius: 30px;
+    border-radius: 6px;
     padding: 0.6rem 1.5rem;
     color: var(--primary-color);
     font-weight: 500;
-    transition: all 0.3s;
-}
-
-.btn-insurance-secondary:hover {
-    background: rgba(0,123,255,0.1);
 }
 
 /* Table styles */
@@ -76,11 +60,7 @@
 }
 
 .table-insurance tbody tr {
-    transition: background-color 0.2s;
-}
-
-.table-insurance tbody tr:hover {
-    background-color: rgba(0,123,255,0.05);
+    /* Đã bỏ hiệu ứng hover */
 }
 
 .table-insurance th, .table-insurance td {
@@ -109,12 +89,11 @@
 .btn-action {
     width: 38px;
     height: 38px;
-    border-radius: 50%;
+    border-radius: 4px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     margin: 0 3px;
-    transition: all 0.3s;
 }
 
 .btn-action-view {
@@ -125,10 +104,6 @@
 .btn-action-edit {
     background-color: var(--warning-color);
     color: white;
-}
-
-.btn-action:hover {
-    transform: scale(1.1);
 }
 
 /* Breadcrumbs */
@@ -191,23 +166,86 @@
     color: var(--secondary-color);
 }
 
-/* Form styles */
+/* Form styles - Cải thiện */
+.form-insurance .form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
 .form-insurance .form-group label {
-    font-weight: 500;
+    font-weight: 600;
     color: var(--dark-color);
     margin-bottom: 0.5rem;
+    display: block;
+    font-size: 0.95rem;
 }
 
 .form-insurance .form-control {
-    border-radius: 8px;
-    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    padding: 0.7rem 1rem;
     border: 1px solid #e0e0e0;
-    transition: all 0.3s;
+    background-color: #f9f9f9;
+    height: auto;
+    font-size: 1rem;
 }
 
 .form-insurance .form-control:focus {
-    box-shadow: 0 3px 8px rgba(0,123,255,0.1);
+    background-color: #fff;
     border-color: var(--primary-color);
+    outline: none;
+    box-shadow: none;
+}
+
+/* Form section styling */
+.form-section {
+    background-color: #f5f7fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+.form-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.form-section-title i {
+    margin-right: 0.5rem;
+}
+
+/* Required field indicator */
+.field-required {
+    color: var(--danger-color);
+    font-weight: bold;
+    margin-left: 3px;
+}
+
+/* Improved input groups */
+.input-group-text {
+    background-color: #f0f3f9;
+    border-color: #e0e0e0;
+    color: var(--primary-color);
+}
+
+/* Help text styling */
+.form-text {
+    color: #6c757d;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+/* Action button area */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0;
+    margin-top: 1rem;
+    border-top: 1px solid #eee;
 }
 
 /* Responsive adjustments */
