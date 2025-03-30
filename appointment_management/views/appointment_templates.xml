@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Layout chung cho các trang quản lý lịch hẹn -->
+    <template id="appointment_layout" name="Appointment Management Layout">
+        <t t-call="website.layout">
+            <style>
+                /* Styles for status badges */
+                .badge-draft { background-color: #17a2b8; color: white; }
+                .badge-confirmed { background-color: #28a745; color: white; }
+                .badge-done { background-color: #6c757d; color: white; }
+                .badge-cancelled { background-color: #dc3545; color: white; }
+
+                /* Card styles */
+                .appointment-card {
+                    transition: all 0.3s ease;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                }
+                .appointment-card:hover {
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    transform: translateY(-2px);
+                }
+
+                /* Calendar styles */
+                .appointment-state-draft { background-color: #17a2b8 !important; border-color: #17a2b8 !important; }
+                .appointment-state-confirmed { background-color: #28a745 !important; border-color: #28a745 !important; }
+                .appointment-state-done { background-color: #6c757d !important; border-color: #6c757d !important; }
+                .appointment-state-cancelled { background-color: #dc3545 !important; border-color: #dc3545 !important; }
+
+                /* Tab buttons */
+                .view-toggle .btn {
+                    width: 120px;
+                }
+
+                /* Form elements */
+                .form-container {
+                    background-color: #f8f9fa;
+                    border-radius: 10px;
+                    padding: 20px;
+                    margin-bottom: 20px;
+                }
+
+                /* Action buttons */
+                .btn-action {
+                    min-width: 120px;
+                }
+            </style>
+            <div class="container mt-4 mb-5">
+                <div class="row">
+                    <div class="col-12">
+                        <h1 class="text-center mb-4">Quản lý lịch hẹn khám bệnh</h1>
+                    </div>
+                </div>
+                <t t-raw="0"/>
+            </div>
+        </t>
+    </template>
+
+    <!-- Menu dropdown cho website -->
+    <record id="appointment_menu" model="website.menu">
+        <field name="name">Quản lý lịch hẹn</field>
+        <field name="url">/clinic/appointments</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">40</field>
+    </record>
+</odoo>
