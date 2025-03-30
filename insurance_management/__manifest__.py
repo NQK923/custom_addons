@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-     'name': "Quản lý bảo hiểm y tế",
+    'name': "Quản lý bảo hiểm y tế",
 
     'summary': "Quản lý thông tin bảo hiểm y tế của bệnh nhân",
-
 
     'description': """
 Module quản lý thông tin bảo hiểm y tế của bệnh nhân, hỗ trợ:
@@ -32,6 +31,14 @@ Module quản lý thông tin bảo hiểm y tế của bệnh nhân, hỗ trợ:
         'views/views.xml',
         'views/templates.xml',
     ],
+
+    # Thêm assets
+    'assets': {
+        'web.assets_frontend': [
+            'insurance_management/static/src/css/insurance_styles.css',
+        ],
+    },
+
     'installable': True,
     'application': True,
 
