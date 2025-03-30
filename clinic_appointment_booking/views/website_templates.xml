@@ -72,7 +72,7 @@
                                                     </div>
                                                     <input type="email" name="email" id="email" class="form-control" placeholder="example@email.com"/>
                                                 </div>
-                                                <small class="text-muted">Nhận thông báo xác nhận qua email</small>
+                                                <small class="text-muted">Nhận thông báo nhắc nhở lịch hẹn qua email</small>
                                             </div>
                                         </div>
 
@@ -110,6 +110,21 @@
                                                         </t>
                                                     </select>
                                                 </div>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="room_id" class="form-label">Phòng khám</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="fa fa-hospital-o"></i></span>
+                                                    </div>
+                                                    <select name="room_id" id="room_id" class="form-control">
+                                                        <option value="">-- Chọn phòng khám --</option>
+                                                        <t t-foreach="exam_rooms" t-as="room">
+                                                            <option t-att-value="room.id"><t t-esc="room.name"/></option>
+                                                        </t>
+                                                    </select>
+                                                </div>
+                                                <small class="text-muted">Bạn có thể chọn phòng khám hoặc để trống</small>
                                             </div>
                                         </div>
                                     </div>
@@ -233,26 +248,33 @@
                                 <div class="alert alert-info py-4 px-4 mb-4">
                                     <h5 class="mb-3">Thông tin lịch hẹn của bạn</h5>
                                     <div class="row">
-                                        <div class="col-md-4 mb-2">
+                                        <div class="col-md-3 mb-2">
                                             <div class="d-flex align-items-center justify-content-center">
                                                 <i class="fa fa-id-card-o mr-2 text-primary"></i>
                                                 <strong>Mã lịch hẹn:</strong>
                                             </div>
                                             <div class="mt-1"><t t-esc="appointment_name"/></div>
                                         </div>
-                                        <div class="col-md-4 mb-2">
+                                        <div class="col-md-3 mb-2">
                                             <div class="d-flex align-items-center justify-content-center">
                                                 <i class="fa fa-calendar mr-2 text-primary"></i>
                                                 <strong>Thời gian:</strong>
                                             </div>
                                             <div class="mt-1"><t t-esc="appointment_date"/></div>
                                         </div>
-                                        <div class="col-md-4 mb-2">
+                                        <div class="col-md-3 mb-2">
                                             <div class="d-flex align-items-center justify-content-center">
                                                 <i class="fa fa-user-md mr-2 text-primary"></i>
                                                 <strong>Bác sĩ:</strong>
                                             </div>
                                             <div class="mt-1"><t t-esc="doctor_name"/></div>
+                                        </div>
+                                        <div class="col-md-3 mb-2">
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <i class="fa fa-hospital-o mr-2 text-primary"></i>
+                                                <strong>Phòng khám:</strong>
+                                            </div>
+                                            <div class="mt-1"><t t-esc="room_name"/></div>
                                         </div>
                                     </div>
                                 </div>

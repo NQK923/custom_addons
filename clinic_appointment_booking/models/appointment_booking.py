@@ -29,8 +29,8 @@ class AppointmentBooking(models.TransientModel):
                 'name': self.name,
                 'phone': self.phone,
                 'email': self.email,
-                'gender': 'other',  # Giá trị mặc định
-                'patient_type': 'outpatient',  # Ngoại trú
+                'gender': 'other',
+                'patient_type': 'outpatient',
                 'date': fields.Datetime.now(),
             }
             patient = Patient.create(patient_vals)
