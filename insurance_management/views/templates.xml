@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Danh sách bảo hiểm y tế -->
+    <template id="insurance_list_template" name="Danh sách bảo hiểm y tế">
+        <t t-call="website.layout">
+            <div class="container py-5">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="insurance-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Bảo hiểm y tế</li>
+                    </ol>
+                </nav>
+
+                <div class="insurance-card card mb-4">
+                    <div class="card-header text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="mb-0 d-flex align-items-center">
+                                <i class="fa fa-shield-alt mr-2"></i> Danh sách bảo hiểm y tế
+                            </h2>
+                            <p class="mb-0 mt-1 d-none d-md-block text-white-50">Quản lý thông tin bảo hiểm y tế của bệnh nhân</p>
+                        </div>
+                        <a href="/clinic/insurance/create" class="btn-insurance-primary">
+                            <i class="fa fa-plus-circle mr-1"></i> Tạo mới
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <!-- Search box -->
+                        <div class="insurance-search">
+                            <input type="text" id="insuranceSearch" class="form-control" placeholder="Tìm kiếm bảo hiểm..."/>
+                            <i class="fa fa-search"></i>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-insurance" id="insuranceTable">
+                                <thead>
+                                    <tr>
+                                        <th>Số thẻ BHYT</th>
+                                        <th>Bệnh nhân</th>
+                                        <th>Mức chi trả</th>
+                                        <th>Nơi ĐKKCB</th>
+                                        <th>Có giá trị đến</th>
+                                        <th>Trạng thái</th>
+                                        <th class="text-center">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="insurance_policies" t-as="insurance">
+                                        <tr>
+                                            <td data-label="Số thẻ BHYT">
+                                                <a t-att-href="'/clinic/insurance/%s' % insurance.id" class="font-weight-bold text-primary">
+                                                    <t t-esc="insurance.number"/>
+                                                </a>
+                                            </td>
+                                            <td data-label="Bệnh nhân">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mr-2" style="width: 32px; height: 32px;">
+                                                        <t t-esc="insurance.patient_id.name[:1]"/>
+                                                    </div>
+                                                    <span><t t-esc="insurance.patient_id.name"/></span>
+                                                </div>
+                                            </td>
+                                            <td data-label="Mức chi trả">
+                                                <span class="font-weight-bold"><t t-esc="insurance.coverage_rate"/>%</span>
+                                            </td>
+                                            <td data-label="Nơi ĐKKCB">
+                                                <span><t t-esc="insurance.facility"/></span>
+                                            </td>
+                                            <td data-label="Có giá trị đến">
+                                                <span><t t-esc="insurance.expiry_date"/></span>
+                                            </td>
+                                            <td data-label="Trạng thái">
+                                                <span t-if="insurance.state == 'valid'" class="badge badge-insurance-valid">
+                                                    <i class="fa fa-check-circle mr-1"></i> Hợp lệ
+                                                </span>
+                                                <span t-if="insurance.state == 'expired'" class="badge badge-insurance-expired">
+                                                    <i class="fa fa-times-circle mr-1"></i> Hết hạn
+                                                </span>
+                                            </td>
+                                            <td data-label="Thao tác" class="text-center">
+                                                <a t-att-href="'/clinic/insurance/%s' % insurance.id" class="btn-action btn-action-view" title="Xem chi tiết">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                                <a t-att-href="'/clinic/insurance/%s/edit' % insurance.id" class="btn-action btn-action-edit" title="Chỉnh sửa">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                        <t t-if="not insurance_policies">
+                            <div class="empty-state">
+                                <i class="fa fa-clipboard"></i>
+                                <p>Không có dữ liệu bảo hiểm y tế nào.</p>
+                                <a href="/clinic/insurance/create" class="btn-insurance-primary mt-3">
+                                     Tạo bảo hiểm mới
+                                </a>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- JavaScript cho tìm kiếm -->
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const searchInput = document.getElementById('insuranceSearch');
+                        const table = document.getElementById('insuranceTable');
+                        const rows = table.querySelectorAll('tbody tr');
+
+                        searchInput.addEventListener('keyup', function() {
+                            const searchText = searchInput.value.toLowerCase();
+
+                            rows.forEach(function(row) {
+                                let found = false;
+                                const cells = row.querySelectorAll('td');
+
+                                cells.forEach(function(cell) {
+                                    if (cell.textContent.toLowerCase().indexOf(searchText) > -1) {
+                                        found = true;
+                                    }
+                                });
+
+                                row.style.display = found ? '' : 'none';
+                            });
+                        });
+                    });
+                </script>
+            </div>
+        </t>
+    </template>
+
+    <!-- Chi tiết bảo hiểm y tế -->
+    <template id="insurance_detail_template" name="Chi tiết bảo hiểm y tế">
+        <t t-call="website.layout">
+            <div class="container py-5">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="insurance-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                        <li class="breadcrumb-item"><a href="/clinic/insurance">Bảo hiểm y tế</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Chi tiết</li>
+                    </ol>
+                </nav>
+
+                <t t-if="error">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fa fa-exclamation-triangle mr-2"></i>
+                        <t t-esc="error"/>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&amp;times;</span>
+                        </button>
+                    </div>
+                </t>
+
+                <div class="row">
+                    <!-- Thông tin chính -->
+                    <div class="col-lg-8">
+                        <div class="insurance-card card mb-4">
+                            <div class="card-header text-white d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h2 class="mb-0 d-flex align-items-center">
+                                        <i class="fa fa-id-card mr-2"></i> Chi tiết bảo hiểm y tế
+                                    </h2>
+                                    <p class="mb-0 mt-1 text-white-50">Số thẻ: <t t-esc="insurance.number"/></p>
+                                </div>
+                                <div>
+                                    <a t-att-href="'/clinic/insurance/%s/edit' % insurance.id" class="btn-insurance-primary">
+                                        <i class="fa fa-edit mr-1"></i> Chỉnh sửa
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="h5 font-weight-bold mb-3 d-flex align-items-center">
+                                            <i class="fa fa-shield-alt text-primary mr-2"></i>
+                                            Thông tin bảo hiểm
+                                        </div>
+                                        <div class="mb-4 px-3">
+                                            <div class="mb-3 d-flex flex-column">
+                                                <span class="text-muted small mb-1">Mã bảo hiểm</span>
+                                                <span class="font-weight-bold"><t t-esc="insurance.name"/></span>
+                                            </div>
+                                            <div class="mb-3 d-flex flex-column">
+                                                <span class="text-muted small mb-1">Số thẻ BHYT</span>
+                                                <span class="font-weight-bold"><t t-esc="insurance.number"/></span>
+                                            </div>
+                                            <div class="mb-3 d-flex flex-column">
+                                                <span class="text-muted small mb-1">Nơi ĐKKCB</span>
+                                                <span><t t-esc="insurance.facility"/></span>
+                                            </div>
+                                            <div class="mb-3 d-flex flex-column">
+                                                <span class="text-muted small mb-1">Mức chi trả</span>
+                                                <span class="font-weight-bold"><t t-esc="insurance.coverage_rate"/>%</span>
+                                            </div>
+                                            <div class="mb-3 d-flex flex-column">
+                                                <span class="text-muted small mb-1">Có giá trị đến</span>
+                                                <span><t t-esc="insurance.expiry_date"/></span>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <span class="text-muted small mb-1">Trạng thái</span>
+                                                <div>
+                                                    <span t-if="insurance.state == 'valid'" class="badge badge-insurance-valid">
+                                                        <i class="fa fa-check-circle mr-1"></i> Hợp lệ
+                                                    </span>
+                                                    <span t-if="insurance.state == 'expired'" class="badge badge-insurance-expired">
+                                                        <i class="fa fa-times-circle mr-1"></i> Hết hạn
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="h5 font-weight-bold mb-3 d-flex align-items-center">
+                                            <i class="fa fa-user text-primary mr-2"></i>
+                                            Thông tin bệnh nhân
+                                        </div>
+                                        <div class="mb-4 px-3">
+                                            <div class="text-center mb-4">
+                                                <div class="avatar bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; font-size: 32px;">
+                                                    <t t-esc="insurance.patient_id.name[:1]"/>
+                                                </div>
+                                                <h5 class="mb-0"><t t-esc="insurance.patient_id.name"/></h5>
+                                                <span class="text-muted small">Mã BN: <t t-esc="insurance.patient_id.code"/></span>
+                                            </div>
+                                            <div class="mb-3 d-flex flex-column">
+                                                <span class="text-muted small mb-1">Giới tính</span>
+                                                <span>
+                                                    <t t-if="insurance.patient_id.gender == 'male'">Nam</t>
+                                                    <t t-elif="insurance.patient_id.gender == 'female'">Nữ</t>
+                                                    <t t-else="">Khác</t>
+                                                </span>
+                                            </div>
+                                            <div class="mb-3 d-flex flex-column">
+                                                <span class="text-muted small mb-1">Tuổi</span>
+                                                <span><t t-esc="insurance.patient_id.age"/> tuổi</span>
+                                            </div>
+                                            <div class="mb-3 d-flex flex-column">
+                                                <span class="text-muted small mb-1">Ngày sinh</span>
+                                                <span><t t-esc="insurance.patient_id.date_of_birth"/></span>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <span class="text-muted small mb-1">Điện thoại</span>
+                                                <span><t t-esc="insurance.patient_id.phone or 'Không có'"/></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="col-lg-4">
+                        <div class="insurance-card card mb-4">
+                            <div class="card-header text-white">
+                                <h5 class="mb-0 d-flex align-items-center">
+                                    <i class="fa fa-cog mr-2"></i> Thao tác
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <a href="/clinic/insurance" class="list-group-item list-group-item-action d-flex align-items-center">
+                                        <i class="fa fa-arrow-left text-primary mr-3"></i>
+                                        <span>Quay lại danh sách</span>
+                                    </a>
+                                    <a t-att-href="'/clinic/insurance/%s/edit' % insurance.id" class="list-group-item list-group-item-action d-flex align-items-center">
+                                        <i class="fa fa-edit text-warning mr-3"></i>
+                                        <span>Chỉnh sửa thông tin</span>
+                                    </a>
+                                    <button type="button" class="list-group-item list-group-item-action d-flex align-items-center" data-toggle="modal" data-target="#deleteModal">
+                                        <i class="fa fa-trash text-danger mr-3"></i>
+                                        <span>Xóa bảo hiểm</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="insurance-card card mb-4">
+                            <div class="card-header text-white">
+                                <h5 class="mb-0 d-flex align-items-center">
+                                    <i class="fa fa-info-circle mr-2"></i> Trạng thái
+                                </h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="py-3">
+                                    <t t-if="insurance.state == 'valid'">
+                                        <div class="mb-3">
+                                            <i class="fa fa-check-circle text-success" style="font-size: 64px;"></i>
+                                        </div>
+                                        <h5 class="text-success mb-1">Bảo hiểm hợp lệ</h5>
+                                        <p class="text-muted">Bảo hiểm có hiệu lực đến <t t-esc="insurance.expiry_date"/></p>
+                                    </t>
+                                    <t t-if="insurance.state == 'expired'">
+                                        <div class="mb-3">
+                                            <i class="fa fa-times-circle text-danger" style="font-size: 64px;"></i>
+                                        </div>
+                                        <h5 class="text-danger mb-1">Bảo hiểm hết hạn</h5>
+                                        <p class="text-muted">Bảo hiểm đã hết hạn vào <t t-esc="insurance.expiry_date"/></p>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal xác nhận xóa -->
+                <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" id="deleteModalLabel">
+                                    <i class="fa fa-exclamation-triangle mr-2"></i> Xác nhận xóa
+                                </h5>
+                                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&amp;times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body py-4">
+                                <p class="mb-0 text-center">Bạn có chắc chắn muốn xóa thông tin bảo hiểm này không?</p>
+                                <p class="text-center text-danger mb-0 mt-2"><b>Lưu ý:</b> Hành động này không thể hoàn tác.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                    <i class="fa fa-times mr-1"></i> Hủy
+                                </button>
+                                <form t-att-action="'/clinic/insurance/%s/delete' % insurance.id" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fa fa-trash mr-1"></i> Xác nhận xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Form tạo mới/chỉnh sửa bảo hiểm y tế -->
+    <template id="insurance_form_template" name="Form bảo hiểm y tế">
+        <t t-call="website.layout">
+            <div class="container py-5">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="insurance-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                        <li class="breadcrumb-item"><a href="/clinic/insurance">Bảo hiểm y tế</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <t t-if="insurance">Chỉnh sửa</t>
+                            <t t-else="">Tạo mới</t>
+                        </li>
+                    </ol>
+                </nav>
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="insurance-card card mb-4">
+                            <div class="card-header text-white d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h2 class="mb-0 d-flex align-items-center">
+                                        <i t-if="insurance" class="fa fa-edit mr-2"></i>
+                                        <i t-else="" class="fa fa-plus-circle mr-2"></i>
+                                        <t t-if="insurance">Chỉnh sửa bảo hiểm y tế</t>
+                                        <t t-else="">Tạo mới bảo hiểm y tế</t>
+                                    </h2>
+                                </div>
+                                <a href="/clinic/insurance" class="btn-insurance-secondary">
+                                    <i class="fa fa-arrow-left mr-1"></i> Quay lại
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="error.get('general')">
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <i class="fa fa-exclamation-triangle mr-2"></i>
+                                        <t t-esc="error.get('general')"/>
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&amp;times;</span>
+                                        </button>
+                                    </div>
+                                </t>
+
+                                <form t-att-action="'/clinic/insurance/%s/edit' % insurance.id if insurance else '/clinic/insurance/create'"
+                                      method="post" class="form-insurance">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                    <!-- Thông tin chính -->
+                                    <div class="form-section">
+                                        <div class="form-section-title">
+                                            <i class="fa fa-user-circle"></i> Thông tin chính
+                                        </div>
+
+                                        <!-- Bệnh nhân -->
+                                        <div class="form-group">
+                                            <label for="patient_id">
+                                                Bệnh nhân <span class="field-required">*</span>
+                                            </label>
+                                            <select name="patient_id" id="patient_id" class="form-control"
+                                                    t-att-class="'is-invalid' if error.get('patient_id') else ''">
+                                                <option value="">-- Chọn bệnh nhân --</option>
+                                                <t t-foreach="patients" t-as="patient">
+                                                    <option t-att-value="patient.id"
+                                                           t-att-selected="'selected' if (insurance and insurance.patient_id.id == patient.id) or (kwargs.get('patient_id') == str(patient.id)) else None">
+                                                        <t t-esc="patient.code"/> - <t t-esc="patient.name"/>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                            <t t-if="error.get('patient_id')">
+                                                <div class="invalid-feedback">
+                                                    <i class="fa fa-exclamation-circle mr-1"></i>
+                                                    <t t-esc="error.get('patient_id')"/>
+                                                </div>
+                                            </t>
+                                            <small class="form-text">Chọn bệnh nhân cần cấp thẻ bảo hiểm y tế</small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Thông tin thẻ bảo hiểm -->
+                                    <div class="form-section">
+                                        <div class="form-section-title">
+                                            <i class="fa fa-id-card"></i> Thông tin thẻ bảo hiểm
+                                        </div>
+
+                                        <div class="row">
+                                            <!-- Số thẻ BHYT -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="number">
+                                                        Số thẻ BHYT <span class="field-required">*</span>
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><i class="fa fa-hashtag"></i></span>
+                                                        </div>
+                                                        <input type="text" name="number" id="number" class="form-control"
+                                                               t-att-class="'is-invalid' if error.get('number') else ''"
+                                                               placeholder="Ví dụ: 0123456789" maxlength="10" pattern="[0-9]{10}"
+                                                               t-att-value="insurance.number if insurance else kwargs.get('number', '')"/>
+                                                    </div>
+                                                    <small class="form-text">
+                                                        <i class="fa fa-info-circle"></i>
+                                                        Số thẻ BHYT phải gồm 10 chữ số.
+                                                    </small>
+                                                    <t t-if="error.get('number')">
+                                                        <div class="invalid-feedback">
+                                                            <i class="fa fa-exclamation-circle mr-1"></i>
+                                                            <t t-esc="error.get('number')"/>
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                            </div>
+
+                                            <!-- Nơi ĐKKCB -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="facility">
+                                                        Nơi ĐKKCB <span class="field-required">*</span>
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><i class="fa fa-hospital"></i></span>
+                                                        </div>
+                                                        <input type="text" name="facility" id="facility" class="form-control"
+                                                               t-att-class="'is-invalid' if error.get('facility') else ''"
+                                                               placeholder="Ví dụ: Bệnh viện A"
+                                                               t-att-value="insurance.facility if insurance else kwargs.get('facility', '')"/>
+                                                    </div>
+                                                    <small class="form-text">Nơi đăng ký khám chữa bệnh ban đầu</small>
+                                                    <t t-if="error.get('facility')">
+                                                        <div class="invalid-feedback">
+                                                            <i class="fa fa-exclamation-circle mr-1"></i>
+                                                            <t t-esc="error.get('facility')"/>
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quyền lợi và thời hạn -->
+                                    <div class="form-section">
+                                        <div class="form-section-title">
+                                            <i class="fa fa-shield-alt"></i> Quyền lợi và thời hạn
+                                        </div>
+
+                                        <div class="row">
+                                            <!-- Mức chi trả -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="coverage_rate">
+                                                        Mức chi trả <span class="field-required">*</span>
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><i class="fa fa-percentage"></i></span>
+                                                        </div>
+                                                        <select name="coverage_rate" id="coverage_rate" class="form-control"
+                                                                t-att-class="'is-invalid' if error.get('coverage_rate') else ''">
+                                                            <option value="">-- Chọn mức chi trả --</option>
+                                                            <option value="80" t-att-selected="'selected' if (insurance and insurance.coverage_rate == '80') or kwargs.get('coverage_rate') == '80' else None">80%</option>
+                                                            <option value="95" t-att-selected="'selected' if (insurance and insurance.coverage_rate == '95') or kwargs.get('coverage_rate') == '95' else None">95%</option>
+                                                            <option value="100" t-att-selected="'selected' if (insurance and insurance.coverage_rate == '100') or kwargs.get('coverage_rate') == '100' else None">100%</option>
+                                                        </select>
+                                                    </div>
+                                                    <small class="form-text">Tỷ lệ phần trăm chi trả của bảo hiểm</small>
+                                                    <t t-if="error.get('coverage_rate')">
+                                                        <div class="invalid-feedback">
+                                                            <i class="fa fa-exclamation-circle mr-1"></i>
+                                                            <t t-esc="error.get('coverage_rate')"/>
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                            </div>
+
+                                            <!-- Có giá trị đến -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="expiry_date">
+                                                        Có giá trị đến <span class="field-required">*</span>
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                                        </div>
+                                                        <input type="date" name="expiry_date" id="expiry_date" class="form-control"
+                                                               t-att-class="'is-invalid' if error.get('expiry_date') else ''"
+                                                               t-att-value="insurance.expiry_date if insurance else kwargs.get('expiry_date', '')"/>
+                                                    </div>
+                                                    <small class="form-text">Ngày hết hạn của thẻ bảo hiểm</small>
+                                                    <t t-if="error.get('expiry_date')">
+                                                        <div class="invalid-feedback">
+                                                            <i class="fa fa-exclamation-circle mr-1"></i>
+                                                            <t t-esc="error.get('expiry_date')"/>
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Nút tác vụ -->
+                                    <div class="form-actions">
+                                        <a href="/clinic/insurance" class="btn-insurance-secondary">
+                                            <i class="fa fa-times mr-1"></i> Hủy
+                                        </a>
+                                        <button type="submit" class="btn-insurance-primary">
+                                            <i class="fa fa-save mr-1"></i>
+                                            <t t-if="insurance">Cập nhật thông tin</t>
+                                            <t t-else="">Tạo bảo hiểm mới</t>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Tips và hướng dẫn -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fa fa-lightbulb text-warning mr-2"></i> Hướng dẫn nhập liệu</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <h6 class="font-weight-bold"><i class="fa fa-info-circle mr-1"></i> Lưu ý quan trọng</h6>
+                                    <p class="mb-0">Vui lòng điền đầy đủ và chính xác thông tin thẻ bảo hiểm y tế để đảm bảo quyền lợi cho bệnh nhân.</p>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <h6 class="font-weight-bold text-primary"><i class="fa fa-check-circle mr-1"></i> Yêu cầu bắt buộc</h6>
+                                        <ul class="mb-0">
+                                            <li class="mb-2">Thông tin bệnh nhân phải chính xác</li>
+                                            <li class="mb-2">Số thẻ BHYT gồm đúng 10 chữ số</li>
+                                            <li class="mb-2">Nơi ĐKKCB phải đúng với thẻ</li>
+                                            <li>Ngày hết hạn phải trong tương lai</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="font-weight-bold text-success"><i class="fa fa-lightbulb mr-1"></i> Mẹo</h6>
+                                        <ul class="mb-0">
+                                            <li class="mb-2">Kiểm tra kỹ số thẻ BHYT</li>
+                                            <li class="mb-2">Nhập đúng tên cơ sở ĐKKCB</li>
+                                            <li class="mb-2">Chọn mức chi trả theo chính sách</li>
+                                            <li>Xác nhận ngày hết hạn từ thẻ gốc</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Thêm liên kết vào menu website -->
+    <record id="menu_website_insurance" model="website.menu">
+        <field name="name">Bảo hiểm y tế</field>
+        <field name="url">/clinic/insurance</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">40</field>
+    </record>
+</odoo>

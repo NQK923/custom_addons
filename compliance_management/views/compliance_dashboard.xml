@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="compliance_layout" name="Compliance Management Layout">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <ul class="nav nav-pills nav-fill">
+                            <li class="nav-item">
+                                <a t-att-class="'nav-link ' + ('active' if page_name == 'dashboard' else '')" href="/compliance/dashboard">
+                                    <i class="fa fa-tachometer"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a t-att-class="'nav-link ' + ('active' if page_name == 'assessments' else '')" href="/compliance/assessments">
+                                    <i class="fa fa-check-square-o"></i> Đánh giá Tuân thủ
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a t-att-class="'nav-link ' + ('active' if page_name == 'regulations' else '')" href="/compliance/regulations">
+                                    <i class="fa fa-book"></i> Quy định Y tế
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a t-att-class="'nav-link ' + ('active' if page_name == 'authorities' else '')" href="/compliance/authorities">
+                                    <i class="fa fa-university"></i> Cơ quan Quản lý
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Nội dung trang -->
+                <div class="row">
+                    <div class="col-12">
+                        <t t-raw="0"/>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Template dashboard -->
+    <template id="compliance_dashboard_template" name="Compliance Dashboard">
+        <t t-call="compliance_management.compliance_layout">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">Dashboard Quản lý Tuân thủ Y tế</h1>
+                </div>
+            </div>
+
+            <!-- Thống kê tổng quan -->
+            <div class="row mb-4">
+                <div class="col-md-7">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Thống kê Trạng thái Tuân thủ</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col">
+                                    <div class="p-3 bg-success text-white rounded mb-2">
+                                        <h3><t t-esc="compliance_stats['compliant']"/></h3>
+                                    </div>
+                                    <p>Tuân thủ</p>
+                                </div>
+                                <div class="col">
+                                    <div class="p-3 bg-danger text-white rounded mb-2">
+                                        <h3><t t-esc="compliance_stats['non_compliant']"/></h3>
+                                    </div>
+                                    <p>Không tuân thủ</p>
+                                </div>
+                                <div class="col">
+                                    <div class="p-3 bg-warning text-white rounded mb-2">
+                                        <h3><t t-esc="compliance_stats['partly_compliant']"/></h3>
+                                    </div>
+                                    <p>Tuân thủ một phần</p>
+                                </div>
+                                <div class="col">
+                                    <div class="p-3 bg-info text-white rounded mb-2">
+                                        <h3><t t-esc="compliance_stats['in_progress']"/></h3>
+                                    </div>
+                                    <p>Đang thực hiện</p>
+                                </div>
+                                <div class="col">
+                                    <div class="p-3 bg-secondary text-white rounded mb-2">
+                                        <h3><t t-esc="compliance_stats['draft']"/></h3>
+                                    </div>
+                                    <p>Nháp</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <div class="card shadow">
+                        <div class="card-header bg-info text-white">
+                            <h4 class="mb-0">Quy định theo Phạm vi</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col">
+                                    <div class="p-3 bg-primary text-white rounded mb-2">
+                                        <h3><t t-esc="regulation_stats['national']"/></h3>
+                                    </div>
+                                    <p>Quốc gia</p>
+                                </div>
+                                <div class="col">
+                                    <div class="p-3 bg-primary text-white rounded mb-2">
+                                        <h3><t t-esc="regulation_stats['international']"/></h3>
+                                    </div>
+                                    <p>Quốc tế</p>
+                                </div>
+                                <div class="col">
+                                    <div class="p-3 bg-primary text-white rounded mb-2">
+                                        <h3><t t-esc="regulation_stats['local']"/></h3>
+                                    </div>
+                                    <p>Địa phương</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Đánh giá tuân thủ gần đây và sắp tới hạn -->
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">Đánh giá Tuân thủ Gần đây</h4>
+                            <a href="/compliance/assessment/new" class="btn btn-sm btn-outline-light">
+                                <i class="fa fa-plus"></i> Tạo mới
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="recent_compliances">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Tên</th>
+                                                <th>Quy định</th>
+                                                <th>Ngày đánh giá</th>
+                                                <th>Trạng thái</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="recent_compliances" t-as="compliance">
+                                                <tr>
+                                                    <td>
+                                                        <a t-att-href="'/compliance/assessment/%s' % compliance.id">
+                                                            <t t-esc="compliance.name"/>
+                                                        </a>
+                                                    </td>
+                                                    <td><t t-esc="compliance.regulation_id.name"/></td>
+                                                    <td><t t-esc="compliance.date_assessment"/></td>
+                                                    <td>
+                                                        <span t-att-class="'badge ' + (
+                                                            'bg-success' if compliance.state == 'compliant' else
+                                                            'bg-danger' if compliance.state == 'non_compliant' else
+                                                            'bg-warning' if compliance.state == 'partly_compliant' else
+                                                            'bg-info' if compliance.state == 'in_progress' else
+                                                            'bg-secondary'
+                                                        )">
+                                                            <t t-esc="dict(compliance._fields['state'].selection).get(compliance.state)"/>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <a href="/compliance/assessments" class="btn btn-outline-primary">Xem tất cả</a>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="alert alert-info">Chưa có đánh giá tuân thủ nào.</div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header bg-warning text-dark">
+                            <h4 class="mb-0">Đánh giá Sắp tới Hạn</h4>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="upcoming_assessments">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Tên</th>
+                                                <th>Quy định</th>
+                                                <th>Ngày đánh giá tiếp theo</th>
+                                                <th>Người phụ trách</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="upcoming_assessments" t-as="assessment">
+                                                <tr>
+                                                    <td>
+                                                        <a t-att-href="'/compliance/assessment/%s' % assessment.id">
+                                                            <t t-esc="assessment.name"/>
+                                                        </a>
+                                                    </td>
+                                                    <td><t t-esc="assessment.regulation_id.name"/></td>
+                                                    <td><t t-esc="assessment.next_assessment"/></td>
+                                                    <td><t t-esc="assessment.responsible_id.name"/></td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="alert alert-info">Không có đánh giá nào sắp tới hạn trong 30 ngày tới.</div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

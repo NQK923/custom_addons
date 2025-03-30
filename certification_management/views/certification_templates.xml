@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Dashboard Template -->
+    <template id="dashboard_template" name="Certification Dashboard">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="text-center">Quản lý Hồ sơ và Chứng nhận Y tế</h1>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/certification/dashboard">Trang chủ</a></li>
+                                <li class="breadcrumb-item active">Bảng điều khiển</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <h5 class="card-title">Tổng số chứng nhận</h5>
+                                <p class="card-text display-4"><t t-esc="all_certs"/></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <h5 class="card-title">Chứng nhận hợp lệ</h5>
+                                <p class="card-text display-4"><t t-esc="valid_certs"/></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <h5 class="card-title">Sắp hết hạn</h5>
+                                <p class="card-text display-4"><t t-esc="expiring_certs"/></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-danger text-white">
+                            <div class="card-body">
+                                <h5 class="card-title">Hết hạn</h5>
+                                <p class="card-text display-4"><t t-esc="expired_certs"/></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h4>Truy cập nhanh</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3 mb-2">
+                                        <a href="/certification/certificates" class="btn btn-primary btn-block">
+                                            <i class="fa fa-certificate mr-2"></i> Danh sách chứng nhận
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <a href="/certification/certificate/create" class="btn btn-success btn-block">
+                                            <i class="fa fa-plus mr-2"></i> Tạo chứng nhận mới
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <a href="/certification/inspections" class="btn btn-info btn-block">
+                                            <i class="fa fa-clipboard-check mr-2"></i> Danh sách kiểm tra
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <a href="/certification/inspection/create" class="btn btn-success btn-block">
+                                            <i class="fa fa-plus mr-2"></i> Tạo kiểm tra mới
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lists -->
+                <div class="row">
+                    <!-- Upcoming Inspections -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h4>Kiểm tra sắp tới</h4>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="upcoming_inspections">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Ngày</th>
+                                                    <th>Tên</th>
+                                                    <th>Hành động</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="upcoming_inspections" t-as="inspection">
+                                                    <tr>
+                                                        <td><t t-esc="inspection.planned_date"/></td>
+                                                        <td><t t-esc="inspection.name"/></td>
+                                                        <td>
+                                                            <a t-att-href="'/certification/inspection/%s' % inspection.id" class="btn btn-sm btn-primary">
+                                                                Chi tiết
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <a href="/certification/inspections?state=planned" class="btn btn-outline-primary btn-sm">Xem tất cả</a>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted">Không có kiểm tra nào lên kế hoạch trong tuần tới.</p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expiring Certificates -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h4>Chứng nhận sắp hết hạn</h4>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="expiring_certificates">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Ngày hết hạn</th>
+                                                    <th>Tên</th>
+                                                    <th>Hành động</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="expiring_certificates" t-as="certificate">
+                                                    <tr>
+                                                        <td><t t-esc="certificate.expiry_date"/></td>
+                                                        <td><t t-esc="certificate.name"/></td>
+                                                        <td>
+                                                            <a t-att-href="'/certification/certificate/%s' % certificate.id" class="btn btn-sm btn-primary">
+                                                                Chi tiết
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <a href="/certification/certificates?state=expiring" class="btn btn-outline-primary btn-sm">Xem tất cả</a>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted">Không có chứng nhận nào sắp hết hạn.</p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Certificates List Template -->
+    <template id="certificates_template" name="Certificates List">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1>Danh sách chứng nhận y tế</h1>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/certification/dashboard">Trang chủ</a></li>
+                                <li class="breadcrumb-item active">Chứng nhận</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <form class="form-inline" action="/certification/certificates" method="get">
+                            <div class="input-group mb-2 mr-sm-2">
+                                <input type="text" name="search" class="form-control" placeholder="Tìm kiếm..." t-att-value="search or ''"/>
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <select name="state" class="form-control mb-2 mr-sm-2">
+                                <option value="">Tất cả trạng thái</option>
+                                <option t-att-selected="filter_state == 'draft'" value="draft">Dự thảo</option>
+                                <option t-att-selected="filter_state == 'valid'" value="valid">Có hiệu lực</option>
+                                <option t-att-selected="filter_state == 'expiring'" value="expiring">Sắp hết hạn</option>
+                                <option t-att-selected="filter_state == 'expired'" value="expired">Hết hạn</option>
+                                <option t-att-selected="filter_state == 'renewed'" value="renewed">Đã gia hạn</option>
+                            </select>
+                            <select name="certification_type" class="form-control mb-2 mr-sm-2">
+                                <option value="">Tất cả loại</option>
+                                <option t-att-selected="filter_type == 'operation'" value="operation">Giấy phép hoạt động</option>
+                                <option t-att-selected="filter_type == 'quality'" value="quality">Chứng nhận chất lượng</option>
+                                <option t-att-selected="filter_type == 'safety'" value="safety">Chứng nhận an toàn</option>
+                                <option t-att-selected="filter_type == 'environment'" value="environment">Chứng nhận môi trường</option>
+                                <option t-att-selected="filter_type == 'other'" value="other">Khác</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary mb-2">Lọc</button>
+                            <a href="/certification/certificates" class="btn btn-secondary mb-2 ml-2">Đặt lại</a>
+                        </form>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <a href="/certification/certificate/create" class="btn btn-success">
+                            <i class="fa fa-plus mr-1"></i> Tạo chứng nhận mới
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Certificates Table -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <t t-if="certifications">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tên</th>
+                                                    <th>Số hiệu</th>
+                                                    <th>Loại</th>
+                                                    <th>Cơ quan cấp</th>
+                                                    <th>Ngày hết hạn</th>
+                                                    <th>Trạng thái</th>
+                                                    <th>Hành động</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="certifications" t-as="cert">
+                                                    <tr t-attf-class="#{cert.state == 'expired' and 'table-danger' or cert.state == 'expiring' and 'table-warning' or ''}">
+                                                        <td><t t-esc="cert.name"/></td>
+                                                        <td><t t-esc="cert.number"/></td>
+                                                        <td>
+                                                            <t t-if="cert.certification_type == 'operation'">Giấy phép hoạt động</t>
+                                                            <t t-elif="cert.certification_type == 'quality'">Chứng nhận chất lượng</t>
+                                                            <t t-elif="cert.certification_type == 'safety'">Chứng nhận an toàn</t>
+                                                            <t t-elif="cert.certification_type == 'environment'">Chứng nhận môi trường</t>
+                                                            <t t-else="">Khác</t>
+                                                        </td>
+                                                        <td><t t-esc="cert.authority"/></td>
+                                                        <td><t t-esc="cert.expiry_date"/></td>
+                                                        <td>
+                                                            <span t-attf-class="badge badge-#{cert.state == 'valid' and 'success' or cert.state == 'draft' and 'secondary' or cert.state == 'expiring' and 'warning' or cert.state == 'expired' and 'danger' or cert.state == 'renewed' and 'info'}">
+                                                                <t t-if="cert.state == 'valid'">Có hiệu lực</t>
+                                                                <t t-elif="cert.state == 'draft'">Dự thảo</t>
+                                                                <t t-elif="cert.state == 'expiring'">Sắp hết hạn</t>
+                                                                <t t-elif="cert.state == 'expired'">Hết hạn</t>
+                                                                <t t-elif="cert.state == 'renewed'">Đã gia hạn</t>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group">
+                                                                <a t-att-href="'/certification/certificate/%s' % cert.id" class="btn btn-sm btn-primary">Chi tiết</a>
+                                                                <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    <span class="sr-only">Toggle Dropdown</span>
+                                                                </button>
+                                                                <div class="dropdown-menu">
+                                                                    <a t-att-href="'/certification/certificate/%s/edit' % cert.id" class="dropdown-item">Chỉnh sửa</a>
+                                                                    <t t-if="cert.state == 'draft'">
+                                                                        <a t-att-href="'/certification/certificate/%s/set_valid' % cert.id" class="dropdown-item">Xác nhận</a>
+                                                                    </t>
+                                                                    <t t-if="cert.state in ['valid', 'expiring', 'expired']">
+                                                                        <a t-att-href="'/certification/certificate/%s/renew' % cert.id" class="dropdown-item">Gia hạn</a>
+                                                                    </t>
+                                                                    <a t-att-href="'/certification/inspection/create?certification_id=%s' % cert.id" class="dropdown-item">Tạo kiểm tra</a>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="alert alert-info">
+                                        <p class="mb-0">Không tìm thấy chứng nhận nào. <a href="/certification/certificate/create">Tạo chứng nhận mới</a>?</p>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Certificate Detail Template -->
+    <template id="certificate_detail_template" name="Certificate Detail">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1><t t-esc="certificate.name"/></h1>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/certification/dashboard">Trang chủ</a></li>
+                                <li class="breadcrumb-item"><a href="/certification/certificates">Chứng nhận</a></li>
+                                <li class="breadcrumb-item active"><t t-esc="certificate.name"/></li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Status and Actions -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <span t-attf-class="badge badge-#{certificate.state == 'valid' and 'success' or certificate.state == 'draft' and 'secondary' or certificate.state == 'expiring' and 'warning' or certificate.state == 'expired' and 'danger' or certificate.state == 'renewed' and 'info'} p-2">
+                            <t t-if="certificate.state == 'valid'">Có hiệu lực</t>
+                            <t t-elif="certificate.state == 'draft'">Dự thảo</t>
+                            <t t-elif="certificate.state == 'expiring'">Sắp hết hạn</t>
+                            <t t-elif="certificate.state == 'expired'">Hết hạn</t>
+                            <t t-elif="certificate.state == 'renewed'">Đã gia hạn</t>
+                        </span>
+                        <t t-if="certificate.days_remaining > 0">
+                            <span class="ml-2">Còn <strong><t t-esc="certificate.days_remaining"/></strong> ngày</span>
+                        </t>
+                        <t t-elif="certificate.days_remaining &lt;= 0">
+                            <span class="ml-2 text-danger">Đã hết hạn <strong><t t-esc="abs(certificate.days_remaining)"/></strong> ngày</span>
+                        </t>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <div class="btn-group">
+                            <a t-att-href="'/certification/certificate/%s/edit' % certificate.id" class="btn btn-primary">
+                                <i class="fa fa-edit mr-1"></i> Chỉnh sửa
+                            </a>
+                            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <t t-if="certificate.state == 'draft'">
+                                    <a t-att-href="'/certification/certificate/%s/set_valid' % certificate.id" class="dropdown-item">Xác nhận</a>
+                                </t>
+                                <t t-if="certificate.state in ['valid', 'expiring', 'expired']">
+                                    <a t-att-href="'/certification/certificate/%s/renew' % certificate.id" class="dropdown-item">Gia hạn</a>
+                                </t>
+                                <a t-att-href="'/certification/inspection/create?certification_id=%s' % certificate.id" class="dropdown-item">Tạo kiểm tra</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certificate Details -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Thông tin chung</h4>
+                            </div>
+                            <div class="card-body">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Số hiệu</dt>
+                                    <dd class="col-sm-8"><t t-esc="certificate.number"/></dd>
+
+                                    <dt class="col-sm-4">Loại chứng nhận</dt>
+                                    <dd class="col-sm-8">
+                                        <t t-if="certificate.certification_type == 'operation'">Giấy phép hoạt động</t>
+                                        <t t-elif="certificate.certification_type == 'quality'">Chứng nhận chất lượng</t>
+                                        <t t-elif="certificate.certification_type == 'safety'">Chứng nhận an toàn</t>
+                                        <t t-elif="certificate.certification_type == 'environment'">Chứng nhận môi trường</t>
+                                        <t t-else="">Khác</t>
+                                    </dd>
+
+                                    <dt class="col-sm-4">Cơ quan cấp</dt>
+                                    <dd class="col-sm-8"><t t-esc="certificate.authority"/></dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Thời hạn</h4>
+                            </div>
+                            <div class="card-body">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Ngày cấp</dt>
+                                    <dd class="col-sm-8"><t t-esc="certificate.issue_date"/></dd>
+
+                                    <dt class="col-sm-4">Ngày hết hạn</dt>
+                                    <dd class="col-sm-8"><t t-esc="certificate.expiry_date"/></dd>
+
+                                    <dt class="col-sm-4">Nhắc nhở gia hạn</dt>
+                                    <dd class="col-sm-8">
+                                        <t t-if="certificate.renewal_reminder">
+                                            Có (<t t-esc="certificate.reminder_days"/> ngày trước khi hết hạn)
+                                        </t>
+                                        <t t-else="">Không</t>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Info -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Mô tả</h4>
+                            </div>
+                            <div class="card-body">
+                                <p t-if="certificate.description"><t t-esc="certificate.description"/></p>
+                                <p t-else="" class="text-muted">Không có mô tả.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inspection History -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h4>Lịch sử kiểm tra</h4>
+                                <a t-att-href="'/certification/inspection/create?certification_id=%s' % certificate.id" class="btn btn-sm btn-success">
+                                    <i class="fa fa-plus mr-1"></i> Thêm kiểm tra
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="certificate.inspection_ids">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Ngày</th>
+                                                    <th>Tên</th>
+                                                    <th>Người kiểm tra</th>
+                                                    <th>Kết quả</th>
+                                                    <th>Trạng thái</th>
+                                                    <th>Hành động</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="certificate.inspection_ids" t-as="inspection">
+                                                    <tr t-attf-class="#{inspection.result == 'failed' and 'table-danger' or inspection.result == 'conditional' and 'table-warning' or ''}">
+                                                        <td><t t-esc="inspection.date or inspection.planned_date"/></td>
+                                                        <td><t t-esc="inspection.name"/></td>
+                                                        <td><t t-esc="inspection.inspector"/></td>
+                                                        <td>
+                                                            <span t-attf-class="badge badge-#{inspection.result == 'passed' and 'success' or inspection.result == 'failed' and 'danger' or inspection.result == 'conditional' and 'warning' or 'secondary'}">
+                                                                <t t-if="inspection.result == 'passed'">Đạt</t>
+                                                                <t t-elif="inspection.result == 'failed'">Không đạt</t>
+                                                                <t t-elif="inspection.result == 'conditional'">Đạt có điều kiện</t>
+                                                                <t t-else="">Đang chờ</t>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span t-attf-class="badge badge-#{inspection.state == 'completed' and 'success' or inspection.state == 'in_progress' and 'primary' or inspection.state == 'canceled' and 'danger' or 'secondary'}">
+                                                                <t t-if="inspection.state == 'planned'">Lên kế hoạch</t>
+                                                                <t t-elif="inspection.state == 'in_progress'">Đang thực hiện</t>
+                                                                <t t-elif="inspection.state == 'completed'">Đã hoàn thành</t>
+                                                                <t t-elif="inspection.state == 'canceled'">Hủy bỏ</t>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <a t-att-href="'/certification/inspection/%s' % inspection.id" class="btn btn-sm btn-primary">Chi tiết</a>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted">Chưa có kiểm tra nào cho chứng nhận này.</p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Certificate Renewal Template -->
+    <template id="certificate_renew_template" name="Renew Certificate">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1>Gia hạn chứng nhận</h1>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/certification/dashboard">Trang chủ</a></li>
+                                <li class="breadcrumb-item"><a href="/certification/certificates">Chứng nhận</a></li>
+                                <li class="breadcrumb-item"><a t-att-href="'/certification/certificate/%s' % certificate.id"><t t-esc="certificate.name"/></a></li>
+                                <li class="breadcrumb-item active">Gia hạn</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Current Certificate Info -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Thông tin chứng nhận hiện tại</h4>
+                            </div>
+                            <div class="card-body">
+                                <dl class="row">
+                                    <dt class="col-sm-3">Tên</dt>
+                                    <dd class="col-sm-9"><t t-esc="certificate.name"/></dd>
+
+                                    <dt class="col-sm-3">Số hiệu</dt>
+                                    <dd class="col-sm-9"><t t-esc="certificate.number"/></dd>
+
+                                    <dt class="col-sm-3">Ngày hết hạn hiện tại</dt>
+                                    <dd class="col-sm-9"><t t-esc="certificate.expiry_date"/></dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Renewal Form -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Gia hạn chứng nhận</h4>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="error_message">
+                                    <div class="alert alert-danger" role="alert">
+                                        <t t-esc="error_message"/>
+                                    </div>
+                                </t>
+
+                                <form action="" method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                    <div class="form-group">
+                                        <label for="new_expiry_date">Ngày hết hạn mới</label>
+                                        <input type="date" class="form-control" id="new_expiry_date" name="new_expiry_date" t-att-value="form_data.get('new_expiry_date') or default_new_expiry" required="required"/>
+                                        <small class="form-text text-muted">Ngày hết hạn mới phải sau ngày hết hạn hiện tại.</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="renewal_document">Tài liệu gia hạn</label>
+                                        <input type="file" class="form-control-file" id="renewal_document" name="renewal_document"/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="notes">Ghi chú</label>
+                                        <textarea class="form-control" id="notes" name="notes" rows="3"><t t-esc="form_data.get('notes', '')"/></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary">Xác nhận gia hạn</button>
+                                        <a t-att-href="'/certification/certificate/%s' % certificate.id" class="btn btn-secondary ml-2">Hủy bỏ</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

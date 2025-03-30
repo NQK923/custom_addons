@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template danh sách lịch hẹn -->
+    <template id="appointment_list_template" name="Appointment List">
+        <t t-call="appointment_management.appointment_layout">
+            <!-- Thêm CSS và JS cần thiết cho calendar -->
+            <t t-set="head">
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css"/>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+            </t>
+
+            <!-- Thông báo kết quả -->
+            <div t-if="request.params.get('success')" class="alert alert-success alert-dismissible fade show" role="alert">
+                Đã tạo lịch hẹn mới thành công!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&amp;times;</span>
+                </button>
+            </div>
+            <div t-if="request.params.get('error')" class="alert alert-danger alert-dismissible fade show" role="alert">
+                Có lỗi xảy ra: <t t-esc="request.params.get('message', 'Vui lòng kiểm tra lại thông tin')"/>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&amp;times;</span>
+                </button>
+            </div>
+
+            <!-- Form tạo lịch hẹn mới -->
+            <div class="card form-container mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Tạo lịch hẹn mới</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/clinic/appointment/create" class="appointment-form">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label for="patient_id">Bệnh nhân <span class="text-danger">*</span></label>
+                                <select name="patient_id" id="patient_id" class="form-control" required="required">
+                                    <option value="">-- Chọn bệnh nhân --</option>
+                                    <t t-foreach="patients" t-as="patient">
+                                        <option t-att-value="patient.id">
+                                            <t t-esc="patient.code"/> - <t t-esc="patient.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label for="staff_id">Bác sĩ <span class="text-danger">*</span></label>
+                                <select name="staff_id" id="staff_id" class="form-control" required="required">
+                                    <option value="">-- Chọn bác sĩ --</option>
+                                    <t t-foreach="doctors" t-as="doctor">
+                                        <option t-att-value="doctor.id">
+                                            <t t-esc="doctor.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label for="room_id">Phòng khám</label>
+                                <select name="room_id" id="room_id" class="form-control">
+                                    <option value="">-- Chọn phòng --</option>
+                                    <t t-foreach="rooms" t-as="room">
+                                        <option t-att-value="room.id">
+                                            <t t-esc="room.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label for="appointment_date">Ngày hẹn <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="appointment_date" name="appointment_date"
+                                       required="required"/>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label for="appointment_time">Giờ hẹn <span class="text-danger">*</span></label>
+                                <input type="time" class="form-control" id="appointment_time" name="appointment_time"
+                                       value="08:00" required="required"/>
+                                <small class="text-muted">Lịch hẹn chỉ có thể được đặt từ 8:00 sáng đến 21:00 tối</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="note">Ghi chú</label>
+                            <textarea name="note" id="note" class="form-control" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-2">
+                            <i class="fa fa-plus-circle"></i> Tạo lịch hẹn
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Filter và toggle chế độ xem -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <form method="GET" action="/clinic/appointments" class="form-inline">
+                        <input type="hidden" name="view_mode" t-att-value="view_mode"/>
+                        <label for="state" class="mr-2">Lọc theo trạng thái:</label>
+                        <select name="state" id="state" class="form-control mr-2" onchange="this.form.submit()">
+                            <option value="all" t-att-selected="state_filter == 'all'">Tất cả</option>
+                            <option value="draft" t-att-selected="state_filter == 'draft'">Nháp</option>
+                            <option value="confirmed" t-att-selected="state_filter == 'confirmed'">Đã xác nhận</option>
+                            <option value="done" t-att-selected="state_filter == 'done'">Hoàn thành</option>
+                            <option value="cancelled" t-att-selected="state_filter == 'cancelled'">Đã hủy</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="col-md-6 text-right view-toggle">
+                    <a t-att-href="'/clinic/appointments?view_mode=list&amp;state=' + state_filter"
+                       class="btn btn-outline-primary mr-2" t-att-class="{'active': view_mode == 'list'}">
+                        <i class="fa fa-list"></i> Danh sách
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hiển thị dạng danh sách -->
+            <t t-if="view_mode == 'list'">
+                <t t-if="appointments">
+                    <div class="row">
+                        <t t-foreach="appointments" t-as="appointment">
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card appointment-card h-100">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span class="font-weight-bold"><t t-esc="appointment.name"/></span>
+                                        <span t-attf-class="badge badge-{{ appointment.state }}">
+                                            <t t-if="appointment.state == 'draft'">Nháp</t>
+                                            <t t-elif="appointment.state == 'confirmed'">Đã xác nhận</t>
+                                            <t t-elif="appointment.state == 'done'">Hoàn thành</t>
+                                            <t t-elif="appointment.state == 'cancelled'">Đã hủy</t>
+                                        </span>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>
+                                            <strong>Bệnh nhân:</strong> <t t-esc="appointment.patient_id.name"/>
+                                        </p>
+                                        <p>
+                                            <strong>Bác sĩ:</strong> <t t-esc="appointment.staff_id.name"/>
+                                        </p>
+                                        <p>
+                                            <strong>Thời gian:</strong>
+                                            <t t-esc="appointment.appointment_date.strftime('%d/%m/%Y %H:%M')"/>
+                                        </p>
+                                        <p t-if="appointment.room_id">
+                                            <strong>Phòng:</strong> <t t-esc="appointment.room_id.name"/>
+                                        </p>
+                                    </div>
+                                    <div class="card-footer text-center">
+                                        <a t-att-href="'/clinic/appointment/%s' % appointment.id" class="btn btn-primary">
+                                            <i class="fa fa-eye"></i> Chi tiết
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="alert alert-info">
+                        <p class="mb-0 text-center">Không có lịch hẹn nào phù hợp với điều kiện tìm kiếm.</p>
+                    </div>
+                </t>
+            </t>
+
+            <!-- Form validation script -->
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    // Form validation
+                    $('.appointment-form').on('submit', function(e) {
+                        var isValid = true;
+
+                        // Check required fields
+                        $(this).find('[required]').each(function() {
+                            if (!$(this).val()) {
+                                isValid = false;
+                                $(this).addClass('is-invalid');
+                            } else {
+                                $(this).removeClass('is-invalid');
+                            }
+                        });
+
+                        if (!isValid) {
+                            e.preventDefault();
+                            alert('Vui lòng điền đầy đủ thông tin bắt buộc');
+                        }
+                    });
+                });
+            </script>
+        </t>
+    </template>
+</odoo>
