@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template chi tiết lịch hẹn -->
+    <template id="appointment_detail_template" name="Appointment Detail">
+        <t t-call="appointment_management.appointment_layout">
+            <!-- Breadcrumb và nút quay lại -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="/clinic/appointments">Quản lý lịch hẹn</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                Chi tiết lịch hẹn
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Thông báo kết quả -->
+            <div t-if="request.params.get('updated')" class="alert alert-success alert-dismissible fade show" role="alert">
+                Đã cập nhật lịch hẹn thành công!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&amp;times;</span>
+                </button>
+            </div>
+            <div t-if="request.params.get('action_success')" class="alert alert-success alert-dismissible fade show" role="alert">
+                Đã thực hiện thao tác thành công!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&amp;times;</span>
+                </button>
+            </div>
+            <div t-if="request.params.get('error')" class="alert alert-danger alert-dismissible fade show" role="alert">
+                Có lỗi xảy ra: <t t-esc="request.params.get('message', 'Vui lòng kiểm tra lại thông tin')"/>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&amp;times;</span>
+                </button>
+            </div>
+
+            <!-- Thông tin lịch hẹn -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><t t-esc="appointment.name"/> - Chi tiết lịch hẹn</h4>
+                    <span t-attf-class="badge badge-pill badge-{{ appointment.state == 'draft' and 'info' or
+                                                                    appointment.state == 'confirmed' and 'success' or
+                                                                    appointment.state == 'done' and 'secondary' or
+                                                                    appointment.state == 'cancelled' and 'danger' }}">
+                        <t t-if="appointment.state == 'draft'">Nháp</t>
+                        <t t-elif="appointment.state == 'confirmed'">Đã xác nhận</t>
+                        <t t-elif="appointment.state == 'done'">Hoàn thành</t>
+                        <t t-elif="appointment.state == 'cancelled'">Đã hủy</t>
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">Thông tin bệnh nhân</h5>
+                            <p><strong>Mã bệnh nhân:</strong> <t t-esc="appointment.patient_id.code"/></p>
+                            <p><strong>Tên bệnh nhân:</strong> <t t-esc="appointment.patient_id.name"/></p>
+                            <p><strong>Giới tính:</strong>
+                                <t t-if="appointment.patient_id.gender == 'male'">Nam</t>
+                                <t t-elif="appointment.patient_id.gender == 'female'">Nữ</t>
+                                <t t-else="">Khác</t>
+                            </p>
+                            <p><strong>Tuổi:</strong> <t t-esc="appointment.patient_id.age"/></p>
+                            <p><strong>Số điện thoại:</strong> <t t-esc="appointment.patient_id.phone or 'Không có'"/></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">Thông tin lịch hẹn</h5>
+                            <p><strong>Bác sĩ:</strong> <t t-esc="appointment.staff_id.name"/></p>
+                            <p><strong>Ngày giờ hẹn:</strong> <t t-esc="appointment.appointment_date.strftime('%d/%m/%Y %H:%M')"/></p>
+                            <p><strong>Phòng khám:</strong> <t t-esc="appointment.room_id.name if appointment.room_id else 'Chưa chỉ định'"/></p>
+                            <p><strong>Ghi chú:</strong> <t t-esc="appointment.note or 'Không có'"/></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <!-- Các nút thao tác -->
+                    <div class="text-center">
+                        <t t-if="appointment.state == 'draft'">
+                            <a t-att-href="'/clinic/appointment/%s/action?action=confirm' % appointment.id"
+                               class="btn btn-success btn-action mr-2">
+                                <i class="fa fa-check-circle"></i> Xác nhận
+                            </a>
+                            <a t-att-href="'/clinic/appointment/%s/action?action=cancel' % appointment.id"
+                               class="btn btn-danger btn-action mr-2"
+                               onclick="return confirm('Bạn có chắc chắn muốn hủy lịch hẹn này?')">
+                                <i class="fa fa-times-circle"></i> Hủy
+                            </a>
+                        </t>
+                        <t t-if="appointment.state == 'confirmed'">
+                            <a t-att-href="'/clinic/appointment/%s/action?action=done' % appointment.id"
+                               class="btn btn-secondary btn-action mr-2">
+                                <i class="fa fa-check-square"></i> Hoàn thành
+                            </a>
+                            <a t-att-href="'/clinic/appointment/%s/action?action=cancel' % appointment.id"
+                               class="btn btn-danger btn-action mr-2"
+                               onclick="return confirm('Bạn có chắc chắn muốn hủy lịch hẹn này?')">
+                                <i class="fa fa-times-circle"></i> Hủy
+                            </a>
+                        </t>
+                        <t t-if="appointment.state == 'cancelled'">
+                            <a t-att-href="'/clinic/appointment/%s/action?action=draft' % appointment.id"
+                               class="btn btn-info btn-action mr-2">
+                                <i class="fa fa-undo"></i> Đặt về nháp
+                            </a>
+                        </t>
+                        <a href="/clinic/appointments" class="btn btn-primary btn-action">
+                            <i class="fa fa-list"></i> Quay lại danh sách
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form chỉnh sửa thông tin lịch hẹn -->
+            <t t-if="appointment.state in ['draft', 'confirmed']">
+                <div class="card form-container">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="mb-0">Chỉnh sửa lịch hẹn</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" t-att-action="'/clinic/appointment/%s/update' % appointment.id" class="appointment-form">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="staff_id">Bác sĩ</label>
+                                    <select name="staff_id" id="staff_id" class="form-control">
+                                        <t t-foreach="doctors" t-as="doctor">
+                                            <option t-att-value="doctor.id" t-att-selected="doctor.id == appointment.staff_id.id">
+                                                <t t-esc="doctor.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label for="room_id">Phòng khám</label>
+                                    <select name="room_id" id="room_id" class="form-control">
+                                        <option value="">-- Chọn phòng --</option>
+                                        <t t-foreach="rooms" t-as="room">
+                                            <option t-att-value="room.id" t-att-selected="room.id == appointment.room_id.id">
+                                                <t t-esc="room.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="appointment_date">Ngày hẹn</label>
+                                    <input type="date" class="form-control" id="appointment_date" name="appointment_date"
+                                           t-att-value="appointment.appointment_date.strftime('%Y-%m-%d')"/>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label for="appointment_time">Giờ hẹn</label>
+                                    <input type="time" class="form-control" id="appointment_time" name="appointment_time"
+                                           t-att-value="appointment.appointment_date.strftime('%H:%M')"/>
+                                    <small class="text-muted">Lịch hẹn chỉ có thể được đặt từ 8:00 sáng đến 21:00 tối</small>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="note">Ghi chú</label>
+                                <textarea name="note" id="note" class="form-control" rows="3"><t t-esc="appointment.note or ''"/></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-2">
+                                <i class="fa fa-save"></i> Cập nhật
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
