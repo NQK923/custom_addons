@@ -1,0 +1,60 @@
+/* Style cho module Patient Management */
+
+/* Card styling */
+.o_patient_card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        background-color: #4c76be;
+        color: white;
+        border-radius: 8px 8px 0 0;
+    }
+}
+
+/* Table styling */
+.o_patient_table {
+    th {
+        background-color: #f8f9fa;
+    }
+
+    .btn-group {
+        .btn {
+            margin-right: 5px;
+        }
+    }
+}
+
+/* Form controls */
+.o_patient_form {
+    label {
+        font-weight: 500;
+    }
+
+    .required::after {
+        content: " *";
+        color: #dc3545;
+    }
+}
+
+/* Patient status indicators */
+.o_patient_status {
+    &.outpatient {
+        background-color: #28a745;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+    }
+
+    &.inpatient {
+        background-color: #17a2b8;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+    }
+}

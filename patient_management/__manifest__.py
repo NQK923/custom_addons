@@ -10,12 +10,20 @@
     'category': 'Healthcare',
     'version': '0.1',
     'license': 'LGPL-3',
-    'depends': ['base'],
+    'depends': ['base', 'website'],
     'data': [
         'security/ir.model.access.csv',
         'views/clinic_patient_views.xml',
+        'views/patient_list_template.xml',
+        'views/patient_form_template.xml',
+        'views/patient_edit_templates.xml',
+        'views/website_menu.xml',
     ],
+    'assets': {
+        'web.assets_frontend': [
+            'patient_management/static/src/scss/patient_management.scss',
+        ],
+    },
     'installable': True,
     'application': True,
-    'license': 'LGPL-3',
 }
