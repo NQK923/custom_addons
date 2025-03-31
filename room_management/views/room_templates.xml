@@ -17,6 +17,22 @@
                                 </button>
                             </div>
                         </t>
+                        <t t-if="request.params.get('success') == 'assigned'">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                Phân bệnh nhân vào giường thành công!
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&amp;times;</span>
+                                </button>
+                            </div>
+                        </t>
+                        <t t-if="request.params.get('success') == 'discharged'">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                Xuất viện bệnh nhân <t t-esc="request.params.get('patient_name', '')"/> thành công!
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&amp;times;</span>
+                                </button>
+                            </div>
+                        </t>
                         <t t-if="request.params.get('error')">
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                 <t t-esc="request.params.get('error')"/>
@@ -31,11 +47,6 @@
                             <li class="nav-item">
                                 <a class="nav-link active" id="rooms-tab" data-toggle="tab" href="#rooms" role="tab" aria-controls="rooms" aria-selected="true">
                                     <i class="fa fa-building"/> Phòng khám
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="beds-tab" data-toggle="tab" href="#beds" role="tab" aria-controls="beds" aria-selected="false">
-                                    <i class="fa fa-bed"/> Giường bệnh
                                 </a>
                             </li>
                         </ul>
@@ -175,13 +186,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Nút tạo giường mới -->
-                                <div class="text-right mb-3">
-                                    <a href="/clinic/bed/create" class="btn btn-primary">
-                                        <i class="fa fa-plus"/> Tạo giường mới
-                                    </a>
-                                </div>
-
                                 <div class="card shadow-sm">
                                     <div class="card-body">
                                         <div class="table-responsive">
@@ -210,9 +214,6 @@
                                                                 <td><t t-esc="bed.patient_name or '-'"/></td>
                                                                 <td>
                                                                     <div class="btn-group">
-                                                                        <a t-att-href="'/clinic/bed/%s' % bed.id" class="btn btn-sm btn-primary">
-                                                                            <i class="fa fa-eye"/> Xem
-                                                                        </a>
                                                                         <t t-if="bed.patient_id">
                                                                             <form method="POST" t-att-action="'/clinic/bed/%s/discharge' % bed.id" class="d-inline">
                                                                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
@@ -236,21 +237,26 @@
                                                                                                 <span aria-hidden="true">&amp;times;</span>
                                                                                             </button>
                                                                                         </div>
-                                                                                        <div class="modal-body">
-                                                                                            <form t-att-action="'/clinic/bed/%s/assign' % bed.id" method="POST" t-att-id="'assignForm%s' % bed.id">
+                                                                                        <form t-att-action="'/clinic/bed/%s/assign' % bed.id" method="POST">
+                                                                                            <div class="modal-body">
                                                                                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                                                                                 <div class="form-group">
                                                                                                     <label for="patient_id">Chọn bệnh nhân:</label>
-                                                                                                    <select class="form-control patient-select" name="patient_id" required="required">
+                                                                                                    <select class="form-control" name="patient_id" required="required">
                                                                                                         <option value="">-- Chọn bệnh nhân --</option>
+                                                                                                        <t t-foreach="patients" t-as="patient">
+                                                                                                            <option t-att-value="patient.id">
+                                                                                                                <t t-esc="patient.code"/> - <t t-esc="patient.name"/>
+                                                                                                            </option>
+                                                                                                        </t>
                                                                                                     </select>
                                                                                                 </div>
-                                                                                            </form>
-                                                                                        </div>
-                                                                                        <div class="modal-footer">
-                                                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                                                                                            <button type="submit" class="btn btn-primary" t-att-form="'assignForm%s' % bed.id">Phân bệnh nhân</button>
-                                                                                        </div>
+                                                                                            </div>
+                                                                                            <div class="modal-footer">
+                                                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                                                                                <button type="submit" class="btn btn-primary">Phân bệnh nhân</button>
+                                                                                            </div>
+                                                                                        </form>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -275,30 +281,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Script để duy trì tab khi load lại trang -->
-            <script type="text/javascript">
-                $(document).ready(function() {
-                    // Kích hoạt tab giường nếu có tham số active_tab
-                    var activeTab = new URLSearchParams(window.location.search).get('active_tab');
-                    if (activeTab === 'beds') {
-                        $('#beds-tab').tab('show');
-                    }
-
-                    // Thêm tham số active_tab khi chuyển tab
-                    $('#beds-tab').on('shown.bs.tab', function (e) {
-                        var url = new URL(window.location.href);
-                        url.searchParams.set('active_tab', 'beds');
-                        window.history.replaceState({}, '', url);
-                    });
-
-                    $('#rooms-tab').on('shown.bs.tab', function (e) {
-                        var url = new URL(window.location.href);
-                        url.searchParams.delete('active_tab');
-                        window.history.replaceState({}, '', url);
-                    });
-                });
-            </script>
         </t>
     </template>
 
@@ -464,6 +446,9 @@
                         <t t-elif="request.params.get('success') == 'assigned'">
                             Phân bệnh nhân vào giường thành công!
                         </t>
+                        <t t-elif="request.params.get('success') == 'discharged'">
+                            Xuất viện bệnh nhân thành công!
+                        </t>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&amp;times;</span>
                         </button>
@@ -581,22 +566,26 @@
                                                                                     <span aria-hidden="true">&amp;times;</span>
                                                                                 </button>
                                                                             </div>
-                                                                            <div class="modal-body">
-                                                                                <form t-att-action="'/clinic/bed/%s/assign' % bed.id" method="POST" t-att-id="'assignForm%s' % bed.id">
+                                                                            <form t-att-action="'/clinic/bed/%s/assign' % bed.id" method="POST">
+                                                                                <div class="modal-body">
                                                                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-
                                                                                     <div class="form-group">
                                                                                         <label for="patient_id">Chọn bệnh nhân:</label>
-                                                                                        <select class="form-control patient-select" name="patient_id" required="required">
+                                                                                        <select class="form-control" name="patient_id" required="required">
                                                                                             <option value="">-- Chọn bệnh nhân --</option>
+                                                                                            <t t-foreach="patients" t-as="patient">
+                                                                                                <option t-att-value="patient.id">
+                                                                                                    <t t-esc="patient.code"/> - <t t-esc="patient.name"/>
+                                                                                                </option>
+                                                                                            </t>
                                                                                         </select>
                                                                                     </div>
-                                                                                </form>
-                                                                            </div>
-                                                                            <div class="modal-footer">
-                                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                                                                                <button type="submit" class="btn btn-primary" t-att-form="'assignForm%s' % bed.id">Phân bệnh nhân</button>
-                                                                            </div>
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                                                                    <button type="submit" class="btn btn-primary">Phân bệnh nhân</button>
+                                                                                </div>
+                                                                            </form>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -642,7 +631,6 @@
                     </div>
                 </div>
             </div>
-
         </t>
     </template>
 </odoo>
