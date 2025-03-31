@@ -1,60 +1,322 @@
-/* Style cho module Patient Management */
+/* Modern & Professional Patient Management System Styles */
 
-/* Card styling */
+/* Variables */
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --secondary: #64748b;
+    --success: #10b981;
+    --info: #06b6d4;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --light: #f1f5f9;
+    --dark: #1e293b;
+    --border-radius: 0.5rem;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Global Styling */
+.o_patient_container {
+    padding: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Card Styling */
 .o_patient_card {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-
-    &:hover {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
+    box-shadow: var(--card-shadow);
+    border: none;
+    border-radius: var(--border-radius);
+    overflow: hidden;
 
     .card-header {
-        background-color: #4c76be;
+        background-color: var(--primary);
         color: white;
-        border-radius: 8px 8px 0 0;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        border-bottom: none;
+
+        h3, h4 {
+            margin-bottom: 0;
+        }
+    }
+
+    .card-body {
+        padding: 1.5rem;
     }
 }
 
-/* Table styling */
+/* Table Styling */
 .o_patient_table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+
     th {
-        background-color: #f8f9fa;
+        background-color: var(--light);
+        color: var(--dark);
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        text-transform: uppercase;
+        font-size: 0.875rem;
+        letter-spacing: 0.05em;
+        border-bottom: 2px solid #e2e8f0;
     }
 
-    .btn-group {
-        .btn {
-            margin-right: 5px;
+    td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    tbody tr {
+        /* Không có hiệu ứng hover */
+    }
+
+    .btn-group .btn {
+        margin-right: 0.5rem;
+        border-radius: 0.375rem;
+    }
+
+    /* Status indicators */
+    .badge {
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+        font-weight: 600;
+        text-transform: uppercase;
+        border-radius: 9999px;
+
+        &.badge-outpatient {
+            background-color: var(--success);
+            color: white;
+        }
+
+        &.badge-inpatient {
+            background-color: var(--info);
+            color: white;
         }
     }
 }
 
-/* Form controls */
+/* Form Controls */
 .o_patient_form {
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
     label {
         font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+    }
+
+    .form-control {
+        border-radius: 0.375rem;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #cbd5e1;
+
+        &:focus {
+            border-color: var(--primary);
+            box-shadow: none;
+        }
+    }
+
+    textarea.form-control {
+        min-height: 100px;
     }
 
     .required::after {
         content: " *";
-        color: #dc3545;
+        color: var(--danger);
     }
 }
 
-/* Patient status indicators */
-.o_patient_status {
-    &.outpatient {
-        background-color: #28a745;
-        color: white;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
+/* Button Styling */
+.btn {
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+
+    &.btn-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
     }
 
-    &.inpatient {
-        background-color: #17a2b8;
-        color: white;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
+    &.btn-outline-primary {
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    &.btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        i {
+            margin-right: 0.5rem;
+        }
+    }
+}
+
+/* Search and Filter Controls */
+.o_patient_search {
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--card-shadow);
+
+    .input-group {
+        .form-control {
+            border-radius: 0.375rem 0 0 0.375rem;
+        }
+
+        .btn {
+            border-radius: 0 0.375rem 0.375rem 0;
+        }
+    }
+
+    .filter-options {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+}
+
+/* Patient Info Display */
+.o_patient_info {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+
+    .info-item {
+        margin-bottom: 0.75rem;
+
+        .info-label {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: var(--dark);
+        }
+    }
+}
+
+/* Tabs Styling */
+.o_patient_tabs {
+    .nav-tabs {
+        border-bottom: 1px solid #e2e8f0;
+
+        .nav-item {
+            margin-bottom: -1px;
+        }
+
+        .nav-link {
+            border: none;
+            border-bottom: 2px solid transparent;
+            background: transparent;
+            color: var(--secondary);
+            padding: 0.75rem 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+
+            &:hover {
+                color: var(--primary);
+            }
+
+            &.active {
+                color: var(--primary);
+                border-bottom-color: var(--primary);
+            }
+        }
+    }
+
+    .tab-content {
+        padding: 1.5rem 0;
+    }
+}
+
+/* Pagination Controls */
+.o_patient_pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+
+    .page-item {
+        .page-link {
+            color: var(--primary);
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            margin: 0 0.25rem;
+            padding: 0.5rem 0.75rem;
+        }
+
+        &.active .page-link {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+    }
+}
+
+/* Insurance Info Styling */
+.insurance-info {
+    border-left: 4px solid var(--info);
+    padding-left: 1rem;
+
+    &.expired {
+        border-left-color: var(--warning);
+    }
+
+    &.none {
+        border-left-color: var(--secondary);
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .o_patient_info {
+        grid-template-columns: 1fr;
+    }
+
+    .o_patient_table {
+        th, td {
+            padding: 0.75rem 0.5rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            align-items: flex-start;
+
+            .btn {
+                margin-bottom: 0.5rem;
+                width: 100%;
+            }
+        }
+    }
+}
+
+/* Notifications without animations */
+.o_patient_notification {
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+
+    &.success {
+        background-color: rgba(16, 185, 129, 0.1);
+        border-left: 4px solid var(--success);
+    }
+
+    &.warning {
+        background-color: rgba(245, 158, 11, 0.1);
+        border-left: 4px solid var(--warning);
+    }
+
+    &.error {
+        background-color: rgba(239, 68, 68, 0.1);
+        border-left: 4px solid var(--danger);
     }
 }
