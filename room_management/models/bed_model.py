@@ -15,7 +15,7 @@ class ClinicBed(models.Model):
         string='Trạng thái',
         default='available',
         compute="_compute_status",
-        stored=True
+        store=True
     )
     patient_id = fields.Many2one(
         comodel_name='clinic.patient',
@@ -33,7 +33,8 @@ class ClinicBed(models.Model):
                 record.patient_id.patient_type = "inpatient"
             else:
                 record.status = "available"
-                record.patient_id.patient_type = "outpatient"
+                if record.patient_id.patient_type == "inpatient":
+                    record.patient_id.patient_type = "outpatient"
 
     @api.constrains('patient_id')
     def _constrains_patient_id(self):
@@ -42,15 +43,16 @@ class ClinicBed(models.Model):
                 patient_record = self.env['clinic.bed'].search(
                     [
                         ('patient_id', '=', record.patient_id.id),
-                        # ('room_id', '=', record.room_id.id)
+                        ('id', '!=', record.id)
                     ]
                 )
-                if len(patient_record) > 1:
+                if patient_record:
                     raise ValidationError("Bệnh nhân đã có giường")
 
 
-    # Nut xuat vien
+    # Nút xuất viện
     def action_out(self):
         self.ensure_one()
-        self.patient_id.patient_type = 'outpatient'
-        self.patient_id = False
+        if self.patient_id:
+            self.patient_id.patient_type = 'outpatient'
+            self.patient_id = False

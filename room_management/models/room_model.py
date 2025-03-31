@@ -27,9 +27,6 @@ class ClinicRoom(models.Model):
         comodel_name='clinic.bed',
         inverse_name='room_id',
         string='Danh sách giường',
-        compute="_compute_bed_ids",
-        store=True,
-        readonly=False,
     )
     note = fields.Text(string='Ghi chú')
 
@@ -50,18 +47,48 @@ class ClinicRoom(models.Model):
             else:
                 record.status = 'available'
 
-    @api.depends('capacity')
-    def _compute_bed_ids(self):
-        context = self.env.context
-        active_id = context.get('params', {}).get('resId', False)
-        for record in self:
-            if record.capacity >= 1:
-                bed_vals = [dict(status='available', room_id=active_id) for i in range(record.capacity)]
-                bed_ids = self.env['clinic.bed'].create(bed_vals)
-                record.write(
-                    {
-                        'bed_ids': [(6, 0, bed_ids.ids)]
-                    }
-                )
-            else:
-                record.bed_ids = False
+    @api.model_create_multi
+    def create(self, vals_list):
+        rooms = super(ClinicRoom, self).create(vals_list)
+        # Tạo giường sau khi phòng đã được tạo và có ID
+        for room in rooms:
+            if room.capacity >= 1:
+                bed_vals = []
+                for i in range(room.capacity):
+                    bed_vals.append({
+                        'status': 'available',
+                        'room_id': room.id
+                    })
+                self.env['clinic.bed'].create(bed_vals)
+        return rooms
+
+    def write(self, vals):
+        old_capacity = {room.id: room.capacity for room in self}
+        result = super(ClinicRoom, self).write(vals)
+
+        # Xử lý thay đổi sức chứa
+        if 'capacity' in vals:
+            for room in self:
+                current_beds = len(room.bed_ids)
+                # Nếu tăng sức chứa, thêm giường mới
+                if room.capacity > current_beds:
+                    bed_vals = []
+                    for i in range(current_beds, room.capacity):
+                        bed_vals.append({
+                            'status': 'available',
+                            'room_id': room.id
+                        })
+                    self.env['clinic.bed'].create(bed_vals)
+                # Nếu giảm sức chứa, xóa giường trống
+                elif room.capacity < current_beds:
+                    empty_beds = room.bed_ids.filtered(lambda b: not b.patient_id)
+                    if len(empty_beds) >= (current_beds - room.capacity):
+                        # Xóa số giường trống cần thiết
+                        beds_to_remove = empty_beds[:(current_beds - room.capacity)]
+                        beds_to_remove.unlink()
+                    else:
+                        # Nếu không đủ giường trống, reset về capacity cũ và hiển thị lỗi
+                        room.capacity = old_capacity[room.id]
+                        raise ValidationError("Không thể giảm sức chứa vì có bệnh nhân đang sử dụng giường")
+
+        return result

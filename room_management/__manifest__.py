@@ -11,12 +11,13 @@
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/room_templates.xml',
+        'views/bed_templates.xml',
         'views/website_menu.xml',
     ],
     'assets': {
         'web.assets_frontend': [
-            ('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css', {'external': True}),
-            ('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js', {'external': True}),
+            '/room_management/static/lib/select2/css/select2.min.css',
+            '/room_management/static/lib/select2/js/select2.min.js',
             '/room_management/static/src/css/room_management.css',
             '/room_management/static/src/js/room_management.js',
         ],
