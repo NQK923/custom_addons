@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template for adding/editing pharmacy products -->
+    <template id="pharmacy_product_form_template" name="Pharmacy Product Form">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/pharmacy">Dashboard</a></li>
+                                <li class="breadcrumb-item"><a href="/pharmacy/products">Kho dược phẩm</a></li>
+                                <li class="breadcrumb-item active">
+                                    <t t-if="edit">Chỉnh sửa dược phẩm</t>
+                                    <t t-else="">Thêm dược phẩm mới</t>
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h1>
+                            <t t-if="edit">Chỉnh sửa dược phẩm</t>
+                            <t t-else="">Thêm dược phẩm mới</t>
+                        </h1>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <t t-if="edit">
+                            <a t-att-href="'/pharmacy/product/%s' % product.id" class="btn btn-info">
+                                <i class="fa fa-eye"></i> Xem chi tiết
+                            </a>
+                        </t>
+                    </div>
+                </div>
+
+                <t t-if="error">
+                    <div class="alert alert-danger" role="alert">
+                        <strong>Lỗi:</strong> <t t-esc="error"/>
+                    </div>
+                </t>
+
+                <div class="card">
+                    <div class="card-body">
+                        <form t-attf-action="#{edit and '/pharmacy/product/%s/edit' % product.id or '/pharmacy/product/new'}" method="POST">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="row">
+                                <!-- Left column -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="name">Tên thuốc <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="name" name="name" required="required"
+                                               t-att-value="values.get('name', '')"/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="code">Mã thuốc <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="code" name="code" required="required"
+                                               t-att-value="values.get('code', '')" t-att-readonly="edit"/>
+                                        <small class="form-text text-muted" t-if="not edit">Mã thuốc phải là duy nhất</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="category">Loại thuốc</label>
+                                        <input type="text" class="form-control" id="category" name="category"
+                                               t-att-value="values.get('category', '')"/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="manufacturer">Nhà sản xuất</label>
+                                        <input type="text" class="form-control" id="manufacturer" name="manufacturer"
+                                               t-att-value="values.get('manufacturer', '')"/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="uom_id">Đơn vị tính <span class="text-danger">*</span></label>
+                                        <select class="form-control" id="uom_id" name="uom_id" required="required">
+                                            <option value="pill" t-att-selected="values.get('uom_id') == 'pill'">Viên</option>
+                                            <option value="bottle" t-att-selected="values.get('uom_id') == 'bottle'">Chai</option>
+                                            <option value="box" t-att-selected="values.get('uom_id') == 'box'">Hộp</option>
+                                            <option value="pack" t-att-selected="values.get('uom_id') == 'pack'">Gói</option>
+                                            <option value="tube" t-att-selected="values.get('uom_id') == 'tube'">Ống</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Right column -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="purchase_price">Giá nhập <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="purchase_price" name="purchase_price"
+                                                  required="required" min="0" step="0.01"
+                                                  t-att-value="values.get('purchase_price', '')"/>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">VNĐ</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="unit_price">Giá bán <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="unit_price" name="unit_price"
+                                                  required="required" min="0" step="0.01"
+                                                  t-att-value="values.get('unit_price', '')"/>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">VNĐ</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="quantity">Số lượng tồn kho <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="quantity" name="quantity"
+                                              required="required" min="0" step="1"
+                                              t-att-value="values.get('quantity', 0)"/>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="date">Ngày sản xuất</label>
+                                            <input type="date" class="form-control" id="date" name="date"
+                                                   t-att-value="values.get('date')"/>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="expiry">Hạn sử dụng</label>
+                                            <input type="date" class="form-control" id="expiry" name="expiry"
+                                                   t-att-value="values.get('expiry')"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="insurance_covered" name="insurance_covered"
+                                                   t-att-checked="values.get('insurance_covered')"/>
+                                            <label class="custom-control-label" for="insurance_covered">Được bảo hiểm chi trả</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description">Mô tả</label>
+                                <textarea class="form-control" id="description" name="description" rows="4"><t t-esc="values.get('description', '')"/></textarea>
+                            </div>
+
+                            <div class="form-group text-right">
+                                <a href="/pharmacy/products" class="btn btn-secondary mr-2">
+                                    <i class="fa fa-times"></i> Hủy
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i t-if="edit" class="fa fa-save"></i>
+                                    <i t-else="" class="fa fa-plus"></i>
+                                    <t t-if="edit">Cập nhật dược phẩm</t>
+                                    <t t-else="">Thêm dược phẩm</t>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JavaScript for price calculation -->
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    $('#purchase_price').on('change', function() {
+                        // Calculate suggested unit price based on purchase price
+                        var purchasePrice = parseFloat($(this).val()) || 0;
+                        var profit = getMaxProfitMargin(purchasePrice);
+                        var unitPrice = (purchasePrice * (1 + profit/100)).toFixed(2);
+                        $('#unit_price').val(unitPrice);
+                    });
+
+                    function getMaxProfitMargin(price) {
+                        if (price &lt;= 1000) return 15.0;
+                        else if (price &lt;= 5000) return 10.0;
+                        else if (price &lt;= 100000) return 7.0;
+                        else if (price &lt;= 1000000) return 5.0;
+                        else return 2.0;
+                    }
+                });
+            </script>
+        </t>
+    </template>
+</odoo>

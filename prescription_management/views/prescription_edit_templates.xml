@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template for creating a new prescription -->
+    <template id="new_prescription_template" name="New Prescription">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-12">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/pharmacy/prescriptions">Đơn thuốc</a></li>
+                                <li class="breadcrumb-item active">Thêm mới</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1>Tạo đơn thuốc mới</h1>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <form action="/pharmacy/new_prescription" method="POST">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="form-group row">
+                                <label for="patient_id" class="col-sm-2 col-form-label">Bệnh nhân <span class="text-danger">*</span></label>
+                                <div class="col-sm-10">
+                                    <select id="patient_id" name="patient_id" class="form-control" required="required">
+                                        <option value="">-- Chọn bệnh nhân --</option>
+                                        <t t-foreach="patients" t-as="patient">
+                                            <option t-att-value="patient.id">
+                                                <t t-esc="patient.code"/> - <t t-esc="patient.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="staff_id" class="col-sm-2 col-form-label">Bác sĩ</label>
+                                <div class="col-sm-10">
+                                    <select id="staff_id" name="staff_id" class="form-control">
+                                        <option value="">-- Chọn bác sĩ --</option>
+                                        <t t-foreach="staff" t-as="s">
+                                            <option t-att-value="s.id">
+                                                <t t-esc="s.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="numdate" class="col-sm-2 col-form-label">Số ngày uống <span class="text-danger">*</span></label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="numdate" name="numdate" class="form-control" required="required" min="1" step="0.5" value="7"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="notes" class="col-sm-2 col-form-label">Ghi chú</label>
+                                <div class="col-sm-10">
+                                    <textarea id="notes" name="notes" class="form-control" rows="3"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-sm-10 offset-sm-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa fa-save"></i> Tạo đơn thuốc
+                                    </button>
+                                    <a href="/pharmacy/prescriptions" class="btn btn-secondary ml-2">
+                                        <i class="fa fa-times"></i> Hủy
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Template for editing a prescription -->
+    <template id="edit_prescription_template" name="Edit Prescription">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-12">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/pharmacy/prescriptions">Đơn thuốc</a></li>
+                                <li class="breadcrumb-item"><a t-att-href="'/pharmacy/prescription/%s' % prescription.id">Chi tiết</a></li>
+                                <li class="breadcrumb-item active">Chỉnh sửa</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h1>Chỉnh sửa đơn thuốc: <t t-esc="prescription.name"/></h1>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <a t-att-href="'/pharmacy/prescription/%s' % prescription.id" class="btn btn-info">
+                            <i class="fa fa-eye"></i> Xem chi tiết
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <strong>Bệnh nhân:</strong> <t t-esc="prescription.patient_id.name"/> (<t t-esc="prescription.patient_id.code"/>)
+                            <t t-if="prescription.staff_id">
+                                | <strong>Bác sĩ:</strong> <t t-esc="prescription.staff_id.name"/>
+                            </t>
+                            | <strong>Số ngày uống:</strong> <t t-esc="prescription.numdate"/> ngày
+                        </div>
+                    </div>
+                </div>
+
+                <t t-if="error_message">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                <t t-esc="error_message"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Thuốc trong đơn</h5>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="prescription_lines">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th width="5%">#</th>
+                                                    <th width="30%">Thuốc</th>
+                                                    <th width="15%">Số lượng</th>
+                                                    <th width="20%">Liều lượng</th>
+                                                    <th width="20%">Hướng dẫn</th>
+                                                    <th width="10%">Thao tác</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="prescription_lines" t-as="line">
+                                                    <tr>
+                                                        <td t-esc="line_index + 1"/>
+                                                        <td>
+                                                            <div t-esc="line.product_id.name"/>
+                                                            <small class="text-muted d-block" t-esc="line.product_id.code"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="line.quantity"/>
+                                                            <small t-esc="line.product_id.uom_id"/>
+                                                        </td>
+                                                        <td t-esc="line.dosage"/>
+                                                        <td t-esc="line.instructions or '-'"/>
+                                                        <td>
+                                                            <a t-att-href="'/pharmacy/prescription/line/%s/delete' % line.id"
+                                                               class="btn btn-sm btn-danger"
+                                                               onclick="return confirm('Bạn có chắc chắn muốn xóa thuốc này?')">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="alert alert-warning">
+                                        Đơn thuốc này chưa có thuốc nào. Vui lòng thêm thuốc bên dưới.
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">Thêm thuốc vào đơn</h5>
+                            </div>
+                            <div class="card-body">
+                                <form t-att-action="'/pharmacy/prescription/%s/edit' % prescription.id" method="POST">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                    <div class="form-group row">
+                                        <label for="product_id" class="col-sm-2 col-form-label">Thuốc <span class="text-danger">*</span></label>
+                                        <div class="col-sm-10">
+                                            <select id="product_id" name="product_id" class="form-control" required="required">
+                                                <option value="">-- Chọn thuốc --</option>
+                                                <t t-foreach="products" t-as="product">
+                                                    <option t-att-value="product.id">
+                                                        <t t-esc="product.code"/> - <t t-esc="product.name"/>
+                                                        (<t t-esc="product.quantity"/> <t t-esc="product.uom_id"/>)
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="quantity" class="col-sm-2 col-form-label">Số lượng <span class="text-danger">*</span></label>
+                                        <div class="col-sm-4">
+                                            <input type="number" id="quantity" name="quantity" class="form-control" required="required" min="0.5" step="0.5"/>
+                                        </div>
+
+                                        <label for="dosage" class="col-sm-2 col-form-label">Liều lượng <span class="text-danger">*</span></label>
+                                        <div class="col-sm-4">
+                                            <input type="text" id="dosage" name="dosage" class="form-control" required="required" placeholder="Ví dụ: 1 viên/ngày/3 bữa"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <label for="instructions" class="col-sm-2 col-form-label">Hướng dẫn</label>
+                                        <div class="col-sm-10">
+                                            <textarea id="instructions" name="instructions" class="form-control" rows="3" placeholder="Ví dụ: Uống sau khi ăn"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-sm-10 offset-sm-2">
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fa fa-plus"></i> Thêm thuốc
+                                            </button>
+                                            <a t-att-href="'/pharmacy/prescription/%s' % prescription.id" class="btn btn-secondary ml-2">
+                                                <i class="fa fa-check"></i> Hoàn tất
+                                            </a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
