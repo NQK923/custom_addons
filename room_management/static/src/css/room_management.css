@@ -1,0 +1,52 @@
+/* Room Management CSS */
+
+.badge-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.select2-container {
+    width: 100% !important;
+}
+
+/* Card styling */
+.room-card {
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.room-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styling */
+.room-table th {
+    background-color: #f8f9fa;
+}
+
+.room-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Button styling */
+.btn-action {
+    margin-right: 5px;
+}
+
+/* Form styling */
+.required-field::after {
+    content: "*";
+    color: red;
+    margin-left: 4px;
+}

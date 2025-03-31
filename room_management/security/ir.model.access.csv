@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_clinic_room,access.clinic.room,model_clinic_room,base.group_user,1,1,1,1
 access_clinic_bed,access.clinic.bed,model_clinic_bed,base.group_user,1,1,1,1
+access_clinic_room_public,access.clinic.room.public,model_clinic_room,,1,0,0,0
+access_clinic_bed_public,access.clinic.bed.public,model_clinic_bed,,1,0,0,0
