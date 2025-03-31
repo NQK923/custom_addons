@@ -6,7 +6,7 @@
             <div class="container mt-4 mb-5">
                 <div class="row">
                     <div class="col-12">
-                        <h1 class="text-center mb-4">Danh sách Phòng khám</h1>
+                        <h1 class="text-center mb-4">Quản lý Phòng khám</h1>
 
                         <!-- Thông báo -->
                         <t t-if="request.params.get('success') == 'deleted'">
@@ -26,94 +26,279 @@
                             </div>
                         </t>
 
-                        <!-- Nút tạo phòng mới -->
-                        <div class="text-right mb-3">
-                            <a href="/clinic/room/create" class="btn btn-primary">
-                                <i class="fa fa-plus"/> Tạo phòng mới
-                            </a>
-                        </div>
+                        <!-- Tab Navigation -->
+                        <ul class="nav nav-tabs mb-4" id="roomTabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="rooms-tab" data-toggle="tab" href="#rooms" role="tab" aria-controls="rooms" aria-selected="true">
+                                    <i class="fa fa-building"/> Phòng khám
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="beds-tab" data-toggle="tab" href="#beds" role="tab" aria-controls="beds" aria-selected="false">
+                                    <i class="fa fa-bed"/> Giường bệnh
+                                </a>
+                            </li>
+                        </ul>
 
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>Tên phòng</th>
-                                                <th>Loại phòng</th>
-                                                <th>Sức chứa</th>
-                                                <th>Trạng thái</th>
-                                                <th>Thao tác</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <t t-if="rooms">
-                                                <t t-foreach="rooms" t-as="room">
+                        <!-- Tab Content -->
+                        <div class="tab-content" id="roomTabsContent">
+                            <!-- Tab Phòng khám -->
+                            <div class="tab-pane fade show active" id="rooms" role="tabpanel" aria-labelledby="rooms-tab">
+                                <!-- Nút tạo phòng mới -->
+                                <div class="text-right mb-3">
+                                    <a href="/clinic/room/create" class="btn btn-primary">
+                                        <i class="fa fa-plus"/> Tạo phòng mới
+                                    </a>
+                                </div>
+
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead class="thead-light">
                                                     <tr>
-                                                        <td><t t-esc="room.name"/></td>
-                                                        <td>
-                                                            <t t-if="room.room_type == 'exam'">Phòng khám</t>
-                                                            <t t-elif="room.room_type == 'treatment'">Phòng điều trị</t>
-                                                            <t t-elif="room.room_type == 'emergency'">Phòng cấp cứu</t>
-                                                        </td>
-                                                        <td><t t-esc="room.capacity"/></td>
-                                                        <td>
-                                                            <span t-if="room.status == 'available'" class="badge badge-success">Còn trống</span>
-                                                            <span t-else="" class="badge badge-danger">Đã đầy</span>
-                                                        </td>
-                                                        <td>
-                                                            <div class="btn-group">
-                                                                <a t-att-href="'/clinic/room/%s' % room.id" class="btn btn-sm btn-primary">
-                                                                    <i class="fa fa-eye"/> Xem
-                                                                </a>
-                                                                <a t-att-href="'/clinic/room/%s/edit' % room.id" class="btn btn-sm btn-info">
-                                                                    <i class="fa fa-edit"/> Sửa
-                                                                </a>
-                                                                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" t-att-data-target="'#deleteModal%s' % room.id">
-                                                                    <i class="fa fa-trash"/> Xóa
-                                                                </button>
-                                                            </div>
+                                                        <th>Tên phòng</th>
+                                                        <th>Loại phòng</th>
+                                                        <th>Sức chứa</th>
+                                                        <th>Trạng thái</th>
+                                                        <th>Thao tác</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-if="rooms">
+                                                        <t t-foreach="rooms" t-as="room">
+                                                            <tr>
+                                                                <td><t t-esc="room.name"/></td>
+                                                                <td>
+                                                                    <t t-if="room.room_type == 'exam'">Phòng khám</t>
+                                                                    <t t-elif="room.room_type == 'treatment'">Phòng điều trị</t>
+                                                                    <t t-elif="room.room_type == 'emergency'">Phòng cấp cứu</t>
+                                                                </td>
+                                                                <td><t t-esc="room.capacity"/></td>
+                                                                <td>
+                                                                    <span t-if="room.status == 'available'" class="badge badge-success">Còn trống</span>
+                                                                    <span t-else="" class="badge badge-danger">Đã đầy</span>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="btn-group">
+                                                                        <a t-att-href="'/clinic/room/%s' % room.id" class="btn btn-sm btn-primary">
+                                                                            <i class="fa fa-eye"/> Xem
+                                                                        </a>
+                                                                        <a t-att-href="'/clinic/room/%s/edit' % room.id" class="btn btn-sm btn-info">
+                                                                            <i class="fa fa-edit"/> Sửa
+                                                                        </a>
+                                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" t-att-data-target="'#deleteModal%s' % room.id">
+                                                                            <i class="fa fa-trash"/> Xóa
+                                                                        </button>
+                                                                    </div>
 
-                                                            <!-- Modal xác nhận xóa -->
-                                                            <div class="modal fade" t-att-id="'deleteModal%s' % room.id" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                                                <div class="modal-dialog" role="document">
-                                                                    <div class="modal-content">
-                                                                        <div class="modal-header">
-                                                                            <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
-                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                                <span aria-hidden="true">&amp;times;</span>
-                                                                            </button>
-                                                                        </div>
-                                                                        <div class="modal-body">
-                                                                            Bạn có chắc chắn muốn xóa phòng <strong><t t-esc="room.name"/></strong>?
-                                                                        </div>
-                                                                        <div class="modal-footer">
-                                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                                                                            <form t-att-action="'/clinic/room/%s/delete' % room.id" method="POST">
-                                                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                                                                <button type="submit" class="btn btn-danger">Xóa</button>
-                                                                            </form>
+                                                                    <!-- Modal xác nhận xóa -->
+                                                                    <div class="modal fade" t-att-id="'deleteModal%s' % room.id" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                                                        <div class="modal-dialog" role="document">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+                                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                        <span aria-hidden="true">&amp;times;</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    Bạn có chắc chắn muốn xóa phòng <strong><t t-esc="room.name"/></strong>?
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                                                                    <form t-att-action="'/clinic/room/%s/delete' % room.id" method="POST">
+                                                                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                                                        <button type="submit" class="btn btn-danger">Xóa</button>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            </div>
-                                                        </td>
+                                                                </td>
+                                                            </tr>
+                                                        </t>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <tr>
+                                                            <td colspan="5" class="text-center">Không có phòng nào</td>
+                                                        </tr>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab Giường bệnh -->
+                            <div class="tab-pane fade" id="beds" role="tabpanel" aria-labelledby="beds-tab">
+                                <!-- Form tìm kiếm -->
+                                <div class="card shadow-sm mb-4">
+                                    <div class="card-header bg-light">
+                                        <h4 class="mb-0">Tìm kiếm</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <form method="GET" action="/clinic/rooms" id="bedSearchForm">
+                                            <input type="hidden" name="active_tab" value="beds"/>
+                                            <div class="row">
+                                                <div class="col-md-5">
+                                                    <div class="form-group">
+                                                        <label for="search_room">Phòng:</label>
+                                                        <select class="form-control" id="search_room" name="search_room">
+                                                            <option value="">-- Tất cả phòng --</option>
+                                                            <t t-foreach="rooms" t-as="room">
+                                                                <option t-att-value="room.id" t-att-selected="str(room.id) == request.params.get('search_room', '')">
+                                                                    <t t-esc="room.name"/>
+                                                                </option>
+                                                            </t>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <div class="form-group">
+                                                        <label for="search_status">Trạng thái:</label>
+                                                        <select class="form-control" id="search_status" name="search_status">
+                                                            <option value="">-- Tất cả trạng thái --</option>
+                                                            <option value="available" t-att-selected="request.params.get('search_status') == 'available'">Còn trống</option>
+                                                            <option value="occupied" t-att-selected="request.params.get('search_status') == 'occupied'">Có bệnh nhân</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2 d-flex align-items-end">
+                                                    <button type="submit" class="btn btn-primary btn-block">
+                                                        <i class="fa fa-search"/> Tìm kiếm
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- Nút tạo giường mới -->
+                                <div class="text-right mb-3">
+                                    <a href="/clinic/bed/create" class="btn btn-primary">
+                                        <i class="fa fa-plus"/> Tạo giường mới
+                                    </a>
+                                </div>
+
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Phòng</th>
+                                                        <th>Trạng thái</th>
+                                                        <th>Mã bệnh nhân</th>
+                                                        <th>Tên bệnh nhân</th>
+                                                        <th>Thao tác</th>
                                                     </tr>
-                                                </t>
-                                            </t>
-                                            <t t-else="">
-                                                <tr>
-                                                    <td colspan="5" class="text-center">Không có phòng nào</td>
-                                                </tr>
-                                            </t>
-                                        </tbody>
-                                    </table>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-if="beds">
+                                                        <t t-foreach="beds" t-as="bed">
+                                                            <tr>
+                                                                <td><t t-esc="bed.id"/></td>
+                                                                <td><t t-esc="bed.room_id.name"/></td>
+                                                                <td>
+                                                                    <span t-if="bed.status == 'available'" class="badge badge-success">Còn trống</span>
+                                                                    <span t-else="" class="badge badge-warning">Có bệnh nhân</span>
+                                                                </td>
+                                                                <td><t t-esc="bed.patient_id.code or '-'"/></td>
+                                                                <td><t t-esc="bed.patient_name or '-'"/></td>
+                                                                <td>
+                                                                    <div class="btn-group">
+                                                                        <a t-att-href="'/clinic/bed/%s' % bed.id" class="btn btn-sm btn-primary">
+                                                                            <i class="fa fa-eye"/> Xem
+                                                                        </a>
+                                                                        <t t-if="bed.patient_id">
+                                                                            <form method="POST" t-att-action="'/clinic/bed/%s/discharge' % bed.id" class="d-inline">
+                                                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                                                    <i class="fa fa-sign-out"/> Xuất viện
+                                                                                </button>
+                                                                            </form>
+                                                                        </t>
+                                                                        <t t-else="">
+                                                                            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" t-att-data-target="'#assignModal%s' % bed.id">
+                                                                                <i class="fa fa-user-plus"/> Phân bệnh nhân
+                                                                            </button>
+
+                                                                            <!-- Modal phân bệnh nhân -->
+                                                                            <div class="modal fade" t-att-id="'assignModal%s' % bed.id" tabindex="-1" role="dialog" aria-hidden="true">
+                                                                                <div class="modal-dialog" role="document">
+                                                                                    <div class="modal-content">
+                                                                                        <div class="modal-header">
+                                                                                            <h5 class="modal-title">Phân bệnh nhân vào giường</h5>
+                                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                                <span aria-hidden="true">&amp;times;</span>
+                                                                                            </button>
+                                                                                        </div>
+                                                                                        <div class="modal-body">
+                                                                                            <form t-att-action="'/clinic/bed/%s/assign' % bed.id" method="POST" t-att-id="'assignForm%s' % bed.id">
+                                                                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                                                                <div class="form-group">
+                                                                                                    <label for="patient_id">Chọn bệnh nhân:</label>
+                                                                                                    <select class="form-control patient-select" name="patient_id" required="required">
+                                                                                                        <option value="">-- Chọn bệnh nhân --</option>
+                                                                                                    </select>
+                                                                                                </div>
+                                                                                            </form>
+                                                                                        </div>
+                                                                                        <div class="modal-footer">
+                                                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                                                                            <button type="submit" class="btn btn-primary" t-att-form="'assignForm%s' % bed.id">Phân bệnh nhân</button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </t>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </t>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <tr>
+                                                            <td colspan="6" class="text-center">Không tìm thấy giường bệnh nào</td>
+                                                        </tr>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Script để duy trì tab khi load lại trang -->
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    // Kích hoạt tab giường nếu có tham số active_tab
+                    var activeTab = new URLSearchParams(window.location.search).get('active_tab');
+                    if (activeTab === 'beds') {
+                        $('#beds-tab').tab('show');
+                    }
+
+                    // Thêm tham số active_tab khi chuyển tab
+                    $('#beds-tab').on('shown.bs.tab', function (e) {
+                        var url = new URL(window.location.href);
+                        url.searchParams.set('active_tab', 'beds');
+                        window.history.replaceState({}, '', url);
+                    });
+
+                    $('#rooms-tab').on('shown.bs.tab', function (e) {
+                        var url = new URL(window.location.href);
+                        url.searchParams.delete('active_tab');
+                        window.history.replaceState({}, '', url);
+                    });
+                });
+            </script>
         </t>
     </template>
 
@@ -445,7 +630,7 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            Bạn có chắc chắn muốn xóa phòng <strong><t t-esc="room.name"/></strong>?
+                            <p>Bạn có chắc chắn muốn xóa phòng <strong><t t-esc="room.name"/></strong>?</p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
@@ -457,6 +642,7 @@
                     </div>
                 </div>
             </div>
+
         </t>
     </template>
 </odoo>
