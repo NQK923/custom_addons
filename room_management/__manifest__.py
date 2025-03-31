@@ -11,15 +11,12 @@
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/room_templates.xml',
-        'views/bed_templates.xml',
         'views/website_menu.xml',
     ],
     'assets': {
         'web.assets_frontend': [
-            '/room_management/static/lib/select2/css/select2.min.css',
-            '/room_management/static/lib/select2/js/select2.min.js',
-            '/room_management/static/src/css/room_management.css',
-            '/room_management/static/src/js/room_management.js',
+            'room_management/static/src/css/room_management.css',
+            'room_management/static/src/js/room_management.js',
         ],
     },
     'installable': True,
