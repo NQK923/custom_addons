@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Template form tạo mới bệnh nhân -->
+    <template id="patient_create_template" name="Thêm bệnh nhân mới">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h1>Thêm bệnh nhân mới</h1>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <a href="/patients" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left"/> Quay lại
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post" action="/patients/create">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="name">Họ và tên<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="name" name="name" required="required"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">Email</label>
+                                        <input type="email" class="form-control" id="email" name="email"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phone">Số điện thoại</label>
+                                        <input type="tel" class="form-control" id="phone" name="phone"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="gender">Giới tính<span class="text-danger">*</span></label>
+                                        <select class="form-control" id="gender" name="gender" required="required">
+                                            <t t-foreach="genders" t-as="gender">
+                                                <option t-att-value="gender[0]"><t t-esc="gender[1]"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="date_of_birth">Ngày sinh</label>
+                                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="patient_type">Loại bệnh nhân<span class="text-danger">*</span></label>
+                                        <select class="form-control" id="patient_type" name="patient_type" required="required">
+                                            <t t-foreach="patient_types" t-as="type">
+                                                <option t-att-value="type[0]"><t t-esc="type[1]"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="note">Ghi chú</label>
+                                <textarea class="form-control" id="note" name="note" rows="5"></textarea>
+                            </div>
+
+                            <div class="form-group text-right">
+                                <a href="/patients" class="btn btn-secondary">Hủy</a>
+                                <button type="submit" class="btn btn-primary">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Template form cập nhật bệnh nhân -->
+    <template id="patient_edit_template" name="Chỉnh sửa bệnh nhân">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h1>Chỉnh sửa bệnh nhân: <t t-esc="patient.name"/></h1>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <a t-att-href="'/patients/%s' % patient.id" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left"/> Quay lại
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post" t-att-action="'/patients/%s/edit' % patient.id">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="name">Họ và tên<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="name" name="name" t-att-value="patient.name" required="required"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">Email</label>
+                                        <input type="email" class="form-control" id="email" name="email" t-att-value="patient.email"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phone">Số điện thoại</label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" t-att-value="patient.phone"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="gender">Giới tính<span class="text-danger">*</span></label>
+                                        <select class="form-control" id="gender" name="gender" required="required">
+                                            <t t-foreach="genders" t-as="gender">
+                                                <option t-att-value="gender[0]" t-att-selected="gender[0] == patient.gender"><t t-esc="gender[1]"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="date_of_birth">Ngày sinh</label>
+                                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" t-att-value="patient.date_of_birth"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Mã bệnh nhân</label>
+                                        <p class="form-control-plaintext"><t t-esc="patient.code"/></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="note">Ghi chú</label>
+                                <textarea class="form-control" id="note" name="note" rows="5"><t t-esc="patient.note"/></textarea>
+                            </div>
+
+                            <div class="form-group text-right">
+                                <a t-att-href="'/patients/%s' % patient.id" class="btn btn-secondary">Hủy</a>
+                                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="patient_form_template" name="Chi tiết bệnh nhân">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h1>Chi tiết bệnh nhân: <t t-esc="patient.name"/></h1>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <a t-att-href="'/patients/%s/edit' % patient.id" class="btn btn-warning">
+                            <i class="fa fa-edit"/> Chỉnh sửa
+                        </a>
+                        <a href="/patients" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left"/> Quay lại
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Thông tin bệnh nhân</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Mã bệnh nhân:</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-plaintext"><t t-esc="patient.code"/></p>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Họ và tên:</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-plaintext"><t t-esc="patient.name"/></p>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Email:</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-plaintext">
+                                            <t t-if="patient.email">
+                                                <a t-att-href="'mailto:%s' % patient.email">
+                                                    <t t-esc="patient.email"/>
+                                                </a>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Điện thoại:</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-plaintext">
+                                            <t t-if="patient.phone">
+                                                <a t-att-href="'tel:%s' % patient.phone">
+                                                    <t t-esc="patient.phone"/>
+                                                </a>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Ngày sinh:</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-plaintext">
+                                            <t t-if="patient.date_of_birth">
+                                                <t t-esc="patient.date_of_birth" t-options='{"widget": "date"}'/>
+                                            </t>
+                                            <t t-else="">-</t>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Tuổi:</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-plaintext"><t t-esc="patient.age"/> tuổi</p>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Giới tính:</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-plaintext">
+                                            <t t-if="patient.gender == 'male'">Nam</t>
+                                            <t t-elif="patient.gender == 'female'">Nữ</t>
+                                            <t t-else="">Khác</t>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Loại bệnh nhân:</label>
+                                    <div class="col-sm-8">
+                                        <p class="form-control-plaintext">
+                                            <t t-if="patient.patient_type == 'outpatient'">Ngoại trú</t>
+                                            <t t-else="">Nội trú</t>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin bảo hiểm y tế -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Thông tin bảo hiểm y tế</h4>
+                    </div>
+                    <div class="card-body">
+                        <t t-if="patient.has_insurance">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Số thẻ BHYT:</label>
+                                        <div class="col-sm-8">
+                                            <p class="form-control-plaintext"><t t-esc="patient.insurance_number"/></p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Nơi ĐKKCB:</label>
+                                        <div class="col-sm-8">
+                                            <p class="form-control-plaintext"><t t-esc="patient.insurance_facility"/></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Có giá trị đến:</label>
+                                        <div class="col-sm-8">
+                                            <p class="form-control-plaintext">
+                                                <t t-esc="patient.insurance_expiry" t-options='{"widget": "date"}'/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Trạng thái:</label>
+                                        <div class="col-sm-8">
+                                            <p class="form-control-plaintext"><t t-esc="patient.insurance_state"/></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="alert alert-info">
+                                Bệnh nhân chưa có bảo hiểm y tế.
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Ghi chú -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Ghi chú</h4>
+                    </div>
+                    <div class="card-body">
+                        <t t-if="patient.note">
+                            <div t-raw="patient.note"/>
+                        </t>
+                        <t t-else="">
+                            <div class="alert alert-info">
+                                Không có ghi chú.
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

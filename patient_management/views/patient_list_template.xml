@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="patient_list_template" name="Danh sách bệnh nhân">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h1>Danh sách bệnh nhân</h1>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <a href="/patients/create" class="btn btn-primary">
+                            <i class="fa fa-plus"/> Thêm bệnh nhân mới
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Bảng danh sách bệnh nhân -->
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Mã</th>
+                                    <th>Ngày đăng ký</th>
+                                    <th>Họ và tên</th>
+                                    <th>Giới tính</th>
+                                    <th>Email</th>
+                                    <th>Điện thoại</th>
+                                    <th>Tuổi</th>
+                                    <th>Loại</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="patients" t-as="patient">
+                                    <tr>
+                                        <td><t t-esc="patient.code"/></td>
+                                        <td><t t-esc="patient.date" t-options='{"widget": "datetime"}'/></td>
+                                        <td><t t-esc="patient.name"/></td>
+                                        <td>
+                                            <t t-if="patient.gender == 'male'">Nam</t>
+                                            <t t-elif="patient.gender == 'female'">Nữ</t>
+                                            <t t-else="">Khác</t>
+                                        </td>
+                                        <td><t t-esc="patient.email"/></td>
+                                        <td><t t-esc="patient.phone"/></td>
+                                        <td><t t-esc="patient.age"/></td>
+                                        <td>
+                                            <t t-if="patient.patient_type == 'outpatient'">Ngoại trú</t>
+                                            <t t-else="">Nội trú</t>
+                                        </td>
+                                        <td>
+                                            <a t-att-href="'/patients/%s' % patient.id" class="btn btn-sm btn-info">
+                                                <i class="fa fa-eye"/> Xem
+                                            </a>
+                                            <a t-att-href="'/patients/%s/edit' % patient.id" class="btn btn-sm btn-warning">
+                                                <i class="fa fa-edit"/> Sửa
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
