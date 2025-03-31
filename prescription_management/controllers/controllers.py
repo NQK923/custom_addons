@@ -187,7 +187,7 @@ class PrescriptionManagementController(http.Controller):
         except AccessError:
             return request.redirect('/pharmacy/products?deletion_error=1')
 
-    # === CLINIC SERVICES ===
+    # === CLINIC SERVICES CRUD ===
 
     @http.route('/pharmacy/services', type='http', auth='public', website=True, methods=['GET'])
     def clinic_services(self, **kwargs):
@@ -204,6 +204,100 @@ class PrescriptionManagementController(http.Controller):
             'search': search
         }
         return request.render('prescription_management.clinic_services_template', values)
+
+    @http.route('/pharmacy/service/<model("clinic.service"):service_id>', type='http', auth='public', website=True)
+    def clinic_service_detail(self, service_id, **kwargs):
+        if not service_id:
+            return request.redirect('/pharmacy/services')
+
+        values = {
+            'service': service_id,
+        }
+        return request.render('prescription_management.clinic_service_detail_template', values)
+
+    @http.route('/pharmacy/service/new', type='http', auth='user', website=True, methods=['GET', 'POST'])
+    def clinic_service_new(self, **kwargs):
+        if request.httprequest.method == 'POST':
+            try:
+                # Prepare values
+                vals = {
+                    'service_name': kwargs.get('service_name'),
+                    'price': float(kwargs.get('price', 0)),
+                    'description': kwargs.get('description'),
+                    'insurance_covered': kwargs.get('insurance_covered') == 'on',
+                    'active': kwargs.get('active') == 'on',
+                }
+
+                # Create the service
+                service = request.env['clinic.service'].sudo().create(vals)
+                return request.redirect('/pharmacy/services')
+
+            except (ValueError, ValidationError) as e:
+                values = {
+                    'error': str(e),
+                    'values': kwargs,
+                }
+                return request.render('prescription_management.clinic_service_form_template', values)
+
+        values = {
+            'values': {},
+            'edit': False,
+        }
+        return request.render('prescription_management.clinic_service_form_template', values)
+
+    @http.route('/pharmacy/service/<model("clinic.service"):service_id>/edit', type='http', auth='user', website=True,
+                methods=['GET', 'POST'])
+    def clinic_service_edit(self, service_id, **kwargs):
+        if not service_id:
+            return request.redirect('/pharmacy/services')
+
+        if request.httprequest.method == 'POST':
+            try:
+                # Prepare values
+                vals = {
+                    'service_name': kwargs.get('service_name'),
+                    'price': float(kwargs.get('price', 0)),
+                    'description': kwargs.get('description'),
+                    'insurance_covered': kwargs.get('insurance_covered') == 'on',
+                    'active': kwargs.get('active') == 'on',
+                }
+
+                # Update the service
+                service_id.sudo().write(vals)
+                return request.redirect(f'/pharmacy/service/{service_id.id}')
+
+            except (ValueError, ValidationError) as e:
+                values = {
+                    'error': str(e),
+                    'values': kwargs,
+                    'service': service_id,
+                    'edit': True,
+                }
+                return request.render('prescription_management.clinic_service_form_template', values)
+
+        values = {
+            'values': {
+                'service_name': service_id.service_name,
+                'price': service_id.price,
+                'description': service_id.description,
+                'insurance_covered': service_id.insurance_covered,
+                'active': service_id.active,
+            },
+            'service': service_id,
+            'edit': True,
+        }
+        return request.render('prescription_management.clinic_service_form_template', values)
+
+    @http.route('/pharmacy/service/<model("clinic.service"):service_id>/delete', type='http', auth='user', website=True)
+    def clinic_service_delete(self, service_id, **kwargs):
+        if not service_id:
+            return request.redirect('/pharmacy/services')
+
+        try:
+            service_id.sudo().unlink()
+            return request.redirect('/pharmacy/services?deletion_success=1')
+        except AccessError:
+            return request.redirect('/pharmacy/services?deletion_error=1')
 
     # === PRESCRIPTIONS ===
 

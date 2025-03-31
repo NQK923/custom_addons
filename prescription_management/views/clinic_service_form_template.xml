@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template for adding/editing clinic services -->
+    <template id="clinic_service_form_template" name="Clinic Service Form">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/pharmacy">Dashboard</a></li>
+                                <li class="breadcrumb-item"><a href="/pharmacy/services">Dịch vụ</a></li>
+                                <li class="breadcrumb-item active">
+                                    <t t-if="edit">Chỉnh sửa dịch vụ</t>
+                                    <t t-else="">Thêm dịch vụ mới</t>
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h1>
+                            <t t-if="edit">Chỉnh sửa dịch vụ</t>
+                            <t t-else="">Thêm dịch vụ mới</t>
+                        </h1>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <t t-if="edit">
+                            <a t-att-href="'/pharmacy/service/%s' % service.id" class="btn btn-info">
+                                <i class="fa fa-eye"></i> Xem chi tiết
+                            </a>
+                        </t>
+                    </div>
+                </div>
+
+                <t t-if="error">
+                    <div class="alert alert-danger" role="alert">
+                        <strong>Lỗi:</strong> <t t-esc="error"/>
+                    </div>
+                </t>
+
+                <div class="card">
+                    <div class="card-body">
+                        <form t-attf-action="#{edit and '/pharmacy/service/%s/edit' % service.id or '/pharmacy/service/new'}" method="POST">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="form-group">
+                                <label for="service_name">Tên dịch vụ <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="service_name" name="service_name" required="required"
+                                       t-att-value="values.get('service_name', '')"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="price">Giá dịch vụ <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="price" name="price"
+                                          required="required" min="0" step="0.01"
+                                          t-att-value="values.get('price', '')"/>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">VNĐ</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description">Mô tả</label>
+                                <textarea class="form-control" id="description" name="description" rows="4"><t t-esc="values.get('description', '')"/></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox mb-2">
+                                    <input type="checkbox" class="custom-control-input" id="insurance_covered" name="insurance_covered"
+                                           t-att-checked="values.get('insurance_covered')"/>
+                                    <label class="custom-control-label" for="insurance_covered">Được bảo hiểm chi trả</label>
+                                </div>
+
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="active" name="active"
+                                           t-att-checked="'active' not in values or values.get('active')"/>
+                                    <label class="custom-control-label" for="active">Đang hoạt động</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group text-right">
+                                <a href="/pharmacy/services" class="btn btn-secondary mr-2">
+                                    <i class="fa fa-times"></i> Hủy
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i t-if="edit" class="fa fa-save"></i>
+                                    <i t-else="" class="fa fa-plus"></i>
+                                    <t t-if="edit">Cập nhật dịch vụ</t>
+                                    <t t-else="">Thêm dịch vụ</t>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
