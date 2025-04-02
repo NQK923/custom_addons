@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Treatment Plans Template -->
+    <template id="treatment_plans_template" name="Treatment Plans">
+        <t t-call="website.layout">
+            <style>
+                .treatment-container {
+                    background-color: #f8f9fa;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    max-width: 1200px;
+                    margin: 0 auto;
+                }
+                .patient-info, .treatment-list {
+                    background-color: #fff;
+                    padding: 20px;
+                    border-radius: 8px;
+                    margin-bottom: 25px;
+                    border: 1px solid #dee2e6;
+                }
+                .section-heading {
+                    color: #007bff;
+                    border-bottom: 2px solid #007bff;
+                    padding-bottom: 8px;
+                    margin-bottom: 20px;
+                    font-size: 1.5rem;
+                }
+                .patient-data p {
+                    margin: 8px 0;
+                    font-size: 1rem;
+                    color: #343a40;
+                }
+                .patient-data strong {
+                    color: #495057;
+                    min-width: 150px;
+                    display: inline-block;
+                }
+                .search-form {
+                    max-width: 500px;
+                    margin: 0 auto 30px auto;
+                }
+                .search-form label {
+                    font-weight: 600;
+                    color: #495057;
+                }
+                .search-form .form-control {
+                    border-radius: 5px;
+                    box-shadow: none;
+                }
+                .search-form .btn-primary {
+                    width: 100%;
+                    border-radius: 5px;
+                    padding: 10px;
+                }
+                .table {
+                    margin-bottom: 0;
+                }
+                .table th {
+                    background-color: #007bff;
+                    color: #fff;
+                    padding: 12px;
+                    text-align: center;
+                }
+                .table td {
+                    vertical-align: middle;
+                    padding: 10px;
+                    text-align: center;
+                }
+                .no-data {
+                    color: #6c757d;
+                    font-style: italic;
+                    text-align: center;
+                    padding: 20px;
+                }
+                .action-btn {
+                    background-color: #17a2b8;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    padding: 6px 12px;
+                    cursor: pointer;
+                    transition: background-color 0.3s;
+                }
+                .action-btn:hover {
+                    background-color: #138496;
+                    text-decoration: none;
+                    color: white;
+                }
+            </style>
+
+            <div class="container mt-5 treatment-container">
+                <h1 class="text-center mb-4">Kế hoạch điều trị bệnh nhân</h1>
+
+                <!-- Navigation tabs -->
+                <div class="text-center mb-4">
+                    <a href="/clinic/treatment_plans" class="btn btn-primary mx-2 active">Kế hoạch điều trị</a>
+                    <a href="/clinic/patient_care" class="btn btn-outline-primary mx-2">Theo dõi chăm sóc</a>
+                </div>
+
+                <!-- Search Form -->
+                <form method="POST" action="/clinic/treatment_plans" class="search-form mb-4">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="form-group">
+                        <label for="search_value">Tìm kiếm bệnh nhân (mã hoặc tên):</label>
+                        <input type="text" class="form-control" id="search_value" name="search_value"
+                               t-att-value="search_value or ''"
+                               placeholder="Nhập mã hoặc tên bệnh nhân"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2">Tìm kiếm</button>
+                </form>
+
+                <!-- Patient Information -->
+                <t t-if="patient">
+                    <div class="patient-info">
+                        <h3 class="section-heading">Thông tin bệnh nhân</h3>
+                        <div class="row patient-data">
+                            <div class="col-md-6">
+                                <p><strong>Mã bệnh nhân:</strong> <t t-esc="patient.code"/></p>
+                                <p><strong>Họ và tên:</strong> <t t-esc="patient.name"/></p>
+                                <p><strong>Giới tính:</strong>
+                                    <t t-if="patient.gender == 'male'">Nam</t>
+                                    <t t-elif="patient.gender == 'female'">Nữ</t>
+                                    <t t-else="">Khác</t>
+                                </p>
+                                <p><strong>Tuổi:</strong> <t t-esc="patient.age"/></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Ngày sinh:</strong> <t t-esc="patient.date_of_birth"/></p>
+                                <p><strong>Số điện thoại:</strong> <t t-esc="patient.phone or 'Không có'"/></p>
+                                <p><strong>Email:</strong> <t t-esc="patient.email or 'Không có'"/></p>
+                                <p><strong>Loại bệnh nhân:</strong>
+                                    <t t-if="patient.patient_type == 'outpatient'">Ngoại trú</t>
+                                    <t t-elif="patient.patient_type == 'inpatient'">Nội trú</t>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Treatment Plans -->
+                    <div class="treatment-list">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="section-heading mb-0">Danh sách kế hoạch điều trị</h3>
+                            <a t-att-href="'/clinic/treatment_plan/create?patient_id=%s' % patient.id" class="btn btn-success">
+                                <i class="fa fa-plus-circle"></i> Tạo kế hoạch mới
+                            </a>
+                        </div>
+                        <t t-if="treatment_plans">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã kế hoạch</th>
+                                            <th>Ngày bắt đầu</th>
+                                            <th>Ngày kết thúc</th>
+                                            <th>Số quá trình</th>
+                                            <th>Chi tiết</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="treatment_plans" t-as="plan">
+                                            <tr>
+                                                <td><t t-esc="plan.code"/></td>
+                                                <td><t t-esc="plan.start_date"/></td>
+                                                <td><t t-if="plan.end_date" t-esc="plan.end_date"/><t t-else="">Chưa kết thúc</t></td>
+                                                <td><t t-esc="len(plan.treatment_process_ids)"/></td>
+                                                <td>
+                                                    <a t-att-href="'/clinic/treatment_plan_details/%s' % plan.id"
+                                                       class="action-btn">
+                                                        Xem chi tiết
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="no-data">
+                                <p>Bệnh nhân chưa có kế hoạch điều trị nào.</p>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+                <t t-else="">
+                    <t t-if="search_value">
+                        <div class="alert alert-warning text-center">
+                            <i class="fa fa-exclamation-triangle"></i> Không tìm thấy bệnh nhân nào với thông tin đã nhập.
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info text-center">
+                            <i class="fa fa-info-circle"></i> Vui lòng nhập thông tin để tìm kiếm bệnh nhân.
+                        </div>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Treatment Plan Details Template -->
+    <template id="treatment_plan_details_template" name="Treatment Plan Details">
+        <t t-call="website.layout">
+            <style>
+                .details-container {
+                    background-color: #f8f9fa;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    max-width: 1200px;
+                    margin: 0 auto;
+                }
+                .plan-header, .process-list {
+                    background-color: #fff;
+                    padding: 20px;
+                    border-radius: 8px;
+                    margin-bottom: 25px;
+                    border: 1px solid #dee2e6;
+                }
+                .section-heading {
+                    color: #007bff;
+                    border-bottom: 2px solid #007bff;
+                    padding-bottom: 8px;
+                    margin-bottom: 20px;
+                    font-size: 1.5rem;
+                }
+                .plan-info p {
+                    margin: 8px 0;
+                    font-size: 1rem;
+                    color: #343a40;
+                }
+                .plan-info strong {
+                    color: #495057;
+                    min-width: 150px;
+                    display: inline-block;
+                }
+                .table {
+                    margin-bottom: 0;
+                }
+                .table th {
+                    background-color: #007bff;
+                    color: #fff;
+                    padding: 12px;
+                    text-align: center;
+                }
+                .table td {
+                    vertical-align: middle;
+                    padding: 10px;
+                    text-align: center;
+                }
+                .no-data {
+                    color: #6c757d;
+                    font-style: italic;
+                    text-align: center;
+                    padding: 20px;
+                }
+                .status-badge {
+                    padding: 5px 10px;
+                    border-radius: 20px;
+                    color: white;
+                    font-size: 0.85rem;
+                }
+                .status-pending {
+                    background-color: #ffc107;
+                }
+                .status-in-progress {
+                    background-color: #17a2b8;
+                }
+                .status-completed {
+                    background-color: #28a745;
+                }
+                .back-btn {
+                    background-color: #6c757d;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    padding: 8px 16px;
+                    cursor: pointer;
+                    transition: background-color 0.3s;
+                    text-decoration: none;
+                    display: inline-block;
+                    margin-top: 20px;
+                }
+                .back-btn:hover {
+                    background-color: #5a6268;
+                    text-decoration: none;
+                    color: white;
+                }
+            </style>
+
+            <div class="container mt-5 details-container">
+                <h1 class="text-center mb-5">Chi tiết kế hoạch điều trị</h1>
+
+                <!-- Plan Information -->
+                <div class="plan-header">
+                    <h3 class="section-heading">Thông tin kế hoạch</h3>
+                    <div class="row plan-info">
+                        <div class="col-md-6">
+                            <p><strong>Mã kế hoạch:</strong> <t t-esc="plan.code"/></p>
+                            <p><strong>Bệnh nhân:</strong> <t t-esc="plan.patient_id.name"/> (<t t-esc="plan.patient_id.code"/>)</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Ngày bắt đầu:</strong> <t t-esc="plan.start_date"/></p>
+                            <p><strong>Ngày kết thúc:</strong> <t t-if="plan.end_date" t-esc="plan.end_date"/><t t-else="">Chưa kết thúc</t></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Treatment Processes -->
+                <div class="process-list">
+                    <h3 class="section-heading">Quá trình điều trị</h3>
+                    <t t-if="processes">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Mã quá trình</th>
+                                        <th>Loại dịch vụ</th>
+                                        <th>Người thực hiện</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thời gian thực hiện</th>
+                                        <th>Đơn thuốc</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="processes" t-as="process">
+                                        <tr>
+                                            <td><t t-esc="process.code"/></td>
+                                            <td><t t-esc="process.service_id.name"/></td>
+                                            <td><t t-esc="process.executor_id.name"/></td>
+                                            <td>
+                                                <span t-att-class="'status-badge ' + ('status-pending' if process.state == 'pending' else 'status-in-progress' if process.state == 'in_progress' else 'status-completed')">
+                                                    <t t-if="process.state == 'pending'">Chưa thực hiện</t>
+                                                    <t t-elif="process.state == 'in_progress'">Đang thực hiện</t>
+                                                    <t t-elif="process.state == 'completed'">Hoàn thành</t>
+                                                </span>
+                                            </td>
+                                            <td><t t-if="process.execution_time" t-esc="process.execution_time"/><t t-else="">Chưa thực hiện</t></td>
+                                            <td><t t-if="process.prescription_id" t-esc="process.prescription_id.name"/><t t-else="">Không có</t></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="no-data">
+                            <p>Chưa có quá trình điều trị nào trong kế hoạch này.</p>
+                        </div>
+                    </t>
+                </div>
+
+                <div class="text-center">
+                    <a href="/clinic/treatment_plans" class="back-btn">
+                        <i class="fa fa-arrow-left"></i> Quay lại danh sách
+                    </a>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
