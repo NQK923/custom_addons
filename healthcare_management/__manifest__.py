@@ -36,7 +36,6 @@
         'data/sequence.xml',
         'data/appointment_reminder_cron.xml',
         'data/appointment_reminder_email_template.xml',
-        'views/website_templates/website_assets.xml',
         'views/website_templates/website_menu.xml',
         'views/website_templates/healthcare_dashboard_template.xml',
         'views/website_templates/patient_feedback_template.xml',
