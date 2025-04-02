@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Define the URL action for salary management -->
+    <record id="action_website_salary_dashboard" model="ir.actions.act_url">
+        <field name="name">Salary Management</field>
+        <field name="url">/salary/dashboard</field>
+        <field name="target">self</field>
+    </record>
+
+    <!-- Add website menu -->
+    <record id="website_menu_salary_management" model="website.menu">
+        <field name="name">Quản lý lương</field>
+        <field name="url">/salary/dashboard</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">55</field>
+    </record>
+</odoo>

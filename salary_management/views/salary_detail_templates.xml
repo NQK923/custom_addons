@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Salary Detail Template -->
+    <template id="salary_detail_template" name="Salary Detail">
+        <t t-call="website.layout">
+            <t t-call="salary_management.salary_management_styles"/>
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    // Initialize Bootstrap tabs
+                    $('.nav-tabs a').on('click', function(e) {
+                        e.preventDefault();
+                        $(this).tab('show');
+                    });
+                });
+            </script>
+            <div class="container mt-5 salary-management-container">
+                <a t-att-href="'/salary/sheet/%s' % salary.sheet_id.id" class="back-link">
+                    <i class="fa fa-arrow-left"></i> Quay lại bảng lương
+                </a>
+                <h1 class="page-title">Chi tiết lương - <t t-esc="salary.staff_id.staff_name"/></h1>
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h3 class="card-title mb-0">Thông tin nhân viên</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-5 font-weight-bold">Mã nhân viên:</div>
+                                    <div class="col-md-7"><t t-esc="salary.staff_id.name"/></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-5 font-weight-bold">Họ tên:</div>
+                                    <div class="col-md-7"><t t-esc="salary.staff_id.staff_name"/></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-5 font-weight-bold">Chức vụ:</div>
+                                    <div class="col-md-7"><t t-esc="salary.staff_id.staff_type.name"/></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-5 font-weight-bold">Số năm kinh nghiệm:</div>
+                                    <div class="col-md-7"><t t-esc="salary.staff_id.experience_year"/> năm</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-5 font-weight-bold">Số ngày công:</div>
+                                    <div class="col-md-7"><t t-esc="salary.work_days"/>/<t t-esc="salary.standard_work_days"/></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-5 font-weight-bold">Số ngày đi trễ:</div>
+                                    <div class="col-md-7"><t t-esc="salary.late_days"/></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-5 font-weight-bold">Số ngày nghỉ:</div>
+                                    <div class="col-md-7"><t t-esc="salary.absent_days"/></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h3 class="card-title mb-0">Thông tin phiếu lương</h3>
+                                <div>
+                                    <span t-if="salary.state == 'draft'" class="status-badge status-draft">Nháp</span>
+                                    <span t-if="salary.state == 'confirmed'" class="status-badge status-confirmed">Xác nhận</span>
+                                    <span t-if="salary.state == 'paid'" class="status-badge status-paid">Đã thanh toán</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6 font-weight-bold">Lương cơ bản:</div>
+                                    <div class="col-md-6 text-right"><span class="currency-vnd"><t t-esc="'{:,.0f}'.format(salary.base_salary)"/></span></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6 font-weight-bold">Tổng phụ cấp:</div>
+                                    <div class="col-md-6 text-right"><span class="currency-vnd"><t t-esc="'{:,.0f}'.format(salary.total_allowance)"/></span></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6 font-weight-bold">Tổng thưởng:</div>
+                                    <div class="col-md-6 text-right"><span class="currency-vnd"><t t-esc="'{:,.0f}'.format(salary.total_bonus)"/></span></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6 font-weight-bold">Tổng lương:</div>
+                                    <div class="col-md-6 text-right"><span class="currency-vnd"><t t-esc="'{:,.0f}'.format(salary.total_salary)"/></span></div>
+                                </div>
+                                <hr/>
+                                <div class="row mb-3">
+                                    <div class="col-md-6 font-weight-bold">Phạt đi trễ:</div>
+                                    <div class="col-md-6 text-right text-danger">-<span class="currency-vnd"><t t-esc="'{:,.0f}'.format(salary.late_penalty)"/></span></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6 font-weight-bold">Phạt nghỉ:</div>
+                                    <div class="col-md-6 text-right text-danger">-<span class="currency-vnd"><t t-esc="'{:,.0f}'.format(salary.absent_penalty)"/></span></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6 font-weight-bold">Tổng khấu trừ:</div>
+                                    <div class="col-md-6 text-right text-danger">-<span class="currency-vnd"><t t-esc="'{:,.0f}'.format(salary.total_deduction)"/></span></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6 font-weight-bold">Thuế TNCN:</div>
+                                    <div class="col-md-6 text-right text-danger">-<span class="currency-vnd"><t t-esc="'{:,.0f}'.format(salary.tax)"/></span></div>
+                                </div>
+                                <hr/>
+                                <div class="row">
+                                    <div class="col-md-6 font-weight-bold">Thực nhận:</div>
+                                    <div class="col-md-6 text-right"><strong class="text-success currency-vnd"><t t-esc="'{:,.0f}'.format(salary.net_salary)"/></strong></div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="action-buttons text-center">
+                                    <t t-if="salary.state == 'draft'">
+                                        <a t-att-href="'/salary/confirm/%s' % salary.id" class="btn btn-success">
+                                            <i class="fa fa-check"></i> Xác nhận
+                                        </a>
+                                    </t>
+                                    <t t-if="salary.state == 'confirmed'">
+                                        <a t-att-href="'/salary/pay/%s' % salary.id" class="btn btn-info">
+                                            <i class="fa fa-money"></i> Thanh toán
+                                        </a>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-lg-12">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h3 class="card-title mb-0">Quản lý phụ cấp, thưởng và khấu trừ</h3>
+                            </div>
+                            <div class="card-body">
+                                <form method="post" t-att-action="'/salary/update/%s' % salary.id">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="allowances-tab" data-toggle="tab" href="#allowances" role="tab">Phụ cấp</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="bonuses-tab" data-toggle="tab" href="#bonuses" role="tab">Thưởng</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="deductions-tab" data-toggle="tab" href="#deductions" role="tab">Khấu trừ</a>
+                                        </li>
+                                    </ul>
+
+                                    <div class="tab-content mt-4" id="myTabContent">
+                                        <!-- Allowances Tab -->
+                                        <div class="tab-pane fade show active" id="allowances" role="tabpanel">
+                                            <h4 class="mb-3">Phụ cấp áp dụng</h4>
+                                            <div class="row">
+                                                <t t-foreach="all_allowances" t-as="allowance">
+                                                    <div class="col-lg-4 col-md-6 mb-3">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input"
+                                                                   t-att-id="'allowance_%s' % allowance.id"
+                                                                   t-att-name="'allowance_ids'"
+                                                                   t-att-value="allowance.id"
+                                                                   t-att-checked="allowance in salary.allowance_ids"/>
+                                                            <label class="custom-control-label" t-att-for="'allowance_%s' % allowance.id">
+                                                                <t t-esc="allowance.allowance_name"/>
+                                                                (<span class="currency-vnd"><t t-esc="'{:,.0f}'.format(allowance.amount)"/></span>)
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+
+                                        <!-- Bonuses Tab -->
+                                        <div class="tab-pane fade" id="bonuses" role="tabpanel">
+                                            <h4 class="mb-3">Thưởng áp dụng</h4>
+                                            <div class="row">
+                                                <t t-foreach="all_bonuses" t-as="bonus">
+                                                    <div class="col-lg-4 col-md-6 mb-3">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input"
+                                                                   t-att-id="'bonus_%s' % bonus.id"
+                                                                   t-att-name="'bonus_ids'"
+                                                                   t-att-value="bonus.id"
+                                                                   t-att-checked="bonus in salary.bonus_ids"/>
+                                                            <label class="custom-control-label" t-att-for="'bonus_%s' % bonus.id">
+                                                                <t t-esc="bonus.bonus_name"/>
+                                                                (<span class="currency-vnd"><t t-esc="'{:,.0f}'.format(bonus.amount)"/></span>)
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+
+                                        <!-- Deductions Tab -->
+                                        <div class="tab-pane fade" id="deductions" role="tabpanel">
+                                            <h4 class="mb-3">Khấu trừ áp dụng</h4>
+                                            <div class="row">
+                                                <t t-foreach="all_deductions" t-as="deduction">
+                                                    <div class="col-lg-4 col-md-6 mb-3">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input"
+                                                                   t-att-id="'deduction_%s' % deduction.id"
+                                                                   t-att-name="'deduction_ids'"
+                                                                   t-att-value="deduction.id"
+                                                                   t-att-checked="deduction in salary.deduction_ids"/>
+                                                            <label class="custom-control-label" t-att-for="'deduction_%s' % deduction.id">
+                                                                <t t-esc="deduction.deduction_name"/>
+                                                                (<t t-esc="deduction.rate"/>%
+                                                                <t t-if="deduction.salary_type == 'base_salary'">của lương cơ bản</t>
+                                                                <t t-else="">của tổng lương</t>)
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group mt-4">
+                                        <button type="submit" class="btn btn-primary" t-att-disabled="salary.state != 'draft'">
+                                            <i class="fa fa-save"></i> Cập nhật
+                                        </button>
+                                        <a t-att-href="'/salary/sheet/%s' % salary.sheet_id.id" class="btn btn-secondary ml-2">
+                                            <i class="fa fa-times"></i> Hủy
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

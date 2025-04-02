@@ -15,7 +15,7 @@ Module quản lý xét nghiệm và chẩn đoán y tế với giao diện websi
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'website', 'web'],
+    'depends': ['base', 'website', 'web', 'staff_management', 'patient_management'],
 
     # always loaded
     'data': [
