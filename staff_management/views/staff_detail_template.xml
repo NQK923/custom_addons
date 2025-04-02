@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="staff_detail_template" name="Staff Detail">
+        <t t-call="website.layout">
+            <div class="container mt-4 mb-5">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/clinic/staff">Quản lý nhân sự</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Chi tiết nhân viên</li>
+                    </ol>
+                </nav>
+
+                <div class="row">
+                    <!-- Staff information -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0">Thông tin nhân viên</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center mb-4">
+                                    <div class="avatar-circle mx-auto mb-3">
+                                        <span class="initials">
+                                            <t t-esc="staff.staff_name and staff.staff_name[0] or '?'"/>
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-1"><t t-esc="staff.staff_name"/></h3>
+                                    <p class="text-muted">
+                                        <t t-if="staff.staff_type">
+                                            <t t-esc="staff.staff_type.position"/>
+                                        </t>
+                                    </p>
+                                    <div class="mb-2">
+                                        <span t-if="staff.status == 'active'" class="badge badge-success">Đang làm việc</span>
+                                        <span t-elif="staff.status == 'inactive'" class="badge badge-warning">Nghỉ phép</span>
+                                        <span t-elif="staff.status == 'retired'" class="badge badge-secondary">Đã nghỉ hưu</span>
+                                    </div>
+                                </div>
+
+                                <div class="staff-info">
+                                    <p>
+                                        <strong>Mã nhân sự:</strong>
+                                        <span class="float-right"><t t-esc="staff.name"/></span>
+                                    </p>
+                                    <p>
+                                        <strong>Giới tính:</strong>
+                                        <span class="float-right">
+                                            <t t-if="staff.gender == 'male'">Nam</t>
+                                            <t t-elif="staff.gender == 'female'">Nữ</t>
+                                            <t t-else="">Khác</t>
+                                        </span>
+                                    </p>
+                                    <p>
+                                        <strong>Ngày sinh:</strong>
+                                        <span class="float-right">
+                                            <t t-esc="staff.date_of_birth"/>
+                                        </span>
+                                    </p>
+                                    <p>
+                                        <strong>Liên hệ:</strong>
+                                        <span class="float-right"><t t-esc="staff.contact_info"/></span>
+                                    </p>
+                                    <p>
+                                        <strong>Khoa:</strong>
+                                        <span class="float-right">
+                                            <t t-if="staff.department_id">
+                                                <t t-esc="staff.department_id.department_name"/>
+                                            </t>
+                                        </span>
+                                    </p>
+                                    <p>
+                                        <strong>Trình độ:</strong>
+                                        <span class="float-right"><t t-esc="staff.qualification"/></span>
+                                    </p>
+                                    <p>
+                                        <strong>Số năm kinh nghiệm:</strong>
+                                        <span class="float-right"><t t-esc="staff.experience_year"/> năm</span>
+                                    </p>
+                                    <p>
+                                        <strong>Số giấy phép:</strong>
+                                        <span class="float-right"><t t-esc="staff.license_number"/></span>
+                                    </p>
+                                    <p>
+                                        <strong>Loại lao động:</strong>
+                                        <span class="float-right">
+                                            <t t-if="staff.labor_type == 'full_time'">Toàn thời gian</t>
+                                            <t t-elif="staff.labor_type == 'part_time'">Bán thời gian</t>
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <div class="mt-4">
+                                    <a t-att-href="'/clinic/staff/attendance/%s' % staff.id" class="btn btn-block btn-primary">
+                                        <i class="fa fa-clock-o"/> Chấm công
+                                    </a>
+                                    <a t-att-href="'/clinic/staff/performance/%s' % staff.id" class="btn btn-block btn-success mt-2">
+                                        <i class="fa fa-star"/> Đánh giá hiệu suất
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent activities -->
+                    <div class="col-md-8">
+                        <!-- Recent attendance -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                <h4 class="mb-0">Chấm công gần đây</h4>
+                                <a t-att-href="'/clinic/staff/attendance/%s' % staff.id" class="text-white">
+                                    <i class="fa fa-external-link"/> Xem tất cả
+                                </a>
+                            </div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Ngày</th>
+                                            <th>Giờ vào</th>
+                                            <th>Giờ ra</th>
+                                            <th>Số giờ làm việc</th>
+                                            <th>Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-if="attendances">
+                                            <t t-foreach="attendances" t-as="attendance">
+                                                <tr>
+                                                    <td><t t-esc="attendance.date"/></td>
+                                                    <td><t t-esc="attendance.check_in"/></td>
+                                                    <td><t t-esc="attendance.check_out or '--'"/></td>
+                                                    <td><t t-esc="attendance.work_hours"/></td>
+                                                    <td>
+                                                        <span t-if="attendance.status == 'present'" class="badge badge-success">Có mặt</span>
+                                                        <span t-elif="attendance.status == 'absent'" class="badge badge-danger">Vắng mặt</span>
+                                                        <span t-elif="attendance.status == 'late'" class="badge badge-warning">Đi muộn</span>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <tr>
+                                                <td colspan="5" class="text-center py-3">
+                                                    <div class="alert alert-info mb-0">
+                                                        Chưa có dữ liệu chấm công nào.
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Recent performance evaluations -->
+                        <div class="card">
+                            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                <h4 class="mb-0">Đánh giá hiệu suất gần đây</h4>
+                                <a t-att-href="'/clinic/staff/performance/%s' % staff.id" class="text-white">
+                                    <i class="fa fa-external-link"/> Xem tất cả
+                                </a>
+                            </div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Tháng/Năm</th>
+                                            <th>Điểm</th>
+                                            <th>Điểm chuyên cần</th>
+                                            <th>Số giờ làm việc</th>
+                                            <th>Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-if="performances">
+                                            <t t-foreach="performances" t-as="performance">
+                                                <tr>
+                                                    <td>
+                                                        <t t-esc="performance.month"/>/<t t-esc="performance.year"/>
+                                                    </td>
+                                                    <td><t t-esc="performance.score"/></td>
+                                                    <td><t t-esc="performance.attendance_score"/></td>
+                                                    <td><t t-esc="performance.work_hours"/></td>
+                                                    <td>
+                                                        <span t-if="performance.state == 'draft'" class="badge badge-secondary">Nháp</span>
+                                                        <span t-elif="performance.state == 'confirmed'" class="badge badge-primary">Xác nhận</span>
+                                                        <span t-elif="performance.state == 'approved'" class="badge badge-success">Đã duyệt</span>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <tr>
+                                                <td colspan="5" class="text-center py-3">
+                                                    <div class="alert alert-info mb-0">
+                                                        Chưa có dữ liệu đánh giá hiệu suất nào.
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .avatar-circle {
+                    width: 100px;
+                    height: 100px;
+                    background-color: #3498db;
+                    border-radius: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .initials {
+                    font-size: 50px;
+                    color: white;
+                    text-transform: uppercase;
+                }
+
+                .staff-info p {
+                    padding: 8px 0;
+                    border-bottom: 1px solid #eee;
+                    margin-bottom: 0;
+                }
+            </style>
+        </t>
+    </template>
+</odoo>

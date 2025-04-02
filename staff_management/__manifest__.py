@@ -2,33 +2,31 @@
 {
      'name': "Quản lý nhân sự",
 
-    'summary': "Short (1 phrase/line) summary of the module's purpose",
-
+    'summary': "Quản lý thông tin nhân sự y tế trên giao diện web",
 
     'description': """
-Long description of module's purpose
+Module cho phép quản lý thông tin nhân sự y tế, chấm công và đánh giá hiệu suất thông qua giao diện web.
     """,
 
     'author': "My Company",
     'website': "https://www.yourcompany.com",
 
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
     'category': 'Healthcare',
     'version': '0.1',
     'license': 'LGPL-3',
 
-    # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base', 'website'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
+        'views/website_menu.xml',
+        'views/staff_list_template.xml',
+        'views/staff_detail_template.xml',
+        'views/attendance_template.xml',
+        'views/performance_template.xml',
     ],
     'installable': True,
     'application': True,
-
 }
-

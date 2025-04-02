@@ -4,15 +4,6 @@
     <template id="salary_detail_template" name="Salary Detail">
         <t t-call="website.layout">
             <t t-call="salary_management.salary_management_styles"/>
-            <script type="text/javascript">
-                $(document).ready(function() {
-                    // Initialize Bootstrap tabs
-                    $('.nav-tabs a').on('click', function(e) {
-                        e.preventDefault();
-                        $(this).tab('show');
-                    });
-                });
-            </script>
             <div class="container mt-5 salary-management-container">
                 <a t-att-href="'/salary/sheet/%s' % salary.sheet_id.id" class="back-link">
                     <i class="fa fa-arrow-left"></i> Quay lại bảng lương
@@ -136,22 +127,67 @@
                                 <form method="post" t-att-action="'/salary/update/%s' % salary.id">
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
-                                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                        <li class="nav-item">
-                                            <a class="nav-link active" id="allowances-tab" data-toggle="tab" href="#allowances" role="tab">Phụ cấp</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="bonuses-tab" data-toggle="tab" href="#bonuses" role="tab">Thưởng</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="deductions-tab" data-toggle="tab" href="#deductions" role="tab">Khấu trừ</a>
-                                        </li>
-                                    </ul>
+                                    <div class="salary-tabs mb-4">
+                                        <style>
+                                            .salary-tabs {
+                                                border-bottom: 1px solid #dee2e6;
+                                                margin-bottom: 1rem;
+                                            }
+                                            .salary-tabs .tab-button {
+                                                background: none;
+                                                border: none;
+                                                padding: 0.75rem 1rem;
+                                                margin-right: 0.5rem;
+                                                cursor: pointer;
+                                                color: #495057;
+                                                position: relative;
+                                                bottom: -1px;
+                                            }
+                                            .salary-tabs .tab-button.active {
+                                                color: #007bff;
+                                                border-bottom: 2px solid #007bff;
+                                                font-weight: bold;
+                                            }
+                                            .salary-tab-content {
+                                                display: none;
+                                            }
+                                            .salary-tab-content.active {
+                                                display: block;
+                                            }
+                                        </style>
+                                        <script>
+                                            function showTab(tabId) {
+                                                // Hide all tabs
+                                                var tabContents = document.getElementsByClassName('salary-tab-content');
+                                                for (var i = 0; i &lt; tabContents.length; i++) {
+                                                    tabContents[i].classList.remove('active');
+                                                }
 
-                                    <div class="tab-content mt-4" id="myTabContent">
-                                        <!-- Allowances Tab -->
-                                        <div class="tab-pane fade show active" id="allowances" role="tabpanel">
-                                            <h4 class="mb-3">Phụ cấp áp dụng</h4>
+                                                // Deactivate all buttons
+                                                var tabButtons = document.getElementsByClassName('tab-button');
+                                                for (var i = 0; i &lt; tabButtons.length; i++) {
+                                                    tabButtons[i].classList.remove('active');
+                                                }
+
+                                                // Show the selected tab
+                                                document.getElementById(tabId).classList.add('active');
+                                                document.getElementById(tabId + '-btn').classList.add('active');
+                                            }
+                                        </script>
+
+                                        <button type="button" id="allowances-tab-btn"
+                                                class="tab-button active"
+                                                onclick="showTab('allowances-tab')">Phụ cấp</button>
+                                        <button type="button" id="bonuses-tab-btn"
+                                                class="tab-button"
+                                                onclick="showTab('bonuses-tab')">Thưởng</button>
+                                        <button type="button" id="deductions-tab-btn"
+                                                class="tab-button"
+                                                onclick="showTab('deductions-tab')">Khấu trừ</button>
+                                    </div>
+
+                                    <div class="salary-tab-content active" id="allowances-tab">
+                                        <h4 class="mb-3">Phụ cấp áp dụng</h4>
                                             <div class="row">
                                                 <t t-foreach="all_allowances" t-as="allowance">
                                                     <div class="col-lg-4 col-md-6 mb-3">
@@ -172,7 +208,7 @@
                                         </div>
 
                                         <!-- Bonuses Tab -->
-                                        <div class="tab-pane fade" id="bonuses" role="tabpanel">
+                                        <div class="salary-tab-content" id="bonuses-tab">
                                             <h4 class="mb-3">Thưởng áp dụng</h4>
                                             <div class="row">
                                                 <t t-foreach="all_bonuses" t-as="bonus">
@@ -194,7 +230,7 @@
                                         </div>
 
                                         <!-- Deductions Tab -->
-                                        <div class="tab-pane fade" id="deductions" role="tabpanel">
+                                        <div class="salary-tab-content" id="deductions-tab">
                                             <h4 class="mb-3">Khấu trừ áp dụng</h4>
                                             <div class="row">
                                                 <t t-foreach="all_deductions" t-as="deduction">
@@ -216,7 +252,6 @@
                                                 </t>
                                             </div>
                                         </div>
-                                    </div>
 
                                     <div class="form-group mt-4">
                                         <button type="submit" class="btn btn-primary" t-att-disabled="salary.state != 'draft'">
