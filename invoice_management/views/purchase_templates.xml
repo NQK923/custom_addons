@@ -90,13 +90,16 @@
                             var template = document.querySelector('.product-line-template').cloneNode(true);
                             template.classList.remove('product-line-template');
                             template.classList.add('product-line');
+                            template.style.display = 'flex';
 
                             // Add event listener to remove button
                             template.querySelector('.remove-line').addEventListener('click', function() {
                                 this.closest('.product-line').remove();
                             });
 
-                            document.querySelector('.product-lines-container').insertBefore(template, this.parentNode);
+                            // Insert before the button's parent div (which is the text-right div)
+                            var container = document.querySelector('.product-lines-container');
+                            container.insertBefore(template, document.querySelector('.product-lines-container .text-right'));
                         });
 
                         // Hide template line
