@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Statistics Dashboard Template -->
+    <template id="statistics_dashboard_template" name="Statistics Dashboard">
+        <t t-call="invoice_management.invoice_management_layout">
+            <t t-set="page_title">Thống kê phòng khám</t>
+
+            <!-- Actions -->
+            <div class="im-actions text-right">
+                <a href="/statistics/generate" class="btn btn-success">
+                    <i class="fa fa-plus"></i> Tạo thống kê mới
+                </a>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="im-card">
+                <h3>Thống kê gần đây</h3>
+
+                <t t-if="statistics">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Tên thống kê:</strong> <t t-esc="statistics.name"/></p>
+                            <p><strong>Từ ngày:</strong> <t t-esc="statistics.date_from"/></p>
+                            <p><strong>Đến ngày:</strong> <t t-esc="statistics.date_to"/></p>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <a t-att-href="'/statistics/view/%s' % statistics.id" class="btn btn-info">
+                                <i class="fa fa-eye"></i> Xem chi tiết
+                            </a>
+                            <a t-att-href="'/statistics/print/%s' % statistics.id" class="btn btn-secondary ml-2">
+                                <i class="fa fa-file-pdf-o"></i> Xuất PDF
+                            </a>
+                        </div>
+                    </div>
+
+                    <hr class="my-4"/>
+
+                    <!-- Overview Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Tổng hóa đơn</h5>
+                                    <h2 class="card-text"><t t-esc="statistics.total_invoices"/></h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Đã thanh toán</h5>
+                                    <h2 class="card-text"><t t-esc="statistics.paid_invoices"/></h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-danger text-white">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Đã hủy</h5>
+                                    <h2 class="card-text"><t t-esc="statistics.cancelled_invoices"/></h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Tổng doanh thu</h5>
+                                    <h2 class="card-text"><t t-esc="'{:,.0f}'.format(statistics.total_revenue)"/></h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Revenue Summary -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Doanh thu</h4>
+                            <table class="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <th>Tổng doanh thu</th>
+                                        <td class="text-right font-weight-bold">
+                                            <t t-esc="'{:,.0f}'.format(statistics.total_revenue)"/> VND
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Doanh thu dịch vụ</th>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(statistics.service_revenue)"/> VND
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Doanh thu thuốc</th>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(statistics.medicine_revenue)"/> VND
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Doanh thu từ bảo hiểm</th>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(statistics.insurance_revenue)"/> VND
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Doanh thu từ bệnh nhân</th>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(statistics.patient_revenue)"/> VND
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Top dịch vụ &amp; thuốc</h4>
+                            <table class="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <th>Dịch vụ sử dụng nhiều nhất</th>
+                                        <td>
+                                            <t t-if="statistics.most_used_service_id">
+                                                <t t-esc="statistics.most_used_service_id.service_name"/>
+                                                (<t t-esc="statistics.most_used_service_count"/> lượt)
+                                            </t>
+                                            <t t-else="">
+                                                <span class="text-muted font-italic">Không có dữ liệu</span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Thuốc bán chạy nhất</th>
+                                        <td>
+                                            <t t-if="statistics.most_sold_product_id">
+                                                <t t-esc="statistics.most_sold_product_id.name"/>
+                                                (<t t-esc="statistics.most_sold_product_count"/> lượt)
+                                            </t>
+                                            <t t-else="">
+                                                <span class="text-muted font-italic">Không có dữ liệu</span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="im-empty">
+                        Chưa có dữ liệu thống kê. Vui lòng tạo thống kê mới.
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Statistics Generate Template -->
+    <template id="statistics_generate_template" name="Generate Statistics">
+        <t t-call="invoice_management.invoice_management_layout">
+            <t t-set="page_title">Tạo thống kê mới</t>
+
+            <!-- Generate Form -->
+            <div class="im-card">
+                <h3>Tạo thống kê mới</h3>
+
+                <form method="POST" action="/statistics/generate">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                    <div class="form-group row">
+                        <label for="date_from" class="col-sm-3 col-form-label">Từ ngày</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control" id="date_from" name="date_from"
+                                   t-att-value="month_start" required="required"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="date_to" class="col-sm-3 col-form-label">Đến ngày</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control" id="date_to" name="date_to"
+                                   t-att-value="today" required="required"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-9 offset-sm-3">
+                            <button type="submit" class="btn btn-primary">Tạo thống kê</button>
+                            <a href="/statistics/dashboard" class="btn btn-secondary ml-2">Hủy</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <!-- Statistics View Template -->
+    <template id="statistics_view_template" name="View Statistics">
+        <t t-call="invoice_management.invoice_management_layout">
+            <t t-set="page_title" t-value="statistics.name"/>
+
+            <!-- Load Chart.js -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
+            <!-- Actions -->
+            <div class="im-actions">
+                <a href="/statistics/dashboard" class="btn btn-secondary">
+                    <i class="fa fa-arrow-left"></i> Quay lại
+                </a>
+                <a t-att-href="'/statistics/print/%s' % statistics.id" class="btn btn-primary ml-2">
+                    <i class="fa fa-file-pdf-o"></i> Xuất PDF
+                </a>
+            </div>
+
+            <!-- Statistics Overview -->
+            <div class="im-card">
+                <h3>Tổng quan</h3>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Từ ngày:</strong> <t t-esc="statistics.date_from"/></p>
+                        <p><strong>Đến ngày:</strong> <t t-esc="statistics.date_to"/></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Tổng số hóa đơn:</strong> <t t-esc="statistics.total_invoices"/></p>
+                        <p><strong>Hóa đơn đã thanh toán:</strong> <t t-esc="statistics.paid_invoices"/></p>
+                        <p><strong>Hóa đơn đã hủy:</strong> <t t-esc="statistics.cancelled_invoices"/></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Chart -->
+            <div class="im-card">
+                <h3>Biểu đồ doanh thu</h3>
+
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+
+                <script type="text/javascript">
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var ctx = document.getElementById('revenueChart').getContext('2d');
+                        var labels = <t t-raw="chart_labels"/>;
+                        var revenue = <t t-raw="chart_revenue"/>;
+                        var service = <t t-raw="chart_service"/>;
+                        var medicine = <t t-raw="chart_medicine"/>;
+
+                        var chart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [
+                                    {
+                                        label: 'Tổng doanh thu',
+                                        data: revenue,
+                                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                        borderColor: 'rgba(54, 162, 235, 1)',
+                                        borderWidth: 2,
+                                        fill: true
+                                    },
+                                    {
+                                        label: 'Doanh thu dịch vụ',
+                                        data: service,
+                                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                        borderColor: 'rgba(255, 99, 132, 1)',
+                                        borderWidth: 2,
+                                        fill: true
+                                    },
+                                    {
+                                        label: 'Doanh thu thuốc',
+                                        data: medicine,
+                                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                        borderColor: 'rgba(75, 192, 192, 1)',
+                                        borderWidth: 2,
+                                        fill: true
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true,
+                                            callback: function(value) {
+                                                return value.toLocaleString() + ' VND';
+                                            }
+                                        }
+                                    }]
+                                },
+                                tooltips: {
+                                    callbacks: {
+                                        label: function(tooltipItem, data) {
+                                            var label = data.datasets[tooltipItem.datasetIndex].label || '';
+                                            if (label) {
+                                                label += ': ';
+                                            }
+                                            label += parseInt(tooltipItem.yLabel).toLocaleString() + ' VND';
+                                            return label;
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                </script>
+            </div>
+
+            <!-- Revenue Details -->
+            <div class="im-card">
+                <h3>Chi tiết doanh thu</h3>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <th>Tổng doanh thu</th>
+                                    <td class="text-right font-weight-bold">
+                                        <t t-esc="'{:,.0f}'.format(statistics.total_revenue)"/> VND
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Doanh thu dịch vụ</th>
+                                    <td class="text-right">
+                                        <t t-esc="'{:,.0f}'.format(statistics.service_revenue)"/> VND
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Doanh thu thuốc</th>
+                                    <td class="text-right">
+                                        <t t-esc="'{:,.0f}'.format(statistics.medicine_revenue)"/> VND
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <th>Doanh thu từ bảo hiểm</th>
+                                    <td class="text-right" style="color: green;">
+                                        <t t-esc="'{:,.0f}'.format(statistics.insurance_revenue)"/> VND
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Doanh thu từ bệnh nhân</th>
+                                    <td class="text-right" style="color: #b91c1c;">
+                                        <t t-esc="'{:,.0f}'.format(statistics.patient_revenue)"/> VND
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Tỷ lệ bảo hiểm chi trả</th>
+                                    <td class="text-right">
+                                        <t t-esc="'{:.2f}'.format(statistics.insurance_revenue / statistics.total_revenue * 100 if statistics.total_revenue else 0)"/>%
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Services and Products -->
+            <div class="im-card">
+                <h3>Top dịch vụ &amp; thuốc</h3>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Dịch vụ được sử dụng nhiều nhất</h4>
+                        <t t-if="statistics.most_used_service_id">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <t t-esc="statistics.most_used_service_id.service_name"/>
+                                    </h5>
+                                    <p class="card-text">
+                                        Số lượt sử dụng: <span class="badge badge-primary">
+                                            <t t-esc="statistics.most_used_service_count"/>
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="im-empty">
+                                Không có dữ liệu dịch vụ.
+                            </div>
+                        </t>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Thuốc bán chạy nhất</h4>
+                        <t t-if="statistics.most_sold_product_id">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <t t-esc="statistics.most_sold_product_id.name"/>
+                                    </h5>
+                                    <p class="card-text">
+                                        Số lượng bán: <span class="badge badge-success">
+                                            <t t-esc="statistics.most_sold_product_count"/>
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="im-empty">
+                                Không có dữ liệu thuốc.
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Statistics Table -->
+            <div class="im-card">
+                <h3>Thống kê theo ngày</h3>
+
+                <t t-if="statistics.daily_stats_ids">
+                    <div class="table-responsive">
+                        <table class="table table-striped im-table">
+                            <thead>
+                                <tr>
+                                    <th>Ngày</th>
+                                    <th class="text-center">Số hóa đơn</th>
+                                    <th class="text-right">Tổng doanh thu</th>
+                                    <th class="text-right">Doanh thu dịch vụ</th>
+                                    <th class="text-right">Doanh thu thuốc</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="statistics.daily_stats_ids" t-as="day">
+                                    <tr>
+                                        <td><t t-esc="day.date"/></td>
+                                        <td class="text-center"><t t-esc="day.invoice_count"/></td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(day.total_revenue)"/> VND
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(day.service_revenue)"/> VND
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(day.medicine_revenue)"/> VND
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr class="table-info">
+                                    <td><strong>Tổng cộng</strong></td>
+                                    <td class="text-center"><strong>
+                                        <t t-esc="sum(statistics.daily_stats_ids.mapped('invoice_count'))"/>
+                                    </strong></td>
+                                    <td class="text-right"><strong>
+                                        <t t-esc="'{:,.0f}'.format(sum(statistics.daily_stats_ids.mapped('total_revenue')))"/> VND
+                                    </strong></td>
+                                    <td class="text-right"><strong>
+                                        <t t-esc="'{:,.0f}'.format(sum(statistics.daily_stats_ids.mapped('service_revenue')))"/> VND
+                                    </strong></td>
+                                    <td class="text-right"><strong>
+                                        <t t-esc="'{:,.0f}'.format(sum(statistics.daily_stats_ids.mapped('medicine_revenue')))"/> VND
+                                    </strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="im-empty">
+                        Không có dữ liệu thống kê theo ngày.
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

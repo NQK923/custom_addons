@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Purchase Order Form Template -->
+    <template id="purchase_form_template" name="Create Purchase Order">
+        <t t-call="invoice_management.invoice_management_layout">
+            <t t-set="page_title">Tạo phiếu nhập hàng</t>
+
+            <!-- Actions -->
+            <div class="im-actions">
+                <a href="/purchase/list" class="btn btn-secondary">
+                    <i class="fa fa-arrow-left"></i> Quay lại
+                </a>
+            </div>
+
+            <!-- Purchase Order Form -->
+            <div class="im-card">
+                <h3>Tạo phiếu nhập hàng mới</h3>
+
+                <form method="POST" action="/purchase/create">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                    <div class="form-group row">
+                        <label for="date" class="col-sm-3 col-form-label">Ngày nhập</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control" id="date" name="date"
+                                   t-att-value="today" required="required"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="supplier_name" class="col-sm-3 col-form-label">Nhà cung cấp</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="supplier_name" name="supplier_name"
+                                  placeholder="Tên nhà cung cấp" required="required"/>
+                        </div>
+                    </div>
+
+                    <!-- Product Lines -->
+                    <h4 class="mt-4 mb-3">Chi tiết phiếu nhập</h4>
+                    <div class="product-lines-container">
+                        <div class="form-row align-items-center mb-2 product-line-template">
+                            <div class="col-5">
+                                <select name="product_id" class="form-control product-select">
+                                    <option value="">-- Chọn dược phẩm --</option>
+                                    <t t-foreach="products" t-as="product">
+                                        <option t-att-value="product.id"><t t-esc="product.name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="col-2">
+                                <input type="number" name="quantity" class="form-control" placeholder="Số lượng"
+                                       min="1" step="1" value="1"/>
+                            </div>
+                            <div class="col-3">
+                                <input type="number" name="price_unit" class="form-control" placeholder="Đơn giá"
+                                       min="0" step="1000" value="0"/>
+                            </div>
+                            <div class="col-2">
+                                <button type="button" class="btn btn-danger remove-line">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="text-right mb-3">
+                            <button type="button" class="btn btn-sm btn-info add-product-line">
+                                <i class="fa fa-plus"></i> Thêm sản phẩm
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="note" class="col-sm-3 col-form-label">Ghi chú</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" id="note" name="note" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-9 offset-sm-3">
+                            <button type="submit" class="btn btn-primary">Tạo phiếu nhập</button>
+                            <a href="/purchase/list" class="btn btn-secondary ml-2">Hủy</a>
+                        </div>
+                    </div>
+                </form>
+
+                <script type="text/javascript">
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Add product line
+                        document.querySelector('.add-product-line').addEventListener('click', function() {
+                            var template = document.querySelector('.product-line-template').cloneNode(true);
+                            template.classList.remove('product-line-template');
+                            template.classList.add('product-line');
+
+                            // Add event listener to remove button
+                            template.querySelector('.remove-line').addEventListener('click', function() {
+                                this.closest('.product-line').remove();
+                            });
+
+                            document.querySelector('.product-lines-container').insertBefore(template, this.parentNode);
+                        });
+
+                        // Hide template line
+                        document.querySelector('.product-line-template').style.display = 'none';
+                    });
+                </script>
+            </div>
+        </t>
+    </template>
+
+    <!-- Purchase Order List Template -->
+    <template id="purchase_list_template" name="Purchase Order List">
+        <t t-call="invoice_management.invoice_management_layout">
+            <t t-set="page_title">Danh sách phiếu nhập hàng</t>
+
+            <!-- Actions -->
+            <div class="im-actions text-right">
+                <a href="/purchase/create" class="btn btn-success">
+                    <i class="fa fa-plus"></i> Tạo phiếu nhập hàng mới
+                </a>
+            </div>
+
+            <!-- Purchase Order Table -->
+            <div class="im-card">
+                <h3>Danh sách phiếu nhập hàng</h3>
+
+                <t t-if="purchase_orders">
+                    <div class="table-responsive">
+                        <table class="table table-striped im-table">
+                            <thead>
+                                <tr>
+                                    <th>Số phiếu nhập</th>
+                                    <th>Ngày nhập</th>
+                                    <th>Nhà cung cấp</th>
+                                    <th class="text-right">Tổng tiền chưa thuế</th>
+                                    <th class="text-right">Thuế</th>
+                                    <th class="text-right">Tổng tiền sau thuế</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="purchase_orders" t-as="purchase">
+                                    <tr>
+                                        <td><t t-esc="purchase.display_name"/></td>
+                                        <td><t t-esc="purchase.date"/></td>
+                                        <td><t t-esc="purchase.supplier_name"/></td>
+                                        <td class="im-price">
+                                            <t t-esc="'{:,.0f}'.format(purchase.amount_untaxed)"/> VND
+                                        </td>
+                                        <td class="im-price">
+                                            <t t-esc="'{:,.0f}'.format(purchase.amount_tax)"/> VND
+                                        </td>
+                                        <td class="im-price">
+                                            <t t-esc="'{:,.0f}'.format(purchase.amount_total)"/> VND
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-if="purchase.state == 'draft'">
+                                                <span class="im-status-draft">Nháp</span>
+                                            </t>
+                                            <t t-elif="purchase.state == 'confirmed'">
+                                                <span class="im-status-confirmed">Đã xác nhận</span>
+                                            </t>
+                                            <t t-elif="purchase.state == 'paid'">
+                                                <span class="im-status-paid">Đã thanh toán</span>
+                                            </t>
+                                        </td>
+                                        <td class="text-center">
+                                            <a t-att-href="'/purchase/view/%s' % purchase.id" class="btn btn-sm btn-info">
+                                                <i class="fa fa-eye"></i> Xem
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="im-empty">
+                        Không tìm thấy phiếu nhập hàng nào.
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Purchase Order View Template -->
+    <template id="purchase_view_template" name="Purchase Order View">
+        <t t-call="invoice_management.invoice_management_layout">
+            <t t-set="page_title">Chi tiết phiếu nhập hàng</t>
+
+            <!-- Actions -->
+            <div class="im-actions">
+                <a href="/purchase/list" class="btn btn-secondary">
+                    <i class="fa fa-arrow-left"></i> Quay lại
+                </a>
+
+                <t t-if="purchase.state == 'draft'">
+                    <a t-att-href="'/purchase/action/confirm/%s' % purchase.id" class="btn btn-primary ml-2">
+                        <i class="fa fa-check"></i> Xác nhận
+                    </a>
+                </t>
+                <t t-if="purchase.state == 'confirmed'">
+                    <a t-att-href="'/purchase/action/pay/%s' % purchase.id" class="btn btn-success ml-2">
+                        <i class="fa fa-money"></i> Thanh toán
+                    </a>
+                </t>
+            </div>
+
+            <!-- Purchase Information -->
+            <div class="im-card">
+                <h3>Thông tin phiếu nhập hàng</h3>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Số phiếu nhập:</strong> <t t-esc="purchase.display_name"/></p>
+                        <p><strong>Ngày nhập:</strong> <t t-esc="purchase.date"/></p>
+                        <p><strong>Nhà cung cấp:</strong> <t t-esc="purchase.supplier_name"/></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Trạng thái:</strong>
+                            <t t-if="purchase.state == 'draft'">
+                                <span class="im-status-draft">Nháp</span>
+                            </t>
+                            <t t-elif="purchase.state == 'confirmed'">
+                                <span class="im-status-confirmed">Đã xác nhận</span>
+                            </t>
+                            <t t-elif="purchase.state == 'paid'">
+                                <span class="im-status-paid">Đã thanh toán</span>
+                            </t>
+                        </p>
+                        <p><strong>Tổng tiền chưa thuế:</strong>
+                            <span class="font-weight-bold">
+                                <t t-esc="'{:,.0f}'.format(purchase.amount_untaxed)"/> VND
+                            </span>
+                        </p>
+                        <p><strong>Thuế (10%):</strong>
+                            <span class="font-weight-bold">
+                                <t t-esc="'{:,.0f}'.format(purchase.amount_tax)"/> VND
+                            </span>
+                        </p>
+                        <p><strong>Tổng tiền sau thuế:</strong>
+                            <span class="font-weight-bold">
+                                <t t-esc="'{:,.0f}'.format(purchase.amount_total)"/> VND
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Purchase Lines -->
+            <div class="im-card">
+                <h3>Chi tiết phiếu nhập</h3>
+
+                <t t-if="purchase.line_ids">
+                    <div class="table-responsive">
+                        <table class="table table-striped im-table">
+                            <thead>
+                                <tr>
+                                    <th>Dược phẩm</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-right">Đơn giá</th>
+                                    <th class="text-right">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="purchase.line_ids" t-as="line">
+                                    <tr>
+                                        <td><t t-esc="line.product_id.name"/></td>
+                                        <td class="text-center"><t t-esc="line.quantity"/></td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(line.price_unit)"/> VND
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(line.subtotal)"/> VND
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr class="table-info">
+                                    <td colspan="3" class="text-right"><strong>Tổng cộng:</strong></td>
+                                    <td class="text-right"><strong>
+                                        <t t-esc="'{:,.0f}'.format(purchase.amount_untaxed)"/> VND
+                                    </strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="im-empty">
+                        Không có chi tiết phiếu nhập nào.
+                    </div>
+                </t>
+            </div>
+
+            <!-- Notes -->
+            <div class="im-card">
+                <h3>Ghi chú</h3>
+
+                <p t-if="purchase.note"><t t-esc="purchase.note"/></p>
+                <p t-else="" class="im-empty">Không có ghi chú.</p>
+            </div>
+        </t>
+    </template>
+</odoo>

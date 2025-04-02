@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Create website menu items -->
+    <record id="website_menu_invoice_management" model="website.menu">
+        <field name="name">Quản lý hóa đơn</field>
+        <field name="url">/invoice/list</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">40</field>
+    </record>
+</odoo>

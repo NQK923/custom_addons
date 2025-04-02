@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Invoice Form Template -->
+    <template id="invoice_form_template" name="Create/Edit Invoice">
+        <t t-call="invoice_management.invoice_management_layout">
+            <t t-set="page_title">
+                <t t-if="edit_mode">Chỉnh sửa hóa đơn</t>
+                <t t-else="">Tạo hóa đơn mới</t>
+            </t>
+
+            <!-- Actions -->
+            <div class="im-actions">
+                <a href="/invoice/list" class="btn btn-secondary">
+                    <i class="fa fa-arrow-left"></i> Quay lại
+                </a>
+            </div>
+
+            <!-- Invoice Form -->
+            <div class="im-card">
+                <h3>
+                    <t t-if="edit_mode">Chỉnh sửa hóa đơn</t>
+                    <t t-else="">Tạo hóa đơn mới</t>
+                </h3>
+
+                <form method="POST" t-attf-action="/invoice/#{edit_mode and 'edit/' + str(invoice.id) or 'create'}">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                    <div class="form-group row">
+                        <label for="patient_id" class="col-sm-3 col-form-label">Bệnh nhân</label>
+                        <div class="col-sm-9">
+                            <select name="patient_id" id="patient_id" class="form-control" required="required">
+                                <option value="">-- Chọn bệnh nhân --</option>
+                                <t t-foreach="patients" t-as="patient">
+                                    <option t-att-value="patient.id" t-att-selected="invoice and invoice.patient_id.id == patient.id">
+                                        <t t-esc="patient.name"/> (<t t-esc="patient.code"/>)
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="invoice_date" class="col-sm-3 col-form-label">Ngày lập</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control" id="invoice_date" name="invoice_date"
+                                   t-att-value="invoice and invoice.invoice_date or today"
+                                   required="required"/>
+                        </div>
+                    </div>
+
+                    <!-- Service Lines -->
+                    <h4 class="mt-4 mb-3">Dịch vụ</h4>
+                    <div class="service-lines-container">
+                        <div t-if="invoice and invoice.service_lines" class="mb-3">
+                            <div t-foreach="invoice.service_lines" t-as="line" class="form-row align-items-center mb-2 service-line">
+                                <div class="col-5">
+                                    <select name="service_id" class="form-control service-select">
+                                        <option value="">-- Chọn dịch vụ --</option>
+                                        <!-- We would need to fetch services here -->
+                                        <option t-att-value="line.service_id.id" selected="selected">
+                                            <t t-esc="line.service_id.service_name"/>
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-2">
+                                    <input type="number" name="service_qty" class="form-control" placeholder="Số lượng"
+                                           min="1" step="1" t-att-value="line.quantity"/>
+                                </div>
+                                <div class="col-3">
+                                    <span class="form-control-plaintext">
+                                        <t t-esc="'{:,.0f}'.format(line.price_unit)"/> VND
+                                    </span>
+                                </div>
+                                <div class="col-2">
+                                    <button type="button" class="btn btn-danger remove-line">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row align-items-center mb-2 service-line-template">
+                            <div class="col-5">
+                                <select name="service_id" class="form-control service-select">
+                                    <option value="">-- Chọn dịch vụ --</option>
+                                    <t t-foreach="services" t-as="service">
+                                        <option t-att-value="service.id"><t t-esc="service.service_name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="col-2">
+                                <input type="number" name="service_qty" class="form-control" placeholder="Số lượng"
+                                       min="1" step="1" value="1"/>
+                            </div>
+                            <div class="col-3">
+                                <span class="form-control-plaintext price-display">0 VND</span>
+                            </div>
+                            <div class="col-2">
+                                <button type="button" class="btn btn-danger remove-line">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="text-right mb-3">
+                            <button type="button" class="btn btn-sm btn-info add-service-line">
+                                <i class="fa fa-plus"></i> Thêm dịch vụ
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Product Lines -->
+                    <h4 class="mt-4 mb-3">Thuốc</h4>
+                    <div class="product-lines-container">
+                        <div t-if="invoice and invoice.product_lines" class="mb-3">
+                            <div t-foreach="invoice.product_lines" t-as="line" class="form-row align-items-center mb-2 product-line">
+                                <div class="col-5">
+                                    <select name="product_id" class="form-control product-select">
+                                        <option value="">-- Chọn thuốc --</option>
+                                        <!-- We would need to fetch products here -->
+                                        <option t-att-value="line.product_id.id" selected="selected">
+                                            <t t-esc="line.product_id.name"/>
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-2">
+                                    <input type="number" name="product_qty" class="form-control" placeholder="Số lượng"
+                                           min="1" step="1" t-att-value="line.quantity"/>
+                                </div>
+                                <div class="col-3">
+                                    <span class="form-control-plaintext">
+                                        <t t-esc="'{:,.0f}'.format(line.price_unit)"/> VND
+                                    </span>
+                                </div>
+                                <div class="col-2">
+                                    <button type="button" class="btn btn-danger remove-line">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row align-items-center mb-2 product-line-template">
+                            <div class="col-5">
+                                <select name="product_id" class="form-control product-select">
+                                    <option value="">-- Chọn thuốc --</option>
+                                    <t t-foreach="products" t-as="product">
+                                        <option t-att-value="product.id"><t t-esc="product.name"/> (SL: <t t-esc="product.quantity"/>)</option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="col-2">
+                                <input type="number" name="product_qty" class="form-control" placeholder="Số lượng"
+                                       min="1" step="1" value="1"/>
+                            </div>
+                            <div class="col-3">
+                                <span class="form-control-plaintext price-display">0 VND</span>
+                            </div>
+                            <div class="col-2">
+                                <button type="button" class="btn btn-danger remove-line">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="text-right mb-3">
+                            <button type="button" class="btn btn-sm btn-info add-product-line">
+                                <i class="fa fa-plus"></i> Thêm thuốc
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="note" class="col-sm-3 col-form-label">Ghi chú</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" id="note" name="note" rows="3"><t t-esc="invoice and invoice.note or ''"/></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-9 offset-sm-3">
+                            <button type="submit" class="btn btn-primary">
+                                <t t-if="edit_mode">Cập nhật</t>
+                                <t t-else="">Tạo hóa đơn</t>
+                            </button>
+                            <a href="/invoice/list" class="btn btn-secondary ml-2">Hủy</a>
+                        </div>
+                    </div>
+                </form>
+
+                <script type="text/javascript">
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Add service line
+                        document.querySelector('.add-service-line').addEventListener('click', function() {
+                            var template = document.querySelector('.service-line-template').cloneNode(true);
+                            template.classList.remove('service-line-template');
+                            template.classList.add('service-line');
+
+                            // Add event listener to remove button
+                            template.querySelector('.remove-line').addEventListener('click', function() {
+                                this.closest('.service-line').remove();
+                            });
+
+                            document.querySelector('.service-lines-container').insertBefore(template, this.parentNode);
+                        });
+
+                        // Add product line
+                        document.querySelector('.add-product-line').addEventListener('click', function() {
+                            var template = document.querySelector('.product-line-template').cloneNode(true);
+                            template.classList.remove('product-line-template');
+                            template.classList.add('product-line');
+
+                            // Add event listener to remove button
+                            template.querySelector('.remove-line').addEventListener('click', function() {
+                                this.closest('.product-line').remove();
+                            });
+
+                            document.querySelector('.product-lines-container').insertBefore(template, this.parentNode);
+                        });
+
+                        // Add event listeners to existing remove buttons
+                        document.querySelectorAll('.service-line .remove-line, .product-line .remove-line').forEach(function(button) {
+                            button.addEventListener('click', function() {
+                                this.closest('.service-line, .product-line').remove();
+                            });
+                        });
+
+                        // Hide template lines
+                        document.querySelector('.service-line-template').style.display = 'none';
+                        document.querySelector('.product-line-template').style.display = 'none';
+                    });
+                </script>
+            </div>
+        </t>
+    </template>
+
+    <!-- Invoice List Template -->
+    <template id="invoice_list_template" name="Invoice List">
+        <t t-call="invoice_management.invoice_management_layout">
+            <t t-set="page_title">Danh sách hóa đơn</t>
+
+            <!-- Filter Form -->
+            <div class="im-card im-filter-form">
+                <form method="GET" action="/invoice/list" class="form-row align-items-end">
+                    <div class="form-group col-md-3">
+                        <label for="state">Trạng thái</label>
+                        <select name="state" id="state" class="form-control">
+                            <t t-foreach="state_options" t-as="option">
+                                <option t-att-value="option[0]" t-att-selected="option[0] == filter_state">
+                                    <t t-esc="option[1]"/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="date_from">Từ ngày</label>
+                        <input type="date" name="date_from" id="date_from" class="form-control"
+                               t-att-value="filter_date_from"/>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="date_to">Đến ngày</label>
+                        <input type="date" name="date_to" id="date_to" class="form-control"
+                               t-att-value="filter_date_to"/>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">Lọc</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Actions -->
+            <div class="im-actions text-right">
+                <a href="/invoice/create" class="btn btn-success">
+                    <i class="fa fa-plus"></i> Tạo hóa đơn mới
+                </a>
+            </div>
+
+            <!-- Invoice Table -->
+            <div class="im-card">
+                <h3>Danh sách hóa đơn</h3>
+
+                <t t-if="invoices">
+                    <div class="table-responsive">
+                        <table class="table table-striped im-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã hóa đơn</th>
+                                    <th>Bệnh nhân</th>
+                                    <th>Ngày lập</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Bảo hiểm chi trả</th>
+                                    <th>Bệnh nhân chi trả</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="invoices" t-as="invoice">
+                                    <tr>
+                                        <td><t t-esc="invoice.name"/></td>
+                                        <td><t t-esc="invoice.patient_id.name"/></td>
+                                        <td><t t-esc="invoice.invoice_date"/></td>
+                                        <td class="im-price">
+                                            <t t-esc="'{:,.0f}'.format(invoice.amount_total)"/> VND
+                                        </td>
+                                        <td class="im-price">
+                                            <t t-esc="'{:,.0f}'.format(invoice.insurance_amount)"/> VND
+                                        </td>
+                                        <td class="im-price">
+                                            <t t-esc="'{:,.0f}'.format(invoice.patient_amount)"/> VND
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-if="invoice.state == 'draft'">
+                                                <span class="im-status-draft">Nháp</span>
+                                            </t>
+                                            <t t-elif="invoice.state == 'confirmed'">
+                                                <span class="im-status-confirmed">Đã xác nhận</span>
+                                            </t>
+                                            <t t-elif="invoice.state == 'paid'">
+                                                <span class="im-status-paid">Đã thanh toán</span>
+                                            </t>
+                                            <t t-elif="invoice.state == 'cancelled'">
+                                                <span class="im-status-cancelled">Đã hủy</span>
+                                            </t>
+                                        </td>
+                                        <td class="text-center">
+                                            <a t-att-href="'/invoice/view/%s' % invoice.id" class="btn btn-sm btn-info">
+                                                <i class="fa fa-eye"></i> Xem
+                                            </a>
+                                            <t t-if="invoice.state == 'draft'">
+                                                <a t-att-href="'/invoice/edit/%s' % invoice.id" class="btn btn-sm btn-warning ml-1">
+                                                    <i class="fa fa-edit"></i> Sửa
+                                                </a>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="im-empty">
+                        Không tìm thấy hóa đơn nào.
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Invoice View Template -->
+    <template id="invoice_view_template" name="Invoice View">
+        <t t-call="invoice_management.invoice_management_layout">
+            <t t-set="page_title">Chi tiết hóa đơn</t>
+
+            <!-- Actions -->
+            <div class="im-actions">
+                <a href="/invoice/list" class="btn btn-secondary">
+                    <i class="fa fa-arrow-left"></i> Quay lại
+                </a>
+
+                <t t-if="invoice.state == 'draft'">
+                    <a t-att-href="'/invoice/edit/%s' % invoice.id" class="btn btn-warning ml-2">
+                        <i class="fa fa-edit"></i> Sửa
+                    </a>
+                    <a t-att-href="'/invoice/action/confirm/%s' % invoice.id" class="btn btn-primary ml-2">
+                        <i class="fa fa-check"></i> Xác nhận
+                    </a>
+                    <a t-att-href="'/invoice/action/cancel/%s' % invoice.id" class="btn btn-danger ml-2"
+                       onclick="return confirm('Bạn có chắc chắn muốn hủy hóa đơn này?')">
+                        <i class="fa fa-times"></i> Hủy
+                    </a>
+                </t>
+                <t t-if="invoice.state == 'confirmed'">
+                    <a t-att-href="'/invoice/action/pay/%s' % invoice.id" class="btn btn-success ml-2">
+                        <i class="fa fa-money"></i> Thanh toán
+                    </a>
+                    <a t-att-href="'/invoice/action/cancel/%s' % invoice.id" class="btn btn-danger ml-2"
+                       onclick="return confirm('Bạn có chắc chắn muốn hủy hóa đơn này?')">
+                        <i class="fa fa-times"></i> Hủy
+                    </a>
+                </t>
+                <t t-if="invoice.state == 'cancelled'">
+                    <a t-att-href="'/invoice/action/reset/%s' % invoice.id" class="btn btn-warning ml-2">
+                        <i class="fa fa-refresh"></i> Đặt về nháp
+                    </a>
+                </t>
+            </div>
+
+            <!-- Invoice Information -->
+            <div class="im-card">
+                <h3>Thông tin hóa đơn</h3>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Mã hóa đơn:</strong> <t t-esc="invoice.name"/></p>
+                        <p><strong>Ngày lập:</strong> <t t-esc="invoice.invoice_date"/></p>
+                        <p><strong>Trạng thái:</strong>
+                            <t t-if="invoice.state == 'draft'">
+                                <span class="im-status-draft">Nháp</span>
+                            </t>
+                            <t t-elif="invoice.state == 'confirmed'">
+                                <span class="im-status-confirmed">Đã xác nhận</span>
+                            </t>
+                            <t t-elif="invoice.state == 'paid'">
+                                <span class="im-status-paid">Đã thanh toán</span>
+                            </t>
+                            <t t-elif="invoice.state == 'cancelled'">
+                                <span class="im-status-cancelled">Đã hủy</span>
+                            </t>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Bệnh nhân:</strong> <t t-esc="invoice.patient_id.name"/></p>
+                        <p><strong>Điện thoại:</strong> <t t-esc="invoice.patient_id.phone or 'N/A'"/></p>
+                        <p><strong>Bảo hiểm:</strong>
+                            <t t-if="invoice.patient_id.has_insurance">
+                                <span class="badge badge-success">Có</span>
+                                <span t-esc="invoice.patient_id.insurance_number"/>
+                            </t>
+                            <t t-else="">
+                                <span class="badge badge-secondary">Không</span>
+                            </t>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Lines -->
+            <div class="im-card">
+                <h3>Dịch vụ</h3>
+
+                <t t-if="invoice.service_lines">
+                    <div class="table-responsive">
+                        <table class="table table-striped im-table">
+                            <thead>
+                                <tr>
+                                    <th>Dịch vụ</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-right">Đơn giá</th>
+                                    <th class="text-right">Thành tiền</th>
+                                    <th class="text-right">Bảo hiểm chi trả</th>
+                                    <th class="text-right">Bệnh nhân chi trả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="invoice.service_lines" t-as="line">
+                                    <tr>
+                                        <td><t t-esc="line.service_id.service_name"/></td>
+                                        <td class="text-center"><t t-esc="line.quantity"/></td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(line.price_unit)"/> VND
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(line.price_subtotal)"/> VND
+                                        </td>
+                                        <td class="text-right" style="color: green;">
+                                            <t t-esc="'{:,.0f}'.format(line.insurance_amount)"/> VND
+                                        </td>
+                                        <td class="text-right" style="color: #b91c1c;">
+                                            <t t-esc="'{:,.0f}'.format(line.patient_amount)"/> VND
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr class="table-info">
+                                    <td colspan="3" class="text-right"><strong>Tổng cộng:</strong></td>
+                                    <td class="text-right"><strong>
+                                        <t t-esc="'{:,.0f}'.format(invoice.service_amount)"/> VND
+                                    </strong></td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="im-empty">
+                        Không có dịch vụ nào.
+                    </div>
+                </t>
+            </div>
+
+            <!-- Product Lines -->
+            <div class="im-card">
+                <h3>Thuốc</h3>
+
+                <t t-if="invoice.product_lines">
+                    <div class="table-responsive">
+                        <table class="table table-striped im-table">
+                            <thead>
+                                <tr>
+                                    <th>Thuốc</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-right">Đơn giá</th>
+                                    <th class="text-right">Thành tiền</th>
+                                    <th class="text-right">Bảo hiểm chi trả</th>
+                                    <th class="text-right">Bệnh nhân chi trả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="invoice.product_lines" t-as="line">
+                                    <tr>
+                                        <td><t t-esc="line.product_id.name"/></td>
+                                        <td class="text-center"><t t-esc="line.quantity"/></td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(line.price_unit)"/> VND
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(line.price_subtotal)"/> VND
+                                        </td>
+                                        <td class="text-right" style="color: green;">
+                                            <t t-esc="'{:,.0f}'.format(line.insurance_amount)"/> VND
+                                        </td>
+                                        <td class="text-right" style="color: #b91c1c;">
+                                            <t t-esc="'{:,.0f}'.format(line.patient_amount)"/> VND
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr class="table-info">
+                                    <td colspan="3" class="text-right"><strong>Tổng cộng:</strong></td>
+                                    <td class="text-right"><strong>
+                                        <t t-esc="'{:,.0f}'.format(invoice.medicine_amount)"/> VND
+                                    </strong></td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="im-empty">
+                        Không có thuốc nào.
+                    </div>
+                </t>
+            </div>
+
+            <!-- Summary -->
+            <div class="im-card">
+                <h3>Tổng hợp</h3>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Ghi chú:</strong> <t t-esc="invoice.note or 'Không có ghi chú'"/></p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th class="text-right">Tổng tiền dịch vụ:</th>
+                                    <td class="text-right">
+                                        <t t-esc="'{:,.0f}'.format(invoice.service_amount)"/> VND
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-right">Tổng tiền thuốc:</th>
+                                    <td class="text-right">
+                                        <t t-esc="'{:,.0f}'.format(invoice.medicine_amount)"/> VND
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-right">Tổng cộng:</th>
+                                    <td class="text-right">
+                                        <strong><t t-esc="'{:,.0f}'.format(invoice.amount_total)"/> VND</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-right">Bảo hiểm chi trả:</th>
+                                    <td class="text-right" style="color: green;">
+                                        <strong><t t-esc="'{:,.0f}'.format(invoice.insurance_amount)"/> VND</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-right">Bệnh nhân chi trả:</th>
+                                    <td class="text-right" style="color: #b91c1c;">
+                                        <strong><t t-esc="'{:,.0f}'.format(invoice.patient_amount)"/> VND</strong>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

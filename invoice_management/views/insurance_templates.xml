@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Insurance Invoice Form Template -->
+    <template id="insurance_form_template" name="Create Insurance Invoice">
+        <t t-call="invoice_management.invoice_management_layout">
+            <t t-set="page_title">Tạo hóa đơn bảo hiểm</t>
+
+            <!-- Actions -->
+            <div class="im-actions">
+                <a href="/insurance/list" class="btn btn-secondary">
+                    <i class="fa fa-arrow-left"></i> Quay lại
+                </a>
+            </div>
+
+            <!-- Insurance Invoice Form -->
+            <div class="im-card">
+                <h3>Tạo hóa đơn bảo hiểm mới</h3>
+
+                <form method="POST" action="/insurance/create">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                    <div class="form-group row">
+                        <label for="date_from" class="col-sm-3 col-form-label">Từ ngày</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control" id="date_from" name="date_from"
+                                   t-att-value="date_from" required="required"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="date_to" class="col-sm-3 col-form-label">Đến ngày</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control" id="date_to" name="date_to"
+                                   t-att-value="date_to" required="required"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-9 offset-sm-3">
+                            <button type="submit" class="btn btn-primary">Tạo hóa đơn</button>
+                            <a href="/insurance/list" class="btn btn-secondary ml-2">Hủy</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <!-- Insurance Invoice List Template -->
+    <template id="insurance_list_template" name="Insurance Invoice List">
+        <t t-call="invoice_management.invoice_management_layout">
+            <t t-set="page_title">Danh sách hóa đơn bảo hiểm</t>
+
+            <!-- Actions -->
+            <div class="im-actions text-right">
+                <a href="/insurance/create" class="btn btn-success">
+                    <i class="fa fa-plus"></i> Tạo hóa đơn bảo hiểm mới
+                </a>
+            </div>
+
+            <!-- Insurance Invoice Table -->
+            <div class="im-card">
+                <h3>Danh sách hóa đơn bảo hiểm</h3>
+
+                <t t-if="insurance_invoices">
+                    <div class="table-responsive">
+                        <table class="table table-striped im-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã hóa đơn BH</th>
+                                    <th>Từ ngày</th>
+                                    <th>Đến ngày</th>
+                                    <th>Tổng tiền dịch vụ</th>
+                                    <th>Tổng tiền thuốc</th>
+                                    <th>Bảo hiểm chi trả</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="insurance_invoices" t-as="insurance">
+                                    <tr>
+                                        <td><t t-esc="insurance.name"/></td>
+                                        <td><t t-esc="insurance.date_from"/></td>
+                                        <td><t t-esc="insurance.date_to"/></td>
+                                        <td class="im-price">
+                                            <t t-esc="'{:,.0f}'.format(insurance.total_service_amount)"/> VND
+                                        </td>
+                                        <td class="im-price">
+                                            <t t-esc="'{:,.0f}'.format(insurance.total_medicine_amount)"/> VND
+                                        </td>
+                                        <td class="im-price">
+                                            <t t-esc="'{:,.0f}'.format(insurance.total_insurance_amount)"/> VND
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-if="insurance.state == 'draft'">
+                                                <span class="im-status-draft">Nháp</span>
+                                            </t>
+                                            <t t-elif="insurance.state == 'confirmed'">
+                                                <span class="im-status-confirmed">Đã xác nhận</span>
+                                            </t>
+                                            <t t-elif="insurance.state == 'paid'">
+                                                <span class="im-status-paid">Đã thanh toán</span>
+                                            </t>
+                                            <t t-elif="insurance.state == 'cancelled'">
+                                                <span class="im-status-cancelled">Đã hủy</span>
+                                            </t>
+                                        </td>
+                                        <td class="text-center">
+                                            <a t-att-href="'/insurance/view/%s' % insurance.id" class="btn btn-sm btn-info">
+                                                <i class="fa fa-eye"></i> Xem
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="im-empty">
+                        Không tìm thấy hóa đơn bảo hiểm nào.
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Insurance Invoice View Template -->
+    <template id="insurance_view_template" name="Insurance Invoice View">
+        <t t-call="invoice_management.invoice_management_layout">
+            <t t-set="page_title">Chi tiết hóa đơn bảo hiểm</t>
+
+            <!-- Actions -->
+            <div class="im-actions">
+                <a href="/insurance/list" class="btn btn-secondary">
+                    <i class="fa fa-arrow-left"></i> Quay lại
+                </a>
+
+                <t t-if="insurance.state == 'draft'">
+                    <a t-att-href="'/insurance/action/confirm/%s' % insurance.id" class="btn btn-primary ml-2">
+                        <i class="fa fa-check"></i> Xác nhận
+                    </a>
+                    <a t-att-href="'/insurance/action/cancel/%s' % insurance.id" class="btn btn-danger ml-2"
+                       onclick="return confirm('Bạn có chắc chắn muốn hủy hóa đơn này?')">
+                        <i class="fa fa-times"></i> Hủy
+                    </a>
+                </t>
+                <t t-if="insurance.state == 'confirmed'">
+                    <a t-att-href="'/insurance/action/pay/%s' % insurance.id" class="btn btn-success ml-2">
+                        <i class="fa fa-money"></i> Thanh toán
+                    </a>
+                    <a t-att-href="'/insurance/action/cancel/%s' % insurance.id" class="btn btn-danger ml-2"
+                       onclick="return confirm('Bạn có chắc chắn muốn hủy hóa đơn này?')">
+                        <i class="fa fa-times"></i> Hủy
+                    </a>
+                </t>
+                <t t-if="insurance.state == 'cancelled'">
+                    <a t-att-href="'/insurance/action/draft/%s' % insurance.id" class="btn btn-warning ml-2">
+                        <i class="fa fa-refresh"></i> Đặt về nháp
+                    </a>
+                </t>
+            </div>
+
+            <!-- Insurance Invoice Information -->
+            <div class="im-card">
+                <h3>Thông tin hóa đơn bảo hiểm</h3>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Mã hóa đơn:</strong> <t t-esc="insurance.name"/></p>
+                        <p><strong>Từ ngày:</strong> <t t-esc="insurance.date_from"/></p>
+                        <p><strong>Đến ngày:</strong> <t t-esc="insurance.date_to"/></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Trạng thái:</strong>
+                            <t t-if="insurance.state == 'draft'">
+                                <span class="im-status-draft">Nháp</span>
+                            </t>
+                            <t t-elif="insurance.state == 'confirmed'">
+                                <span class="im-status-confirmed">Đã xác nhận</span>
+                            </t>
+                            <t t-elif="insurance.state == 'paid'">
+                                <span class="im-status-paid">Đã thanh toán</span>
+                            </t>
+                            <t t-elif="insurance.state == 'cancelled'">
+                                <span class="im-status-cancelled">Đã hủy</span>
+                            </t>
+                        </p>
+                        <p><strong>Tổng tiền bảo hiểm chi trả:</strong>
+                            <span class="font-weight-bold" style="color: green;">
+                                <t t-esc="'{:,.0f}'.format(insurance.total_insurance_amount)"/> VND
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoice Lines -->
+            <div class="im-card">
+                <h3>Chi tiết hóa đơn</h3>
+
+                <t t-if="insurance.invoice_line_ids">
+                    <div class="table-responsive">
+                        <table class="table table-striped im-table">
+                            <thead>
+                                <tr>
+                                    <th>Hóa đơn</th>
+                                    <th>Bệnh nhân</th>
+                                    <th>Ngày hóa đơn</th>
+                                    <th class="text-right">Tiền dịch vụ</th>
+                                    <th class="text-right">Tiền thuốc</th>
+                                    <th class="text-right">Bảo hiểm chi trả</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="insurance.invoice_line_ids" t-as="line">
+                                    <tr>
+                                        <td><t t-esc="line.invoice_id.name"/></td>
+                                        <td><t t-esc="line.patient_id.name"/></td>
+                                        <td><t t-esc="line.invoice_date"/></td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(line.service_amount)"/> VND
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(line.medicine_amount)"/> VND
+                                        </td>
+                                        <td class="text-right" style="color: green;">
+                                            <t t-esc="'{:,.0f}'.format(line.insurance_amount)"/> VND
+                                        </td>
+                                        <td class="text-center">
+                                            <a t-att-href="'/invoice/view/%s' % line.invoice_id.id" class="btn btn-sm btn-info">
+                                                <i class="fa fa-eye"></i> Xem hóa đơn
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr class="table-info">
+                                    <td colspan="3" class="text-right"><strong>Tổng cộng:</strong></td>
+                                    <td class="text-right"><strong>
+                                        <t t-esc="'{:,.0f}'.format(insurance.total_service_amount)"/> VND
+                                    </strong></td>
+                                    <td class="text-right"><strong>
+                                        <t t-esc="'{:,.0f}'.format(insurance.total_medicine_amount)"/> VND
+                                    </strong></td>
+                                    <td class="text-right" style="color: green;"><strong>
+                                        <t t-esc="'{:,.0f}'.format(insurance.total_insurance_amount)"/> VND
+                                    </strong></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="im-empty">
+                        Không có chi tiết hóa đơn nào.
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>
