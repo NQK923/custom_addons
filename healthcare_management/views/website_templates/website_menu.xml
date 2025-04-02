@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="healthcare_website_menu" inherit_id="website.user_navbar" name="Healthcare Management Menu">
+        <xpath expr="//ul[@id='o_menu_sections']/li[last()]" position="after">
+            <li class="dropdown" groups="base.group_user">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="fa fa-hospital-o mr-1"></i> Chăm sóc khách hàng y tế
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/healthcare/dashboard">
+                        <i class="fa fa-home mr-2"></i> Trang chủ
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <span class="dropdown-header">Phản hồi &amp; Khiếu nại</span>
+                    <a class="dropdown-item" href="/healthcare/patient_feedback">
+                        <i class="fa fa-comments mr-2"></i> Phản hồi của bệnh nhân
+                    </a>
+                    <a class="dropdown-item" href="/healthcare/patient_complaint">
+                        <i class="fa fa-exclamation-circle mr-2"></i> Khiếu nại của bệnh nhân
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <span class="dropdown-header">Thông báo lịch hẹn</span>
+                    <a class="dropdown-item" href="/healthcare/appointment_reminder">
+                        <i class="fa fa-calendar-check mr-2"></i> Quản lý thông báo lịch hẹn
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <span class="dropdown-header">Thống kê &amp; Phân tích</span>
+                    <a class="dropdown-item" href="/healthcare/feedback_dashboard">
+                        <i class="fa fa-chart-bar mr-2"></i> Phân tích phản hồi
+                    </a>
+                    <a class="dropdown-item" href="/healthcare/feedback_statistics">
+                        <i class="fa fa-chart-line mr-2"></i> Thống kê phản hồi
+                    </a>
+                    <a class="dropdown-item" href="/healthcare/complaint_dashboard">
+                        <i class="fa fa-chart-bar mr-2"></i> Phân tích khiếu nại
+                    </a>
+                    <a class="dropdown-item" href="/healthcare/complaint_statistics">
+                        <i class="fa fa-chart-line mr-2"></i> Thống kê khiếu nại
+                    </a>
+                </div>
+            </li>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template danh sách thông báo lịch hẹn -->
+    <template id="appointment_reminder_list_template" name="Danh sách thông báo lịch hẹn">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h1>Danh sách thông báo lịch hẹn</h1>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <button id="btnSyncAppointments" class="btn btn-primary">
+                            <i class="fa fa-sync"></i> Đồng bộ lịch hẹn
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bộ lọc -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <form class="form-inline bg-light p-3 rounded">
+                            <div class="form-group mb-2 mr-2">
+                                <label for="filter_state" class="mr-2">Trạng thái:</label>
+                                <select class="form-control" id="filter_state" name="filter_state">
+                                    <option value="">Tất cả</option>
+                                    <option value="to_send">Chờ gửi</option>
+                                    <option value="sent">Đã gửi</option>
+                                    <option value="failed">Thất bại</option>
+                                    <option value="cancelled">Đã hủy</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-2 mr-2">
+                                <label for="filter_date_from" class="mr-2">Từ ngày:</label>
+                                <input type="date" class="form-control" id="filter_date_from" name="filter_date_from"/>
+                            </div>
+                            <div class="form-group mb-2 mr-2">
+                                <label for="filter_date_to" class="mr-2">Đến ngày:</label>
+                                <input type="date" class="form-control" id="filter_date_to" name="filter_date_to"/>
+                            </div>
+                            <button type="submit" class="btn btn-primary mb-2">Lọc</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Bảng danh sách thông báo lịch hẹn -->
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Mã thông báo</th>
+                                <th>Bệnh nhân</th>
+                                <th>Ngày giờ hẹn</th>
+                                <th>Ngày gửi thông báo</th>
+                                <th>Bác sĩ</th>
+                                <th>Phòng khám</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="reminders" t-as="reminder">
+                                <tr t-att-class="'table-warning' if reminder.state == 'to_send' else 'table-success' if reminder.state == 'sent' else 'table-danger' if reminder.state == 'failed' else 'table-secondary'">
+                                    <td><t t-esc="reminder.name"/></td>
+                                    <td><t t-esc="reminder.patient_id.name"/></td>
+                                    <td><t t-esc="reminder.appointment_date"/></td>
+                                    <td><t t-esc="reminder.notification_date"/></td>
+                                    <td><t t-esc="reminder.staff_id.staff_name or '-'"/></td>
+                                    <td><t t-esc="reminder.room_id.name or '-'"/></td>
+                                    <td>
+                                        <span t-att-class="'badge ' + ('badge-warning' if reminder.state == 'to_send' else 'badge-success' if reminder.state == 'sent' else 'badge-danger' if reminder.state == 'failed' else 'badge-secondary')">
+                                            <t t-if="reminder.state == 'to_send'">Chờ gửi</t>
+                                            <t t-elif="reminder.state == 'sent'">Đã gửi</t>
+                                            <t t-elif="reminder.state == 'failed'">Thất bại</t>
+                                            <t t-elif="reminder.state == 'cancelled'">Đã hủy</t>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a t-att-href="'/healthcare/appointment_reminder/%s' % reminder.id" class="btn btn-sm btn-info">
+                                            <i class="fa fa-eye"></i> Xem
+                                        </a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Hiển thị khi không có dữ liệu -->
+                <div t-if="not reminders" class="alert alert-info text-center">
+                    <h4>Không có thông báo lịch hẹn nào.</h4>
+                    <p>Hãy nhấn nút "Đồng bộ lịch hẹn" để tạo thông báo cho các lịch hẹn hiện có.</p>
+                </div>
+            </div>
+
+            <!-- JavaScript for appointment sync -->
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    $('#btnSyncAppointments').on('click', function() {
+                        if (confirm('Bạn có muốn đồng bộ tất cả các lịch hẹn từ hệ thống?')) {
+                            $.ajax({
+                                url: '/healthcare/appointment_reminder/sync',
+                                method: 'POST',
+                                dataType: 'json',
+                                data: {
+                                    csrf_token: odoo.csrf_token,
+                                },
+                                success: function(result) {
+                                    if (result.success) {
+                                        alert('Đã đồng bộ ' + result.count + ' lịch hẹn mới.');
+                                        location.reload();
+                                    } else {
+                                        alert('Đã xảy ra lỗi khi đồng bộ: ' + (result.error || 'Không xác định'));
+                                    }
+                                },
+                                error: function() {
+                                    alert('Đã xảy ra lỗi khi kết nối đến máy chủ.');
+                                }
+                            });
+                        }
+                    });
+                });
+            </script>
+        </t>
+    </template>
+
+    <!-- Template xem chi tiết thông báo lịch hẹn -->
+    <template id="appointment_reminder_detail_template" name="Chi tiết thông báo lịch hẹn">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
+                                <li class="breadcrumb-item"><a href="/healthcare/appointment_reminder">Thông báo lịch hẹn</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Chi tiết thông báo</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">
+                            <i class="fa fa-calendar-check mr-2"></i>
+                            Thông báo lịch hẹn: <t t-esc="reminder.name"/>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2">Thông tin bệnh nhân</h5>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th style="width: 40%">Mã thông báo:</th>
+                                        <td><t t-esc="reminder.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Bệnh nhân:</th>
+                                        <td><t t-esc="reminder.patient_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email:</th>
+                                        <td><t t-esc="reminder.patient_id.email or 'Không có'"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Điện thoại:</th>
+                                        <td><t t-esc="reminder.patient_id.phone or 'Không có'"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2">Chi tiết lịch hẹn</h5>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th style="width: 40%">Ngày giờ hẹn:</th>
+                                        <td><t t-esc="reminder.appointment_date"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Ngày gửi thông báo:</th>
+                                        <td><t t-esc="reminder.notification_date"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Bác sĩ:</th>
+                                        <td><t t-esc="reminder.staff_id.staff_name or '-'"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phòng khám:</th>
+                                        <td><t t-esc="reminder.room_id.name or '-'"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2">Trạng thái thông báo</h5>
+                                <div class="p-3 bg-light rounded">
+                                    <p>
+                                        <strong>Trạng thái hiện tại:</strong>
+                                        <span t-att-class="'badge ' + ('badge-warning' if reminder.state == 'to_send' else 'badge-success' if reminder.state == 'sent' else 'badge-danger' if reminder.state == 'failed' else 'badge-secondary')">
+                                            <t t-if="reminder.state == 'to_send'">Chờ gửi</t>
+                                            <t t-elif="reminder.state == 'sent'">Đã gửi</t>
+                                            <t t-elif="reminder.state == 'failed'">Thất bại</t>
+                                            <t t-elif="reminder.state == 'cancelled'">Đã hủy</t>
+                                        </span>
+                                    </p>
+                                    <t t-if="reminder.email_status">
+                                        <p><strong>Thông tin trạng thái:</strong></p>
+                                        <div class="alert alert-info">
+                                            <t t-esc="reminder.email_status"/>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2">Xem trước email thông báo</h5>
+                                <div class="p-3 border rounded">
+                                    <div style="margin: 0px; padding: 0px; font-size: 13px;">
+                                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                                            Kính gửi <t t-esc="reminder.patient_id.name or 'Quý khách'"/>,
+                                        </p>
+                                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                                            Chúng tôi xin gửi lời nhắc nhở về lịch hẹn khám sắp tới của bạn:
+                                        </p>
+                                        <ul>
+                                            <li>Mã lịch hẹn: <strong><t t-esc="reminder.name or ''"/></strong></li>
+                                            <li>Thời gian: <strong><t t-esc="reminder.appointment_date or ''"/></strong></li>
+                                            <li>Bác sĩ: <strong><t t-esc="reminder.staff_id.staff_name or 'Chưa xác định'"/></strong></li>
+                                            <li>Phòng khám: <strong><t t-esc="reminder.room_id.name or 'Chưa xác định'"/></strong></li>
+                                        </ul>
+                                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                                            Vui lòng đến trước 15 phút để hoàn tất thủ tục.
+                                        </p>
+                                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                                            Nếu bạn cần thay đổi lịch hẹn, vui lòng liên hệ với chúng tôi trước ít nhất 24 giờ.
+                                        </p>
+                                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                                            Trân trọng,<br/>
+                                            Phòng khám <t t-esc="company_name or ''"/>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-group">
+                            <a href="/healthcare/appointment_reminder" class="btn btn-secondary">
+                                <i class="fa fa-arrow-left"></i> Quay lại
+                            </a>
+                            <button type="button" class="btn btn-primary" id="btnSendReminder"
+                                    t-att-data-reminder-id="reminder.id"
+                                    t-att-disabled="reminder.state not in ['to_send', 'failed']">
+                                <i class="fa fa-paper-plane"></i> Gửi thông báo ngay
+                            </button>
+                            <button type="button" class="btn btn-danger" id="btnCancelReminder"
+                                    t-att-data-reminder-id="reminder.id"
+                                    t-att-disabled="reminder.state not in ['to_send', 'failed']">
+                                <i class="fa fa-times"></i> Hủy thông báo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JavaScript for reminder actions -->
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    // Gửi thông báo ngay
+                    $('#btnSendReminder').on('click', function() {
+                        var reminderId = $(this).data('reminder-id');
+                        if (!reminderId) return;
+
+                        if (confirm('Bạn có muốn gửi thông báo này ngay bây giờ?')) {
+                            $.ajax({
+                                url: '/healthcare/appointment_reminder/action',
+                                method: 'POST',
+                                dataType: 'json',
+                                data: {
+                                    reminder_id: reminderId,
+                                    action: 'send_now',
+                                    csrf_token: odoo.csrf_token,
+                                },
+                                success: function(result) {
+                                    if (result.success) {
+                                        alert('Đã gửi thông báo thành công.');
+                                        location.reload();
+                                    } else {
+                                        alert('Đã xảy ra lỗi khi gửi thông báo: ' + (result.error || 'Không xác định'));
+                                    }
+                                },
+                                error: function() {
+                                    alert('Đã xảy ra lỗi khi kết nối đến máy chủ.');
+                                }
+                            });
+                        }
+                    });
+
+                    // Hủy thông báo
+                    $('#btnCancelReminder').on('click', function() {
+                        var reminderId = $(this).data('reminder-id');
+                        if (!reminderId) return;
+
+                        if (confirm('Bạn có chắc chắn muốn hủy thông báo này?')) {
+                            $.ajax({
+                                url: '/healthcare/appointment_reminder/action',
+                                method: 'POST',
+                                dataType: 'json',
+                                data: {
+                                    reminder_id: reminderId,
+                                    action: 'cancel',
+                                    csrf_token: odoo.csrf_token,
+                                },
+                                success: function(result) {
+                                    if (result.success) {
+                                        alert('Đã hủy thông báo thành công.');
+                                        location.reload();
+                                    } else {
+                                        alert('Đã xảy ra lỗi khi hủy thông báo: ' + (result.error || 'Không xác định'));
+                                    }
+                                },
+                                error: function() {
+                                    alert('Đã xảy ra lỗi khi kết nối đến máy chủ.');
+                                }
+                            });
+                        }
+                    });
+                });
+            </script>
+        </t>
+    </template>
+</odoo>

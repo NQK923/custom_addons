@@ -341,3 +341,296 @@ class HealthcareManagement(http.Controller):
                 return {'success': False, 'error': 'Không thể tạo khiếu nại'}
         except Exception as e:
             return {'success': False, 'error': str(e)}
+
+    # Complaint Dashboard
+    @http.route('/healthcare/complaint_dashboard', type='http', auth='user', website=True)
+    def complaint_dashboard(self, **kw):
+        date_from = kw.get('date_from', (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d'))
+        date_to = kw.get('date_to', datetime.today().strftime('%Y-%m-%d'))
+
+        # Sử dụng SQL trực tiếp để lấy thống kê tương tự như model.dashboard
+        request.env.cr.execute("""
+            SELECT 
+                COUNT(*) as total_complaints,
+                SUM(CASE WHEN state = 'new' THEN 1 ELSE 0 END) AS new_complaints,
+                SUM(CASE WHEN state = 'in_progress' THEN 1 ELSE 0 END) AS in_progress_complaints,
+                SUM(CASE WHEN state = 'resolved' THEN 1 ELSE 0 END) AS resolved_complaints,
+                SUM(CASE WHEN state = 'cancelled' THEN 1 ELSE 0 END) AS cancelled_complaints,
+                AVG(CASE WHEN resolution_time > 0 THEN resolution_time ELSE NULL END) AS avg_resolution_time
+            FROM 
+                healthcare_complaint_statistics
+            WHERE 
+                complaint_date >= %s AND complaint_date <= %s
+        """, (date_from, date_to))
+        summary_stats = request.env.cr.dictfetchone()
+
+        # Thống kê theo phân loại
+        request.env.cr.execute("""
+            SELECT 
+                c.id AS category_id,
+                c.category AS category,
+                CASE
+                    WHEN c.category = 'service' THEN 'Dịch vụ'
+                    WHEN c.category = 'staff' THEN 'Nhân viên'
+                    WHEN c.category = 'facility' THEN 'Cơ sở vật chất'
+                    WHEN c.category = 'billing' THEN 'Thanh toán'
+                    ELSE 'Khác'
+                END AS category_name,
+                COUNT(c.id) AS total_complaints,
+                SUM(CASE WHEN c.state = 'new' THEN 1 ELSE 0 END) AS new_count,
+                SUM(CASE WHEN c.state = 'in_progress' THEN 1 ELSE 0 END) AS in_progress_count,
+                SUM(CASE WHEN c.state = 'resolved' THEN 1 ELSE 0 END) AS resolved_count,
+                SUM(CASE WHEN c.state = 'cancelled' THEN 1 ELSE 0 END) AS cancelled_count,
+                AVG(CASE WHEN c.resolution_time > 0 THEN c.resolution_time ELSE NULL END) AS avg_resolution_time
+            FROM 
+                healthcare_complaint_statistics c
+            WHERE 
+                c.complaint_date >= %s AND c.complaint_date <= %s
+            GROUP BY 
+                c.id, c.category
+            ORDER BY 
+                c.category
+        """, (date_from, date_to))
+        category_stats = request.env.cr.dictfetchall()
+
+        # Dữ liệu cho biểu đồ - Khiếu nại theo phân loại
+        request.env.cr.execute("""
+            SELECT 
+                category, 
+                COUNT(*) as count 
+            FROM 
+                healthcare_complaint_statistics 
+            WHERE 
+                complaint_date >= %s AND complaint_date <= %s 
+            GROUP BY 
+                category
+        """, (date_from, date_to))
+        complaint_by_category = request.env.cr.dictfetchall()
+
+        # Dữ liệu cho biểu đồ - Khiếu nại theo tháng
+        request.env.cr.execute("""
+            SELECT 
+                TO_CHAR(complaint_date, 'YYYY-MM') as month_key,
+                TO_CHAR(complaint_date, 'MM/YYYY') as month_name,
+                state,
+                COUNT(*) as count
+            FROM 
+                healthcare_complaint_statistics 
+            WHERE 
+                complaint_date >= %s AND complaint_date <= %s 
+            GROUP BY 
+                month_key, month_name, state
+            ORDER BY
+                month_key
+        """, (date_from, date_to))
+        monthly_data = request.env.cr.dictfetchall()
+
+        # Chuyển đổi dữ liệu theo tháng để phù hợp với format biểu đồ
+        complaint_by_month = []
+        months = {}
+
+        for data in monthly_data:
+            month_key = data['month_key']
+            if month_key not in months:
+                months[month_key] = {
+                    'month_name': data['month_name'],
+                    'new': 0,
+                    'in_progress': 0,
+                    'resolved': 0,
+                    'cancelled': 0
+                }
+
+            state = data['state']
+            if state:
+                months[month_key][state] = data['count']
+
+        for month_key, data in months.items():
+            complaint_by_month.append(data)
+
+        return request.render('healthcare_management.complaint_dashboard_template', {
+            'date_from': date_from,
+            'date_to': date_to,
+            'summary_stats': summary_stats,
+            'category_stats': category_stats,
+            'complaint_by_category': json.dumps(complaint_by_category),
+            'complaint_by_month': json.dumps(complaint_by_month),
+        })
+
+    # Complaint Statistics
+    @http.route('/healthcare/complaint_statistics', type='http', auth='user', website=True)
+    def complaint_statistics(self, **kw):
+        date_from = kw.get('date_from', (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d'))
+        date_to = kw.get('date_to', datetime.today().strftime('%Y-%m-%d'))
+        filter_category = kw.get('filter_category', False)
+
+        domain = [
+            ('complaint_date', '>=', date_from),
+            ('complaint_date', '<=', date_to)
+        ]
+
+        if filter_category:
+            domain.append(('category', '=', filter_category))
+
+        statistics = request.env['healthcare.complaint.statistics'].sudo().search(domain)
+
+        # Thống kê theo phân loại
+        request.env.cr.execute("""
+            SELECT 
+                category, 
+                COUNT(*) as count 
+            FROM 
+                healthcare_complaint_statistics 
+            WHERE 
+                complaint_date >= %s AND complaint_date <= %s 
+                """ + ("""AND category = %s""" if filter_category else "") + """
+            GROUP BY 
+                category
+        """, (date_from, date_to) + ((filter_category,) if filter_category else ()))
+        category_data = request.env.cr.dictfetchall()
+
+        # Thống kê trung bình thời gian giải quyết theo phân loại
+        request.env.cr.execute("""
+            SELECT 
+                category,
+                AVG(resolution_time) as avg_time 
+            FROM 
+                healthcare_complaint_statistics 
+            WHERE 
+                complaint_date >= %s AND complaint_date <= %s 
+                AND resolution_time > 0
+                """ + ("""AND category = %s""" if filter_category else "") + """
+            GROUP BY 
+                category
+        """, (date_from, date_to) + ((filter_category,) if filter_category else ()))
+        resolution_data = request.env.cr.dictfetchall()
+
+        # Thống kê theo trạng thái
+        request.env.cr.execute("""
+            SELECT 
+                state,
+                COUNT(*) as count 
+            FROM 
+                healthcare_complaint_statistics 
+            WHERE 
+                complaint_date >= %s AND complaint_date <= %s 
+                """ + ("""AND category = %s""" if filter_category else "") + """
+            GROUP BY 
+                state
+        """, (date_from, date_to) + ((filter_category,) if filter_category else ()))
+        state_rows = request.env.cr.dictfetchall()
+
+        state_data = {}
+        for row in state_rows:
+            state_data[row['state']] = row['count']
+
+        # Thống kê theo mức độ ưu tiên
+        request.env.cr.execute("""
+            SELECT 
+                priority,
+                COUNT(*) as count 
+            FROM 
+                healthcare_complaint_statistics 
+            WHERE 
+                complaint_date >= %s AND complaint_date <= %s 
+                """ + ("""AND category = %s""" if filter_category else "") + """
+            GROUP BY 
+                priority
+        """, (date_from, date_to) + ((filter_category,) if filter_category else ()))
+        priority_rows = request.env.cr.dictfetchall()
+
+        priority_data = {}
+        for row in priority_rows:
+            priority_data[row['priority']] = row['count']
+
+        return request.render('healthcare_management.complaint_statistics_template', {
+            'date_from': date_from,
+            'date_to': date_to,
+            'filter_category': filter_category,
+            'statistics': statistics,
+            'category_data': category_data,
+            'resolution_data': resolution_data,
+            'state_data': state_data,
+            'priority_data': priority_data
+        })
+
+    # Appointment Reminder
+    @http.route('/healthcare/appointment_reminder', type='http', auth='user', website=True)
+    def appointment_reminder_list(self, **kw):
+        domain = []
+
+        # Xử lý filter nếu có
+        filter_state = kw.get('filter_state')
+        filter_date_from = kw.get('filter_date_from')
+        filter_date_to = kw.get('filter_date_to')
+
+        if filter_state:
+            domain.append(('state', '=', filter_state))
+        if filter_date_from:
+            domain.append(('appointment_date', '>=', filter_date_from))
+        if filter_date_to:
+            domain.append(('appointment_date', '<=', filter_date_to))
+
+        reminders = request.env['appointment.reminder'].sudo().search(domain)
+        return request.render('healthcare_management.appointment_reminder_list_template', {
+            'reminders': reminders,
+        })
+
+    @http.route('/healthcare/appointment_reminder/<model("appointment.reminder"):reminder>', type='http', auth='user',
+                website=True)
+    def appointment_reminder_detail(self, reminder, **kw):
+        company_name = request.env.user.company_id.name
+        return request.render('healthcare_management.appointment_reminder_detail_template', {
+            'reminder': reminder,
+            'company_name': company_name
+        })
+
+    @http.route('/healthcare/appointment_reminder/sync', type='json', auth='user', website=True)
+    def appointment_reminder_sync(self, **kw):
+        try:
+            # Gọi hàm đồng bộ lịch hẹn
+            result = request.env['appointment.reminder'].sudo().action_sync_all_appointments()
+
+            # Trích xuất số lượng bản ghi đã tạo
+            count = 0
+            if result and 'params' in result:
+                message = result['params'].get('message', '')
+                # Extract number from message like 'Đã tạo X thông báo lịch hẹn mới'
+                import re
+                match = re.search(r'Đã tạo (\d+)', message)
+                if match:
+                    count = int(match.group(1))
+
+            return {
+                'success': True,
+                'count': count
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+
+    @http.route('/healthcare/appointment_reminder/action', type='json', auth='user', website=True)
+    def appointment_reminder_action(self, **kw):
+        reminder_id = kw.get('reminder_id')
+        action = kw.get('action')
+
+        if not reminder_id or not action:
+            return {'success': False, 'error': 'Thiếu thông tin cần thiết'}
+
+        reminder = request.env['appointment.reminder'].sudo().browse(int(reminder_id))
+
+        if not reminder.exists():
+            return {'success': False, 'error': 'Không tìm thấy thông báo lịch hẹn'}
+
+        try:
+            if action == 'send_now':
+                reminder.action_send_reminder_now()
+                return {'success': True}
+            elif action == 'cancel':
+                reminder.action_cancel_reminder()
+                return {'success': True}
+            else:
+                return {'success': False, 'error': 'Hành động không hợp lệ'}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}

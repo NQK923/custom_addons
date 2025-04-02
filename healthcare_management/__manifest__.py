@@ -9,14 +9,22 @@
         - Quản lý phản hồi từ bệnh nhân
         - Xử lý khiếu nại 
         - Theo dõi cải thiện dịch vụ chăm sóc sức khỏe
+        - Nhắc nhở lịch hẹn tự động
     """,
     'category': 'Healthcare',
     'author': 'Your Company',
     'website': 'https://www.yourcompany.com',
     'depends': ['base', 'mail', 'appointment_management', 'staff_management', 'website'],
     'data': [
+        # Security
         'security/ir.model.access.csv',
-        # View truyền thống (giữ lại để sử dụng trong backend)
+
+        # Data
+        'data/sequence.xml',
+        'data/appointment_reminder_cron.xml',
+        'data/appointment_reminder_email_template.xml',
+
+        # Backend Views (Truyền thống)
         'views/patient_feedback_views.xml',
         'views/complaint_views.xml',
         'views/feedback_dashboard_view.xml',
@@ -30,12 +38,23 @@
         'data/appointment_reminder_email_template.xml',
         'views/website_templates/website_assets.xml',
         'views/website_templates/website_menu.xml',
+        'views/website_templates/healthcare_dashboard_template.xml',
         'views/website_templates/patient_feedback_template.xml',
-        'views/website_templates/feedback_dashboard_template.xml',
         'views/website_templates/complaint_template.xml',
+        'views/website_templates/feedback_dashboard_template.xml',
         'views/website_templates/feedback_statistics_template.xml',
+        'views/website_templates/complaint_dashboard_template.xml',
+        'views/website_templates/complaint_statistics_template.xml',
+        'views/website_templates/appointment_reminder_template.xml',
     ],
     'demo': [],
+    'assets': {
+        'web.assets_frontend': [
+            'healthcare_management/static/src/css/healthcare.css',
+            'healthcare_management/static/src/js/healthcare.js',
+        ],
+    },
+    'qweb': [],
     'installable': True,
     'application': True,
     'auto_install': False,
