@@ -294,7 +294,19 @@
 
                 <!-- Plan Information -->
                 <div class="plan-header">
-                    <h3 class="section-heading">Thông tin kế hoạch</h3>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="section-heading mb-0">Thông tin kế hoạch</h3>
+                        <div>
+                            <a t-att-href="'/clinic/treatment_plan/edit/%s' % plan.id" class="btn btn-info me-2">
+                                <i class="fa fa-edit"></i> Chỉnh sửa
+                            </a>
+                            <a t-att-href="'/clinic/treatment_plan/delete/%s' % plan.id"
+                               class="btn btn-danger"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa kế hoạch điều trị này?')">
+                                <i class="fa fa-trash"></i> Xóa
+                            </a>
+                        </div>
+                    </div>
                     <div class="row plan-info">
                         <div class="col-md-6">
                             <p><strong>Mã kế hoạch:</strong> <t t-esc="plan.code"/></p>
@@ -309,7 +321,12 @@
 
                 <!-- Treatment Processes -->
                 <div class="process-list">
-                    <h3 class="section-heading">Quá trình điều trị</h3>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="section-heading mb-0">Quá trình điều trị</h3>
+                        <a t-att-href="'/clinic/treatment_process/create?plan_id=%s' % plan.id" class="btn btn-success">
+                            <i class="fa fa-plus-circle"></i> Thêm quá trình mới
+                        </a>
+                    </div>
                     <t t-if="processes">
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped">
@@ -321,6 +338,7 @@
                                         <th>Trạng thái</th>
                                         <th>Thời gian thực hiện</th>
                                         <th>Đơn thuốc</th>
+                                        <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -338,6 +356,16 @@
                                             </td>
                                             <td><t t-if="process.execution_time" t-esc="process.execution_time"/><t t-else="">Chưa thực hiện</t></td>
                                             <td><t t-if="process.prescription_id" t-esc="process.prescription_id.name"/><t t-else="">Không có</t></td>
+                                            <td>
+                                                <a t-att-href="'/clinic/treatment_process/edit/%s' % process.id" class="btn btn-sm btn-info me-1">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                                <a t-att-href="'/clinic/treatment_process/delete/%s' % process.id"
+                                                   class="btn btn-sm btn-danger"
+                                                   onclick="return confirm('Bạn có chắc chắn muốn xóa quá trình này?')">
+                                                    <i class="fa fa-trash"></i>
+                                                </a>
+                                            </td>
                                         </tr>
                                     </t>
                                 </tbody>
