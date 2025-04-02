@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="healthcare_dashboard_template" name="Dashboard Quản lý chăm sóc khách hàng">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="jumbotron bg-primary text-white">
+                    <h1 class="display-4">Quản lý chăm sóc khách hàng y tế</h1>
+                    <p class="lead">Hệ thống quản lý phản hồi, khiếu nại và chăm sóc khách hàng trong lĩnh vực y tế</p>
+                    <hr class="my-4 bg-white"/>
+                    <p>Sử dụng hệ thống để theo dõi phản hồi của bệnh nhân, xử lý khiếu nại và phân tích dữ liệu</p>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card text-white bg-info mb-3">
+                            <div class="card-header">
+                                <h4 class="mb-0"><i class="fa fa-comments mr-2"></i> Phản hồi</h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Quản lý phản hồi từ bệnh nhân, ghi nhận khen ngợi, góp ý, khiếu nại và hỏi đáp</p>
+                                <a href="/healthcare/patient_feedback" class="btn btn-light btn-block">Xem phản hồi</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-danger mb-3">
+                            <div class="card-header">
+                                <h4 class="mb-0"><i class="fa fa-exclamation-circle mr-2"></i> Khiếu nại</h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Quản lý khiếu nại, xử lý và theo dõi trạng thái giải quyết khiếu nại của bệnh nhân</p>
+                                <a href="/healthcare/patient_complaint" class="btn btn-light btn-block">Xem khiếu nại</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-success mb-3">
+                            <div class="card-header">
+                                <h4 class="mb-0"><i class="fa fa-chart-line mr-2"></i> Thống kê</h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Thống kê và phân tích dữ liệu phản hồi, khiếu nại của bệnh nhân</p>
+                                <div class="btn-group w-100">
+                                    <a href="/healthcare/feedback_dashboard" class="btn btn-light">Phân tích phản hồi</a>
+                                    <a href="/healthcare/feedback_statistics" class="btn btn-light">Thống kê phản hồi</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h3 class="mb-0">Hướng dẫn sử dụng nhanh</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <h5 class="card-title"><i class="fa fa-plus-circle mr-2"></i> Tạo phản hồi mới</h5>
+                                                <p class="card-text">Để tạo phản hồi mới từ bệnh nhân:</p>
+                                                <ol>
+                                                    <li>Vào mục "Phản hồi bệnh nhân"</li>
+                                                    <li>Nhấn nút "Tạo phản hồi mới"</li>
+                                                    <li>Điền thông tin và lưu lại</li>
+                                                </ol>
+                                                <a href="/healthcare/patient_feedback/create" class="btn btn-primary">Tạo phản hồi mới</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <h5 class="card-title"><i class="fa fa-chart-bar mr-2"></i> Xem thống kê</h5>
+                                                <p class="card-text">Để xem thống kê và biểu đồ phân tích:</p>
+                                                <ol>
+                                                    <li>Vào mục "Phân tích phản hồi" hoặc "Thống kê phản hồi"</li>
+                                                    <li>Chọn khoảng thời gian cần xem</li>
+                                                    <li>Xem biểu đồ và dữ liệu thống kê</li>
+                                                </ol>
+                                                <div class="btn-group">
+                                                    <a href="/healthcare/feedback_dashboard" class="btn btn-primary">Phân tích phản hồi</a>
+                                                    <a href="/healthcare/feedback_statistics" class="btn btn-info">Thống kê phản hồi</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template danh sách phản hồi -->
+    <template id="patient_feedback_list_template" name="Danh sách phản hồi bệnh nhân">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h1>Danh sách phản hồi bệnh nhân</h1>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <a href="/healthcare/patient_feedback/create" class="btn btn-primary">
+                            <i class="fa fa-plus-circle"></i> Tạo phản hồi mới
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Bộ lọc -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <form class="form-inline bg-light p-3 rounded">
+                            <div class="form-group mb-2 mr-2">
+                                <label for="filter_type" class="mr-2">Loại phản hồi:</label>
+                                <select class="form-control" id="filter_type" name="filter_type">
+                                    <option value="">Tất cả</option>
+                                    <option value="compliment">Khen ngợi</option>
+                                    <option value="suggestion">Góp ý</option>
+                                    <option value="complaint">Khiếu nại</option>
+                                    <option value="question">Hỏi đáp</option>
+                                    <option value="other">Khác</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-2 mr-2">
+                                <label for="filter_state" class="mr-2">Trạng thái:</label>
+                                <select class="form-control" id="filter_state" name="filter_state">
+                                    <option value="">Tất cả</option>
+                                    <option value="new">Mới</option>
+                                    <option value="noted">Đã ghi nhận</option>
+                                    <option value="cancelled">Đã hủy</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary mb-2">Lọc</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Bảng danh sách phản hồi -->
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Mã phản hồi</th>
+                                <th>Bệnh nhân</th>
+                                <th>Ngày phản hồi</th>
+                                <th>Loại phản hồi</th>
+                                <th>Trạng thái</th>
+                                <th>Đánh giá</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="feedbacks" t-as="feedback">
+                                <tr t-att-class="'table-danger' if feedback.state == 'new' else 'table-success' if feedback.state == 'noted' else 'table-secondary'">
+                                    <td><t t-esc="feedback.name"/></td>
+                                    <td><t t-esc="feedback.patient_id.name"/></td>
+                                    <td><t t-esc="feedback.feedback_date"/></td>
+                                    <td>
+                                        <t t-if="feedback.feedback_type == 'compliment'">Khen ngợi</t>
+                                        <t t-elif="feedback.feedback_type == 'suggestion'">Góp ý</t>
+                                        <t t-elif="feedback.feedback_type == 'complaint'">Khiếu nại</t>
+                                        <t t-elif="feedback.feedback_type == 'question'">Hỏi đáp</t>
+                                        <t t-else="">Khác</t>
+                                    </td>
+                                    <td>
+                                        <span t-att-class="'badge ' + ('badge-danger' if feedback.state == 'new' else 'badge-success' if feedback.state == 'noted' else 'badge-secondary')">
+                                            <t t-if="feedback.state == 'new'">Mới</t>
+                                            <t t-elif="feedback.state == 'noted'">Đã ghi nhận</t>
+                                            <t t-elif="feedback.state == 'cancelled'">Đã hủy</t>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="ratings">
+                                            <t t-foreach="range(5)" t-as="i">
+                                                <i t-att-class="'fa fa-star' + (' text-warning' if feedback.satisfaction_rating and int(feedback.satisfaction_rating) > i else '')"></i>
+                                            </t>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a t-att-href="'/healthcare/patient_feedback/%s' % feedback.id" class="btn btn-sm btn-info">
+                                            <i class="fa fa-eye"></i> Xem
+                                        </a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Hiển thị khi không có dữ liệu -->
+                <div t-if="not feedbacks" class="alert alert-info text-center">
+                    <h4>Không có phản hồi nào.</h4>
+                    <p>Hãy tạo phản hồi bệnh nhân đầu tiên bằng cách nhấn vào nút "Tạo phản hồi mới" ở trên.</p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Template xem chi tiết phản hồi -->
+    <template id="patient_feedback_detail_template" name="Chi tiết phản hồi bệnh nhân">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
+                                <li class="breadcrumb-item"><a href="/healthcare/patient_feedback">Phản hồi bệnh nhân</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Chi tiết phản hồi</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">
+                            <i class="fa fa-comment-dots mr-2"></i>
+                            Chi tiết phản hồi: <t t-esc="feedback.name"/>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2">Thông tin chung</h5>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th style="width: 40%">Mã phản hồi:</th>
+                                        <td><t t-esc="feedback.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Bệnh nhân:</th>
+                                        <td><t t-esc="feedback.patient_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phòng ban:</th>
+                                        <td><t t-esc="feedback.department_id.name or 'Không có'"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Người phụ trách:</th>
+                                        <td><t t-esc="feedback.user_id.name"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2">Chi tiết phản hồi</h5>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th style="width: 40%">Ngày phản hồi:</th>
+                                        <td><t t-esc="feedback.feedback_date"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Loại phản hồi:</th>
+                                        <td>
+                                            <t t-if="feedback.feedback_type == 'compliment'">Khen ngợi</t>
+                                            <t t-elif="feedback.feedback_type == 'suggestion'">Góp ý</t>
+                                            <t t-elif="feedback.feedback_type == 'complaint'">Khiếu nại</t>
+                                            <t t-elif="feedback.feedback_type == 'question'">Hỏi đáp</t>
+                                            <t t-else="">Khác</t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Trạng thái:</th>
+                                        <td>
+                                            <span t-att-class="'badge ' + ('badge-danger' if feedback.state == 'new' else 'badge-success' if feedback.state == 'noted' else 'badge-secondary')">
+                                                <t t-if="feedback.state == 'new'">Mới</t>
+                                                <t t-elif="feedback.state == 'noted'">Đã ghi nhận</t>
+                                                <t t-elif="feedback.state == 'cancelled'">Đã hủy</t>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Đánh giá:</th>
+                                        <td>
+                                            <div class="ratings">
+                                                <t t-foreach="range(5)" t-as="i">
+                                                    <i t-att-class="'fa fa-star' + (' text-warning' if feedback.satisfaction_rating and int(feedback.satisfaction_rating) > i else '')"></i>
+                                                </t>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2">Nội dung phản hồi</h5>
+                                <div class="p-3 bg-light rounded">
+                                    <p t-esc="feedback.description"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2">Khiếu nại liên quan</h5>
+                                <div t-if="feedback.complaint_id" class="p-3 bg-light rounded">
+                                    <a t-att-href="'/healthcare/patient_complaint/%s' % feedback.complaint_id.id" class="btn btn-info">
+                                        <i class="fa fa-exclamation-circle"></i>
+                                        Xem khiếu nại: <t t-esc="feedback.complaint_id.name"/>
+                                    </a>
+                                </div>
+                                <div t-else="" class="p-3 bg-light rounded">
+                                    <p class="text-muted">Không có khiếu nại liên quan.</p>
+                                    <form method="post" t-att-action="'/healthcare/patient_complaint/create?feedback_id=%s' % feedback.id">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button type="submit" class="btn btn-outline-primary" t-att-disabled="feedback.complaint_id">
+                                            <i class="fa fa-plus-circle"></i> Tạo khiếu nại từ phản hồi này
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-group">
+                            <a href="/healthcare/patient_feedback" class="btn btn-secondary">
+                                <i class="fa fa-arrow-left"></i> Quay lại
+                            </a>
+                            <button type="button" class="btn btn-success" t-att-data-feedback-id="feedback.id"
+                                    t-att-data-action="'note'" t-att-disabled="feedback.state != 'new'">
+                                <i class="fa fa-check"></i> Ghi nhận
+                            </button>
+                            <button type="button" class="btn btn-danger" t-att-data-feedback-id="feedback.id"
+                                    t-att-data-action="'cancel'" t-att-disabled="feedback.state not in ['new', 'noted']">
+                                <i class="fa fa-times"></i> Hủy
+                            </button>
+                            <button type="button" class="btn btn-warning" t-att-data-feedback-id="feedback.id"
+                                    t-att-data-action="'new'" t-att-disabled="feedback.state != 'cancelled'">
+                                <i class="fa fa-redo"></i> Thiết lập thành Mới
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Template form tạo phản hồi mới -->
+    <template id="patient_feedback_form_template" name="Tạo phản hồi bệnh nhân">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
+                                <li class="breadcrumb-item"><a href="/healthcare/patient_feedback">Phản hồi bệnh nhân</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Tạo phản hồi mới</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">
+                            <i class="fa fa-plus-circle mr-2"></i>
+                            Tạo phản hồi bệnh nhân mới
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="/healthcare/patient_feedback/create">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="patient_id" class="font-weight-bold">Bệnh nhân <span class="text-danger">*</span></label>
+                                        <select class="form-control" id="patient_id" name="patient_id" required="required">
+                                            <option value="">-- Chọn bệnh nhân --</option>
+                                            <t t-foreach="patients" t-as="patient">
+                                                <option t-att-value="patient.id">
+                                                    <t t-esc="patient.name"/> (<t t-esc="patient.code"/>)
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="department_id" class="font-weight-bold">Phòng ban</label>
+                                        <select class="form-control" id="department_id" name="department_id">
+                                            <option value="">-- Chọn phòng ban --</option>
+                                            <t t-foreach="departments" t-as="department">
+                                                <option t-att-value="department.id">
+                                                    <t t-esc="department.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="feedback_type" class="font-weight-bold">Loại phản hồi <span class="text-danger">*</span></label>
+                                        <select class="form-control" id="feedback_type" name="feedback_type" required="required">
+                                            <option value="">-- Chọn loại phản hồi --</option>
+                                            <t t-foreach="feedback_types" t-as="type">
+                                                <option t-att-value="type[0]"><t t-esc="type[1]"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="satisfaction_rating" class="font-weight-bold">Đánh giá mức độ hài lòng</label>
+                                        <select class="form-control" id="satisfaction_rating" name="satisfaction_rating">
+                                            <option value="">-- Chọn đánh giá --</option>
+                                            <t t-foreach="satisfaction_ratings" t-as="rating">
+                                                <option t-att-value="rating[0]"><t t-esc="rating[1]"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description" class="font-weight-bold">Nội dung phản hồi <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="description" name="description" rows="5" required="required"
+                                         placeholder="Nhập chi tiết phản hồi từ bệnh nhân..."></textarea>
+                            </div>
+
+                            <div class="form-group text-right">
+                                <a href="/healthcare/patient_feedback" class="btn btn-secondary">
+                                    <i class="fa fa-times"></i> Hủy
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-save"></i> Lưu
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
