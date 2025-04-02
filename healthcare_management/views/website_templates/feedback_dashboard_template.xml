@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="feedback_dashboard_template" name="Bảng điều khiển phản hồi">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Phân tích phản hồi</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">
+                            <i class="fa fa-chart-bar mr-2"></i>
+                            Bảng điều khiển phân tích phản hồi
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Bộ lọc theo ngày -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <form method="get" action="/healthcare/feedback_dashboard" class="form-inline bg-light p-3 rounded">
+                                    <div class="form-group mb-2 mr-2">
+                                        <label for="date_from" class="mr-2">Từ ngày:</label>
+                                        <input type="date" class="form-control" id="date_from" name="date_from" t-att-value="date_from"/>
+                                    </div>
+                                    <div class="form-group mb-2 mr-2">
+                                        <label for="date_to" class="mr-2">Đến ngày:</label>
+                                        <input type="date" class="form-control" id="date_to" name="date_to" t-att-value="date_to"/>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary mb-2">Lọc</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Thống kê tổng quan -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card bg-primary text-white mb-4">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Tổng số phản hồi</h5>
+                                        <h2 class="display-4"><t t-esc="summary_stats['total_feedback'] or 0"/></h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-success text-white mb-4">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Điểm hài lòng trung bình</h5>
+                                        <h2 class="display-4">
+                                            <t t-if="summary_stats['avg_satisfaction']">
+                                                <t t-esc="round(summary_stats['avg_satisfaction'], 1)"/>
+                                            </t>
+                                            <t t-else="">0.0</t>
+                                            <small>/5</small>
+                                        </h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-info text-white mb-4">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Tỷ lệ khiếu nại</h5>
+                                        <h2 class="display-4">
+                                            <t t-if="summary_stats['total_feedback'] and summary_stats['total_complaints']">
+                                                <t t-esc="round(summary_stats['total_complaints'] * 100 / summary_stats['total_feedback'], 1)"/>%
+                                            </t>
+                                            <t t-else="">0%</t>
+                                        </h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phân loại phản hồi -->
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card bg-info text-white mb-4">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Khen ngợi</h5>
+                                        <h2><t t-esc="summary_stats['total_compliments'] or 0"/></h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-danger text-white mb-4">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Khiếu nại</h5>
+                                        <h2><t t-esc="summary_stats['total_complaints'] or 0"/></h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-warning text-white mb-4">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Góp ý</h5>
+                                        <h2><t t-esc="summary_stats['total_suggestions'] or 0"/></h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-secondary text-white mb-4">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Hỏi đáp</h5>
+                                        <h2><t t-esc="summary_stats['total_questions'] or 0"/></h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Biểu đồ phản hồi theo loại -->
+                        <div class="row mt-5">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">Phản hồi theo loại</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="feedbackTypeChart" width="100%" height="50"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">Phản hồi theo phòng ban</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="departmentFeedbackChart" width="100%" height="50"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thống kê theo phòng ban -->
+                        <div class="row mt-5">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">Thống kê phản hồi theo phòng ban</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover">
+                                                <thead class="thead-dark">
+                                                    <tr>
+                                                        <th>Phòng ban</th>
+                                                        <th>Tổng số phản hồi</th>
+                                                        <th>Khen ngợi</th>
+                                                        <th>Khiếu nại</th>
+                                                        <th>Góp ý</th>
+                                                        <th>Hỏi đáp</th>
+                                                        <th>Khác</th>
+                                                        <th>Điểm hài lòng TB</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-foreach="department_stats" t-as="dept">
+                                                        <tr>
+                                                            <td><t t-esc="dept['department_name']"/></td>
+                                                            <td><t t-esc="dept['total_feedback']"/></td>
+                                                            <td><t t-esc="dept['compliments']"/></td>
+                                                            <td><t t-esc="dept['complaints']"/></td>
+                                                            <td><t t-esc="dept['suggestions']"/></td>
+                                                            <td><t t-esc="dept['questions']"/></td>
+                                                            <td><t t-esc="dept['others']"/></td>
+                                                            <td>
+                                                                <t t-if="dept['avg_satisfaction']">
+                                                                    <t t-esc="round(dept['avg_satisfaction'], 1)"/>
+                                                                </t>
+                                                                <t t-else="">0.0</t>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JavaScript for Charts -->
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    // Feedback by Type Chart
+                    var feedbackTypeData = <t t-raw="json.dumps(feedback_by_type)"/>;
+                    var typeLabels = [];
+                    var typeData = [];
+                    var typeColors = [];
+
+                    var colorMap = {
+                        'compliment': 'rgba(23, 162, 184, 0.8)',
+                        'complaint': 'rgba(220, 53, 69, 0.8)',
+                        'suggestion': 'rgba(255, 193, 7, 0.8)',
+                        'question': 'rgba(108, 117, 125, 0.8)',
+                        'other': 'rgba(73, 80, 87, 0.8)'
+                    };
+
+                    feedbackTypeData.forEach(function(item) {
+                        typeLabels.push(getFeedbackTypeName(item.feedback_type));
+                        typeData.push(item.count);
+                        typeColors.push(colorMap[item.feedback_type] || 'rgba(73, 80, 87, 0.8)');
+                    });
+
+                    var typeCtx = document.getElementById('feedbackTypeChart').getContext('2d');
+                    var typeChart = new Chart(typeCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: typeLabels,
+                            datasets: [{
+                                data: typeData,
+                                backgroundColor: typeColors,
+                                borderColor: 'rgba(255, 255, 255, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            legend: {
+                                position: 'right',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Phân bố phản hồi theo loại'
+                            },
+                            animation: {
+                                animateScale: true,
+                                animateRotate: true
+                            }
+                        }
+                    });
+
+                    // Department Feedback Chart
+                    var deptData = <t t-raw="json.dumps(department_stats)"/>;
+                    var deptLabels = [];
+                    var deptTotals = [];
+
+                    deptData.forEach(function(dept) {
+                        deptLabels.push(dept.department_name);
+                        deptTotals.push(dept.total_feedback);
+                    });
+
+                    var deptCtx = document.getElementById('departmentFeedbackChart').getContext('2d');
+                    var deptChart = new Chart(deptCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: deptLabels,
+                            datasets: [{
+                                label: 'Tổng phản hồi',
+                                data: deptTotals,
+                                backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                                borderColor: 'rgba(0, 123, 255, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+
+                    function getFeedbackTypeName(type) {
+                        switch (type) {
+                            case 'compliment': return 'Khen ngợi';
+                            case 'complaint': return 'Khiếu nại';
+                            case 'suggestion': return 'Góp ý';
+                            case 'question': return 'Hỏi đáp';
+                            default: return 'Khác';
+                        }
+                    }
+                });
+            </script>
+        </t>
+    </template>
+</odoo>
