@@ -1,283 +1,157 @@
 from odoo import http
-from odoo.http import request, _logger
+from odoo.http import request
 from odoo.exceptions import ValidationError
-import json
 
 
 class RoomManagementController(http.Controller):
-    @http.route('/clinic/rooms', type='http', auth='public', website=True)
-    def clinic_rooms(self, **kwargs):
+    @http.route('/clinic/rooms', type='http', auth='user', website=True)
+    def room_list(self, **kwargs):
+        """Hiển thị danh sách phòng khám"""
         rooms = request.env['clinic.room'].sudo().search([])
-        patients = request.env['clinic.patient'].sudo().search([('patient_type', '=', 'outpatient')])
-
-        search_room = kwargs.get('search_room')
-        search_status = kwargs.get('search_status')
-
-        domain = []
-        if search_room:
-            domain.append(('room_id', '=', int(search_room)))
-        if search_status:
-            domain.append(('status', '=', search_status))
-
-        beds = request.env['clinic.bed'].sudo().search(domain)
-
         values = {
             'rooms': rooms,
-            'beds': beds,
-            'patients': patients
         }
         return request.render('room_management.room_list_template', values)
 
-    @http.route('/clinic/room/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
-    def create_room(self, **kwargs):
-        error_message = None
-        success_message = None
-
-        if request.httprequest.method == 'POST':
-            try:
-                name = kwargs.get('name')
-                room_type = kwargs.get('room_type')
-                capacity = int(kwargs.get('capacity', 0))
-                note = kwargs.get('note', '')
-
-                if not name or not room_type or capacity < 1:
-                    error_message = "Vui lòng điền đầy đủ thông tin và sức chứa phải lớn hơn 0"
-                else:
-                    # Tạo phòng mới - giường sẽ được tạo tự động trong phương thức create của model
-                    request.env['clinic.room'].sudo().create({
-                        'name': name,
-                        'room_type': room_type,
-                        'capacity': capacity,
-                        'note': note
-                    })
-                    success_message = "Tạo phòng thành công"
-                    if not error_message:
-                        return request.redirect('/clinic/rooms')
-            except Exception as e:
-                error_message = f"Lỗi khi tạo phòng: {str(e)}"
-
-        values = {
-            'error_message': error_message,
-            'success_message': success_message,
-            'room_types': [
-                ('exam', 'Phòng khám'),
-                ('treatment', 'Phòng điều trị'),
-                ('emergency', 'Phòng cấp cứu')
-            ],
-            'default_values': kwargs
-        }
-        return request.render('room_management.room_create_template', values)
-
-    @http.route('/clinic/room/<int:room_id>/edit', type='http', auth='user', website=True, methods=['GET', 'POST'])
-    def edit_room(self, room_id=None, **kwargs):
-        if not room_id:
-            return request.redirect('/clinic/rooms')
-
-        room = request.env['clinic.room'].sudo().browse(room_id)
-        error_message = None
-        success_message = None
-
-        if request.httprequest.method == 'POST':
-            try:
-                name = kwargs.get('name')
-                room_type = kwargs.get('room_type')
-                capacity = int(kwargs.get('capacity', 0))
-                note = kwargs.get('note', '')
-
-                if not name or not room_type or capacity < 1:
-                    error_message = "Vui lòng điền đầy đủ thông tin và sức chứa phải lớn hơn 0"
-                else:
-                    # Cập nhật thông tin phòng
-                    room.write({
-                        'name': name,
-                        'room_type': room_type,
-                        'capacity': capacity,
-                        'note': note
-                    })
-                    success_message = "Cập nhật phòng thành công"
-                    if not error_message:
-                        return request.redirect(f'/clinic/room/{room_id}')
-            except ValidationError as e:
-                error_message = str(e)
-            except Exception as e:
-                error_message = f"Lỗi khi cập nhật phòng: {str(e)}"
-
+    @http.route('/clinic/room/<model("clinic.room"):room>', type='http', auth='user', website=True)
+    def room_detail(self, room, **kwargs):
+        """Hiển thị chi tiết phòng khám và danh sách giường bệnh"""
         values = {
             'room': room,
-            'error_message': error_message,
-            'success_message': success_message,
-            'room_types': [
-                ('exam', 'Phòng khám'),
-                ('treatment', 'Phòng điều trị'),
-                ('emergency', 'Phòng cấp cứu')
-            ]
-        }
-        return request.render('room_management.room_edit_template', values)
-
-    @http.route('/clinic/room/<int:room_id>', type='http', auth='public', website=True)
-    def clinic_room_detail(self, room_id=None, **kwargs):
-        if not room_id:
-            return request.redirect('/clinic/rooms')
-
-        room = request.env['clinic.room'].sudo().browse(room_id)
-
-        # Handle discharge action if requested
-        bed_id = kwargs.get('discharge_bed')
-        success_message = None
-        error_message = None
-
-        if bed_id and request.httprequest.method == 'POST':
-            try:
-                bed = request.env['clinic.bed'].sudo().browse(int(bed_id))
-                if bed and bed.patient_id:
-                    # Execute discharge action
-                    bed.action_out()
-                    success_message = f"Bệnh nhân {bed.patient_name} đã được xuất viện thành công"
-            except Exception as e:
-                error_message = f"Lỗi khi xuất viện: {str(e)}"
-
-        # Danh sách bệnh nhân cho mục đích phân giường
-        patients = request.env['clinic.patient'].sudo().search([('patient_type', '=', 'outpatient')])
-
-        values = {
-            'room': room,
-            'success_message': success_message,
-            'error_message': error_message,
-            'patients': patients
         }
         return request.render('room_management.room_detail_template', values)
 
-    @http.route('/clinic/room/<int:room_id>/delete', type='http', auth='user', website=True, methods=['POST'])
-    def delete_room(self, room_id=None, **kwargs):
-        if not room_id:
-            return request.redirect('/clinic/rooms')
+    @http.route('/clinic/rooms/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
+    def create_room(self, **kwargs):
+        """Tạo phòng mới"""
+        error = None
+        success = None
 
-        try:
-            room = request.env['clinic.room'].sudo().browse(int(room_id))
-            # Kiểm tra xem có bệnh nhân đang sử dụng giường trong phòng không
-            if any(bed.patient_id for bed in room.bed_ids):
-                return request.redirect(f'/clinic/rooms?error=room_has_patients')
+        if request.httprequest.method == 'POST':
+            try:
+                name = kwargs.get('name')
+                room_type = kwargs.get('room_type')
+                capacity = int(kwargs.get('capacity', 0))
+                note = kwargs.get('note', '')
 
-            room.unlink()
-            return request.redirect('/clinic/rooms?success=deleted')
-        except Exception as e:
-            return request.redirect(f'/clinic/rooms?error={str(e)}')
-
-    @http.route('/clinic/bed/<int:bed_id>/assign', type='http', auth='user', website=True, methods=['POST'])
-    def assign_patient(self, bed_id=None, **kwargs):
-        if not bed_id:
-            return request.redirect('/clinic/rooms?error=no_bed_id')
-
-        try:
-            bed = request.env['clinic.bed'].sudo().browse(int(bed_id))
-            if not bed.exists():
-                return request.redirect('/clinic/rooms?error=bed_not_found')
-
-            patient_id = kwargs.get('patient_id')
-            if not patient_id:
-                return request.redirect('/clinic/rooms?error=no_patient_selected')
-
-            # Log the bed status to debug
-            _logger.info(f"Bed status: {bed.status}, Patient ID: {patient_id}")
-
-            room_id = bed.room_id.id if bed.room_id else None
-            if not room_id:
-                return request.redirect('/clinic/rooms?error=no_room_associated')
-
-            if bed and patient_id:
-                try:
-                    # Check bed status explicitly
-                    if bed.status != 'available':
-                        return request.redirect(f'/clinic/rooms?error=bed_not_available')
-
-                    # Assign patient to bed
-                    patient = request.env['clinic.patient'].sudo().browse(int(patient_id))
-                    if not patient.exists():
-                        return request.redirect('/clinic/rooms?error=patient_not_found')
-
-                    # Explicitly log before assignment
-                    _logger.info(f"Assigning patient {patient.name} (ID: {patient.id}) to bed {bed.id}")
-
-                    bed.patient_id = patient.id
-
-                    # Check if request is AJAX
-                    if request.httprequest.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                        return json.dumps({'status': 'success'})
-
-                    # Redirect based on where the function was called from
-                    referer = request.httprequest.headers.get('Referer', '')
-                    if 'active_tab=beds' in referer:
-                        return request.redirect(f'/clinic/rooms?active_tab=beds&success=assigned')
-                    elif f'/clinic/room/{room_id}' in referer:
-                        return request.redirect(f'/clinic/room/{room_id}?success=assigned')
-                    else:
-                        return request.redirect(f'/clinic/rooms?success=assigned')
-                except Exception as e:
-                    # Log the full exception details
-                    _logger.error(f"Error assigning patient: {str(e)}", exc_info=True)
-                    error_message = f"Error: {str(e)}"
-
-                    if request.httprequest.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                        return json.dumps({'status': 'error', 'message': error_message})
-                    return request.redirect(f'/clinic/rooms?error={error_message}')
-            else:
-                error_message = "Invalid bed or patient"
-                if request.httprequest.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    return json.dumps({'status': 'error', 'message': error_message})
-                return request.redirect(f'/clinic/rooms?error={error_message}')
-
-        except Exception as e:
-            # Log any unexpected errors
-            _logger.error(f"Unexpected error in assign_patient: {str(e)}", exc_info=True)
-            error_message = f"Unexpected error: {str(e)}"
-
-            if request.httprequest.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return json.dumps({'status': 'error', 'message': error_message})
-            return request.redirect(f'/clinic/rooms?error={error_message}')
-
-    @http.route('/clinic/bed/<int:bed_id>/discharge', type='http', auth='user', website=True, methods=['POST'])
-    def discharge_patient(self, bed_id=None, **kwargs):
-        if not bed_id:
-            return request.redirect('/clinic/rooms?active_tab=beds')
-
-        try:
-            bed = request.env['clinic.bed'].sudo().browse(int(bed_id))
-            if bed and bed.patient_id:
-                # Thực hiện xuất viện
-                patient_name = bed.patient_name
-                bed.action_out()
-
-                # Redirect dựa vào nơi đã gọi function
-                referer = request.httprequest.headers.get('Referer', '')
-                if 'active_tab=beds' in referer:
-                    return request.redirect(
-                        f'/clinic/rooms?active_tab=beds&success=discharged&patient_name={patient_name}')
-                elif f'/clinic/room/{bed.room_id.id}' in referer:
-                    return request.redirect(f'/clinic/room/{bed.room_id.id}?success=discharged')
+                if not name or not room_type:
+                    error = "Vui lòng nhập đầy đủ thông tin bắt buộc"
+                elif capacity < 1:
+                    error = "Sức chứa phải lớn hơn 0"
                 else:
-                    return request.redirect(f'/clinic/rooms?success=discharged&patient_name={patient_name}')
+                    # Tạo phòng mới
+                    room_vals = {
+                        'name': name,
+                        'room_type': room_type,
+                        'capacity': capacity,
+                        'note': note
+                    }
 
+                    new_room = request.env['clinic.room'].sudo().create(room_vals)
+                    if new_room:
+                        success = "Tạo phòng thành công!"
+                        return request.redirect('/clinic/room/' + str(new_room.id))
+                    else:
+                        error = "Không thể tạo phòng, vui lòng thử lại"
+            except Exception as e:
+                error = str(e)
+
+        values = {
+            'error': error,
+            'success': success,
+            'default': kwargs,
+        }
+        return request.render('room_management.room_form_template', values)
+
+    @http.route('/clinic/room/<model("clinic.room"):room>/edit', type='http', auth='user', website=True,
+                methods=['GET', 'POST'])
+    def edit_room(self, room, **kwargs):
+        """Chỉnh sửa thông tin phòng"""
+        error = None
+        success = None
+
+        if request.httprequest.method == 'POST':
+            try:
+                name = kwargs.get('name')
+                room_type = kwargs.get('room_type')
+                capacity = int(kwargs.get('capacity', 0))
+                note = kwargs.get('note', '')
+
+                if not name or not room_type:
+                    error = "Vui lòng nhập đầy đủ thông tin bắt buộc"
+                elif capacity < 1:
+                    error = "Sức chứa phải lớn hơn 0"
+                else:
+                    # Cập nhật thông tin phòng
+                    room_vals = {
+                        'name': name,
+                        'room_type': room_type,
+                        'capacity': capacity,
+                        'note': note
+                    }
+
+                    try:
+                        room.sudo().write(room_vals)
+                        success = "Cập nhật phòng thành công!"
+                        return request.redirect('/clinic/room/' + str(room.id))
+                    except ValidationError as ve:
+                        error = str(ve)
+                    except Exception as e:
+                        error = "Có lỗi xảy ra: " + str(e)
+            except Exception as e:
+                error = str(e)
+
+        values = {
+            'room': room,
+            'error': error,
+            'success': success,
+            'default': kwargs if kwargs else {
+                'name': room.name,
+                'room_type': room.room_type,
+                'capacity': room.capacity,
+                'note': room.note or '',
+            },
+        }
+        return request.render('room_management.room_form_template', values)
+
+    @http.route('/clinic/room/<model("clinic.room"):room>/delete', type='http', auth='user', website=True)
+    def delete_room(self, room, **kwargs):
+        """Xóa phòng"""
+        try:
+            # Kiểm tra xem phòng có giường đang có bệnh nhân không
+            occupied_beds = room.bed_ids.filtered(lambda b: b.patient_id)
+            if occupied_beds:
+                # Nếu có bệnh nhân, chuyển hướng về trang chi tiết với thông báo lỗi
+                return request.redirect('/clinic/room/%s?error=%s' % (room.id, "Không thể xóa phòng có bệnh nhân"))
+
+            # Xóa phòng
+            room.sudo().unlink()
+            return request.redirect('/clinic/rooms?success=Xóa phòng thành công')
         except Exception as e:
-            return request.redirect(f'/clinic/rooms?error={str(e)}')
+            return request.redirect('/clinic/rooms?error=%s' % str(e))
 
-        return request.redirect(f'/clinic/rooms?error=invalid_operation')
+    @http.route('/clinic/bed/<model("clinic.bed"):bed>/assign', type='http', auth='user', website=True,
+                methods=['GET', 'POST'])
+    def assign_patient(self, bed, **kwargs):
+        """Xếp bệnh nhân vào giường"""
+        # Xử lý khi form được submit
+        if request.httprequest.method == 'POST':
+            patient_id = kwargs.get('patient_id')
+            if patient_id:
+                bed.sudo().write({'patient_id': int(patient_id)})
+                return request.redirect('/clinic/room/' + str(bed.room_id.id))
 
-    @http.route('/api/patients/search', type='http', auth='user', website=True)
-    def search_patients(self, **kwargs):
-        search_term = kwargs.get('term', '')
-        patients = request.env['clinic.patient'].sudo().search([
-            '|',
-            ('name', 'ilike', search_term),
-            ('code', 'ilike', search_term),
-            ('patient_type', '=', 'outpatient')
-        ], limit=10)
+        # Hiển thị form chọn bệnh nhân
+        patients = request.env['clinic.patient'].sudo().search([('patient_type', '=', 'outpatient')])
+        values = {
+            'bed': bed,
+            'patients': patients,
+        }
+        return request.render('room_management.assign_patient_template', values)
 
-        result = []
-        for patient in patients:
-            result.append({
-                'id': patient.id,
-                'name': patient.name,
-                'code': patient.code
-            })
-
-        return json.dumps(result)
+    @http.route('/clinic/bed/<model("clinic.bed"):bed>/discharge', type='http', auth='user', website=True)
+    def discharge_patient(self, bed, **kwargs):
+        """Xuất viện cho bệnh nhân"""
+        if bed.patient_id:
+            bed.sudo().action_out()
+        return request.redirect('/clinic/room/' + str(bed.room_id.id))
