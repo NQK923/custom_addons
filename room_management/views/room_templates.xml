@@ -223,26 +223,32 @@
                                                                             </form>
                                                                         </t>
                                                                         <t t-else="">
-                                                                            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" t-att-data-target="'#assignModal%s' % bed.id">
+                                                                            <!-- Correctly fixed version for the assign patient modal -->
+                                                                            <button type="button" class="btn btn-sm btn-success btn-assign-patient"
+                                                                                    t-att-data-bed-id="bed.id"
+                                                                                    data-toggle="modal" t-att-data-target="'#assignModal' + str(bed.id)">
                                                                                 <i class="fa fa-user-plus"/> Phân bệnh nhân
                                                                             </button>
 
-                                                                            <!-- Modal phân bệnh nhân -->
-                                                                            <div class="modal fade" t-att-id="'assignModal%s' % bed.id" tabindex="-1" role="dialog" aria-hidden="true">
+                                                                            <!-- Modal phân bệnh nhân - correctly fixed version -->
+                                                                            <div class="modal fade" t-att-id="'assignModal' + str(bed.id)" tabindex="-1"
+                                                                                 role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
                                                                                 <div class="modal-dialog" role="document">
                                                                                     <div class="modal-content">
                                                                                         <div class="modal-header">
-                                                                                            <h5 class="modal-title">Phân bệnh nhân vào giường</h5>
+                                                                                            <h5 class="modal-title" id="assignModalLabel">Phân bệnh nhân vào giường #<t t-esc="bed.id"/></h5>
                                                                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                                                 <span aria-hidden="true">&amp;times;</span>
                                                                                             </button>
                                                                                         </div>
-                                                                                        <form t-att-action="'/clinic/bed/%s/assign' % bed.id" method="POST">
+                                                                                        <form t-att-action="'/clinic/bed/' + str(bed.id) + '/assign'" method="POST"
+                                                                                              class="assign-patient-form">
                                                                                             <div class="modal-body">
                                                                                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                                                                                 <div class="form-group">
                                                                                                     <label for="patient_id">Chọn bệnh nhân:</label>
-                                                                                                    <select class="form-control" name="patient_id" required="required">
+                                                                                                    <select class="form-control" name="patient_id" required="required"
+                                                                                                            t-att-id="'patient_select_' + str(bed.id)">
                                                                                                         <option value="">-- Chọn bệnh nhân --</option>
                                                                                                         <t t-foreach="patients" t-as="patient">
                                                                                                             <option t-att-value="patient.id">
@@ -250,6 +256,9 @@
                                                                                                             </option>
                                                                                                         </t>
                                                                                                     </select>
+                                                                                                    <div class="invalid-feedback">
+                                                                                                        Vui lòng chọn bệnh nhân
+                                                                                                    </div>
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div class="modal-footer">

@@ -1,5 +1,5 @@
 from odoo import http
-from odoo.http import request
+from odoo.http import request, _logger
 from odoo.exceptions import ValidationError
 import json
 
@@ -163,44 +163,77 @@ class RoomManagementController(http.Controller):
         except Exception as e:
             return request.redirect(f'/clinic/rooms?error={str(e)}')
 
-    # === API phân bệnh nhân và xuất viện ===
     @http.route('/clinic/bed/<int:bed_id>/assign', type='http', auth='user', website=True, methods=['POST'])
     def assign_patient(self, bed_id=None, **kwargs):
         if not bed_id:
-            return request.redirect('/clinic/rooms?active_tab=beds')
+            return request.redirect('/clinic/rooms?error=no_bed_id')
 
-        bed = request.env['clinic.bed'].sudo().browse(int(bed_id))
-        patient_id = kwargs.get('patient_id')
-        room_id = bed.room_id.id
+        try:
+            bed = request.env['clinic.bed'].sudo().browse(int(bed_id))
+            if not bed.exists():
+                return request.redirect('/clinic/rooms?error=bed_not_found')
 
-        if bed and patient_id and bed.status == 'available':
-            try:
-                # Phân bệnh nhân vào giường
-                patient = request.env['clinic.patient'].sudo().browse(int(patient_id))
-                bed.patient_id = patient.id
+            patient_id = kwargs.get('patient_id')
+            if not patient_id:
+                return request.redirect('/clinic/rooms?error=no_patient_selected')
 
-                # Kiểm tra xem yêu cầu có phải là AJAX không
+            # Log the bed status to debug
+            _logger.info(f"Bed status: {bed.status}, Patient ID: {patient_id}")
+
+            room_id = bed.room_id.id if bed.room_id else None
+            if not room_id:
+                return request.redirect('/clinic/rooms?error=no_room_associated')
+
+            if bed and patient_id:
+                try:
+                    # Check bed status explicitly
+                    if bed.status != 'available':
+                        return request.redirect(f'/clinic/rooms?error=bed_not_available')
+
+                    # Assign patient to bed
+                    patient = request.env['clinic.patient'].sudo().browse(int(patient_id))
+                    if not patient.exists():
+                        return request.redirect('/clinic/rooms?error=patient_not_found')
+
+                    # Explicitly log before assignment
+                    _logger.info(f"Assigning patient {patient.name} (ID: {patient.id}) to bed {bed.id}")
+
+                    bed.patient_id = patient.id
+
+                    # Check if request is AJAX
+                    if request.httprequest.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                        return json.dumps({'status': 'success'})
+
+                    # Redirect based on where the function was called from
+                    referer = request.httprequest.headers.get('Referer', '')
+                    if 'active_tab=beds' in referer:
+                        return request.redirect(f'/clinic/rooms?active_tab=beds&success=assigned')
+                    elif f'/clinic/room/{room_id}' in referer:
+                        return request.redirect(f'/clinic/room/{room_id}?success=assigned')
+                    else:
+                        return request.redirect(f'/clinic/rooms?success=assigned')
+                except Exception as e:
+                    # Log the full exception details
+                    _logger.error(f"Error assigning patient: {str(e)}", exc_info=True)
+                    error_message = f"Error: {str(e)}"
+
+                    if request.httprequest.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                        return json.dumps({'status': 'error', 'message': error_message})
+                    return request.redirect(f'/clinic/rooms?error={error_message}')
+            else:
+                error_message = "Invalid bed or patient"
                 if request.httprequest.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    return json.dumps({'status': 'success'})
+                    return json.dumps({'status': 'error', 'message': error_message})
+                return request.redirect(f'/clinic/rooms?error={error_message}')
 
-                # Redirect dựa vào nơi đã gọi function
-                referer = request.httprequest.headers.get('Referer', '')
-                if 'active_tab=beds' in referer:
-                    return request.redirect(f'/clinic/rooms?active_tab=beds&success=assigned')
-                elif f'/clinic/room/{room_id}' in referer:
-                    return request.redirect(f'/clinic/room/{room_id}?success=assigned')
-                else:
-                    return request.redirect(f'/clinic/rooms?success=assigned')
+        except Exception as e:
+            # Log any unexpected errors
+            _logger.error(f"Unexpected error in assign_patient: {str(e)}", exc_info=True)
+            error_message = f"Unexpected error: {str(e)}"
 
-            except Exception as e:
-                if request.httprequest.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    return json.dumps({'status': 'error', 'message': str(e)})
-                return request.redirect(f'/clinic/rooms?error={str(e)}')
-
-        if request.httprequest.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return json.dumps({'status': 'error', 'message': 'Invalid operation'})
-
-        return request.redirect(f'/clinic/rooms?error=invalid_operation')
+            if request.httprequest.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return json.dumps({'status': 'error', 'message': error_message})
+            return request.redirect(f'/clinic/rooms?error={error_message}')
 
     @http.route('/clinic/bed/<int:bed_id>/discharge', type='http', auth='user', website=True, methods=['POST'])
     def discharge_patient(self, bed_id=None, **kwargs):

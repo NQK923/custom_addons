@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Salary Sheets List Template -->
+    <template id="salary_sheets_template" name="Salary Sheets List">
+        <t t-call="website.layout">
+            <t t-call="salary_management.salary_management_styles"/>
+            <div class="container mt-5 salary-management-container">
+                <a href="/salary/dashboard" class="back-link">
+                    <i class="fa fa-arrow-left"></i> Quay lại dashboard
+                </a>
+                <h1 class="page-title">Danh sách bảng lương</h1>
+
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h3 class="card-title mb-0">Bảng lương theo tháng</h3>
+                        <a href="/salary/sheet/new" class="btn btn-success">
+                            <i class="fa fa-plus"></i> Thêm mới
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Tháng</th>
+                                        <th>Năm</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-if="sheets">
+                                        <t t-foreach="sheets" t-as="sheet">
+                                            <tr>
+                                                <td>Tháng <t t-esc="sheet.month"/></td>
+                                                <td><t t-esc="sheet.year"/></td>
+                                                <td>
+                                                    <span t-if="sheet.state == 'draft'" class="status-badge status-draft">Nháp</span>
+                                                    <span t-if="sheet.state == 'confirmed'" class="status-badge status-confirmed">Đã lập</span>
+                                                </td>
+                                                <td class="action-buttons">
+                                                    <a t-att-href="'/salary/sheet/%s' % sheet.id" class="btn btn-sm btn-primary">
+                                                        <i class="fa fa-eye"></i> Xem chi tiết
+                                                    </a>
+                                                    <t t-if="sheet.state == 'draft'">
+                                                        <a t-att-href="'/salary/sheet/%s/generate' % sheet.id" class="btn btn-sm btn-success">
+                                                            <i class="fa fa-cog"></i> Lập bảng lương
+                                                        </a>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <tr>
+                                            <td colspan="4" class="text-center">Chưa có bảng lương nào</td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- New Salary Sheet Form Template -->
+    <template id="salary_sheet_new_template" name="New Salary Sheet">
+        <t t-call="website.layout">
+            <t t-call="salary_management.salary_management_styles"/>
+            <div class="container mt-5 salary-management-container">
+                <a href="/salary/sheets" class="back-link">
+                    <i class="fa fa-arrow-left"></i> Quay lại danh sách
+                </a>
+                <h1 class="page-title">Tạo bảng lương mới</h1>
+
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post" action="/salary/sheet/create">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="form-group">
+                                <label for="month">Tháng</label>
+                                <select class="form-control" id="month" name="month" required="required">
+                                    <t t-foreach="months" t-as="month">
+                                        <option t-att-value="month[0]">
+                                            <t t-esc="month[1]"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="year">Năm</label>
+                                <select class="form-control" id="year" name="year" required="required">
+                                    <t t-foreach="years" t-as="year">
+                                        <option t-att-value="year[0]">
+                                            <t t-esc="year[1]"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Tạo bảng lương</button>
+                                <a href="/salary/sheets" class="btn btn-secondary ml-2">Hủy</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Error Template for Sheet Creation -->
+    <template id="salary_sheet_error_template" name="Salary Sheet Error">
+        <t t-call="website.layout">
+            <t t-call="salary_management.salary_management_styles"/>
+            <div class="container mt-5 salary-management-container">
+                <a href="/salary/sheets" class="back-link">
+                    <i class="fa fa-arrow-left"></i> Quay lại danh sách
+                </a>
+                <h1 class="page-title">Lỗi khi tạo bảng lương</h1>
+
+                <div class="alert alert-danger" role="alert">
+                    <h4 class="alert-heading">Không thể tạo bảng lương!</h4>
+                    <p><t t-esc="error"/></p>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">Vui lòng chọn tháng và năm khác hoặc kiểm tra lại thông tin:</p>
+                        <form method="post" action="/salary/sheet/create">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="form-group">
+                                <label for="month">Tháng</label>
+                                <select class="form-control" id="month" name="month" required="required">
+                                    <t t-foreach="months" t-as="month">
+                                        <option t-att-value="month[0]">
+                                            <t t-esc="month[1]"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="year">Năm</label>
+                                <select class="form-control" id="year" name="year" required="required">
+                                    <t t-foreach="years" t-as="year">
+                                        <option t-att-value="year[0]">
+                                            <t t-esc="year[1]"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Thử lại</button>
+                                <a href="/salary/sheets" class="btn btn-secondary ml-2">Quay lại danh sách</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Salary Sheet Detail Template -->
+    <template id="salary_sheet_detail_template" name="Salary Sheet Detail">
+        <t t-call="website.layout">
+            <t t-call="salary_management.salary_management_styles"/>
+            <div class="container mt-5 salary-management-container">
+                <a href="/salary/sheets" class="back-link">
+                    <i class="fa fa-arrow-left"></i> Quay lại danh sách
+                </a>
+                <h1 class="page-title">Bảng lương tháng <t t-esc="sheet.month"/>/<t t-esc="sheet.year"/></h1>
+
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="card-title mb-0">Thông tin bảng lương</h3>
+                            <p class="text-white mt-2 mb-0">
+                                Trạng thái:
+                                <span t-if="sheet.state == 'draft'" class="status-badge status-draft">Nháp</span>
+                                <span t-if="sheet.state == 'confirmed'" class="status-badge status-confirmed">Đã lập</span>
+                            </p>
+                        </div>
+                        <div>
+                            <t t-if="sheet.state == 'draft'">
+                                <a t-att-href="'/salary/sheet/%s/generate' % sheet.id" class="btn btn-success">
+                                    <i class="fa fa-cog"></i> Lập bảng lương
+                                </a>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="mb-4">Danh sách phiếu lương</h4>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nhân viên</th>
+                                        <th>Lương cơ bản</th>
+                                        <th>Tổng lương</th>
+                                        <th>Khấu trừ</th>
+                                        <th>Thuế</th>
+                                        <th>Thực nhận</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-if="salaries">
+                                        <t t-foreach="salaries" t-as="salary">
+                                            <tr>
+                                                <td><t t-esc="salary.staff_id.staff_name"/></td>
+                                                <td><span class="currency-vnd"><t t-esc="'{:,.0f}'.format(salary.base_salary)"/></span></td>
+                                                <td><span class="currency-vnd"><t t-esc="'{:,.0f}'.format(salary.total_salary)"/></span></td>
+                                                <td><span class="currency-vnd"><t t-esc="'{:,.0f}'.format(salary.total_deduction)"/></span></td>
+                                                <td><span class="currency-vnd"><t t-esc="'{:,.0f}'.format(salary.tax)"/></span></td>
+                                                <td><span class="currency-vnd"><t t-esc="'{:,.0f}'.format(salary.net_salary)"/></span></td>
+                                                <td>
+                                                    <span t-if="salary.state == 'draft'" class="status-badge status-draft">Nháp</span>
+                                                    <span t-if="salary.state == 'confirmed'" class="status-badge status-confirmed">Xác nhận</span>
+                                                    <span t-if="salary.state == 'paid'" class="status-badge status-paid">Đã thanh toán</span>
+                                                </td>
+                                                <td class="action-buttons">
+                                                    <a t-att-href="'/salary/detail/%s' % salary.id" class="btn btn-sm btn-primary">
+                                                        <i class="fa fa-edit"></i> Chi tiết
+                                                    </a>
+                                                    <t t-if="salary.state == 'draft'">
+                                                        <a t-att-href="'/salary/confirm/%s' % salary.id" class="btn btn-sm btn-success">
+                                                            <i class="fa fa-check"></i> Xác nhận
+                                                        </a>
+                                                    </t>
+                                                    <t t-if="salary.state == 'confirmed'">
+                                                        <a t-att-href="'/salary/pay/%s' % salary.id" class="btn btn-sm btn-info">
+                                                            <i class="fa fa-money"></i> Thanh toán
+                                                        </a>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <tr>
+                                            <td colspan="8" class="text-center">
+                                                <t t-if="sheet.state == 'draft'">
+                                                    Chưa có phiếu lương. Vui lòng nhấn "Lập bảng lương" để tạo phiếu lương.
+                                                </t>
+                                                <t t-else="">
+                                                    Chưa có phiếu lương nào.
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
