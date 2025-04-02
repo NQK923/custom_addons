@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template for creating new patient care record -->
+    <template id="patient_care_form_template" name="Create Patient Care Record">
+        <t t-call="website.layout">
+            <style>
+                .form-container {
+                    background-color: #f8f9fa;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    max-width: 800px;
+                    margin: 0 auto;
+                }
+                .form-card {
+                    background-color: #fff;
+                    padding: 20px;
+                    border-radius: 8px;
+                    margin-bottom: 25px;
+                    border: 1px solid #dee2e6;
+                }
+                .section-heading {
+                    color: #007bff;
+                    border-bottom: 2px solid #007bff;
+                    padding-bottom: 8px;
+                    margin-bottom: 20px;
+                    font-size: 1.5rem;
+                }
+                .section-subheading {
+                    color: #495057;
+                    font-size: 1.1rem;
+                    margin-top: 15px;
+                    margin-bottom: 10px;
+                    padding-bottom: 5px;
+                    border-bottom: 1px solid #e9ecef;
+                }
+                .patient-info p {
+                    margin: 8px 0;
+                    font-size: 1rem;
+                    color: #343a40;
+                }
+                .patient-info strong {
+                    color: #495057;
+                    min-width: 150px;
+                    display: inline-block;
+                }
+                .form-group {
+                    margin-bottom: 15px;
+                }
+                .form-group label {
+                    font-weight: 600;
+                    color: #495057;
+                    margin-bottom: 6px;
+                }
+                .form-control:focus {
+                    border-color: #80bdff;
+                    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                }
+                .btn-primary {
+                    background-color: #007bff;
+                    border-color: #007bff;
+                }
+                .btn-primary:hover {
+                    background-color: #0069d9;
+                    border-color: #0062cc;
+                }
+                .btn-secondary {
+                    background-color: #6c757d;
+                    border-color: #6c757d;
+                }
+                .btn-secondary:hover {
+                    background-color: #5a6268;
+                    border-color: #545b62;
+                }
+                .required-field::after {
+                    content: " *";
+                    color: red;
+                }
+                .checkbox-container {
+                    display: block;
+                    padding: 10px 15px;
+                    background-color: #f8f9fa;
+                    border-radius: 5px;
+                    margin-top: 5px;
+                }
+                textarea {
+                    min-height: 100px;
+                }
+            </style>
+
+            <div class="container mt-5 mb-5 form-container">
+                <h1 class="text-center mb-4">Thêm thông tin chăm sóc mới</h1>
+
+                <!-- Patient Information -->
+                <div class="form-card">
+                    <h3 class="section-heading">Thông tin bệnh nhân</h3>
+                    <div class="row patient-info">
+                        <div class="col-md-6">
+                            <p><strong>Mã bệnh nhân:</strong> <t t-esc="patient.code"/></p>
+                            <p><strong>Họ và tên:</strong> <t t-esc="patient.name"/></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Giới tính:</strong>
+                                <t t-if="patient.gender == 'male'">Nam</t>
+                                <t t-elif="patient.gender == 'female'">Nữ</t>
+                                <t t-else="">Khác</t>
+                            </p>
+                            <p><strong>Tuổi:</strong> <t t-esc="patient.age"/></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient Care Form -->
+                <div class="form-card">
+                    <h3 class="section-heading">Thông tin chăm sóc bệnh nhân</h3>
+                    <form method="POST" action="/clinic/patient_care/create">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="patient_id" t-att-value="patient.id"/>
+
+                        <!-- Basic info -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="care_date" class="required-field">Ngày chăm sóc</label>
+                                    <input type="date" class="form-control" id="care_date" name="care_date"
+                                           t-att-value="today" required="required"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="statenew" class="required-field">Trạng thái</label>
+                                    <select class="form-control" id="statenew" name="statenew" required="required">
+                                        <option value="pending" selected="selected">Chưa thực hiện</option>
+                                        <option value="in_progress">Đang thực hiện</option>
+                                        <option value="completed">Hoàn thành</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vital signs -->
+                        <h4 class="section-subheading">Dấu hiệu sinh tồn</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="temperature">Nhiệt độ (°C)</label>
+                                    <input type="number" step="0.1" class="form-control" id="temperature"
+                                           name="temperature" placeholder="36.5"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="blood_pressure">Huyết áp (mmHg)</label>
+                                    <input type="text" class="form-control" id="blood_pressure"
+                                           name="blood_pressure" placeholder="120/80"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="heart_rate">Nhịp tim (bpm)</label>
+                                    <input type="number" class="form-control" id="heart_rate"
+                                           name="heart_rate" placeholder="75"/>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="respiration_rate">Tần số hô hấp (lần/phút)</label>
+                                    <input type="number" class="form-control" id="respiration_rate"
+                                           name="respiration_rate" placeholder="16"/>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="oxygen_saturation">Độ bão hòa oxy (%)</label>
+                                    <input type="number" step="0.1" class="form-control" id="oxygen_saturation"
+                                           name="oxygen_saturation" placeholder="98"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Special care -->
+                        <h4 class="section-subheading">Chăm sóc đặc biệt</h4>
+                        <div class="form-group">
+                            <label for="special_care_description">Mô tả chăm sóc đặc biệt</label>
+                            <textarea class="form-control" id="special_care_description"
+                                      name="special_care_description" placeholder="Mô tả chi tiết chăm sóc đặc biệt..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="medical_equipment_used">Thiết bị y tế sử dụng</label>
+                            <input type="text" class="form-control" id="medical_equipment_used"
+                                   name="medical_equipment_used" placeholder="Liệt kê các thiết bị sử dụng"/>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="is_emergency" name="is_emergency"/>
+                                <label for="is_emergency" class="ms-2">Đánh dấu là trường hợp khẩn cấp</label>
+                            </div>
+                        </div>
+
+                        <!-- Daily care -->
+                        <h4 class="section-subheading">Điều dưỡng hàng ngày</h4>
+                        <div class="form-group">
+                            <label for="daily_nursing_notes">Ghi chú chăm sóc hằng ngày</label>
+                            <textarea class="form-control" id="daily_nursing_notes"
+                                      name="daily_nursing_notes" placeholder="Ghi chú về chăm sóc hàng ngày..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="abnormal_event">Sự kiện bất thường</label>
+                            <textarea class="form-control" id="abnormal_event"
+                                      name="abnormal_event" placeholder="Mô tả các sự kiện bất thường nếu có..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="is_alert_triggered" name="is_alert_triggered"/>
+                                <label for="is_alert_triggered" class="ms-2">Kích hoạt cảnh báo</label>
+                            </div>
+                        </div>
+
+                        <!-- Caregiver info -->
+                        <h4 class="section-subheading">Thông tin người chăm sóc</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="doctor_id">Nhân viên chăm sóc</label>
+                                    <select class="form-control" id="doctor_id" name="doctor_id">
+                                        <option value="">-- Chọn nhân viên --</option>
+                                        <t t-foreach="staff" t-as="person">
+                                            <option t-att-value="person.id">
+                                                <t t-esc="person.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="caregiver_role">Vai trò người chăm sóc</label>
+                                    <input type="text" class="form-control" id="caregiver_role"
+                                           name="caregiver_role" placeholder="Vai trò của người chăm sóc"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fa fa-save"></i> Lưu thông tin
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="/clinic/patient_care" class="btn btn-secondary w-100">
+                                    <i class="fa fa-times"></i> Hủy
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Template for editing patient care record -->
+    <template id="patient_care_edit_template" name="Edit Patient Care Record">
+        <t t-call="website.layout">
+            <style>
+                .form-container {
+                    background-color: #f8f9fa;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    max-width: 800px;
+                    margin: 0 auto;
+                }
+                .form-card {
+                    background-color: #fff;
+                    padding: 20px;
+                    border-radius: 8px;
+                    margin-bottom: 25px;
+                    border: 1px solid #dee2e6;
+                }
+                .section-heading {
+                    color: #007bff;
+                    border-bottom: 2px solid #007bff;
+                    padding-bottom: 8px;
+                    margin-bottom: 20px;
+                    font-size: 1.5rem;
+                }
+                .section-subheading {
+                    color: #495057;
+                    font-size: 1.1rem;
+                    margin-top: 15px;
+                    margin-bottom: 10px;
+                    padding-bottom: 5px;
+                    border-bottom: 1px solid #e9ecef;
+                }
+                .patient-info p {
+                    margin: 8px 0;
+                    font-size: 1rem;
+                    color: #343a40;
+                }
+                .patient-info strong {
+                    color: #495057;
+                    min-width: 150px;
+                    display: inline-block;
+                }
+                .form-group {
+                    margin-bottom: 15px;
+                }
+                .form-group label {
+                    font-weight: 600;
+                    color: #495057;
+                    margin-bottom: 6px;
+                }
+                .form-control:focus {
+                    border-color: #80bdff;
+                    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                }
+                .btn-primary {
+                    background-color: #007bff;
+                    border-color: #007bff;
+                }
+                .btn-primary:hover {
+                    background-color: #0069d9;
+                    border-color: #0062cc;
+                }
+                .btn-secondary {
+                    background-color: #6c757d;
+                    border-color: #6c757d;
+                }
+                .btn-secondary:hover {
+                    background-color: #5a6268;
+                    border-color: #545b62;
+                }
+                .required-field::after {
+                    content: " *";
+                    color: red;
+                }
+                .checkbox-container {
+                    display: block;
+                    padding: 10px 15px;
+                    background-color: #f8f9fa;
+                    border-radius: 5px;
+                    margin-top: 5px;
+                }
+                textarea {
+                    min-height: 100px;
+                }
+            </style>
+
+            <div class="container mt-5 mb-5 form-container">
+                <h1 class="text-center mb-4">Chỉnh sửa thông tin chăm sóc</h1>
+
+                <!-- Patient Information -->
+                <div class="form-card">
+                    <h3 class="section-heading">Thông tin bệnh nhân</h3>
+                    <div class="row patient-info">
+                        <div class="col-md-6">
+                            <p><strong>Mã bệnh nhân:</strong> <t t-esc="patient.code"/></p>
+                            <p><strong>Họ và tên:</strong> <t t-esc="patient.name"/></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Giới tính:</strong>
+                                <t t-if="patient.gender == 'male'">Nam</t>
+                                <t t-elif="patient.gender == 'female'">Nữ</t>
+                                <t t-else="">Khác</t>
+                            </p>
+                            <p><strong>Tuổi:</strong> <t t-esc="patient.age"/></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient Care Form -->
+                <div class="form-card">
+                    <h3 class="section-heading">Thông tin chăm sóc bệnh nhân</h3>
+                    <form t-att-action="'/clinic/patient_care/edit/%s' % care.id" method="POST">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <!-- Basic info -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="care_date" class="required-field">Ngày chăm sóc</label>
+                                    <input type="date" class="form-control" id="care_date" name="care_date"
+                                           t-att-value="care.care_date" required="required"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="statenew" class="required-field">Trạng thái</label>
+                                    <select class="form-control" id="statenew" name="statenew" required="required">
+                                        <option value="pending" t-att-selected="care.statenew == 'pending'">Chưa thực hiện</option>
+                                        <option value="in_progress" t-att-selected="care.statenew == 'in_progress'">Đang thực hiện</option>
+                                        <option value="completed" t-att-selected="care.statenew == 'completed'">Hoàn thành</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vital signs -->
+                        <h4 class="section-subheading">Dấu hiệu sinh tồn</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="temperature">Nhiệt độ (°C)</label>
+                                    <input type="number" step="0.1" class="form-control" id="temperature"
+                                           name="temperature" t-att-value="care.temperature"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="blood_pressure">Huyết áp (mmHg)</label>
+                                    <input type="text" class="form-control" id="blood_pressure"
+                                           name="blood_pressure" t-att-value="care.blood_pressure"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="heart_rate">Nhịp tim (bpm)</label>
+                                    <input type="number" class="form-control" id="heart_rate"
+                                           name="heart_rate" t-att-value="care.heart_rate"/>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="respiration_rate">Tần số hô hấp (lần/phút)</label>
+                                    <input type="number" class="form-control" id="respiration_rate"
+                                           name="respiration_rate" t-att-value="care.respiration_rate"/>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="oxygen_saturation">Độ bão hòa oxy (%)</label>
+                                    <input type="number" step="0.1" class="form-control" id="oxygen_saturation"
+                                           name="oxygen_saturation" t-att-value="care.oxygen_saturation"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Special care -->
+                        <h4 class="section-subheading">Chăm sóc đặc biệt</h4>
+                        <div class="form-group">
+                            <label for="special_care_description">Mô tả chăm sóc đặc biệt</label>
+                            <textarea class="form-control" id="special_care_description"
+                                      name="special_care_description"><t t-esc="care.special_care_description"/></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="medical_equipment_used">Thiết bị y tế sử dụng</label>
+                            <input type="text" class="form-control" id="medical_equipment_used"
+                                   name="medical_equipment_used" t-att-value="care.medical_equipment_used"/>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="is_emergency" name="is_emergency" t-att-checked="care.is_emergency"/>
+                                <label for="is_emergency" class="ms-2">Đánh dấu là trường hợp khẩn cấp</label>
+                            </div>
+                        </div>
+
+                        <!-- Daily care -->
+                        <h4 class="section-subheading">Điều dưỡng hàng ngày</h4>
+                        <div class="form-group">
+                            <label for="daily_nursing_notes">Ghi chú chăm sóc hằng ngày</label>
+                            <textarea class="form-control" id="daily_nursing_notes"
+                                      name="daily_nursing_notes"><t t-esc="care.daily_nursing_notes"/></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="abnormal_event">Sự kiện bất thường</label>
+                            <textarea class="form-control" id="abnormal_event"
+                                      name="abnormal_event"><t t-esc="care.abnormal_event"/></textarea>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="is_alert_triggered" name="is_alert_triggered" t-att-checked="care.is_alert_triggered"/>
+                                <label for="is_alert_triggered" class="ms-2">Kích hoạt cảnh báo</label>
+                            </div>
+                        </div>
+
+                        <!-- Caregiver info -->
+                        <h4 class="section-subheading">Thông tin người chăm sóc</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="doctor_id">Nhân viên chăm sóc</label>
+                                    <select class="form-control" id="doctor_id" name="doctor_id">
+                                        <option value="">-- Chọn nhân viên --</option>
+                                        <t t-foreach="staff" t-as="person">
+                                            <option t-att-value="person.id" t-att-selected="person.id == care.doctor_id.id">
+                                                <t t-esc="person.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="caregiver_role">Vai trò người chăm sóc</label>
+                                    <input type="text" class="form-control" id="caregiver_role"
+                                           name="caregiver_role" t-att-value="care.caregiver_role"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fa fa-save"></i> Lưu thay đổi
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <a t-att-href="'/clinic/patient_care_details/%s' % care.id" class="btn btn-secondary w-100">
+                                    <i class="fa fa-times"></i> Hủy
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

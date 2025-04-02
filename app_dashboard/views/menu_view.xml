@@ -1,4 +1,0 @@
-<odoo>
-    <menuitem id="menu_my_custom_module_root" name="My Custom Module" sequence="10"/>
-    <menuitem id="menu_my_custom_model" name="My Custom Model" parent="menu_my_custom_module_root" action="action_my_custom_model"/>
-</odoo>

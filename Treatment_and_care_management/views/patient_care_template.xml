@@ -161,7 +161,12 @@
 
                     <!-- Care Records -->
                     <div class="care-list">
-                        <h3 class="section-heading">Danh sách lịch sử chăm sóc</h3>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="section-heading mb-0">Danh sách lịch sử chăm sóc</h3>
+                            <a t-att-href="'/clinic/patient_care/create?patient_id=%s' % patient.id" class="btn btn-success">
+                                <i class="fa fa-plus-circle"></i> Thêm lịch sử chăm sóc
+                            </a>
+                        </div>
                         <t t-if="care_records">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped">
@@ -174,6 +179,7 @@
                                             <th>Trạng thái</th>
                                             <th>Khẩn cấp</th>
                                             <th>Chi tiết</th>
+                                            <th>Thao tác</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -202,6 +208,16 @@
                                                     <a t-att-href="'/clinic/patient_care_details/%s' % record.id"
                                                        class="action-btn">
                                                         Xem chi tiết
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a t-att-href="'/clinic/patient_care/edit/%s' % record.id" class="btn btn-sm btn-info me-1">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+                                                    <a t-att-href="'/clinic/patient_care/delete/%s' % record.id"
+                                                       class="btn btn-sm btn-danger"
+                                                       onclick="return confirm('Bạn có chắc chắn muốn xóa lịch sử chăm sóc này?')">
+                                                        <i class="fa fa-trash"></i>
                                                     </a>
                                                 </td>
                                             </tr>
@@ -363,7 +379,19 @@
 
                 <!-- Care Header Information -->
                 <div class="care-header">
-                    <h3 class="section-heading">Thông tin chung</h3>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="section-heading mb-0">Thông tin chung</h3>
+                        <div>
+                            <a t-att-href="'/clinic/patient_care/edit/%s' % care.id" class="btn btn-info me-2">
+                                <i class="fa fa-edit"></i> Chỉnh sửa
+                            </a>
+                            <a t-att-href="'/clinic/patient_care/delete/%s' % care.id"
+                               class="btn btn-danger"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa lịch sử chăm sóc này?')">
+                                <i class="fa fa-trash"></i> Xóa
+                            </a>
+                        </div>
+                    </div>
 
                     <t t-if="care.is_emergency">
                         <div class="emergency-banner">
