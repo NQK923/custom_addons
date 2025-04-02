@@ -18,21 +18,7 @@
     'data': [
         # Security
         'security/ir.model.access.csv',
-
         # Data
-        'data/sequence.xml',
-        'data/appointment_reminder_cron.xml',
-        'data/appointment_reminder_email_template.xml',
-
-        # Backend Views (Truyền thống)
-        'views/patient_feedback_views.xml',
-        'views/complaint_views.xml',
-        'views/feedback_dashboard_view.xml',
-        'views/feedback_statistics_view.xml',
-        'views/complaint_statistics_view.xml',
-        'views/complaint_dashboard_view.xml',
-        'views/appointment_reminder_views.xml',
-        'views/menu_views.xml',
         'data/sequence.xml',
         'data/appointment_reminder_cron.xml',
         'data/appointment_reminder_email_template.xml',
@@ -47,12 +33,6 @@
         'views/website_templates/appointment_reminder_template.xml',
     ],
     'demo': [],
-    'assets': {
-        'web.assets_frontend': [
-            'healthcare_management/static/src/css/healthcare.css',
-            'healthcare_management/static/src/js/healthcare.js',
-        ],
-    },
     'qweb': [],
     'installable': True,
     'application': True,
