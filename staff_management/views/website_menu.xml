@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Define website action -->
+    <record id="staff_management_website_action" model="ir.actions.act_url">
+        <field name="name">Staff Management</field>
+        <field name="url">/clinic/staff</field>
+        <field name="target">self</field>
+    </record>
+
+    <!-- Add website menu -->
+    <record id="website_menu_staff_management" model="website.menu">
+        <field name="name">Quản lý nhân sự</field>
+        <field name="url">/clinic/staff</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">55</field>
+    </record>
+</odoo>

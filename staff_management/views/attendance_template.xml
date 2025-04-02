@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="attendance_template" name="Staff Attendance">
+        <t t-call="website.layout">
+            <div class="container mt-4 mb-5">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/clinic/staff">Quản lý nhân sự</a></li>
+                        <li class="breadcrumb-item"><a t-att-href="'/clinic/staff/%s' % staff.id">Chi tiết nhân viên</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Chấm công</li>
+                    </ol>
+                </nav>
+
+                <!-- Notification messages -->
+                <t t-if="error">
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fa fa-exclamation-triangle"/> <t t-esc="error"/>
+                    </div>
+                </t>
+                <t t-if="success">
+                    <div class="alert alert-success" role="alert">
+                        <i class="fa fa-check-circle"/> <t t-esc="success"/>
+                    </div>
+                </t>
+
+                <div class="row">
+                    <!-- Staff info sidebar -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0">Thông tin nhân viên</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center mb-4">
+                                    <div class="avatar-circle mx-auto mb-3">
+                                        <span class="initials">
+                                            <t t-esc="staff.staff_name and staff.staff_name[0] or '?'"/>
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-1"><t t-esc="staff.staff_name"/></h3>
+                                    <p class="text-muted">
+                                        <t t-if="staff.staff_type">
+                                            <t t-esc="staff.staff_type.position"/>
+                                        </t>
+                                    </p>
+                                </div>
+
+                                <div class="staff-info">
+                                    <p>
+                                        <strong>Mã nhân sự:</strong>
+                                        <span class="float-right"><t t-esc="staff.name"/></span>
+                                    </p>
+                                    <p>
+                                        <strong>Khoa:</strong>
+                                        <span class="float-right">
+                                            <t t-if="staff.department_id">
+                                                <t t-esc="staff.department_id.department_name"/>
+                                            </t>
+                                        </span>
+                                    </p>
+                                    <p>
+                                        <strong>Trạng thái:</strong>
+                                        <span class="float-right">
+                                            <span t-if="staff.status == 'active'" class="badge badge-success">Đang làm việc</span>
+                                            <span t-elif="staff.status == 'inactive'" class="badge badge-warning">Nghỉ phép</span>
+                                            <span t-elif="staff.status == 'retired'" class="badge badge-secondary">Đã nghỉ hưu</span>
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Today's attendance -->
+                        <div class="card mt-4">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0">Chấm công hôm nay</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <h5 class="mb-4">Trạng thái chấm công hôm nay</h5>
+                                    <t t-if="not today_attendance">
+                                        <div class="alert alert-warning">
+                                            <i class="fa fa-exclamation-circle"/> Chưa chấm công
+                                        </div>
+                                        <form method="POST">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="action" value="check_in"/>
+                                            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                                                <i class="fa fa-sign-in"/> Chấm công vào
+                                            </button>
+                                        </form>
+                                    </t>
+                                    <t t-elif="today_attendance and not today_attendance.check_out">
+                                        <div class="alert alert-info">
+                                            <i class="fa fa-info-circle"/> Đã chấm công vào lúc:
+                                            <br/><strong><t t-esc="today_attendance.check_in"/></strong>
+                                        </div>
+                                        <form method="POST">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="action" value="check_out"/>
+                                            <button type="submit" class="btn btn-danger btn-lg btn-block">
+                                                <i class="fa fa-sign-out"/> Chấm công ra
+                                            </button>
+                                        </form>
+                                    </t>
+                                    <t t-elif="today_attendance and today_attendance.check_out">
+                                        <div class="alert alert-success">
+                                            <i class="fa fa-check-circle"/> Đã chấm công đầy đủ
+                                            <br/>
+                                            <strong>Vào:</strong> <t t-esc="today_attendance.check_in"/>
+                                            <br/>
+                                            <strong>Ra:</strong> <t t-esc="today_attendance.check_out"/>
+                                            <br/>
+                                            <strong>Tổng giờ:</strong> <t t-esc="today_attendance.work_hours"/> giờ
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attendance history -->
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0">Lịch sử chấm công</h4>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover mb-0">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Ngày</th>
+                                                <th>Giờ vào</th>
+                                                <th>Giờ ra</th>
+                                                <th>Số giờ làm việc</th>
+                                                <th>Trạng thái</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-if="attendances">
+                                                <t t-foreach="attendances" t-as="attendance">
+                                                    <tr>
+                                                        <td><t t-esc="attendance.date"/></td>
+                                                        <td><t t-esc="attendance.check_in"/></td>
+                                                        <td><t t-esc="attendance.check_out or '--'"/></td>
+                                                        <td><t t-esc="attendance.work_hours"/> giờ</td>
+                                                        <td>
+                                                            <span t-if="attendance.status == 'present'" class="badge badge-success">Có mặt</span>
+                                                            <span t-elif="attendance.status == 'absent'" class="badge badge-danger">Vắng mặt</span>
+                                                            <span t-elif="attendance.status == 'late'" class="badge badge-warning">Đi muộn</span>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                            <t t-else="">
+                                                <tr>
+                                                    <td colspan="5" class="text-center py-4">
+                                                        <div class="alert alert-info mb-0">
+                                                            Chưa có dữ liệu chấm công nào.
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .avatar-circle {
+                    width: 100px;
+                    height: 100px;
+                    background-color: #3498db;
+                    border-radius: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .initials {
+                    font-size: 50px;
+                    color: white;
+                    text-transform: uppercase;
+                }
+
+                .staff-info p {
+                    padding: 8px 0;
+                    border-bottom: 1px solid #eee;
+                    margin-bottom: 0;
+                }
+            </style>
+        </t>
+    </template>
+</odoo>
