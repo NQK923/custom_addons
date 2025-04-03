@@ -1,12 +1,13 @@
 {
     'name': "Lịch sử khám của bệnh nhân",
     'summary': "Hiển thị lịch sử khám của bệnh nhân trên giao diện web",
-    'description': "Module cho phép tìm kiếm bệnh nhân theo mã hoặc tên và hiển thị lịch sử khám.",
+    'description': "Module cho phép tìm kiếm bệnh nhân theo email, xác thực OTP và hiển thị lịch sử khám.",
     'author': "Your Name",
     'version': '1.0',
-    'depends': ['base', 'website'],  # Added 'website' dependency
+    'depends': ['base', 'website', 'mail'],  # Added 'mail' dependency
     'data': [
         'security/ir.model.access.csv',
+        'data/mail_template.xml',
         'views/patient_history_templates.xml',
         'views/menu.xml',
     ],

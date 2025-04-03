@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="email_template_otp" model="mail.template">
+            <field name="name">Patient History OTP</field>
+            <field name="model_id" ref="model_clinic_patient"/>
+            <field name="subject">OTP để truy cập lịch sử y tế của bạn</field>
+            <field name="email_from">${object.company_id.email or ''}</field>
+            <field name="email_to">${object.email}</field>
+            <field name="body_html"><![CDATA[
+                <div style="padding:15px; font-family:Arial, Helvetica, sans-serif; font-size:14px;">
+                    <p>Chào ${object.name},</p>
+                    <p>Bạn đã yêu cầu xem lịch sử y tế của mình. Để xác minh danh tính của bạn, vui lòng sử dụng mã OTP sau:</p>
+                    <div style="background-color:#f8f9fa; padding:10px; text-align:center; font-size:24px; font-weight:bold; letter-spacing:5px;">
+                        ${ctx.get('otp_code')}
+                    </div>
+                    <p>Mã này sẽ hết hạn trong 10 phút.</p>
+                    <p>Nếu bạn không yêu cầu điều này, vui lòng bỏ qua email này.</p>
+                    <p>Xin cảm ơn,<br/>Đội ngũ y tế</p>
+                </div>
+            ]]></field>
+        </record>
+    </data>
+</odoo>

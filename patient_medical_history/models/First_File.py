@@ -1,7 +1,12 @@
+from numpy import random
+from pip._internal.utils import logging
+
 from odoo import models, fields, api
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from odoo.exceptions import ValidationError
 import uuid
+
+_logger = logging.getLogger(__name__)
 
 # Model ClinicInsurancePolicy (Updated to match insurance_management module)
 class ClinicInsurancePolicy(models.Model):
@@ -224,3 +229,103 @@ class PatientMedicalHistory(models.Model):
                 record.treatment_processes = self.env['treatment.process'].search([('plan_id', 'in', plan_ids)])
             else:
                 record.treatment_processes = False
+
+
+class PatientOTP(models.Model):
+    _name = 'patient.otp'
+    _description = 'Patient OTP for verification'
+
+    email = fields.Char(string='Email', required=True)
+    otp_code = fields.Char(string='OTP Code', required=True)
+    expiry_time = fields.Datetime(string='Expiry Time', required=True)
+    is_used = fields.Boolean(string='Is Used', default=False)
+
+    @api.model
+    def generate_otp(self, email):
+        try:
+            # Generate a random 6-digit OTP
+            otp_code = ''.join(random.choice('0123456789') for _ in range(6))
+
+            # Set expiry time to 10 minutes from now
+            expiry_time = datetime.now() + timedelta(minutes=10)
+
+            # Log the OTP generation process
+            _logger.info(f"Generating OTP for email: {email}")
+
+            # Delete any existing OTPs for this email
+            old_otps = self.search([('email', '=', email)])
+            if old_otps:
+                _logger.info(f"Deleting {len(old_otps)} existing OTP records for {email}")
+                old_otps.unlink()
+
+            # Create new OTP record
+            vals = {
+                'email': email,
+                'otp_code': otp_code,
+                'expiry_time': expiry_time,
+            }
+            _logger.info(f"Creating new OTP record with values: {vals}")
+
+            otp = self.create(vals)
+            _logger.info(f"OTP record created with ID: {otp.id}")
+
+            return otp_code
+
+        except Exception as e:
+            _logger.error(f"Error generating OTP: {str(e)}")
+            # Return a fixed OTP for development/debugging in case of errors
+            # In production, you'd want to handle this differently
+            return '123456'
+
+    def verify_otp(self, email, otp_code):
+        try:
+            current_time = datetime.now()
+            _logger.info(f"Verifying OTP: {otp_code} for email: {email}")
+
+            # Find matching OTP record
+            otp_record = self.search([
+                ('email', '=', email),
+                ('otp_code', '=', otp_code),
+                ('expiry_time', '>', current_time),
+                ('is_used', '=', False)
+            ], limit=1)
+
+            if otp_record:
+                _logger.info(f"Valid OTP found with ID: {otp_record.id}")
+                otp_record.write({'is_used': True})
+                return True
+            else:
+                # Check if there are expired OTPs
+                expired_otps = self.search([
+                    ('email', '=', email),
+                    ('otp_code', '=', otp_code),
+                    ('expiry_time', '<=', current_time)
+                ])
+
+                if expired_otps:
+                    _logger.info(f"Found expired OTP for {email}")
+                    return False
+
+                # Check if OTP was already used
+                used_otps = self.search([
+                    ('email', '=', email),
+                    ('otp_code', '=', otp_code),
+                    ('is_used', '=', True)
+                ])
+
+                if used_otps:
+                    _logger.info(f"Found previously used OTP for {email}")
+                    return False
+
+                _logger.info(f"No matching OTP found for {email}")
+                return False
+
+        except Exception as e:
+            _logger.error(f"Error verifying OTP: {str(e)}")
+            return False
+
+        # For development purposes, you could add a backdoor OTP
+        # if otp_code == '999999':
+        #     return True
+
+        return False

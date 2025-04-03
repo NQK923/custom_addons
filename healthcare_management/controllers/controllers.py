@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from pip._internal.utils import logging
+
 from odoo import http, fields
 from odoo.http import request
 from datetime import datetime, timedelta
@@ -617,22 +619,22 @@ class HealthcareManagement(http.Controller):
 
         if not reminder_id or not action:
             return {'success': False, 'error': 'Thiếu thông tin cần thiết'}
-
-        reminder = request.env['appointment.reminder'].sudo().browse(int(reminder_id))
-
-        if not reminder.exists():
-            return {'success': False, 'error': 'Không tìm thấy thông báo lịch hẹn'}
-
         try:
+            reminder = request.env['appointment.reminder'].sudo().browse(int(reminder_id))
+            if not reminder.exists():
+                return {'success': False, 'error': 'Không tìm thấy thông báo lịch hẹn'}
             if action == 'send_now':
-                reminder.action_send_reminder_now()
-                return {'success': True}
+                result = reminder._send_reminder_email(reminder)
+                request.env.cr.commit()  # Commit transaction để đảm bảo email được gửi
+                return {'success': result}
             elif action == 'cancel':
                 reminder.action_cancel_reminder()
                 return {'success': True}
             else:
                 return {'success': False, 'error': 'Hành động không hợp lệ'}
         except Exception as e:
+            _logger = logging.getLogger(__name__)
+            _logger.error("Lỗi khi gửi email: %s", str(e), exc_info=True)
             return {'success': False, 'error': str(e)}
 
     @http.route('/healthcare/patient_complaint/create', type='http', auth='user', website=True, methods=['GET', 'POST'])

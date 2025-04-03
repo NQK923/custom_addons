@@ -6,3 +6,4 @@ access_treatment_process,access_treatment_process,model_treatment_process,,1,0,0
 access_medical_test,access_medical_test,model_medical_test,,1,0,0,0
 access_medical_images,access_medical_images,model_medical_images,,1,0,0,0
 access_clinic_insurance_policy,access.clinic.insurance.policy,model_clinic_insurance_policy,,1,1,1,1
+access_patient_otp,access_patient_otp,model_patient_otp,,1,1,1,1
