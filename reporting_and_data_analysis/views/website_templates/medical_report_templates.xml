@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Medical Reports List Template -->
+    <template id="medical_reports_list_template" name="Medical Reports List">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="text-center">Danh Sách Báo Cáo Y Khoa</h1>
+                        <t t-call="reporting_and_data_analysis.report_navigation_bar"/>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="row mb-4">
+                    <div class="col-md-12 text-right">
+                        <a href="/clinic/reports/medical/create" class="btn btn-primary">
+                            <i class="fa fa-plus-circle mr-2"></i>Tạo Báo Cáo Mới
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Reports Table -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Danh Sách Báo Cáo</h5>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="reports">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th>Tên Báo Cáo</th>
+                                                    <th>Loại Báo Cáo</th>
+                                                    <th>Thời Gian</th>
+                                                    <th>Khoa/Phòng</th>
+                                                    <th>Trạng Thái</th>
+                                                    <th>Thao Tác</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-set="report_types" t-value="{'patient': 'Tình hình bệnh nhân', 'epidemiology': 'Dịch tễ học', 'service_quality': 'Chất lượng dịch vụ'}"/>
+                                                <t t-set="status_labels" t-value="{'draft': 'Nháp', 'generated': 'Đã tạo', 'approved': 'Đã duyệt'}"/>
+                                                <t t-set="status_classes" t-value="{'draft': 'secondary', 'generated': 'primary', 'approved': 'success'}"/>
+
+                                                <t t-foreach="reports" t-as="report">
+                                                    <tr>
+                                                        <td><t t-esc="report.name"/></td>
+                                                        <td><t t-esc="report_types.get(report.report_type, report.report_type)"/></td>
+                                                        <td><t t-esc="report.date_from"/> - <t t-esc="report.date_to"/></td>
+                                                        <td><t t-esc="report.department_id.name if report.department_id else 'Tất cả'"/></td>
+                                                        <td>
+                                                            <span t-att-class="'badge badge-' + status_classes.get(report.state, 'secondary')">
+                                                                <t t-esc="status_labels.get(report.state, report.state)"/>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <a t-att-href="'/clinic/reports/medical/%s' % report.id" class="btn btn-sm btn-primary">
+                                                                <i class="fa fa-eye mr-1"></i>Xem
+                                                            </a>
+                                                            <t t-if="report.state != 'draft'">
+                                                                <a t-att-href="'/report/medical_pdf/%s' % report.id" class="btn btn-sm btn-secondary ml-1" target="_blank">
+                                                                    <i class="fa fa-file-pdf mr-1"></i>PDF
+                                                                </a>
+                                                            </t>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="alert alert-info">
+                                        <p>Chưa có báo cáo y khoa nào. Hãy tạo báo cáo đầu tiên của bạn.</p>
+                                        <a href="/clinic/reports/medical/create" class="btn btn-primary mt-2">
+                                            <i class="fa fa-plus-circle mr-2"></i>Tạo Báo Cáo Mới
+                                        </a>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Medical Report Detail Template -->
+    <template id="medical_report_detail_template" name="Medical Report Detail">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="text-center">Chi Tiết Báo Cáo Y Khoa</h1>
+                        <t t-call="reporting_and_data_analysis.report_navigation_bar"/>
+                    </div>
+                </div>
+
+                <!-- Report Header -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h3 class="mb-0"><t t-esc="report.name"/></h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p><strong>Loại báo cáo:</strong>
+                                            <t t-if="report.report_type == 'patient'">Tình hình bệnh nhân</t>
+                                            <t t-elif="report.report_type == 'epidemiology'">Dịch tễ học</t>
+                                            <t t-elif="report.report_type == 'service_quality'">Chất lượng dịch vụ</t>
+                                            <t t-else=""><t t-esc="report.report_type"/></t>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Thời gian:</strong> <t t-esc="report.date_from"/> - <t t-esc="report.date_to"/></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Khoa/Phòng:</strong> <t t-esc="report.department_id.name if report.department_id else 'Tất cả'"/></p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p><strong>Trạng thái:</strong>
+                                            <t t-if="report.state == 'draft'">
+                                                <span class="badge badge-secondary">Nháp</span>
+                                            </t>
+                                            <t t-elif="report.state == 'generated'">
+                                                <span class="badge badge-primary">Đã tạo</span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="badge badge-success">Đã duyệt</span>
+                                            </t>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Người tạo:</strong> <t t-esc="report.staff_id.name if report.staff_id else ''"/></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-between">
+                                    <a href="/clinic/reports/medical" class="btn btn-secondary">
+                                        <i class="fa fa-arrow-left mr-2"></i>Quay Lại
+                                    </a>
+                                    <div>
+                                        <t t-if="report.state == 'draft'">
+                                            <a t-att-href="'/clinic/reports/medical/%s/regenerate' % report.id" class="btn btn-primary">
+                                                <i class="fa fa-sync mr-2"></i>Tạo Báo Cáo
+                                            </a>
+                                        </t>
+                                        <t t-elif="report.state == 'generated'">
+                                            <a t-att-href="'/clinic/reports/medical/%s/regenerate' % report.id" class="btn btn-info mr-2">
+                                                <i class="fa fa-sync mr-2"></i>Cập Nhật
+                                            </a>
+                                            <a t-att-href="'/clinic/reports/medical/%s/approve' % report.id" class="btn btn-success mr-2">
+                                                <i class="fa fa-check-circle mr-2"></i>Duyệt
+                                            </a>
+                                        </t>
+                                        <t t-if="report.state != 'draft'">
+                                            <a t-att-href="'/report/medical_pdf/%s' % report.id" class="btn btn-danger" target="_blank">
+                                                <i class="fa fa-file-pdf mr-2"></i>Xuất PDF
+                                            </a>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Content -->
+                <t t-if="report.state != 'draft'">
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <ul class="nav nav-tabs" id="reportTabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="content-tab" data-toggle="tab" href="#content" role="tab">
+                                        Nội Dung Báo Cáo
+                                    </a>
+                                </li>
+                                <t t-if="report.chart_image">
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="chart-tab" data-toggle="tab" href="#chart" role="tab">
+                                            Biểu Đồ Chính
+                                        </a>
+                                    </li>
+                                </t>
+                                <t t-if="report.additional_chart1">
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="chart1-tab" data-toggle="tab" href="#chart1" role="tab">
+                                            Biểu Đồ Bổ Sung 1
+                                        </a>
+                                    </li>
+                                </t>
+                                <t t-if="report.additional_chart2">
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="chart2-tab" data-toggle="tab" href="#chart2" role="tab">
+                                            Biểu Đồ Bổ Sung 2
+                                        </a>
+                                    </li>
+                                </t>
+                            </ul>
+
+                            <div class="tab-content p-3 border border-top-0 rounded-bottom" id="reportTabsContent">
+                                <div class="tab-pane fade show active" id="content" role="tabpanel">
+                                    <pre style="white-space: pre-wrap; font-family: 'Arial', sans-serif; padding: 15px;">
+                                        <t t-esc="report.report_data"/>
+                                    </pre>
+                                </div>
+
+                                <t t-if="report.chart_image">
+                                    <div class="tab-pane fade" id="chart" role="tabpanel">
+                                        <div class="text-center py-3">
+                                            <img t-att-src="'data:image/png;base64,%s' % report.chart_image" class="img-fluid" alt="Main Chart"/>
+                                        </div>
+                                    </div>
+                                </t>
+
+                                <t t-if="report.additional_chart1">
+                                    <div class="tab-pane fade" id="chart1" role="tabpanel">
+                                        <div class="text-center py-3">
+                                            <img t-att-src="'data:image/png;base64,%s' % report.additional_chart1" class="img-fluid" alt="Additional Chart 1"/>
+                                        </div>
+                                    </div>
+                                </t>
+
+                                <t t-if="report.additional_chart2">
+                                    <div class="tab-pane fade" id="chart2" role="tabpanel">
+                                        <div class="text-center py-3">
+                                            <img t-att-src="'data:image/png;base64,%s' % report.additional_chart2" class="img-fluid" alt="Additional Chart 2"/>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="alert alert-warning">
+                                <i class="fa fa-exclamation-triangle mr-2"></i>
+                                Báo cáo chưa được tạo. Vui lòng nhấn nút "Tạo Báo Cáo" để xem nội dung và biểu đồ.
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Create Medical Report Template -->
+    <template id="medical_report_create_template" name="Create Medical Report">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="text-center">Tạo Báo Cáo Y Khoa Mới</h1>
+                        <t t-call="reporting_and_data_analysis.report_navigation_bar"/>
+                    </div>
+                </div>
+
+                <!-- Error Alert -->
+                <t t-if="error">
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="alert alert-danger">
+                                <i class="fa fa-exclamation-circle mr-2"></i>
+                                <t t-esc="error"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Create Form -->
+                <div class="row">
+                    <div class="col-md-8 offset-md-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Thông Tin Báo Cáo</h5>
+                            </div>
+                            <div class="card-body">
+                                <form action="/clinic/reports/medical/create" method="POST">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                    <div class="form-group">
+                                        <label for="report_type">Loại Báo Cáo</label>
+                                        <select id="report_type" name="report_type" class="form-control" required="required">
+                                            <option value="">-- Chọn Loại Báo Cáo --</option>
+                                            <option value="patient">Tình hình bệnh nhân</option>
+                                            <option value="epidemiology">Dịch tễ học</option>
+                                            <option value="service_quality">Chất lượng dịch vụ</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-md-6">
+                                            <label for="date_from">Từ Ngày</label>
+                                            <input type="date" id="date_from" name="date_from" class="form-control"
+                                                   t-att-value="(datetime.datetime.now() - datetime.timedelta(days=30)).strftime('%Y-%m-%d')"
+                                                   required="required"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="date_to">Đến Ngày</label>
+                                            <input type="date" id="date_to" name="date_to" class="form-control"
+                                                   t-att-value="datetime.datetime.now().strftime('%Y-%m-%d')"
+                                                   required="required"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="department_id">Khoa/Phòng</label>
+                                        <select id="department_id" name="department_id" class="form-control">
+                                            <option value="">-- Tất Cả Khoa/Phòng --</option>
+                                            <t t-foreach="departments" t-as="department">
+                                                <option t-att-value="department.id">
+                                                    <t t-esc="department.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group text-center mt-4">
+                                        <button type="submit" class="btn btn-primary px-4">
+                                            <i class="fa fa-check-circle mr-2"></i>Tạo Báo Cáo
+                                        </button>
+                                        <a href="/clinic/reports/medical" class="btn btn-secondary ml-2">
+                                            <i class="fa fa-times-circle mr-2"></i>Hủy
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

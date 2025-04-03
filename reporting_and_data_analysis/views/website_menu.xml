@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Define website actions for the reports -->
+    <record id="action_website_reports_dashboard" model="ir.actions.act_url">
+        <field name="name">Reports Dashboard</field>
+        <field name="url">/clinic/reports/dashboard</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="action_website_invoice_monthly" model="ir.actions.act_url">
+        <field name="name">Monthly Invoice Reports</field>
+        <field name="url">/clinic/reports/invoice/monthly</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="action_website_invoice_services" model="ir.actions.act_url">
+        <field name="name">Service Revenue Analysis</field>
+        <field name="url">/clinic/reports/invoice/services</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="action_website_invoice_products" model="ir.actions.act_url">
+        <field name="name">Product Revenue Analysis</field>
+        <field name="url">/clinic/reports/invoice/products</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="action_website_invoice_patients" model="ir.actions.act_url">
+        <field name="name">Patient Revenue Analysis</field>
+        <field name="url">/clinic/reports/invoice/patients</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="action_website_invoice_status" model="ir.actions.act_url">
+        <field name="name">Invoice Status Analysis</field>
+        <field name="url">/clinic/reports/invoice/status</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="action_website_medical_reports" model="ir.actions.act_url">
+        <field name="name">Medical Reports</field>
+        <field name="url">/clinic/reports/medical</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="action_website_medical_report_create" model="ir.actions.act_url">
+        <field name="name">Create Medical Report</field>
+        <field name="url">/clinic/reports/medical/create</field>
+        <field name="target">self</field>
+    </record>
+
+    <!-- Add Website Menu Items -->
+    <!-- Main Reports Menu -->
+    <record id="menu_website_reports" model="website.menu">
+        <field name="name">Báo Cáo Y Tế</field>
+        <field name="url">/clinic/reports/dashboard</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence">50</field>
+    </record>
+
+    <!-- Finance Reports Submenu -->
+    <record id="menu_website_finance_reports" model="website.menu">
+        <field name="name">Báo Cáo Tài Chính</field>
+        <field name="url">/clinic/reports/invoice/monthly</field>
+        <field name="parent_id" ref="menu_website_reports"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- Medical Reports Submenu -->
+    <record id="menu_website_medical_reports" model="website.menu">
+        <field name="name">Báo Cáo Y Khoa</field>
+        <field name="url">/clinic/reports/medical</field>
+        <field name="parent_id" ref="menu_website_reports"/>
+        <field name="sequence">20</field>
+    </record>
+</odoo>

@@ -83,14 +83,9 @@
                                     <i class="fa fa-comments healthcare-icon text-info"></i>
                                 </div>
                                 <p class="card-text">Quản lý phản hồi từ bệnh nhân, ghi nhận khen ngợi, góp ý, khiếu nại và hỏi đáp</p>
-                                <div class="d-flex justify-content-between mt-4">
-                                    <a href="/healthcare/patient_feedback" class="btn btn-info">
+                                    <a href="/healthcare/patient_feedback" class="btn btn-info d-block">
                                         <i class="fa fa-list me-1"></i> Danh sách phản hồi
                                     </a>
-                                    <a href="/healthcare/patient_feedback/create" class="btn btn-outline-info">
-                                        <i class="fa fa-plus-circle me-1"></i> Tạo phản hồi
-                                    </a>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -103,13 +98,10 @@
                                 <div class="text-center mb-3">
                                     <i class="fa fa-exclamation-circle healthcare-icon text-danger"></i>
                                 </div>
-                                <p class="card-text">Quản lý khiếu nại, xử lý và theo dõi trạng thái giải quyết khiếu nại của bệnh nhân</p>
-                                <a href="/healthcare/patient_complaint" class="btn btn-danger d-block mt-4">
-                                    <i class="fa fa-list me-1"></i> Danh sách khiếu nại
-                                </a>
-                                <a href="/healthcare/patient_complaint/create" class="btn btn-outline-info">
-                                    <i class="fa fa-plus-circle me-1"></i> Tạo khiếu nại
-                                </a>
+                                <p class="card-text">Quản lý khiếu nại, theo dõi trạng thái giải quyết khiếu nại của bệnh nhân</p>
+                                    <a href="/healthcare/patient_complaint" class="btn btn-danger d-block mt-4">
+                                        <i class="fa fa-list me-1"></i> Danh sách khiếu nại
+                                    </a>
                             </div>
                         </div>
                     </div>

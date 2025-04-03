@@ -13,9 +13,16 @@
     'category': 'Healthcare',
     'author': 'Your Name',
     'website': 'https://www.yourwebsite.com',
-    'depends': ['base', 'mail','appointment_management','healthcare_management','staff_management', 'invoice_management'],
+    'depends': ['base', 'mail', 'appointment_management', 'healthcare_management', 'staff_management',
+                'invoice_management', 'website'],  # Added website dependency
     'data': [
         'security/ir.model.access.csv',
+        'views/website_templates/invoice_report_templates.xml',
+        'views/website_templates/medical_report_templates.xml',
+        'views/website_templates/dashboard_templates.xml',
+        'views/website_templates/report_wizard_templates.xml',
+        'views/website_menu.xml',
+        # Keep these for backend functionality
         'views/invoice_report_views.xml',
         'views/medical_report_view.xml',
         'views/medical_report_template.xml',
