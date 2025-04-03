@@ -36,7 +36,7 @@
         </div>
     </template>
 
-    <!-- Monthly Invoice Template -->
+<!-- Monthly Invoice Template -->
     <template id="invoice_monthly_template" name="Monthly Invoice Analysis">
         <t t-call="website.layout">
             <div class="container mt-4">
@@ -121,11 +121,11 @@
                                                     <tr>
                                                         <td><t t-esc="month['month_name']"/></td>
                                                         <td class="text-right"><t t-esc="month['invoice_count']"/></td>
-                                                        <td class="text-right"><t t-esc="formatLang(month['service_amount'], monetary=True)"/></td>
-                                                        <td class="text-right"><t t-esc="formatLang(month['medicine_amount'], monetary=True)"/></td>
-                                                        <td class="text-right"><t t-esc="formatLang(month['total_amount'], monetary=True)"/></td>
-                                                        <td class="text-right"><t t-esc="formatLang(month['insurance_amount'], monetary=True)"/></td>
-                                                        <td class="text-right"><t t-esc="formatLang(month['patient_amount'], monetary=True)"/></td>
+                                                        <td class="text-right"><t t-esc="formatLang(month['service_amount'])"/></td>
+                                                        <td class="text-right"><t t-esc="formatLang(month['medicine_amount'])"/></td>
+                                                        <td class="text-right"><t t-esc="formatLang(month['total_amount'])"/></td>
+                                                        <td class="text-right"><t t-esc="formatLang(month['insurance_amount'])"/></td>
+                                                        <td class="text-right"><t t-esc="formatLang(month['patient_amount'])"/></td>
                                                     </tr>
                                                     <t t-set="total_invoice_count" t-value="total_invoice_count + month['invoice_count']"/>
                                                     <t t-set="total_service_amount" t-value="total_service_amount + month['service_amount']"/>
@@ -140,11 +140,11 @@
                                             <tr>
                                                 <th>Tổng</th>
                                                 <th class="text-right"><t t-esc="total_invoice_count"/></th>
-                                                <th class="text-right"><t t-esc="formatLang(total_service_amount, monetary=True)"/></th>
-                                                <th class="text-right"><t t-esc="formatLang(total_medicine_amount, monetary=True)"/></th>
-                                                <th class="text-right"><t t-esc="formatLang(total_amount, monetary=True)"/></th>
-                                                <th class="text-right"><t t-esc="formatLang(total_insurance_amount, monetary=True)"/></th>
-                                                <th class="text-right"><t t-esc="formatLang(total_patient_amount, monetary=True)"/></th>
+                                                <th class="text-right"><t t-esc="formatLang(total_service_amount)"/></th>
+                                                <th class="text-right"><t t-esc="formatLang(total_medicine_amount)"/></th>
+                                                <th class="text-right"><t t-esc="formatLang(total_amount)"/></th>
+                                                <th class="text-right"><t t-esc="formatLang(total_insurance_amount)"/></th>
+                                                <th class="text-right"><t t-esc="formatLang(total_patient_amount)"/></th>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -218,7 +218,7 @@
         </t>
     </template>
 
-    <!-- Service Revenue Analysis Template -->
+        <!-- Service Revenue Analysis Template -->
     <template id="invoice_services_template" name="Service Revenue Analysis">
         <t t-call="website.layout">
             <div class="container mt-4">
@@ -269,11 +269,11 @@
                                                 <tr>
                                                     <td><t t-esc="service['service_name']"/></td>
                                                     <td class="text-right"><t t-esc="service['total_quantity']"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(service['total_revenue'], monetary=True)"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(service['insurance_covered'], monetary=True)"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(service['patient_paid'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(service['total_revenue'])"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(service['insurance_covered'])"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(service['patient_paid'])"/></td>
                                                     <td class="text-right"><t t-esc="service['invoice_count']"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(service['avg_price'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(service['avg_price'])"/></td>
                                                 </tr>
                                             </t>
                                         </tbody>
@@ -327,7 +327,7 @@
         </t>
     </template>
 
-    <!-- Product Revenue Analysis Template -->
+        <!-- Product Revenue Analysis Template -->
     <template id="invoice_products_template" name="Product Revenue Analysis">
         <t t-call="website.layout">
             <div class="container mt-4">
@@ -378,11 +378,11 @@
                                                 <tr>
                                                     <td><t t-esc="product['product_name']"/></td>
                                                     <td class="text-right"><t t-esc="product['total_quantity']"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(product['total_revenue'], monetary=True)"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(product['insurance_covered'], monetary=True)"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(product['patient_paid'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(product['total_revenue'])"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(product['insurance_covered'])"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(product['patient_paid'])"/></td>
                                                     <td class="text-right"><t t-esc="product['invoice_count']"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(product['avg_price'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(product['avg_price'])"/></td>
                                                 </tr>
                                             </t>
                                         </tbody>
@@ -474,11 +474,11 @@
                                                 <tr>
                                                     <td><t t-esc="patient['patient_name']"/></td>
                                                     <td class="text-right"><t t-esc="patient['invoice_count']"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(patient['service_amount'], monetary=True)"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(patient['medicine_amount'], monetary=True)"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(patient['total_amount'], monetary=True)"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(patient['insurance_amount'], monetary=True)"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(patient['patient_amount'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(patient['service_amount'])"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(patient['medicine_amount'])"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(patient['total_amount'])"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(patient['insurance_amount'])"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(patient['patient_amount'])"/></td>
                                                     <td class="text-right"><t t-esc="round(patient['insurance_rate'], 2)"/>%</td>
                                                 </tr>
                                             </t>
@@ -562,7 +562,7 @@
                                                             </span>
                                                         </td>
                                                         <td class="text-right"><t t-esc="status['invoice_count']"/></td>
-                                                        <td class="text-right"><t t-esc="formatLang(status['total_amount'], monetary=True)"/></td>
+                                                        <td class="text-right"><t t-esc="formatLang(status['total_amount'])"/></td>
                                                     </tr>
                                                 </t>
                                             </t>
