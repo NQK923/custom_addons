@@ -1,35 +1,36 @@
-
 from odoo import models, fields, api
 from datetime import datetime, date
 from odoo.exceptions import ValidationError
 import uuid
 
-# Model ClinicInsurancePolicy (Thêm mới để quản lý bảo hiểm)
+# Model ClinicInsurancePolicy (Updated to match insurance_management module)
 class ClinicInsurancePolicy(models.Model):
     _name = 'clinic.insurance.policy'
     _description = 'Chính sách bảo hiểm'
 
-    patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True, ondelete='cascade')
+    patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True, ondelete='restrict')
     number = fields.Char(string='Số thẻ BHYT', required=True)
     facility = fields.Char(string='Nơi ĐKKCB', required=True)
-    tier = fields.Selection(
-        [('central', 'Trung ương'), ('province', 'Tỉnh'), ('district', 'Quận/Huyện'), ('commune', 'Xã')],
-        string='Tuyến', required=True
-    )
+    coverage_rate = fields.Selection([
+        ('80', '80%'),
+        ('95', '95%'),
+        ('100', '100%')
+    ], string='Mức chi trả', default='100', required=True)
     expiry_date = fields.Date(string='Có giá trị đến', required=True)
     state = fields.Selection(
         [('valid', 'Hợp lệ'), ('expired', 'Hết hạn')],
         string='Trạng thái', compute='_compute_state', store=True
     )
+    name = fields.Char(string='Mã bảo hiểm', required=True, copy=False, readonly=True)
 
     @api.depends('expiry_date')
     def _compute_state(self):
         today = fields.Date.today()
         for record in self:
-            if record.expiry_date and record.expiry_date >= today:
-                record.state = 'valid'
+            if record.expiry_date:
+                record.state = 'valid' if record.expiry_date >= today else 'expired'
             else:
-                record.state = 'expired'
+                record.state = 'valid'
 
 # Model ClinicPatient
 class ClinicPatient(models.Model):
@@ -64,11 +65,7 @@ class ClinicPatient(models.Model):
     insurance_number = fields.Char(string='Số thẻ BHYT', compute='_compute_insurance_info')
     insurance_facility = fields.Char(string='Nơi ĐKKCB', compute='_compute_insurance_info')
     insurance_expiry = fields.Date(string='Có giá trị đến', compute='_compute_insurance_info')
-    insurance_tier = fields.Selection(
-        [('central', 'Trung ương'), ('province', 'Tỉnh'), ('district', 'Quận/Huyện'), ('commune', 'Xã')],
-        string='Tuyến',
-        compute='_compute_insurance_info'
-    )
+    coverage_rate = fields.Char(string='Mức chi trả', compute='_compute_insurance_info')
     insurance_state = fields.Char(string='Trạng thái', compute='_compute_insurance_info')
     medical_history_ids = fields.One2many('patient.medical.history', 'patient_id', string='Lịch sử y tế')
     treatment_plan_ids = fields.One2many('treatment.plan', 'patient_id', string='Kế hoạch điều trị')
@@ -81,14 +78,14 @@ class ClinicPatient(models.Model):
                 patient.has_insurance = True
                 patient.insurance_number = insurance.number
                 patient.insurance_facility = insurance.facility
-                patient.insurance_tier = insurance.tier
+                patient.coverage_rate = insurance.coverage_rate
                 patient.insurance_expiry = insurance.expiry_date
                 patient.insurance_state = 'Hợp lệ' if insurance.state == 'valid' else 'Hết hạn'
             else:
                 patient.has_insurance = False
                 patient.insurance_number = False
                 patient.insurance_facility = False
-                patient.insurance_tier = False
+                patient.coverage_rate = False
                 patient.insurance_expiry = False
                 patient.insurance_state = False
 
@@ -108,6 +105,7 @@ class ClinicPatient(models.Model):
             if vals.get('code', 'New') == 'New':
                 vals['code'] = str(uuid.uuid4())[:8]
         return super().create(vals_list)
+
 # Model TreatmentPlan
 class TreatmentPlan(models.Model):
     _name = 'treatment.plan'
