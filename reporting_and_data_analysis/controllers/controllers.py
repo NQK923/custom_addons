@@ -7,9 +7,25 @@ import io
 
 from odoo import http
 from odoo.http import request, content_disposition
-from odoo.tools.misc import format_amount
+from odoo.tools.misc import format_amount  # Đúng import
 
 _logger = logging.getLogger(__name__)
+
+
+def _return_error_response(message):
+    """Return a simple error response"""
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head><title>Error</title></head>
+    <body>
+        <h1>Error</h1>
+        <p>{message}</p>
+        <p>Please contact your administrator.</p>
+    </body>
+    </html>
+    """
+    return request.make_response(html, headers=[('Content-Type', 'text/html')])
 
 
 class MedicalReportPDFController(http.Controller):
@@ -21,7 +37,7 @@ class MedicalReportPDFController(http.Controller):
             report_model_name = 'report.med_report_pdf'
             if report_model_name not in request.env:
                 _logger.error(f"Report model {report_model_name} not found")
-                return self._return_error_response("Report model not found in the system")
+                return _return_error_response("Report model not found in the system")
 
             # Get the report handler model
             report_model = request.env[report_model_name]
@@ -36,7 +52,7 @@ class MedicalReportPDFController(http.Controller):
             pdf_content = report_model._get_pdf(medical_report)
 
             if not pdf_content:
-                return self._return_error_response("Failed to generate PDF content")
+                return _return_error_response("Failed to generate PDF content")
 
             # Set the appropriate headers for a PDF download
             filename = f"medical_report_{report_id}.pdf"
@@ -51,43 +67,106 @@ class MedicalReportPDFController(http.Controller):
 
         except Exception as e:
             _logger.error(f"Error generating medical report PDF: {e}")
-            return self._return_error_response(f"Error generating PDF: {e}")
+            return _return_error_response(f"Error generating PDF: {e}")
 
-    def _return_error_response(self, message):
-        """Return a simple error response"""
-        html = f"""
-        <!DOCTYPE html>
-        <html>
-        <head><title>Error</title></head>
-        <body>
-            <h1>Error</h1>
-            <p>{message}</p>
-            <p>Please contact your administrator.</p>
-        </body>
-        </html>
-        """
-        return request.make_response(html, headers=[('Content-Type', 'text/html')])
+
+def _get_monthly_data(year=None):
+    domain = []
+    if year:
+        domain = [('year', '=', year)]
+
+    try:
+        monthly_reports = request.env['clinic.invoice.report.monthly'].search(domain, order='year desc, month')
+        return monthly_reports.read([
+            'name', 'year', 'month', 'month_name', 'invoice_count',
+            'service_amount', 'medicine_amount', 'total_amount',
+            'insurance_amount', 'patient_amount'
+        ])
+    except Exception as e:
+        _logger.error(f"Error getting monthly data: {e}")
+        return []
+
+
+def _get_service_data():
+    try:
+        service_reports = request.env['clinic.invoice.report.service'].search([], order='total_revenue desc')
+        return service_reports.read([
+            'service_name', 'total_quantity', 'total_revenue',
+            'insurance_covered', 'patient_paid', 'invoice_count', 'avg_price'
+        ])
+    except Exception as e:
+        _logger.error(f"Error getting service data: {e}")
+        return []
+
+
+def _get_product_data():
+    try:
+        product_reports = request.env['clinic.invoice.report.product'].search([], order='total_revenue desc')
+        return product_reports.read([
+            'product_name', 'total_quantity', 'total_revenue',
+            'insurance_covered', 'patient_paid', 'invoice_count', 'avg_price'
+        ])
+    except Exception as e:
+        _logger.error(f"Error getting product data: {e}")
+        return []
+
+
+def _get_patient_data():
+    try:
+        patient_reports = request.env['clinic.invoice.report.patient'].search([], order='total_amount desc')
+        return patient_reports.read([
+            'patient_name', 'invoice_count', 'service_amount', 'medicine_amount',
+            'total_amount', 'insurance_amount', 'patient_amount', 'insurance_rate'
+        ])
+    except Exception as e:
+        _logger.error(f"Error getting patient data: {e}")
+        return []
+
+
+def _get_status_data(year=None):
+    domain = []
+    if year:
+        domain = [('year', '=', year)]
+
+    try:
+        status_reports = request.env['clinic.invoice.report.status'].search(domain, order='year desc, month, state')
+        return status_reports.read([
+            'name', 'year', 'month', 'month_name', 'state', 'invoice_count', 'total_amount'
+        ])
+    except Exception as e:
+        _logger.error(f"Error getting status data: {e}")
+        return []
 
 
 class WebsiteReportController(http.Controller):
-    # Define formatLang helper method
+    # Define formatLang helper method - UPDATED to use simple Python formatting
     def formatLang(self, value, digits=None, grouping=True, monetary=False, dp=False, currency_obj=False):
         """Helper method to correctly format amounts for templates"""
-        return format_amount(request.env, value, currency_obj=currency_obj, digits=digits)
+        try:
+            # Định dạng số đơn giản
+            if digits is not None:
+                return f"{float(value):,.{digits}f}"
+            elif isinstance(value, float):
+                return f"{value:,.2f}"
+            else:
+                return f"{value:,}"
+        except Exception as e:
+            _logger.error(f"Error in formatLang: {e}")
+            return str(value)
 
     # Dashboard route
     @http.route('/clinic/reports/dashboard', type='http', auth='user', website=True)
     def reports_dashboard(self, **kwargs):
         # Prepare dashboard data
-        monthly_data = self._get_monthly_data()
-        service_data = self._get_service_data()
-        product_data = self._get_product_data()
+        monthly_data = _get_monthly_data()  # Gọi hàm toàn cục, không phải self._get_monthly_data()
+        service_data = _get_service_data()  # Gọi hàm toàn cục, không phải self._get_service_data()
+        product_data = _get_product_data()  # Gọi hàm toàn cục, không phải self._get_product_data()
 
         values = {
             'monthly_data': monthly_data,
             'service_data': service_data,
             'product_data': product_data,
-            'page_name': 'dashboard',
+            'page_name': 'dashboard',  # Đảm bảo tham số này được đặt để tab Tổng Quan active
             'formatLang': self.formatLang,
             'json': json,
         }
@@ -98,7 +177,7 @@ class WebsiteReportController(http.Controller):
     def invoice_monthly(self, **kwargs):
         year = int(kwargs.get('year', datetime.now().year))
         # Get monthly reports for selected year
-        monthly_data = self._get_monthly_data(year=year)
+        monthly_data = _get_monthly_data(year=year)
 
         # Prepare data for charts
         months = [data['month_name'] for data in monthly_data if data['year'] == year]
@@ -125,7 +204,7 @@ class WebsiteReportController(http.Controller):
 
     @http.route('/clinic/reports/invoice/services', type='http', auth='user', website=True)
     def invoice_services(self, **kwargs):
-        service_data = self._get_service_data()
+        service_data = _get_service_data()
 
         # Prepare data for charts
         services = [data['service_name'] for data in service_data[:10]]  # Top 10 services
@@ -146,7 +225,7 @@ class WebsiteReportController(http.Controller):
 
     @http.route('/clinic/reports/invoice/products', type='http', auth='user', website=True)
     def invoice_products(self, **kwargs):
-        product_data = self._get_product_data()
+        product_data = _get_product_data()
 
         # Prepare data for charts
         products = [data['product_name'] for data in product_data[:10]]  # Top 10 products
@@ -167,7 +246,7 @@ class WebsiteReportController(http.Controller):
 
     @http.route('/clinic/reports/invoice/patients', type='http', auth='user', website=True)
     def invoice_patients(self, **kwargs):
-        patient_data = self._get_patient_data()
+        patient_data = _get_patient_data()
 
         values = {
             'patient_data': patient_data,
@@ -179,7 +258,7 @@ class WebsiteReportController(http.Controller):
     @http.route('/clinic/reports/invoice/status', type='http', auth='user', website=True)
     def invoice_status(self, **kwargs):
         year = int(kwargs.get('year', datetime.now().year))
-        status_data = self._get_status_data(year=year)
+        status_data = _get_status_data(year=year)
 
         values = {
             'status_data': status_data,
@@ -291,67 +370,3 @@ class WebsiteReportController(http.Controller):
         if report.exists():
             report.action_approve()
         return request.redirect(f'/clinic/reports/medical/{report_id}')
-
-    # Helper methods to get data
-    def _get_monthly_data(self, year=None):
-        domain = []
-        if year:
-            domain = [('year', '=', year)]
-
-        try:
-            monthly_reports = request.env['clinic.invoice.report.monthly'].search(domain, order='year desc, month')
-            return monthly_reports.read([
-                'name', 'year', 'month', 'month_name', 'invoice_count',
-                'service_amount', 'medicine_amount', 'total_amount',
-                'insurance_amount', 'patient_amount'
-            ])
-        except Exception as e:
-            _logger.error(f"Error getting monthly data: {e}")
-            return []
-
-    def _get_service_data(self):
-        try:
-            service_reports = request.env['clinic.invoice.report.service'].search([], order='total_revenue desc')
-            return service_reports.read([
-                'service_name', 'total_quantity', 'total_revenue',
-                'insurance_covered', 'patient_paid', 'invoice_count', 'avg_price'
-            ])
-        except Exception as e:
-            _logger.error(f"Error getting service data: {e}")
-            return []
-
-    def _get_product_data(self):
-        try:
-            product_reports = request.env['clinic.invoice.report.product'].search([], order='total_revenue desc')
-            return product_reports.read([
-                'product_name', 'total_quantity', 'total_revenue',
-                'insurance_covered', 'patient_paid', 'invoice_count', 'avg_price'
-            ])
-        except Exception as e:
-            _logger.error(f"Error getting product data: {e}")
-            return []
-
-    def _get_patient_data(self):
-        try:
-            patient_reports = request.env['clinic.invoice.report.patient'].search([], order='total_amount desc')
-            return patient_reports.read([
-                'patient_name', 'invoice_count', 'service_amount', 'medicine_amount',
-                'total_amount', 'insurance_amount', 'patient_amount', 'insurance_rate'
-            ])
-        except Exception as e:
-            _logger.error(f"Error getting patient data: {e}")
-            return []
-
-    def _get_status_data(self, year=None):
-        domain = []
-        if year:
-            domain = [('year', '=', year)]
-
-        try:
-            status_reports = request.env['clinic.invoice.report.status'].search(domain, order='year desc, month, state')
-            return status_reports.read([
-                'name', 'year', 'month', 'month_name', 'state', 'invoice_count', 'total_amount'
-            ])
-        except Exception as e:
-            _logger.error(f"Error getting status data: {e}")
-            return []

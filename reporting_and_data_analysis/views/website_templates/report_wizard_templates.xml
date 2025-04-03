@@ -171,6 +171,38 @@
                     background-color: white !important;
                 }
             }
+
+            /* NEW TAB NAVIGATION STYLES */
+            .nav-tabs .nav-link {
+                border-radius: 8px 8px 0 0;
+                font-weight: 600;
+                color: #495057;
+            }
+
+            .nav-tabs .nav-link.active {
+                background-color: #f8f9fa;
+                border-color: #dee2e6 #dee2e6 #f8f9fa;
+                color: #007bff;
+                border-top: 3px solid #007bff;
+            }
+
+            .nav-tabs .nav-link:hover:not(.active) {
+                background-color: rgba(0, 123, 255, 0.05);
+                border-color: #e9ecef #e9ecef #dee2e6;
+            }
+
+            .sub-navigation {
+                transition: all 0.3s;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            }
+
+            .sub-navigation .btn-outline-secondary {
+                background-color: white;
+            }
+
+            .sub-navigation .btn-outline-secondary:hover {
+                background-color: #f8f9fa;
+            }
         </style>
     </template>
 
