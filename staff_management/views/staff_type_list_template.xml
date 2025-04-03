@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="staff_type_list_template" name="Staff Type List">
+        <t t-call="website.layout">
+            <div class="container mt-4 mb-5">
+                <h1 class="text-center mb-4">Quản lý nhân sự y tế</h1>
+
+                <!-- Tab menu -->
+                <t t-call="staff_management.clinic_tab_menu">
+                    <t t-set="active_tab" t-value="active_tab"/>
+                </t>
+
+                <!-- Notification messages -->
+                <t t-if="error">
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fa fa-exclamation-triangle"/> <t t-esc="error"/>
+                    </div>
+                </t>
+                <t t-if="success">
+                    <div class="alert alert-success" role="alert">
+                        <i class="fa fa-check-circle"/> <t t-esc="success"/>
+                    </div>
+                </t>
+
+                <!-- Staff Type list -->
+                <div class="card">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Danh sách chức vụ</h4>
+                        <div>
+                            <a href="/clinic/staff_type/create" class="btn btn-light">
+                                <i class="fa fa-plus-circle"/> Thêm chức vụ mới
+                            </a>
+                            <span class="badge badge-light ml-2">Tổng số: <t t-esc="len(staff_types)"/></span>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Mã chức vụ</th>
+                                        <th>Tên chức vụ</th>
+                                        <th>Ghi chú</th>
+                                        <th class="text-center">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-if="staff_types">
+                                        <t t-foreach="staff_types" t-as="staff_type">
+                                            <tr>
+                                                <td>
+                                                    <t t-esc="staff_type.name"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="staff_type.position"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="staff_type.note or '--'"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="btn-group">
+                                                        <a t-att-href="'/clinic/staff_type/%s/edit' % staff_type.id" class="btn btn-sm btn-info"
+                                                           title="Chỉnh sửa">
+                                                            <i class="fa fa-edit"/> Sửa
+                                                        </a>
+                                                        <a t-att-href="'/clinic/staff_type/%s/delete' % staff_type.id" class="btn btn-sm btn-danger ml-1"
+                                                           title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa chức vụ này?');">
+                                                            <i class="fa fa-trash"/> Xóa
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4">
+                                                <div class="alert alert-info mb-0">
+                                                    <i class="fa fa-info-circle"/> Chưa có chức vụ nào được tạo.
+                                                    <a href="/clinic/staff_type/create" class="btn btn-primary btn-sm ml-3">
+                                                        <i class="fa fa-plus-circle"/> Tạo chức vụ mới
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

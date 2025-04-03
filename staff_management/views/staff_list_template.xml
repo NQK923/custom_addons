@@ -5,6 +5,23 @@
             <div class="container mt-4 mb-5">
                 <h1 class="text-center mb-4">Quản lý nhân sự y tế</h1>
 
+                <!-- Tab menu -->
+                <t t-call="staff_management.clinic_tab_menu">
+                    <t t-set="active_tab" t-value="active_tab"/>
+                </t>
+
+                <!-- Notification messages -->
+                <t t-if="error">
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fa fa-exclamation-triangle"/> <t t-esc="error"/>
+                    </div>
+                </t>
+                <t t-if="success">
+                    <div class="alert alert-success" role="alert">
+                        <i class="fa fa-check-circle"/> <t t-esc="success"/>
+                    </div>
+                </t>
+
                 <!-- Search form -->
                 <div class="card mb-4">
                     <div class="card-header bg-primary text-white">
@@ -45,7 +62,12 @@
                 <div class="card">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">Danh sách nhân sự</h4>
-                        <span class="badge badge-light">Tổng số: <t t-esc="len(staff_members)"/></span>
+                        <div>
+                            <a href="/clinic/staff/create" class="btn btn-light">
+                                <i class="fa fa-plus-circle"/> Thêm nhân viên mới
+                            </a>
+                            <span class="badge badge-light ml-2">Tổng số: <t t-esc="len(staff_members)"/></span>
+                        </div>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -91,14 +113,30 @@
                                                            title="Chi tiết">
                                                             <i class="fa fa-eye"/> Chi tiết
                                                         </a>
-                                                        <a t-att-href="'/clinic/staff/attendance/%s' % staff.id" class="btn btn-sm btn-primary ml-1"
-                                                           title="Chấm công">
-                                                            <i class="fa fa-clock-o"/> Chấm công
+                                                        <a t-att-href="'/clinic/staff/%s/edit' % staff.id" class="btn btn-sm btn-primary ml-1"
+                                                           title="Chỉnh sửa">
+                                                            <i class="fa fa-edit"/> Sửa
                                                         </a>
-                                                        <a t-att-href="'/clinic/staff/performance/%s' % staff.id" class="btn btn-sm btn-success ml-1"
-                                                           title="Đánh giá hiệu suất">
-                                                            <i class="fa fa-star"/> Đánh giá
-                                                        </a>
+                                                        <div class="dropdown d-inline-block ml-1">
+                                                            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">
+                                                                <i class="fa fa-cog"/> Thao tác
+                                                            </button>
+                                                            <div class="dropdown-menu">
+                                                                <a t-att-href="'/clinic/staff/attendance/%s' % staff.id" class="dropdown-item"
+                                                                   title="Chấm công">
+                                                                    <i class="fa fa-clock-o"/> Chấm công
+                                                                </a>
+                                                                <a t-att-href="'/clinic/staff/performance/%s' % staff.id" class="dropdown-item"
+                                                                   title="Đánh giá hiệu suất">
+                                                                    <i class="fa fa-star"/> Đánh giá
+                                                                </a>
+                                                                <div class="dropdown-divider"></div>
+                                                                <a t-att-href="'/clinic/staff/%s/delete' % staff.id" class="dropdown-item text-danger"
+                                                                   title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa nhân viên này?');">
+                                                                    <i class="fa fa-trash"/> Xóa
+                                                                </a>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -109,6 +147,9 @@
                                             <td colspan="6" class="text-center py-4">
                                                 <div class="alert alert-info mb-0">
                                                     <i class="fa fa-info-circle"/> Không tìm thấy nhân viên nào phù hợp với điều kiện tìm kiếm.
+                                                    <a href="/clinic/staff/create" class="btn btn-primary btn-sm ml-3">
+                                                        <i class="fa fa-plus-circle"/> Thêm nhân viên mới
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>

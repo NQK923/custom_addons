@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="clinic_tab_menu" name="Clinic Tab Menu">
+        <div class="o_clinic_tabs mb-4">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a t-att-class="'nav-link' + (' active' if active_tab == 'staff' else '')" href="/clinic/staff">
+                        <i class="fa fa-users"/> Nhân sự
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a t-att-class="'nav-link' + (' active' if active_tab == 'staff_type' else '')" href="/clinic/staff_type">
+                        <i class="fa fa-id-badge"/> Chức vụ
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a t-att-class="'nav-link' + (' active' if active_tab == 'department' else '')" href="/clinic/department">
+                        <i class="fa fa-hospital-o"/> Khoa
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </template>
+</odoo>
