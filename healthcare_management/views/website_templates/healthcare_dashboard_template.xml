@@ -107,6 +107,9 @@
                                 <a href="/healthcare/patient_complaint" class="btn btn-danger d-block mt-4">
                                     <i class="fa fa-list me-1"></i> Danh sách khiếu nại
                                 </a>
+                                <a href="/healthcare/patient_complaint/create" class="btn btn-outline-info">
+                                    <i class="fa fa-plus-circle me-1"></i> Tạo khiếu nại
+                                </a>
                             </div>
                         </div>
                     </div>

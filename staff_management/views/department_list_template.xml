@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="department_list_template" name="Department List">
+        <t t-call="website.layout">
+            <div class="container mt-4 mb-5">
+                <h1 class="text-center mb-4">Quản lý nhân sự y tế</h1>
+
+                <!-- Tab menu -->
+                <t t-call="staff_management.clinic_tab_menu">
+                    <t t-set="active_tab" t-value="active_tab"/>
+                </t>
+
+                <!-- Notification messages -->
+                <t t-if="error">
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fa fa-exclamation-triangle"/> <t t-esc="error"/>
+                    </div>
+                </t>
+                <t t-if="success">
+                    <div class="alert alert-success" role="alert">
+                        <i class="fa fa-check-circle"/> <t t-esc="success"/>
+                    </div>
+                </t>
+
+                <!-- Department list -->
+                <div class="card">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Danh sách khoa</h4>
+                        <div>
+                            <a href="/clinic/department/create" class="btn btn-light">
+                                <i class="fa fa-plus-circle"/> Thêm khoa mới
+                            </a>
+                            <span class="badge badge-light ml-2">Tổng số: <t t-esc="len(departments)"/></span>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Mã khoa</th>
+                                        <th>Tên khoa</th>
+                                        <th>Loại</th>
+                                        <th>Ghi chú</th>
+                                        <th class="text-center">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-if="departments">
+                                        <t t-foreach="departments" t-as="department">
+                                            <tr>
+                                                <td>
+                                                    <t t-esc="department.name"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="department.department_name"/>
+                                                </td>
+                                                <td>
+                                                    <span t-if="department.type == 'clinical'" class="badge badge-primary">Khoa lâm sàng</span>
+                                                    <span t-elif="department.type == 'subclinical'" class="badge badge-info">Khoa cận lâm sàng</span>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="department.note or '--'"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="btn-group">
+                                                        <a t-att-href="'/clinic/department/%s/edit' % department.id" class="btn btn-sm btn-info"
+                                                           title="Chỉnh sửa">
+                                                            <i class="fa fa-edit"/> Sửa
+                                                        </a>
+                                                        <a t-att-href="'/clinic/department/%s/delete' % department.id" class="btn btn-sm btn-danger ml-1"
+                                                           title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa khoa này?');">
+                                                            <i class="fa fa-trash"/> Xóa
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4">
+                                                <div class="alert alert-info mb-0">
+                                                    <i class="fa fa-info-circle"/> Chưa có khoa nào được tạo.
+                                                    <a href="/clinic/department/create" class="btn btn-primary btn-sm ml-3">
+                                                        <i class="fa fa-plus-circle"/> Tạo khoa mới
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
