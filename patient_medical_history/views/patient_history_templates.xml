@@ -78,6 +78,18 @@
                     padding: 10px;
                     font-size: 1rem;
                 }
+                .badge-valid {
+                    background-color: #28a745;
+                    color: white;
+                    padding: 5px 10px;
+                    border-radius: 20px;
+                }
+                .badge-expired {
+                    background-color: #dc3545;
+                    color: white;
+                    padding: 5px 10px;
+                    border-radius: 20px;
+                }
             </style>
             <div class="container mt-5 patient-history-container">
                 <h1 class="text-center mb-5">Lịch sử khám bệnh nhân</h1>
@@ -87,7 +99,7 @@
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     <div class="form-group">
                         <label for="search_value">Nhập mã hoặc tên bệnh nhân:</label>
-                        <input type="text" class="form-control" id="search_value" name="search_value" t-att-value="search_value or ''" placeholder="Ví dụ: 4437480b hoặc Nguyễn Công Trình"/>
+                        <input type="text" class="form-control" id="search_value" name="search_value" t-att-value="search_value or ''" placeholder="Ví dụ: 4437480b hoặc Nguyễn Văn A"/>
                     </div>
                     <button type="submit" class="btn btn-primary">Tìm kiếm</button>
                 </form>
@@ -100,19 +112,33 @@
                             <div class="col-md-6">
                                 <p><strong>Mã:</strong> <t t-esc="patients.code"/></p>
                                 <p><strong>Họ tên:</strong> <t t-esc="patients.name"/></p>
-                                <p><strong>Giới tính:</strong> <t t-esc="patients.gender"/></p>
+                                <p><strong>Giới tính:</strong>
+                                    <t t-if="patients.gender == 'male'">Nam</t>
+                                    <t t-elif="patients.gender == 'female'">Nữ</t>
+                                    <t t-else="">Khác</t>
+                                </p>
                                 <p><strong>Tuổi:</strong> <t t-esc="patients.age"/></p>
+                                <p><strong>Ngày sinh:</strong> <t t-esc="patients.date_of_birth"/></p>
+                                <p><strong>Điện thoại:</strong> <t t-esc="patients.phone or 'Không có'"/></p>
                             </div>
                             <div class="col-md-6">
+                                <h4 class="mb-3">Thông tin bảo hiểm y tế</h4>
                                 <t t-if="patients.has_insurance">
                                     <p><strong>Số thẻ BHYT:</strong> <t t-esc="patients.insurance_number"/></p>
                                     <p><strong>Nơi ĐKKCB:</strong> <t t-esc="patients.insurance_facility"/></p>
-                                    <p><strong>Tuyến:</strong> <t t-esc="patients.insurance_tier"/></p>
+                                    <p><strong>Mức chi trả:</strong> <t t-esc="patients.insurance_number and patients.coverage_rate or '100'"/>%</p>
                                     <p><strong>Có giá trị đến:</strong> <t t-esc="patients.insurance_expiry"/></p>
-                                    <p><strong>Trạng thái:</strong> <t t-esc="patients.insurance_state"/></p>
+                                    <p><strong>Trạng thái:</strong>
+                                        <span t-if="patients.insurance_state == 'Hợp lệ'" class="badge badge-valid">
+                                            <i class="fa fa-check-circle mr-1"></i> Hợp lệ
+                                        </span>
+                                        <span t-else="" class="badge badge-expired">
+                                            <i class="fa fa-times-circle mr-1"></i> Hết hạn
+                                        </span>
+                                    </p>
                                 </t>
                                 <t t-else="">
-                                    <p><strong>Bảo hiểm:</strong> <span class="no-data">Không có bảo hiểm</span></p>
+                                    <p class="no-data">Không có thông tin bảo hiểm y tế</p>
                                 </t>
                             </div>
                         </div>
@@ -165,7 +191,11 @@
                                             <tr>
                                                 <td><t t-esc="process.code"/></td>
                                                 <td><t t-esc="process.service_id.name"/></td>
-                                                <td><t t-esc="process.state"/></td>
+                                                <td>
+                                                    <t t-if="process.state == 'pending'">Chưa thực hiện</t>
+                                                    <t t-elif="process.state == 'in_progress'">Đang thực hiện</t>
+                                                    <t t-elif="process.state == 'completed'">Hoàn thành</t>
+                                                </td>
                                                 <td><t t-esc="process.execution_time or 'Chưa thực hiện'"/></td>
                                             </tr>
                                         </t>
@@ -191,7 +221,14 @@
                                         <t t-foreach="history.medical_tests" t-as="test">
                                             <tr>
                                                 <td><t t-esc="test.test_code"/></td>
-                                                <td><t t-esc="test.test_type"/></td>
+                                                <td>
+                                                    <t t-if="test.test_type == 'test'">Chuẩn đoán</t>
+                                                    <t t-elif="test.test_type == 'blood'">Máu</t>
+                                                    <t t-elif="test.test_type == 'urine'">Nước tiểu</t>
+                                                    <t t-elif="test.test_type == 'xray'">X-Quang</t>
+                                                    <t t-elif="test.test_type == 'ecg'">ECG</t>
+                                                    <t t-else="">Khác</t>
+                                                </td>
                                                 <td><t t-esc="test.test_date"/></td>
                                                 <td><t t-esc="test.result or 'Chưa có'"/></td>
                                             </tr>
