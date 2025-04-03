@@ -1,178 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Common Styles and Scripts for Reports - Using the correct assets inheritance -->
-    <template id="assets_frontend" inherit_id="web.assets_frontend" name="Report Assets">
-        <xpath expr="." position="inside">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
-            <style>
-                .report-header {
-                    background: linear-gradient(to right, #2c3e50, #3498db);
-                    color: white;
-                    padding: 20px 0;
-                    margin-bottom: 30px;
-                    border-radius: 5px;
+    <!-- Define our own asset bundle -->
+    <template id="report_assets" name="Report Assets">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+        <style>
+            .report-header {
+                background: linear-gradient(to right, #2c3e50, #3498db);
+                color: white;
+                padding: 20px 0;
+                margin-bottom: 30px;
+                border-radius: 5px;
+            }
+            .report-title {
+                font-weight: 700;
+                text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            }
+            .report-links .btn {
+                border-radius: 30px;
+                padding: 8px 16px;
+                transition: all 0.3s;
+            }
+            .report-links .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+            .card {
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                margin-bottom: 20px;
+                transition: all 0.3s;
+            }
+            .card:hover {
+                box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            }
+            .card-header {
+                border-top-left-radius: 8px !important;
+                border-top-right-radius: 8px !important;
+                font-weight: 600;
+            }
+            .table th {
+                background-color: #f8f9fa;
+            }
+            .table-hover tbody tr:hover {
+                background-color: rgba(0,123,255,0.05);
+            }
+            .nav-tabs .nav-link {
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+            }
+            .nav-tabs .nav-link.active {
+                font-weight: 600;
+                color: #007bff;
+                border-top: 3px solid #007bff;
+            }
+            pre {
+                background-color: #f8f9fa;
+                border-radius: 5px;
+            }
+            canvas {
+                max-height: 400px;
+            }
+            .wizard-step {
+                position: relative;
+                padding-bottom: 20px;
+            }
+            .wizard-step:not(:last-child)::after {
+                content: '';
+                position: absolute;
+                left: 20px;
+                top: 30px;
+                height: calc(100% - 30px);
+                width: 2px;
+                background-color: #dee2e6;
+            }
+            .wizard-step-number {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background-color: #f8f9fa;
+                border: 2px solid #dee2e6;
+                color: #6c757d;
+                font-weight: bold;
+                margin-right: 15px;
+                position: relative;
+                z-index: 1;
+            }
+            .wizard-step.active .wizard-step-number {
+                background-color: #007bff;
+                border-color: #007bff;
+                color: white;
+            }
+            .wizard-step.completed .wizard-step-number {
+                background-color: #28a745;
+                border-color: #28a745;
+                color: white;
+            }
+            .wizard-step-content {
+                padding-left: 55px;
+            }
+            /* Custom styling for report forms */
+            .report-form label {
+                font-weight: 600;
+                color: #495057;
+            }
+            .report-form .form-control {
+                border-radius: 4px;
+                border: 1px solid #ced4da;
+                padding: 8px 12px;
+            }
+            .report-form .form-control:focus {
+                border-color: #80bdff;
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            }
+            .report-metric {
+                padding: 20px;
+                text-align: center;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                color: white;
+            }
+            .report-metric h3 {
+                font-size: 16px;
+                margin-bottom: 10px;
+                font-weight: 600;
+            }
+            .report-metric .value {
+                font-size: 24px;
+                font-weight: bold;
+            }
+            .metric-blue {
+                background: linear-gradient(135deg, #007bff, #0056b3);
+            }
+            .metric-green {
+                background: linear-gradient(135deg, #28a745, #1e7e34);
+            }
+            .metric-orange {
+                background: linear-gradient(135deg, #fd7e14, #d56308);
+            }
+            .metric-red {
+                background: linear-gradient(135deg, #dc3545, #bd2130);
+            }
+            .metric-purple {
+                background: linear-gradient(135deg, #6f42c1, #4e2b89);
+            }
+            .metric-teal {
+                background: linear-gradient(135deg, #20c997, #17a2b8);
+            }
+            .print-only {
+                display: none;
+            }
+            @media print {
+                .print-only {
+                    display: block;
                 }
-                .report-title {
-                    font-weight: 700;
-                    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+                .no-print {
+                    display: none !important;
                 }
-                .report-links .btn {
-                    border-radius: 30px;
-                    padding: 8px 16px;
-                    transition: all 0.3s;
-                }
-                .report-links .btn:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                .container {
+                    width: 100%;
+                    max-width: 100%;
                 }
                 .card {
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-                    margin-bottom: 20px;
-                    transition: all 0.3s;
+                    border: 1px solid #ddd;
+                    box-shadow: none !important;
                 }
-                .card:hover {
-                    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+                .table td, .table th {
+                    background-color: white !important;
                 }
-                .card-header {
-                    border-top-left-radius: 8px !important;
-                    border-top-right-radius: 8px !important;
-                    font-weight: 600;
-                }
-                .table th {
-                    background-color: #f8f9fa;
-                }
-                .table-hover tbody tr:hover {
-                    background-color: rgba(0,123,255,0.05);
-                }
-                .nav-tabs .nav-link {
-                    border-top-left-radius: 8px;
-                    border-top-right-radius: 8px;
-                }
-                .nav-tabs .nav-link.active {
-                    font-weight: 600;
-                    color: #007bff;
-                    border-top: 3px solid #007bff;
-                }
-                pre {
-                    background-color: #f8f9fa;
-                    border-radius: 5px;
-                }
-                canvas {
-                    max-height: 400px;
-                }
-                .wizard-step {
-                    position: relative;
-                    padding-bottom: 20px;
-                }
-                .wizard-step:not(:last-child)::after {
-                    content: '';
-                    position: absolute;
-                    left: 20px;
-                    top: 30px;
-                    height: calc(100% - 30px);
-                    width: 2px;
-                    background-color: #dee2e6;
-                }
-                .wizard-step-number {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background-color: #f8f9fa;
-                    border: 2px solid #dee2e6;
-                    color: #6c757d;
-                    font-weight: bold;
-                    margin-right: 15px;
-                    position: relative;
-                    z-index: 1;
-                }
-                .wizard-step.active .wizard-step-number {
-                    background-color: #007bff;
-                    border-color: #007bff;
-                    color: white;
-                }
-                .wizard-step.completed .wizard-step-number {
-                    background-color: #28a745;
-                    border-color: #28a745;
-                    color: white;
-                }
-                .wizard-step-content {
-                    padding-left: 55px;
-                }
-                /* Custom styling for report forms */
-                .report-form label {
-                    font-weight: 600;
-                    color: #495057;
-                }
-                .report-form .form-control {
-                    border-radius: 4px;
-                    border: 1px solid #ced4da;
-                    padding: 8px 12px;
-                }
-                .report-form .form-control:focus {
-                    border-color: #80bdff;
-                    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-                }
-                .report-metric {
-                    padding: 20px;
-                    text-align: center;
-                    border-radius: 8px;
-                    margin-bottom: 20px;
-                    color: white;
-                }
-                .report-metric h3 {
-                    font-size: 16px;
-                    margin-bottom: 10px;
-                    font-weight: 600;
-                }
-                .report-metric .value {
-                    font-size: 24px;
-                    font-weight: bold;
-                }
-                .metric-blue {
-                    background: linear-gradient(135deg, #007bff, #0056b3);
-                }
-                .metric-green {
-                    background: linear-gradient(135deg, #28a745, #1e7e34);
-                }
-                .metric-orange {
-                    background: linear-gradient(135deg, #fd7e14, #d56308);
-                }
-                .metric-red {
-                    background: linear-gradient(135deg, #dc3545, #bd2130);
-                }
-                .metric-purple {
-                    background: linear-gradient(135deg, #6f42c1, #4e2b89);
-                }
-                .metric-teal {
-                    background: linear-gradient(135deg, #20c997, #17a2b8);
-                }
-                .print-only {
-                    display: none;
-                }
-                @media print {
-                    .print-only {
-                        display: block;
-                    }
-                    .no-print {
-                        display: none !important;
-                    }
-                    .container {
-                        width: 100%;
-                        max-width: 100%;
-                    }
-                    .card {
-                        border: 1px solid #ddd;
-                        box-shadow: none !important;
-                    }
-                    .table td, .table th {
-                        background-color: white !important;
-                    }
-                }
-            </style>
+            }
+        </style>
+    </template>
+
+    <!-- Include our assets in the website layout -->
+    <template id="report_layout_assets" name="Report Layout Assets" inherit_id="website.layout">
+        <xpath expr="//head" position="inside">
+            <t t-call="reporting_and_data_analysis.report_assets"/>
         </xpath>
     </template>
 

@@ -52,7 +52,7 @@
                                 <div class="card-header">Tổng Doanh Thu Tháng</div>
                                 <div class="card-body">
                                     <h5 class="card-title">
-                                        <t t-esc="formatLang(latest_month['total_amount'], monetary=True)"/>
+                                        <t t-esc="formatLang(latest_month['total_amount'])"/>
                                     </h5>
                                     <p class="card-text"><t t-esc="latest_month['month_name']"/> <t t-esc="latest_month['year']"/></p>
                                 </div>
@@ -64,7 +64,7 @@
                                 <div class="card-header">Dịch Vụ Y Tế</div>
                                 <div class="card-body">
                                     <h5 class="card-title">
-                                        <t t-esc="formatLang(latest_month['service_amount'], monetary=True)"/>
+                                        <t t-esc="formatLang(latest_month['service_amount'])"/>
                                     </h5>
                                     <p class="card-text"><t t-esc="round(latest_month['service_amount'] / latest_month['total_amount'] * 100 if latest_month['total_amount'] else 0, 1)"/>% doanh thu</p>
                                 </div>
@@ -76,7 +76,7 @@
                                 <div class="card-header">Thuốc &amp; Vật Tư</div>
                                 <div class="card-body">
                                     <h5 class="card-title">
-                                        <t t-esc="formatLang(latest_month['medicine_amount'], monetary=True)"/>
+                                        <t t-esc="formatLang(latest_month['medicine_amount'])"/>
                                     </h5>
                                     <p class="card-text"><t t-esc="round(latest_month['medicine_amount'] / latest_month['total_amount'] * 100 if latest_month['total_amount'] else 0, 1)"/>% doanh thu</p>
                                 </div>
@@ -90,7 +90,7 @@
                                     <h5 class="card-title">
                                         <t t-esc="latest_month['invoice_count']"/>
                                     </h5>
-                                    <p class="card-text">Trung bình: <t t-esc="formatLang(latest_month['total_amount'] / latest_month['invoice_count'] if latest_month['invoice_count'] else 0, monetary=True)"/></p>
+                                    <p class="card-text">Trung bình: <t t-esc="formatLang(latest_month['total_amount'] / latest_month['invoice_count'] if latest_month['invoice_count'] else 0)"/></p>
                                 </div>
                             </div>
                         </div>

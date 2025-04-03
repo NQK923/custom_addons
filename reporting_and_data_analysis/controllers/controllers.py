@@ -7,7 +7,7 @@ import io
 
 from odoo import http
 from odoo.http import request, content_disposition
-from odoo.tools.misc import formatLang
+from odoo.tools.misc import format_amount
 
 _logger = logging.getLogger(__name__)
 
@@ -70,6 +70,11 @@ class MedicalReportPDFController(http.Controller):
 
 
 class WebsiteReportController(http.Controller):
+    # Define formatLang helper method
+    def formatLang(self, value, digits=None, grouping=True, monetary=False, dp=False, currency_obj=False):
+        """Helper method to correctly format amounts for templates"""
+        return format_amount(request.env, value, currency_obj=currency_obj, digits=digits)
+
     # Dashboard route
     @http.route('/clinic/reports/dashboard', type='http', auth='user', website=True)
     def reports_dashboard(self, **kwargs):
@@ -83,7 +88,7 @@ class WebsiteReportController(http.Controller):
             'service_data': service_data,
             'product_data': product_data,
             'page_name': 'dashboard',
-            'formatLang': formatLang,
+            'formatLang': self.formatLang,
             'json': json,
         }
         return request.render('reporting_and_data_analysis.reports_dashboard_template', values)
@@ -114,7 +119,7 @@ class WebsiteReportController(http.Controller):
             'selected_year': year,
             'years': range(datetime.now().year - 5, datetime.now().year + 1),
             'page_name': 'invoice_monthly',
-            'formatLang': formatLang,
+            'formatLang': self.formatLang,
         }
         return request.render('reporting_and_data_analysis.invoice_monthly_template', values)
 
@@ -135,7 +140,7 @@ class WebsiteReportController(http.Controller):
             'service_data': service_data,
             'chart_data': chart_data,
             'page_name': 'invoice_services',
-            'formatLang': formatLang,
+            'formatLang': self.formatLang,
         }
         return request.render('reporting_and_data_analysis.invoice_services_template', values)
 
@@ -156,7 +161,7 @@ class WebsiteReportController(http.Controller):
             'product_data': product_data,
             'chart_data': chart_data,
             'page_name': 'invoice_products',
-            'formatLang': formatLang,
+            'formatLang': self.formatLang,
         }
         return request.render('reporting_and_data_analysis.invoice_products_template', values)
 
@@ -167,7 +172,7 @@ class WebsiteReportController(http.Controller):
         values = {
             'patient_data': patient_data,
             'page_name': 'invoice_patients',
-            'formatLang': formatLang,
+            'formatLang': self.formatLang,
         }
         return request.render('reporting_and_data_analysis.invoice_patients_template', values)
 
@@ -181,7 +186,7 @@ class WebsiteReportController(http.Controller):
             'selected_year': year,
             'years': range(datetime.now().year - 5, datetime.now().year + 1),
             'page_name': 'invoice_status',
-            'formatLang': formatLang,
+            'formatLang': self.formatLang,
         }
         return request.render('reporting_and_data_analysis.invoice_status_template', values)
 
@@ -218,14 +223,23 @@ class WebsiteReportController(http.Controller):
                 date_to = kwargs.get('date_to')
                 department_id = int(kwargs.get('department_id')) if kwargs.get('department_id') else False
 
-                # Create report
+                # Check if the user is linked to a staff record
+                user = request.env.user
+                staff = request.env['clinic.staff'].search([('user_id', '=', user.id)], limit=1)
+
+                # Create report values
                 report_vals = {
                     'report_type': report_type,
                     'date_from': date_from,
                     'date_to': date_to,
                     'department_id': department_id,
-                    'staff_id': request.env.user.id,
                 }
+
+                # Only set staff_id if the user is linked to a staff record
+                if staff:
+                    report_vals['staff_id'] = staff.id
+
+                # Create the report
                 report = request.env['hospital.medical.report'].create(report_vals)
 
                 # Generate report data
@@ -235,17 +249,30 @@ class WebsiteReportController(http.Controller):
                 return request.redirect(f'/clinic/reports/medical/{report.id}')
             except Exception as e:
                 _logger.error(f"Error creating report: {e}")
+
+                # Get departments safely
+                try:
+                    departments = request.env['clinic.department'].search([])
+                except Exception:
+                    departments = []
+
                 values = {
                     'error': str(e),
-                    'departments': request.env['clinic.department'].search([]),
+                    'departments': departments,
                     'page_name': 'create_medical_report',
                     'datetime': datetime,
                 }
                 return request.render('reporting_and_data_analysis.medical_report_create_template', values)
         else:
             # Display form
+            # Get departments safely
+            try:
+                departments = request.env['clinic.department'].search([])
+            except Exception:
+                departments = []
+
             values = {
-                'departments': request.env['clinic.department'].search([]),
+                'departments': departments,
                 'page_name': 'create_medical_report',
                 'datetime': datetime,
             }
@@ -271,40 +298,60 @@ class WebsiteReportController(http.Controller):
         if year:
             domain = [('year', '=', year)]
 
-        monthly_reports = request.env['clinic.invoice.report.monthly'].search(domain, order='year desc, month')
-        return monthly_reports.read([
-            'name', 'year', 'month', 'month_name', 'invoice_count',
-            'service_amount', 'medicine_amount', 'total_amount',
-            'insurance_amount', 'patient_amount'
-        ])
+        try:
+            monthly_reports = request.env['clinic.invoice.report.monthly'].search(domain, order='year desc, month')
+            return monthly_reports.read([
+                'name', 'year', 'month', 'month_name', 'invoice_count',
+                'service_amount', 'medicine_amount', 'total_amount',
+                'insurance_amount', 'patient_amount'
+            ])
+        except Exception as e:
+            _logger.error(f"Error getting monthly data: {e}")
+            return []
 
     def _get_service_data(self):
-        service_reports = request.env['clinic.invoice.report.service'].search([], order='total_revenue desc')
-        return service_reports.read([
-            'service_name', 'total_quantity', 'total_revenue',
-            'insurance_covered', 'patient_paid', 'invoice_count', 'avg_price'
-        ])
+        try:
+            service_reports = request.env['clinic.invoice.report.service'].search([], order='total_revenue desc')
+            return service_reports.read([
+                'service_name', 'total_quantity', 'total_revenue',
+                'insurance_covered', 'patient_paid', 'invoice_count', 'avg_price'
+            ])
+        except Exception as e:
+            _logger.error(f"Error getting service data: {e}")
+            return []
 
     def _get_product_data(self):
-        product_reports = request.env['clinic.invoice.report.product'].search([], order='total_revenue desc')
-        return product_reports.read([
-            'product_name', 'total_quantity', 'total_revenue',
-            'insurance_covered', 'patient_paid', 'invoice_count', 'avg_price'
-        ])
+        try:
+            product_reports = request.env['clinic.invoice.report.product'].search([], order='total_revenue desc')
+            return product_reports.read([
+                'product_name', 'total_quantity', 'total_revenue',
+                'insurance_covered', 'patient_paid', 'invoice_count', 'avg_price'
+            ])
+        except Exception as e:
+            _logger.error(f"Error getting product data: {e}")
+            return []
 
     def _get_patient_data(self):
-        patient_reports = request.env['clinic.invoice.report.patient'].search([], order='total_amount desc')
-        return patient_reports.read([
-            'patient_name', 'invoice_count', 'service_amount', 'medicine_amount',
-            'total_amount', 'insurance_amount', 'patient_amount', 'insurance_rate'
-        ])
+        try:
+            patient_reports = request.env['clinic.invoice.report.patient'].search([], order='total_amount desc')
+            return patient_reports.read([
+                'patient_name', 'invoice_count', 'service_amount', 'medicine_amount',
+                'total_amount', 'insurance_amount', 'patient_amount', 'insurance_rate'
+            ])
+        except Exception as e:
+            _logger.error(f"Error getting patient data: {e}")
+            return []
 
     def _get_status_data(self, year=None):
         domain = []
         if year:
             domain = [('year', '=', year)]
 
-        status_reports = request.env['clinic.invoice.report.status'].search(domain, order='year desc, month, state')
-        return status_reports.read([
-            'name', 'year', 'month', 'month_name', 'state', 'invoice_count', 'total_amount'
-        ])
+        try:
+            status_reports = request.env['clinic.invoice.report.status'].search(domain, order='year desc, month, state')
+            return status_reports.read([
+                'name', 'year', 'month', 'month_name', 'state', 'invoice_count', 'total_amount'
+            ])
+        except Exception as e:
+            _logger.error(f"Error getting status data: {e}")
+            return []
