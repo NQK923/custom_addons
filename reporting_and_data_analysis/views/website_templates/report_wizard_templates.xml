@@ -203,6 +203,96 @@
             .sub-navigation .btn-outline-secondary:hover {
                 background-color: #f8f9fa;
             }
+
+            /* CSS cho Sub Tab Menu */
+            .sub-navigation {
+                padding: 10px;
+                background-color: #f8f9fa;
+                border-radius: 0 0 8px 8px;
+                margin-bottom: 20px;
+            }
+
+            .sub-navigation .btn {
+                margin-right: 8px;
+                margin-bottom: 5px;
+                border-radius: 20px;
+                padding: 6px 15px;
+                font-weight: 500;
+                transition: all 0.2s ease;
+                text-shadow: none;
+            }
+
+            .sub-navigation .btn-outline-secondary {
+                background-color: white;
+                color: #495057;
+            }
+
+            .sub-navigation .btn-outline-secondary:hover {
+                background-color: #e9ecef;
+                color: #007bff;
+            }
+
+            .sub-navigation .btn-primary {
+                box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
+                margin 5px;
+            }
+
+            .sub-navigation .btn-primary:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+            }
+            .nav-tabs {
+                display: flex;
+                justify-content: center;
+                gap: 10px;  /* Thêm khoảng cách 10px giữa các tab */
+                border-bottom: none;
+                margin-bottom: 0;
+            }
+
+            .nav-tabs .nav-item {
+                margin: 0 5px;  /* Thêm lề trái phải 5px cho mỗi tab */
+            }
+
+            .nav-tabs .nav-link {
+                border: 1px solid #dee2e6;
+                background-color: #f8f9fa;
+                padding: 10px 20px;
+                border-radius: 8px 8px 0 0 !important;
+                position: relative;
+                z-index: 1;
+            }
+
+            .nav-tabs .nav-link.active {
+                background-color: #ffffff;
+                border-bottom-color: #ffffff;
+                box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+                z-index: 2;
+            }
+
+            /* Để kết nối tab active với sub-navigation */
+            .nav-tabs .nav-link.active::after {
+                content: '';
+                position: absolute;
+                bottom: -1px;
+                left: 0;
+                right: 0;
+                height: 1px;
+                background-color: #ffffff;
+                z-index: 3;
+            }
+
+            /* Kiểu màu sắc cho sub-navigation để phù hợp với tab */
+            .sub-navigation {
+                padding: 12px;
+                background-color: #ffffff;
+                border: 1px solid #dee2e6;
+                border-top: none;
+                border-radius: 0 0 8px 8px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                position: relative;
+                z-index: 1;
+            }
         </style>
     </template>
 
@@ -511,8 +601,15 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="staff_id">Người tạo báo cáo</label>
-                                <input type="text" id="staff_name" class="form-control" t-att-value="request.env.user.name" readonly="readonly"/>
-                                <input type="hidden" name="staff_id" t-att-value="request.env.user.id"/>
+                                <select id="staff_id" name="staff_id" class="form-control">
+                                    <option value="">-- Chọn nhân viên --</option>
+                                    <t t-foreach="staffs" t-as="staff">
+                                        <option t-att-value="staff.id">
+                                            <t t-esc="staff.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                                <small class="form-text text-muted">Chọn nhân viên tạo báo cáo</small>
                             </div>
                         </div>
                     </div>

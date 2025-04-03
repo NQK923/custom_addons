@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, timedelta
 import json
 import logging
-import base64
-import io
+from datetime import datetime
 
 from odoo import http
 from odoo.http import request, content_disposition
-from odoo.tools.misc import format_amount  # Đúng import
 
 _logger = logging.getLogger(__name__)
 
@@ -301,10 +298,7 @@ class WebsiteReportController(http.Controller):
                 date_from = kwargs.get('date_from')
                 date_to = kwargs.get('date_to')
                 department_id = int(kwargs.get('department_id')) if kwargs.get('department_id') else False
-
-                # Check if the user is linked to a staff record
-                user = request.env.user
-                staff = request.env['clinic.staff'].search([('user_id', '=', user.id)], limit=1)
+                staff_id = int(kwargs.get('staff_id')) if kwargs.get('staff_id') else False
 
                 # Create report values
                 report_vals = {
@@ -312,11 +306,8 @@ class WebsiteReportController(http.Controller):
                     'date_from': date_from,
                     'date_to': date_to,
                     'department_id': department_id,
+                    'staff_id': staff_id,  # Sử dụng staff_id từ form thay vì tự động lấy từ user
                 }
-
-                # Only set staff_id if the user is linked to a staff record
-                if staff:
-                    report_vals['staff_id'] = staff.id
 
                 # Create the report
                 report = request.env['hospital.medical.report'].create(report_vals)
@@ -332,26 +323,32 @@ class WebsiteReportController(http.Controller):
                 # Get departments safely
                 try:
                     departments = request.env['clinic.department'].search([])
+                    staffs = request.env['clinic.staff'].search([])
                 except Exception:
                     departments = []
+                    staffs = []
 
                 values = {
                     'error': str(e),
                     'departments': departments,
+                    'staffs': staffs,
                     'page_name': 'create_medical_report',
                     'datetime': datetime,
                 }
                 return request.render('reporting_and_data_analysis.medical_report_create_template', values)
         else:
             # Display form
-            # Get departments safely
+            # Get departments and staffs safely
             try:
                 departments = request.env['clinic.department'].search([])
+                staffs = request.env['clinic.staff'].search([])
             except Exception:
                 departments = []
+                staffs = []
 
             values = {
                 'departments': departments,
+                'staffs': staffs,
                 'page_name': 'create_medical_report',
                 'datetime': datetime,
             }
