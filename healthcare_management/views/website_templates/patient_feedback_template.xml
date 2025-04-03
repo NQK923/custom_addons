@@ -491,7 +491,6 @@
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
                                 <li class="breadcrumb-item"><a href="/healthcare/patient_feedback">Phản hồi bệnh nhân</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Tạo phản hồi mới</li>
                             </ol>
                         </nav>
                     </div>

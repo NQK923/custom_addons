@@ -3,127 +3,285 @@
     <!-- Template danh sách khiếu nại -->
     <template id="patient_complaint_list_template" name="Danh sách khiếu nại bệnh nhân">
         <t t-call="website.layout">
-            <div class="container mt-4">
+            <!-- CSS styling -->
+            <style>
+                .complaint-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 20px;
+                }
+
+                .complaint-card {
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 20px;
+                    transition: all 0.3s ease;
+                }
+
+                .complaint-card:hover {
+                    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+                    transform: translateY(-2px);
+                }
+
+                .complaint-table {
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    border-radius: 8px;
+                    overflow: hidden;
+                }
+
+                .complaint-table thead th {
+                    background-color: #343a40;
+                    color: white;
+                    border-color: #454d55;
+                    font-weight: 500;
+                    text-transform: uppercase;
+                    font-size: 0.85rem;
+                }
+
+                .complaint-filter {
+                    background-color: #f8f9fa;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                }
+
+                .complaint-filter label {
+                    font-weight: 600;
+                    color: #495057;
+                }
+
+                .badge {
+                    padding: 0.5em 0.75em;
+                    font-weight: 500;
+                    border-radius: 4px;
+                }
+
+                .breadcrumb {
+                    background-color: #f8f9fa;
+                    border-radius: 8px;
+                    padding: 12px 15px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                }
+            </style>
+
+            <div class="container complaint-container mt-4">
                 <div class="row mb-4">
-                    <div class="col-md-8">
-                        <h1>Danh sách khiếu nại bệnh nhân</h1>
-                    </div>
-                    <div class="col-md-4 text-right">
-                        <a href="#" class="btn btn-primary">
-                            <i class="fa fa-plus-circle"></i> Tạo khiếu nại mới
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Bộ lọc -->
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <form class="form-inline bg-light p-3 rounded">
-                            <div class="form-group mb-2 mr-2">
-                                <label for="filter_category" class="mr-2">Phân loại:</label>
-                                <select class="form-control" id="filter_category" name="filter_category">
-                                    <option value="">Tất cả</option>
-                                    <option value="service">Dịch vụ</option>
-                                    <option value="staff">Nhân viên</option>
-                                    <option value="facility">Cơ sở vật chất</option>
-                                    <option value="procedure">Quy trình</option>
-                                    <option value="other">Khác</option>
-                                </select>
-                            </div>
-                            <div class="form-group mb-2 mr-2">
-                                <label for="filter_priority" class="mr-2">Mức độ ưu tiên:</label>
-                                <select class="form-control" id="filter_priority" name="filter_priority">
-                                    <option value="">Tất cả</option>
-                                    <option value="low">Thấp</option>
-                                    <option value="medium">Trung bình</option>
-                                    <option value="high">Cao</option>
-                                    <option value="urgent">Khẩn cấp</option>
-                                </select>
-                            </div>
-                            <div class="form-group mb-2 mr-2">
-                                <label for="filter_state" class="mr-2">Trạng thái:</label>
-                                <select class="form-control" id="filter_state" name="filter_state">
-                                    <option value="">Tất cả</option>
-                                    <option value="draft">Nháp</option>
-                                    <option value="open">Đang xử lý</option>
-                                    <option value="resolved">Đã giải quyết</option>
-                                    <option value="cancelled">Đã hủy</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary mb-2">Lọc</button>
-                        </form>
+                    <div class="col">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Khiếu nại bệnh nhân</li>
+                            </ol>
+                        </nav>
                     </div>
                 </div>
 
-                <!-- Bảng danh sách khiếu nại -->
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>Mã khiếu nại</th>
-                                <th>Bệnh nhân</th>
-                                <th>Ngày tạo</th>
-                                <th>Phân loại</th>
-                                <th>Mức độ ưu tiên</th>
-                                <th>Trạng thái</th>
-                                <th>Người phụ trách</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="complaints" t-as="complaint">
-                                <tr t-att-class="'table-danger' if complaint.state == 'draft' else 'table-warning' if complaint.state == 'open' else 'table-success' if complaint.state == 'resolved' else 'table-secondary'">
-                                    <td><t t-esc="complaint.name"/></td>
-                                    <td><t t-esc="complaint.patient_id.name"/></td>
-                                    <td><t t-esc="complaint.create_date.strftime('%d/%m/%Y')"/></td>
-                                    <td>
-                                        <t t-if="complaint.category == 'service'">Dịch vụ</t>
-                                        <t t-elif="complaint.category == 'staff'">Nhân viên</t>
-                                        <t t-elif="complaint.category == 'facility'">Cơ sở vật chất</t>
-                                        <t t-elif="complaint.category == 'procedure'">Quy trình</t>
-                                        <t t-else="">Khác</t>
-                                    </td>
-                                    <td>
-                                        <span t-att-class="'badge ' + ('badge-danger' if complaint.priority == 'urgent' else 'badge-warning' if complaint.priority == 'high' else 'badge-info' if complaint.priority == 'medium' else 'badge-secondary')">
-                                            <t t-if="complaint.priority == 'urgent'">Khẩn cấp</t>
-                                            <t t-elif="complaint.priority == 'high'">Cao</t>
-                                            <t t-elif="complaint.priority == 'medium'">Trung bình</t>
-                                            <t t-elif="complaint.priority == 'low'">Thấp</t>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span t-att-class="'badge ' + ('badge-danger' if complaint.state == 'draft' else 'badge-warning' if complaint.state == 'open' else 'badge-success' if complaint.state == 'resolved' else 'badge-secondary')">
-                                            <t t-if="complaint.state == 'draft'">Nháp</t>
-                                            <t t-elif="complaint.state == 'open'">Đang xử lý</t>
-                                            <t t-elif="complaint.state == 'resolved'">Đã giải quyết</t>
-                                            <t t-elif="complaint.state == 'cancelled'">Đã hủy</t>
-                                        </span>
-                                    </td>
-                                    <td><t t-esc="complaint.user_id.name"/></td>
-                                    <td>
-                                        <a t-att-href="'/healthcare/patient_complaint/%s' % complaint.id" class="btn btn-sm btn-info">
-                                            <i class="fa fa-eye"></i> Xem
-                                        </a>
-                                    </td>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
-                </div>
+                <div class="card complaint-card">
+                    <div class="card-header bg-danger text-white">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h3 class="mb-0">
+                                    <i class="fa fa-exclamation-circle me-2"></i>
+                                    Danh sách khiếu nại bệnh nhân
+                                </h3>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <a href="/healthcare/patient_complaint/create" class="btn btn-light">
+                                    <i class="fa fa-plus-circle me-1"></i> Tạo khiếu nại mới
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Bộ lọc -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <form method="get" action="/healthcare/patient_complaint" class="complaint-filter">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-2">
+                                            <label for="filter_category">Phân loại:</label>
+                                            <select class="form-select" id="filter_category" name="filter_category">
+                                                <option value="">Tất cả</option>
+                                                <option value="service">Dịch vụ</option>
+                                                <option value="staff">Nhân viên</option>
+                                                <option value="facility">Cơ sở vật chất</option>
+                                                <option value="billing">Thanh toán</option>
+                                                <option value="other">Khác</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 mb-2">
+                                            <label for="filter_priority">Mức độ ưu tiên:</label>
+                                            <select class="form-select" id="filter_priority" name="filter_priority">
+                                                <option value="">Tất cả</option>
+                                                <option value="0">Thấp</option>
+                                                <option value="1">Trung bình</option>
+                                                <option value="2">Cao</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 mb-2">
+                                            <label for="filter_state">Trạng thái:</label>
+                                            <select class="form-select" id="filter_state" name="filter_state">
+                                                <option value="">Tất cả</option>
+                                                <option value="new">Mới</option>
+                                                <option value="in_progress">Đang xử lý</option>
+                                                <option value="resolved">Đã giải quyết</option>
+                                                <option value="cancelled">Đã hủy</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button type="submit" class="btn btn-danger w-100 mb-2">Lọc</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
 
-                <!-- Hiển thị khi không có dữ liệu -->
-                <div t-if="not complaints" class="alert alert-info text-center">
-                    <h4>Không có khiếu nại nào.</h4>
-                    <p>Hãy tạo khiếu nại bệnh nhân đầu tiên bằng cách nhấn vào nút "Tạo khiếu nại mới" ở trên.</p>
+                        <!-- Bảng danh sách khiếu nại -->
+                        <div class="table-responsive complaint-table">
+                            <table class="table table-striped table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Mã khiếu nại</th>
+                                        <th>Bệnh nhân</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Phân loại</th>
+                                        <th>Mức độ ưu tiên</th>
+                                        <th>Trạng thái</th>
+                                        <th>Người phụ trách</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="complaints" t-as="complaint">
+                                        <tr t-att-class="'table-danger' if complaint.state == 'new' else 'table-primary' if complaint.state == 'in_progress' else 'table-success' if complaint.state == 'resolved' else 'table-secondary'">
+                                            <td><t t-esc="complaint.name"/></td>
+                                            <td><t t-esc="complaint.patient_id.name"/></td>
+                                            <td><t t-esc="complaint.create_date.strftime('%d/%m/%Y')"/></td>
+                                            <td>
+                                                <t t-if="complaint.category == 'service'">Dịch vụ</t>
+                                                <t t-elif="complaint.category == 'staff'">Nhân viên</t>
+                                                <t t-elif="complaint.category == 'facility'">Cơ sở vật chất</t>
+                                                <t t-elif="complaint.category == 'billing'">Thanh toán</t>
+                                                <t t-else="">Khác</t>
+                                            </td>
+                                            <td>
+                                                <span t-att-class="'badge ' + ('bg-danger' if complaint.priority == '2' else 'bg-warning text-dark' if complaint.priority == '1' else 'bg-secondary')">
+                                                    <t t-if="complaint.priority == '2'">Cao</t>
+                                                    <t t-elif="complaint.priority == '1'">Trung bình</t>
+                                                    <t t-elif="complaint.priority == '0'">Thấp</t>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span t-att-class="'badge ' + ('bg-danger' if complaint.state == 'new' else 'bg-primary' if complaint.state == 'in_progress' else 'bg-success' if complaint.state == 'resolved' else 'bg-secondary')">
+                                                    <t t-if="complaint.state == 'new'">Mới</t>
+                                                    <t t-elif="complaint.state == 'in_progress'">Đang xử lý</t>
+                                                    <t t-elif="complaint.state == 'resolved'">Đã giải quyết</t>
+                                                    <t t-elif="complaint.state == 'cancelled'">Đã hủy</t>
+                                                </span>
+                                            </td>
+                                            <td><t t-esc="complaint.user_id.name"/></td>
+                                            <td>
+                                                <a t-att-href="'/healthcare/patient_complaint/%s' % complaint.id" class="btn btn-sm btn-info">
+                                                    <i class="fa fa-eye"></i> Xem
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Hiển thị khi không có dữ liệu -->
+                        <div t-if="not complaints" class="alert alert-info text-center mt-4">
+                            <h4>Không có khiếu nại nào.</h4>
+                            <p>Hãy tạo khiếu nại bệnh nhân đầu tiên bằng cách nhấn vào nút "Tạo khiếu nại mới" ở trên.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- JavaScript for filter -->
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Set filter values from URL parameters
+                    var urlParams = new URLSearchParams(window.location.search);
+
+                    if (urlParams.get('filter_category')) {
+                        document.getElementById('filter_category').value = urlParams.get('filter_category');
+                    }
+
+                    if (urlParams.get('filter_priority')) {
+                        document.getElementById('filter_priority').value = urlParams.get('filter_priority');
+                    }
+
+                    if (urlParams.get('filter_state')) {
+                        document.getElementById('filter_state').value = urlParams.get('filter_state');
+                    }
+                });
+            </script>
         </t>
     </template>
 
     <!-- Template xem chi tiết khiếu nại -->
     <template id="patient_complaint_detail_template" name="Chi tiết khiếu nại bệnh nhân">
         <t t-call="website.layout">
-            <div class="container mt-4">
+            <!-- CSS styling -->
+            <style>
+                .complaint-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 20px;
+                }
+
+                .complaint-card {
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 20px;
+                }
+
+                .complaint-card .card-header {
+                    border-radius: 8px 8px 0 0;
+                    font-weight: bold;
+                }
+
+                .complaint-section {
+                    background-color: #f8f9fa;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin-bottom: 20px;
+                }
+
+                .badge {
+                    padding: 0.5em 0.75em;
+                    font-weight: 500;
+                    border-radius: 4px;
+                }
+
+                .btn {
+                    border-radius: 4px;
+                }
+
+                .breadcrumb {
+                    background-color: #f8f9fa;
+                    border-radius: 8px;
+                    padding: 12px 15px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                }
+
+                .detail-label {
+                    font-weight: 600;
+                    color: #495057;
+                }
+
+                .btn-group .btn {
+                    margin-right: 5px;
+                }
+            </style>
+
+            <div class="container complaint-container mt-4">
                 <div class="row mb-4">
                     <div class="col">
                         <nav aria-label="breadcrumb">
@@ -136,19 +294,19 @@
                     </div>
                 </div>
 
-                <div class="card">
+                <div class="card complaint-card">
                     <div class="card-header bg-danger text-white">
                         <div class="row">
                             <div class="col-md-8">
                                 <h3 class="mb-0">
-                                    <i class="fa fa-exclamation-circle mr-2"></i>
+                                    <i class="fa fa-exclamation-circle me-2"></i>
                                     Khiếu nại: <t t-esc="complaint.name"/>
                                 </h3>
                             </div>
-                            <div class="col-md-4 text-right">
-                                <span t-att-class="'badge badge-pill ' + ('badge-light' if complaint.state == 'draft' else 'badge-warning' if complaint.state == 'open' else 'badge-success' if complaint.state == 'resolved' else 'badge-secondary')">
-                                    <t t-if="complaint.state == 'draft'">Nháp</t>
-                                    <t t-elif="complaint.state == 'open'">Đang xử lý</t>
+                            <div class="col-md-4 text-end">
+                                <span t-att-class="'badge bg-' + ('danger' if complaint.state == 'new' else 'primary' if complaint.state == 'in_progress' else 'success' if complaint.state == 'resolved' else 'secondary')">
+                                    <t t-if="complaint.state == 'new'">Mới</t>
+                                    <t t-elif="complaint.state == 'in_progress'">Đang xử lý</t>
                                     <t t-elif="complaint.state == 'resolved'">Đã giải quyết</t>
                                     <t t-elif="complaint.state == 'cancelled'">Đã hủy</t>
                                 </span>
@@ -161,15 +319,15 @@
                                 <h5 class="border-bottom pb-2">Thông tin chung</h5>
                                 <table class="table table-borderless">
                                     <tr>
-                                        <th style="width: 40%">Mã khiếu nại:</th>
+                                        <th class="detail-label" style="width: 40%">Mã khiếu nại:</th>
                                         <td><t t-esc="complaint.name"/></td>
                                     </tr>
                                     <tr>
-                                        <th>Bệnh nhân:</th>
+                                        <th class="detail-label">Bệnh nhân:</th>
                                         <td><t t-esc="complaint.patient_id.name"/></td>
                                     </tr>
                                     <tr>
-                                        <th>Phản hồi liên quan:</th>
+                                        <th class="detail-label">Phản hồi liên quan:</th>
                                         <td>
                                             <t t-if="complaint.feedback_id">
                                                 <a t-att-href="'/healthcare/patient_feedback/%s' % complaint.feedback_id.id">
@@ -180,7 +338,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>Người phụ trách:</th>
+                                        <th class="detail-label">Người phụ trách:</th>
                                         <td><t t-esc="complaint.user_id.name"/></td>
                                     </tr>
                                 </table>
@@ -189,32 +347,31 @@
                                 <h5 class="border-bottom pb-2">Chi tiết khiếu nại</h5>
                                 <table class="table table-borderless">
                                     <tr>
-                                        <th style="width: 40%">Ngày tạo:</th>
+                                        <th class="detail-label" style="width: 40%">Ngày tạo:</th>
                                         <td><t t-esc="complaint.create_date.strftime('%d/%m/%Y')"/></td>
                                     </tr>
                                     <tr>
-                                        <th>Phân loại:</th>
+                                        <th class="detail-label">Phân loại:</th>
                                         <td>
                                             <t t-if="complaint.category == 'service'">Dịch vụ</t>
                                             <t t-elif="complaint.category == 'staff'">Nhân viên</t>
                                             <t t-elif="complaint.category == 'facility'">Cơ sở vật chất</t>
-                                            <t t-elif="complaint.category == 'procedure'">Quy trình</t>
+                                            <t t-elif="complaint.category == 'billing'">Thanh toán</t>
                                             <t t-else="">Khác</t>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>Mức độ ưu tiên:</th>
+                                        <th class="detail-label">Mức độ ưu tiên:</th>
                                         <td>
-                                            <span t-att-class="'badge ' + ('badge-danger' if complaint.priority == 'urgent' else 'badge-warning' if complaint.priority == 'high' else 'badge-info' if complaint.priority == 'medium' else 'badge-secondary')">
-                                                <t t-if="complaint.priority == 'urgent'">Khẩn cấp</t>
-                                                <t t-elif="complaint.priority == 'high'">Cao</t>
-                                                <t t-elif="complaint.priority == 'medium'">Trung bình</t>
-                                                <t t-elif="complaint.priority == 'low'">Thấp</t>
+                                            <span t-att-class="'badge bg-' + ('danger' if complaint.priority == '2' else 'warning text-dark' if complaint.priority == '1' else 'secondary')">
+                                                <t t-if="complaint.priority == '2'">Cao</t>
+                                                <t t-elif="complaint.priority == '1'">Trung bình</t>
+                                                <t t-elif="complaint.priority == '0'">Thấp</t>
                                             </span>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>Ngày giải quyết:</th>
+                                        <th class="detail-label">Ngày giải quyết:</th>
                                         <td>
                                             <t t-if="complaint.resolution_date">
                                                 <t t-esc="complaint.resolution_date.strftime('%d/%m/%Y')"/>
@@ -229,7 +386,7 @@
                         <div class="row mt-4">
                             <div class="col-12">
                                 <h5 class="border-bottom pb-2">Mô tả khiếu nại</h5>
-                                <div class="p-3 bg-light rounded">
+                                <div class="p-3 complaint-section rounded">
                                     <p t-esc="complaint.description"/>
                                 </div>
                             </div>
@@ -238,7 +395,7 @@
                         <div class="row mt-4">
                             <div class="col-12">
                                 <h5 class="border-bottom pb-2">Giải pháp xử lý</h5>
-                                <div class="p-3 bg-light rounded">
+                                <div class="p-3 complaint-section rounded">
                                     <t t-if="complaint.resolution">
                                         <p t-esc="complaint.resolution"/>
                                     </t>
@@ -248,42 +405,224 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="row mt-4">
-                            <div class="col-12">
-                                <h5 class="border-bottom pb-2">Các bước thực hiện</h5>
-                                <div class="p-3 bg-light rounded">
-                                    <t t-if="complaint.actions_taken">
-                                        <p t-esc="complaint.actions_taken"/>
-                                    </t>
-                                    <t t-else="">
-                                        <p class="text-muted">Chưa có hành động nào được ghi nhận.</p>
-                                    </t>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <div class="card-footer">
                         <div class="btn-group">
                             <a href="/healthcare/patient_complaint" class="btn btn-secondary">
-                                <i class="fa fa-arrow-left"></i> Quay lại
+                                <i class="fa fa-arrow-left me-1"></i> Quay lại
                             </a>
                             <button type="button" class="btn btn-warning" t-att-data-complaint-id="complaint.id"
-                                    t-att-data-action="'open'" t-att-disabled="complaint.state != 'draft'">
-                                <i class="fa fa-play"></i> Xử lý
+                                    t-att-data-action="'open'" t-att-disabled="complaint.state != 'new'">
+                                <i class="fa fa-play me-1"></i> Xử lý
                             </button>
                             <button type="button" class="btn btn-success" t-att-data-complaint-id="complaint.id"
-                                    t-att-data-action="'resolve'" t-att-disabled="complaint.state != 'open'">
-                                <i class="fa fa-check"></i> Giải quyết
+                                    t-att-data-action="'resolve'" t-att-disabled="complaint.state != 'in_progress'">
+                                <i class="fa fa-check me-1"></i> Giải quyết
                             </button>
                             <button type="button" class="btn btn-danger" t-att-data-complaint-id="complaint.id"
                                     t-att-data-action="'cancel'" t-att-disabled="complaint.state in ['resolved', 'cancelled']">
-                                <i class="fa fa-times"></i> Hủy
+                                <i class="fa fa-times me-1"></i> Hủy
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- JavaScript for buttons -->
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Add event listeners to all action buttons
+                    document.querySelectorAll('[data-complaint-id][data-action]').forEach(function(button) {
+                        button.addEventListener('click', function() {
+                            var complaintId = this.getAttribute('data-complaint-id');
+                            var action = this.getAttribute('data-action');
+
+                            if (!complaintId || !action) return;
+
+                            // Confirm before proceeding
+                            if (confirm('Bạn có chắc chắn muốn thực hiện thao tác này?')) {
+                                // Send AJAX request
+                                fetch('/healthcare/patient_complaint/action', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    },
+                                    body: JSON.stringify({
+                                        complaint_id: complaintId,
+                                        action: action,
+                                        csrf_token: document.querySelector('meta[name="csrf-token"]')?.content
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(result => {
+                                    if (result.success) {
+                                        location.reload();
+                                    } else {
+                                        alert('Lỗi: ' + (result.error || 'Không xác định'));
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    alert('Đã xảy ra lỗi khi kết nối đến máy chủ.');
+                                });
+                            }
+                        });
+                    });
+                });
+            </script>
+        </t>
+    </template>
+
+    <!-- Template tạo mới khiếu nại -->
+    <template id="patient_complaint_form_template" name="Tạo khiếu nại bệnh nhân">
+        <t t-call="website.layout">
+            <!-- CSS styling -->
+            <style>
+                .complaint-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 20px;
+                }
+
+                .complaint-card {
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 20px;
+                }
+
+                .complaint-card .card-header {
+                    border-radius: 8px 8px 0 0;
+                    font-weight: bold;
+                }
+
+                .form-group label {
+                    font-weight: 600;
+                    color: #495057;
+                }
+
+                .form-group .text-danger {
+                    font-weight: bold;
+                }
+
+                .btn {
+                    border-radius: 4px;
+                }
+
+                .breadcrumb {
+                    background-color: #f8f9fa;
+                    border-radius: 8px;
+                    padding: 12px 15px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                }
+            </style>
+
+            <div class="container mt-4 complaint-container">
+                <div class="row mb-4">
+                    <div class="col">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
+                                <li class="breadcrumb-item"><a href="/healthcare/patient_complaint">Khiếu nại bệnh nhân</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Tạo khiếu nại mới</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="card complaint-card">
+                    <div class="card-header bg-danger text-white">
+                        <h3 class="mb-0">
+                            <i class="fa fa-plus-circle me-2"></i>
+                            Tạo khiếu nại bệnh nhân mới
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="/healthcare/patient_complaint/create" id="complaint-form">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="feedback_id" t-att-value="feedback_id or ''"/>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="patient_id" class="form-label">Bệnh nhân <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="patient_id" name="patient_id" required="required">
+                                            <option value="">-- Chọn bệnh nhân --</option>
+                                            <t t-foreach="patients" t-as="patient">
+                                                <option t-att-value="patient.id" t-att-selected="patient_id == patient.id">
+                                                    <t t-esc="patient.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group mb-3">
+                                        <label for="category" class="form-label">Phân loại khiếu nại <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="category" name="category" required="required">
+                                            <option value="">-- Chọn phân loại --</option>
+                                            <option value="service">Dịch vụ</option>
+                                            <option value="staff">Nhân viên</option>
+                                            <option value="facility">Cơ sở vật chất</option>
+                                            <option value="billing">Thanh toán</option>
+                                            <option value="other">Khác</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="priority" class="form-label">Mức độ ưu tiên <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="priority" name="priority" required="required">
+                                            <option value="1">Trung bình</option>
+                                            <option value="0">Thấp</option>
+                                            <option value="2">Cao</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group mb-3">
+                                        <label for="complaint_date" class="form-label">Ngày khiếu nại</label>
+                                        <input type="date" class="form-control" id="complaint_date" name="complaint_date"
+                                               t-att-value="datetime.date.today().strftime('%Y-%m-%d')"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="description" class="form-label">Nội dung khiếu nại <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="description" name="description" rows="5" required="required"
+                                         placeholder="Nhập chi tiết khiếu nại..."><t t-esc="description or ''"/></textarea>
+                            </div>
+
+                            <div class="form-group text-end mt-4">
+                                <a href="/healthcare/patient_complaint" class="btn btn-secondary me-2">
+                                    <i class="fa fa-times me-1"></i> Hủy
+                                </a>
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fa fa-save me-1"></i> Lưu
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JavaScript -->
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Form validation before submission
+                    document.getElementById('complaint-form').addEventListener('submit', function(event) {
+                        var patientId = document.getElementById('patient_id').value;
+                        var category = document.getElementById('category').value;
+                        var description = document.getElementById('description').value;
+
+                        if (!patientId || !category || !description.trim()) {
+                            event.preventDefault();
+                            alert('Vui lòng điền đầy đủ thông tin bắt buộc.');
+                        }
+                    });
+                });
+            </script>
         </t>
     </template>
 </odoo>

@@ -238,53 +238,28 @@
                 </div>
             </div>
 
-            <!-- JavaScript Inline -->
+            <!-- JavaScript Inline - Fixed Version -->
             <script type="text/javascript">
-                odoo.define('healthcare_management.dashboard', function (require) {
-                    "use strict";
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Get all healthcare cards
+                    var cards = document.querySelectorAll('.healthcare-card');
 
-                    // Load dependencies
-                    var core = require('web.core');
-                    var publicWidget = require('web.public.widget');
+                    // Add event listeners to each card
+                    cards.forEach(function(card) {
+                        card.addEventListener('mouseenter', function() {
+                            var icon = this.querySelector('.healthcare-icon');
+                            if (icon) {
+                                icon.classList.add('fa-bounce');
+                            }
+                        });
 
-                    var HealthcareDashboard = publicWidget.Widget.extend({
-                        selector: '.healthcare-card',
-                        events: {
-                            'mouseenter': '_onCardHover',
-                            'mouseleave': '_onCardLeave'
-                        },
-
-                        /**
-                         * @override
-                         */
-                        start: function () {
-                            return this._super.apply(this, arguments);
-                        },
-
-                        /**
-                         * Handler when hovering card
-                         * @private
-                         * @param {Event} ev
-                         */
-                        _onCardHover: function (ev) {
-                            var $icon = $(ev.currentTarget).find('.healthcare-icon');
-                            $icon.addClass('fa-bounce');
-                        },
-
-                        /**
-                         * Handler when leaving card
-                         * @private
-                         * @param {Event} ev
-                         */
-                        _onCardLeave: function (ev) {
-                            var $icon = $(ev.currentTarget).find('.healthcare-icon');
-                            $icon.removeClass('fa-bounce');
-                        }
+                        card.addEventListener('mouseleave', function() {
+                            var icon = this.querySelector('.healthcare-icon');
+                            if (icon) {
+                                icon.classList.remove('fa-bounce');
+                            }
+                        });
                     });
-
-                    publicWidget.registry.healthcareDashboard = HealthcareDashboard;
-
-                    return HealthcareDashboard;
                 });
             </script>
         </t>
