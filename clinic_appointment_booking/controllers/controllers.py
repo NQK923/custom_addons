@@ -30,8 +30,20 @@ class AppointmentBookingController(http.Controller):
 
     def _is_time_valid(self, appointment_time):
         """Check if appointment time is between 8:00 and 21:00"""
-        hour = appointment_time.hour
-        return 8 <= hour < 21
+        try:
+            # Convert to user's timezone if needed
+            user_tz = pytz.timezone(request.context.get('tz', 'UTC') or 'UTC')
+            if appointment_time.tzinfo is None:
+                # If time has no timezone, assume UTC
+                appointment_time = pytz.utc.localize(appointment_time)
+            appointment_time = appointment_time.astimezone(user_tz)
+
+            hour = appointment_time.hour
+            _logger.info("Validating time: %s, hour: %s", appointment_time, hour)
+            return 1 <= hour < 14
+        except Exception as e:
+            _logger.error("Error validating time: %s", str(e))
+            return False
 
     def _check_availability(self, doctor_id, room_id, appointment_datetime):
         """
@@ -109,32 +121,52 @@ class AppointmentBookingController(http.Controller):
 
     @http.route(['/appointment/submit'], type='http', auth="public", website=True, methods=['POST'])
     def appointment_submit(self, **post):
+        # Log request data for debugging
+        _logger.info("Starting appointment_submit with data: %s", post)
+
         # Kiểm tra dữ liệu
         if not post.get('patient_name') or not post.get('phone') or not post.get('appointment_date') or not post.get(
                 'appointment_time') or not post.get('doctor_id'):
-            return request.redirect('/appointment')
+            _logger.warning("Missing required fields in form submission")
+            return request.redirect('/appointment?error=Vui lòng điền đầy đủ thông tin bắt buộc')
 
         try:
+            # Step 1: Parse date and time
+            _logger.info("Parsing appointment date and time")
             appointment_datetime_str = f"{post.get('appointment_date')} {post.get('appointment_time')}"
             try:
                 appointment_datetime = datetime.strptime(appointment_datetime_str, '%Y-%m-%d %H:%M')
             except ValueError:
-                appointment_datetime = datetime.strptime(appointment_datetime_str, '%Y-%m-%d %H:%M:%S')
+                try:
+                    appointment_datetime = datetime.strptime(appointment_datetime_str, '%Y-%m-%d %H:%M:%S')
+                except ValueError:
+                    _logger.error("Invalid date/time format: %s", appointment_datetime_str)
+                    return request.redirect('/appointment?error=Định dạng thời gian không hợp lệ')
 
+            # Step 2: Validate appointment time
+            _logger.info("Validating appointment time: %s", appointment_datetime)
             if not self._is_time_valid(appointment_datetime):
+                _logger.warning("Invalid appointment time: %s", appointment_datetime)
                 return request.redirect('/appointment?error=Thời gian hẹn phải từ 8:00 sáng đến 21:00 tối.')
 
+            # Step 3: Get doctor and room IDs
             doctor_id = int(post.get('doctor_id'))
             room_id = post.get('room_id') and int(post.get('room_id')) or False
 
+            # Step 4: Check availability
+            _logger.info("Checking availability for doctor %s and room %s", doctor_id, room_id)
             is_available, message = self._check_availability(doctor_id, room_id, appointment_datetime)
             if not is_available:
+                _logger.warning("Availability check failed: %s", message)
                 return request.redirect(f'/appointment?error={message}')
 
+            # Step 5: Find or create patient
+            _logger.info("Finding or creating patient with phone: %s", post.get('phone'))
             Patient = request.env['clinic.patient'].sudo()
             patient = Patient.search([('phone', '=', post.get('phone'))], limit=1)
 
             if not patient:
+                _logger.info("Creating new patient record")
                 patient_vals = {
                     'name': post.get('patient_name'),
                     'phone': post.get('phone'),
@@ -145,6 +177,8 @@ class AppointmentBookingController(http.Controller):
                 }
                 patient = Patient.create(patient_vals)
 
+            # Step 6: Create appointment
+            _logger.info("Creating appointment for patient %s", patient.id)
             appointment_vals = {
                 'patient_id': patient.id,
                 'appointment_date': appointment_datetime,
@@ -155,27 +189,44 @@ class AppointmentBookingController(http.Controller):
             }
 
             appointment = request.env['clinic.appointment'].sudo().create(appointment_vals)
+            _logger.info("Appointment created successfully with ID: %s", appointment.id)
 
             doctor = request.env['clinic.staff'].sudo().browse(doctor_id)
             room = room_id and request.env['clinic.room'].sudo().browse(room_id) or False
 
+            # Step 7: Prepare values for thank you page
             values = {
                 'appointment_name': appointment.name,
                 'appointment_date': appointment.appointment_date,
                 'doctor_name': doctor.staff_name,
                 'room_name': room and room.name or "Chưa phân phòng"
             }
+
+            # Step 8: Send email if needed
             if post.get('email'):
+                _logger.info("Attempting to send confirmation email")
                 template = request.env.ref('clinic_appointment_booking.email_template_appointment',
                                            raise_if_not_found=False)
                 if template:
+                    _logger.info("Sending confirmation email")
                     template.sudo().send_mail(appointment.id, force_send=True)
+                else:
+                    _logger.warning("Email template not found")
 
-            return request.render("clinic_appointment_booking.appointment_booking_thankyou", values)
+            # Step 9: Render thank you page
+            _logger.info("Rendering thank you page")
+            try:
+                thank_you_page = request.render("clinic_appointment_booking.appointment_booking_thankyou", values)
+                _logger.info("Thank you page rendered successfully")
+                return thank_you_page
+            except Exception as render_error:
+                _logger.error("Error rendering thank you page: %s", str(render_error))
+                return request.redirect(
+                    '/appointment?error=Lịch hẹn đã được đặt nhưng không thể hiển thị trang xác nhận')
 
         except Exception as e:
             _logger.error("Error creating appointment: %s", str(e))
-            return request.redirect('/appointment')
+            return request.redirect(f'/appointment?error=Đã xảy ra lỗi: {str(e)}')
 
     @http.route(['/appointment/check'], type='http', auth="public", website=True)
     def appointment_check_form(self, **kw):

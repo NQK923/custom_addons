@@ -29,43 +29,33 @@
                 </li>
             </ul>
 
-            <!-- Sub-navigation menu that appears when a tab is active -->
             <div class="sub-navigation bg-light p-2 border border-top-0 rounded-bottom mb-3">
-                <!-- Financial Reports Sub-navigation -->
                 <div t-if="page_name in ['invoice_monthly', 'invoice_services', 'invoice_products', 'invoice_patients', 'invoice_status']"
-                     class="d-flex flex-wrap">
-                    <a href="/clinic/reports/invoice/monthly" class="btn btn-sm mr-2 mb-1"
+                     class="d-flex flex-wrap justify-content-between gap-2">
+                    <a href="/clinic/reports/invoice/monthly"
+                       class="btn btn-sm"
                        t-att-class="'btn-primary' if page_name == 'invoice_monthly' else 'btn-outline-secondary'">
                         Doanh Thu Theo Tháng
                     </a>
-                    <a href="/clinic/reports/invoice/services" class="btn btn-sm mr-2 mb-1"
+                    <a href="/clinic/reports/invoice/services"
+                       class="btn btn-sm"
                        t-att-class="'btn-primary' if page_name == 'invoice_services' else 'btn-outline-secondary'">
                         Phân Tích Dịch Vụ
                     </a>
-                    <a href="/clinic/reports/invoice/products" class="btn btn-sm mr-2 mb-1"
+                    <a href="/clinic/reports/invoice/products"
+                       class="btn btn-sm"
                        t-att-class="'btn-primary' if page_name == 'invoice_products' else 'btn-outline-secondary'">
                         Phân Tích Thuốc
                     </a>
-                    <a href="/clinic/reports/invoice/patients" class="btn btn-sm mr-2 mb-1"
+                    <a href="/clinic/reports/invoice/patients"
+                       class="btn btn-sm"
                        t-att-class="'btn-primary' if page_name == 'invoice_patients' else 'btn-outline-secondary'">
                         Phân Tích Bệnh Nhân
                     </a>
-                    <a href="/clinic/reports/invoice/status" class="btn btn-sm mr-2 mb-1"
+                    <a href="/clinic/reports/invoice/status"
+                       class="btn btn-sm"
                        t-att-class="'btn-primary' if page_name == 'invoice_status' else 'btn-outline-secondary'">
                         Trạng Thái Hóa Đơn
-                    </a>
-                </div>
-
-                <!-- Medical Reports Sub-navigation -->
-                <div t-if="page_name in ['medical_reports', 'medical_report_detail', 'create_medical_report']"
-                     class="d-flex flex-wrap">
-                    <a href="/clinic/reports/medical" class="btn btn-sm mr-2 mb-1"
-                       t-att-class="'btn-primary' if page_name == 'medical_reports' else 'btn-outline-secondary'">
-                        Danh Sách Báo Cáo
-                    </a>
-                    <a href="/clinic/reports/medical/create" class="btn btn-sm mr-2 mb-1"
-                       t-att-class="'btn-primary' if page_name == 'create_medical_report' else 'btn-outline-secondary'">
-                        Tạo Báo Cáo Mới
                     </a>
                 </div>
             </div>

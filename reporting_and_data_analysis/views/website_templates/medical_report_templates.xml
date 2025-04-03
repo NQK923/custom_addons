@@ -313,21 +313,38 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="department_id">Khoa/Phòng</label>
-                                        <select id="department_id" name="department_id" class="form-control">
-                                            <option value="">-- Tất Cả Khoa/Phòng --</option>
-                                            <t t-foreach="departments" t-as="department">
-                                                <option t-att-value="department.id">
-                                                    <t t-esc="department.name"/>
-                                                </option>
-                                            </t>
-                                        </select>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="department_id">Khoa/Phòng</label>
+                                                <select id="department_id" name="department_id" class="form-control">
+                                                    <option value="">-- Tất Cả Khoa/Phòng --</option>
+                                                    <t t-foreach="departments" t-as="department">
+                                                        <option t-att-value="department.id">
+                                                            <t t-esc="department.name"/>
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="staff_id">Người tạo báo cáo</label>
+                                                <select id="staff_id" name="staff_id" class="form-control">
+                                                    <option value="">-- Chọn nhân viên --</option>
+                                                    <t t-foreach="staffs" t-as="staff">
+                                                        <option t-att-value="staff.id">
+                                                            <t t-esc="staff.name"/>
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="alert alert-info mt-3">
                                         <i class="fa fa-info-circle mr-2"></i>
-                                        <strong>Lưu ý:</strong> Báo cáo sẽ được tạo với người dùng hiện tại. Vui lòng đảm bảo rằng tài khoản của bạn được liên kết với một nhân viên trong hệ thống.
+                                        <strong>Lưu ý:</strong> Hãy chọn thông tin báo cáo phù hợp để có kết quả chính xác nhất.
                                     </div>
 
                                     <div class="form-group text-center mt-4">
