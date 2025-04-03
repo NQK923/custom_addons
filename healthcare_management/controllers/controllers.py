@@ -634,3 +634,48 @@ class HealthcareManagement(http.Controller):
                 return {'success': False, 'error': 'Hành động không hợp lệ'}
         except Exception as e:
             return {'success': False, 'error': str(e)}
+
+    @http.route('/healthcare/patient_complaint/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
+    def patient_complaint_create(self, **kw):
+        patients = request.env['clinic.patient'].sudo().search([])
+
+        # Default values
+        patient_id = False
+        description = False
+        feedback_id = False
+
+        # Check if coming from feedback
+        if kw.get('feedback_id'):
+            feedback = request.env['healthcare.patient.feedback'].sudo().browse(int(kw.get('feedback_id')))
+            if feedback.exists():
+                patient_id = feedback.patient_id.id
+                description = feedback.description
+                feedback_id = feedback.id
+
+        if request.httprequest.method == 'POST':
+            vals = {
+                'patient_id': int(kw.get('patient_id')),
+                'category': kw.get('category'),
+                'priority': kw.get('priority', '1'),
+                'description': kw.get('description'),
+            }
+
+            # Set complaint date if provided
+            if kw.get('complaint_date'):
+                vals['complaint_date'] = kw.get('complaint_date')
+
+            # Set related feedback if provided
+            if kw.get('feedback_id'):
+                vals['feedback_id'] = int(kw.get('feedback_id'))
+
+            # Create the complaint
+            complaint = request.env['healthcare.patient.complaint'].sudo().create(vals)
+            return request.redirect('/healthcare/patient_complaint/%s' % complaint.id)
+
+        return request.render('healthcare_management.patient_complaint_form_template', {
+            'patients': patients,
+            'patient_id': patient_id,
+            'description': description,
+            'feedback_id': feedback_id,
+            'datetime': datetime,
+        })

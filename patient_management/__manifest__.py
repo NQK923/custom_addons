@@ -10,7 +10,7 @@
     'category': 'Healthcare',
     'version': '0.1',
     'license': 'LGPL-3',
-    'depends': ['base', 'website', 'insurance_management'],
+    'depends': ['base', 'website'],
     'data': [
         'security/ir.model.access.csv',
         'views/clinic_patient_views.xml',
