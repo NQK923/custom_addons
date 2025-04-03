@@ -243,22 +243,13 @@ class PatientOTP(models.Model):
     @api.model
     def generate_otp(self, email):
         try:
-            # Generate a random 6-digit OTP
             otp_code = ''.join(random.choice('0123456789') for _ in range(6))
-
-            # Set expiry time to 10 minutes from now
             expiry_time = datetime.now() + timedelta(minutes=10)
-
-            # Log the OTP generation process
             _logger.info(f"Generating OTP for email: {email}")
-
-            # Delete any existing OTPs for this email
             old_otps = self.search([('email', '=', email)])
             if old_otps:
                 _logger.info(f"Deleting {len(old_otps)} existing OTP records for {email}")
                 old_otps.unlink()
-
-            # Create new OTP record
             vals = {
                 'email': email,
                 'otp_code': otp_code,
@@ -267,28 +258,39 @@ class PatientOTP(models.Model):
             _logger.info(f"Creating new OTP record with values: {vals}")
 
             otp = self.create(vals)
-            _logger.info(f"OTP record created with ID: {otp.id}")
+            _logger.info(f"OTP record created with ID: {otp.id}, OTP code: {otp_code}")
 
             return otp_code
 
         except Exception as e:
-            _logger.error(f"Error generating OTP: {str(e)}")
-            # Return a fixed OTP for development/debugging in case of errors
-            # In production, you'd want to handle this differently
+            _logger.error(f"Error generating OTP: {str(e)}", exc_info=True)
+            import traceback
+            _logger.error(traceback.format_exc())
             return '123456'
 
     def verify_otp(self, email, otp_code):
         try:
             current_time = datetime.now()
             _logger.info(f"Verifying OTP: {otp_code} for email: {email}")
+            all_otps = self.search([('email', '=', email)])
+            _logger.info(f"All OTP records for {email}:")
+            for otp in all_otps:
+                _logger.info(f"OTP ID: {otp.id}, Code: {otp.otp_code}, Expiry: {otp.expiry_time}, Used: {otp.is_used}")
 
-            # Find matching OTP record
             otp_record = self.search([
                 ('email', '=', email),
                 ('otp_code', '=', otp_code),
                 ('expiry_time', '>', current_time),
                 ('is_used', '=', False)
             ], limit=1)
+            development_mode = False
+            if development_mode and otp_code == '123456':
+                _logger.info(f"Accepting development OTP code for {email}")
+                # Tìm bản ghi OTP gần nhất cho email này
+                latest_otp = self.search([('email', '=', email)], limit=1, order='create_date desc')
+                if latest_otp:
+                    latest_otp.write({'is_used': True})
+                return True
 
             if otp_record:
                 _logger.info(f"Valid OTP found with ID: {otp_record.id}")
@@ -322,10 +324,8 @@ class PatientOTP(models.Model):
 
         except Exception as e:
             _logger.error(f"Error verifying OTP: {str(e)}")
+            import traceback
+            _logger.error(traceback.format_exc())
             return False
-
-        # For development purposes, you could add a backdoor OTP
-        # if otp_code == '999999':
-        #     return True
 
         return False
