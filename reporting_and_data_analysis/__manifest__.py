@@ -22,11 +22,6 @@
         'views/website_templates/dashboard_templates.xml',
         'views/website_templates/report_wizard_templates.xml',
         'views/website_menu.xml',
-        # Keep these for backend functionality
-        'views/invoice_report_views.xml',
-        'views/medical_report_view.xml',
-        'views/medical_report_template.xml',
-        'views/menu_views.xml',
     ],
     'demo': [],
     'installable': True,
