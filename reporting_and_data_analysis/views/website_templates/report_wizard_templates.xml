@@ -1,0 +1,678 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Common Styles and Scripts for Reports - Using the correct assets inheritance -->
+    <template id="assets_frontend" inherit_id="web.assets_frontend" name="Report Assets">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+            <style>
+                .report-header {
+                    background: linear-gradient(to right, #2c3e50, #3498db);
+                    color: white;
+                    padding: 20px 0;
+                    margin-bottom: 30px;
+                    border-radius: 5px;
+                }
+                .report-title {
+                    font-weight: 700;
+                    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+                }
+                .report-links .btn {
+                    border-radius: 30px;
+                    padding: 8px 16px;
+                    transition: all 0.3s;
+                }
+                .report-links .btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                }
+                .card {
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                    margin-bottom: 20px;
+                    transition: all 0.3s;
+                }
+                .card:hover {
+                    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+                }
+                .card-header {
+                    border-top-left-radius: 8px !important;
+                    border-top-right-radius: 8px !important;
+                    font-weight: 600;
+                }
+                .table th {
+                    background-color: #f8f9fa;
+                }
+                .table-hover tbody tr:hover {
+                    background-color: rgba(0,123,255,0.05);
+                }
+                .nav-tabs .nav-link {
+                    border-top-left-radius: 8px;
+                    border-top-right-radius: 8px;
+                }
+                .nav-tabs .nav-link.active {
+                    font-weight: 600;
+                    color: #007bff;
+                    border-top: 3px solid #007bff;
+                }
+                pre {
+                    background-color: #f8f9fa;
+                    border-radius: 5px;
+                }
+                canvas {
+                    max-height: 400px;
+                }
+                .wizard-step {
+                    position: relative;
+                    padding-bottom: 20px;
+                }
+                .wizard-step:not(:last-child)::after {
+                    content: '';
+                    position: absolute;
+                    left: 20px;
+                    top: 30px;
+                    height: calc(100% - 30px);
+                    width: 2px;
+                    background-color: #dee2e6;
+                }
+                .wizard-step-number {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    background-color: #f8f9fa;
+                    border: 2px solid #dee2e6;
+                    color: #6c757d;
+                    font-weight: bold;
+                    margin-right: 15px;
+                    position: relative;
+                    z-index: 1;
+                }
+                .wizard-step.active .wizard-step-number {
+                    background-color: #007bff;
+                    border-color: #007bff;
+                    color: white;
+                }
+                .wizard-step.completed .wizard-step-number {
+                    background-color: #28a745;
+                    border-color: #28a745;
+                    color: white;
+                }
+                .wizard-step-content {
+                    padding-left: 55px;
+                }
+                /* Custom styling for report forms */
+                .report-form label {
+                    font-weight: 600;
+                    color: #495057;
+                }
+                .report-form .form-control {
+                    border-radius: 4px;
+                    border: 1px solid #ced4da;
+                    padding: 8px 12px;
+                }
+                .report-form .form-control:focus {
+                    border-color: #80bdff;
+                    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                }
+                .report-metric {
+                    padding: 20px;
+                    text-align: center;
+                    border-radius: 8px;
+                    margin-bottom: 20px;
+                    color: white;
+                }
+                .report-metric h3 {
+                    font-size: 16px;
+                    margin-bottom: 10px;
+                    font-weight: 600;
+                }
+                .report-metric .value {
+                    font-size: 24px;
+                    font-weight: bold;
+                }
+                .metric-blue {
+                    background: linear-gradient(135deg, #007bff, #0056b3);
+                }
+                .metric-green {
+                    background: linear-gradient(135deg, #28a745, #1e7e34);
+                }
+                .metric-orange {
+                    background: linear-gradient(135deg, #fd7e14, #d56308);
+                }
+                .metric-red {
+                    background: linear-gradient(135deg, #dc3545, #bd2130);
+                }
+                .metric-purple {
+                    background: linear-gradient(135deg, #6f42c1, #4e2b89);
+                }
+                .metric-teal {
+                    background: linear-gradient(135deg, #20c997, #17a2b8);
+                }
+                .print-only {
+                    display: none;
+                }
+                @media print {
+                    .print-only {
+                        display: block;
+                    }
+                    .no-print {
+                        display: none !important;
+                    }
+                    .container {
+                        width: 100%;
+                        max-width: 100%;
+                    }
+                    .card {
+                        border: 1px solid #ddd;
+                        box-shadow: none !important;
+                    }
+                    .table td, .table th {
+                        background-color: white !important;
+                    }
+                }
+            </style>
+        </xpath>
+    </template>
+
+    <!-- Error Message Template -->
+    <template id="report_error_message" name="Report Error Message">
+        <div class="alert alert-danger">
+            <i class="fa fa-exclamation-circle mr-2"></i>
+            <strong>Error:</strong> <t t-esc="error_message"/>
+        </div>
+    </template>
+
+    <!-- Success Message Template -->
+    <template id="report_success_message" name="Report Success Message">
+        <div class="alert alert-success">
+            <i class="fa fa-check-circle mr-2"></i>
+            <strong>Success:</strong> <t t-esc="success_message"/>
+        </div>
+    </template>
+
+    <!-- Warning Message Template -->
+    <template id="report_warning_message" name="Report Warning Message">
+        <div class="alert alert-warning">
+            <i class="fa fa-exclamation-triangle mr-2"></i>
+            <strong>Warning:</strong> <t t-esc="warning_message"/>
+        </div>
+    </template>
+
+    <!-- Empty Data Template -->
+    <template id="report_no_data" name="Report No Data">
+        <div class="alert alert-info text-center p-5 my-4">
+            <i class="fa fa-info-circle fa-3x mb-3"></i>
+            <h4>No Data Available</h4>
+            <p><t t-esc="no_data_message or 'There is no data available for this report at the moment.'"/></p>
+            <t t-if="action_url">
+                <a t-att-href="action_url" class="btn btn-primary mt-2">
+                    <i t-if="action_icon" t-attf-class="fa fa-{{action_icon}} mr-2"></i>
+                    <t t-esc="action_label or 'Take Action'"/>
+                </a>
+            </t>
+        </div>
+    </template>
+
+    <!-- Loading Indicator Template -->
+    <template id="report_loading_indicator" name="Report Loading Indicator">
+        <div class="text-center p-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <p class="mt-3"><t t-esc="loading_message or 'Loading data, please wait...'"/></p>
+        </div>
+    </template>
+
+    <!-- Report Export Options Template -->
+    <template id="report_export_options" name="Report Export Options">
+        <div class="dropdown d-inline-block">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">
+                <i class="fa fa-download mr-2"></i>Export
+            </button>
+            <div class="dropdown-menu">
+                <t t-if="enable_pdf">
+                    <a t-att-href="pdf_url" class="dropdown-item" target="_blank">
+                        <i class="fa fa-file-pdf mr-2"></i>PDF
+                    </a>
+                </t>
+                <t t-if="enable_excel">
+                    <a t-att-href="excel_url" class="dropdown-item">
+                        <i class="fa fa-file-excel mr-2"></i>Excel
+                    </a>
+                </t>
+                <t t-if="enable_print">
+                    <a href="#" class="dropdown-item" onclick="window.print()">
+                        <i class="fa fa-print mr-2"></i>Print
+                    </a>
+                </t>
+            </div>
+        </div>
+    </template>
+
+    <!-- Custom Filter Form Template -->
+    <template id="report_date_range_filter" name="Report Date Range Filter">
+        <form t-att-action="action_url" method="GET" class="form-inline justify-content-center">
+            <div class="form-group mr-3">
+                <label for="date_from" class="mr-2">From:</label>
+                <input type="date" id="date_from" name="date_from" class="form-control" t-att-value="date_from"/>
+            </div>
+            <div class="form-group mr-3">
+                <label for="date_to" class="mr-2">To:</label>
+                <input type="date" id="date_to" name="date_to" class="form-control" t-att-value="date_to"/>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-filter mr-2"></i>Filter
+            </button>
+        </form>
+    </template>
+
+    <!-- Report Wizard Step Template -->
+    <template id="report_wizard_step" name="Report Wizard Step">
+        <div t-attf-class="wizard-step {{step_class}}">
+            <div class="d-flex align-items-center">
+                <div class="wizard-step-number">
+                    <t t-esc="step_number"/>
+                </div>
+                <h4 class="mb-0"><t t-esc="step_title"/></h4>
+            </div>
+            <div class="wizard-step-content mt-3">
+                <t t-raw="0"/>
+            </div>
+        </div>
+    </template>
+
+    <!-- Report Type Selection Wizard -->
+    <template id="report_wizard_type_selection" name="Report Type Selection">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fa fa-user-injured fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Tình hình bệnh nhân</h5>
+                        <p class="card-text">Phân tích số lượng bệnh nhân, phân bố độ tuổi, và thông tin nhân khẩu học.</p>
+                        <div class="custom-control custom-radio mt-3">
+                            <input type="radio" id="type_patient" name="report_type" value="patient" class="custom-control-input" required="required"/>
+                            <label class="custom-control-label" for="type_patient">Chọn loại báo cáo này</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fa fa-chart-bar fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Dịch tễ học</h5>
+                        <p class="card-text">Thống kê bệnh và chẩn đoán phổ biến, xu hướng dịch tễ trong kỳ báo cáo.</p>
+                        <div class="custom-control custom-radio mt-3">
+                            <input type="radio" id="type_epidemiology" name="report_type" value="epidemiology" class="custom-control-input" required="required"/>
+                            <label class="custom-control-label" for="type_epidemiology">Chọn loại báo cáo này</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fa fa-star-half-alt fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Chất lượng dịch vụ</h5>
+                        <p class="card-text">Phân tích đánh giá của bệnh nhân, mức độ hài lòng và chất lượng dịch vụ.</p>
+                        <div class="custom-control custom-radio mt-3">
+                            <input type="radio" id="type_service_quality" name="report_type" value="service_quality" class="custom-control-input" required="required"/>
+                            <label class="custom-control-label" for="type_service_quality">Chọn loại báo cáo này</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Report Date Range Selection -->
+    <template id="report_wizard_date_range" name="Report Date Range Selection">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="date_from">Từ ngày</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                        </div>
+                        <input type="date" id="date_from" name="date_from" class="form-control"
+                            t-att-value="date_from or (datetime.datetime.now() - datetime.timedelta(days=30)).strftime('%Y-%m-%d')"
+                            required="required"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="date_to">Đến ngày</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                        </div>
+                        <input type="date" id="date_to" name="date_to" class="form-control"
+                            t-att-value="date_to or datetime.datetime.now().strftime('%Y-%m-%d')"
+                            required="required"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="fa fa-info-circle fa-2x text-primary mr-3"></i>
+                            <div>
+                                <h5 class="mb-1">Lưu ý về khoảng thời gian</h5>
+                                <p class="mb-0">Khoảng thời gian sẽ ảnh hưởng đến dữ liệu được phân tích trong báo cáo. Chọn khoảng thời gian phù hợp để có kết quả chính xác nhất.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Department Selection -->
+    <template id="report_wizard_department" name="Department Selection">
+        <div class="form-group">
+            <label for="department_id">Khoa/Phòng</label>
+            <select id="department_id" name="department_id" class="form-control">
+                <option value="">-- Tất cả khoa/phòng --</option>
+                <t t-foreach="departments" t-as="department">
+                    <option t-att-value="department.id" t-att-selected="department_id and str(department_id) == str(department.id)">
+                        <t t-esc="department.name"/>
+                    </option>
+                </t>
+            </select>
+            <small class="form-text text-muted">Chọn khoa/phòng cụ thể hoặc để trống để xem báo cáo cho toàn bộ bệnh viện.</small>
+        </div>
+    </template>
+
+    <!-- Report Options Selection -->
+    <template id="report_wizard_options" name="Report Options Selection">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">Tùy chọn hiển thị</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input type="checkbox" class="custom-control-input" id="option_charts" name="option_charts" value="1" checked="checked"/>
+                            <label class="custom-control-label" for="option_charts">Bao gồm biểu đồ</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input type="checkbox" class="custom-control-input" id="option_tables" name="option_tables" value="1" checked="checked"/>
+                            <label class="custom-control-label" for="option_tables">Bao gồm bảng dữ liệu</label>
+                        </div>
+                        <div class="custom-control custom-checkbox mb-2">
+                            <input type="checkbox" class="custom-control-input" id="option_summary" name="option_summary" value="1" checked="checked"/>
+                            <label class="custom-control-label" for="option_summary">Bao gồm tóm tắt</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">Định dạng xuất</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="custom-control custom-radio mb-2">
+                            <input type="radio" class="custom-control-input" id="format_detailed" name="report_format" value="detailed" checked="checked"/>
+                            <label class="custom-control-label" for="format_detailed">Chi tiết (đầy đủ dữ liệu)</label>
+                        </div>
+                        <div class="custom-control custom-radio mb-2">
+                            <input type="radio" class="custom-control-input" id="format_summary" name="report_format" value="summary"/>
+                            <label class="custom-control-label" for="format_summary">Tóm tắt (chỉ hiển thị thông tin chính)</label>
+                        </div>
+                        <div class="custom-control custom-radio mb-2">
+                            <input type="radio" class="custom-control-input" id="format_comparison" name="report_format" value="comparison"/>
+                            <label class="custom-control-label" for="format_comparison">So sánh (với kỳ trước)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Complete Report Wizard Template -->
+    <template id="report_wizard_complete" name="Complete Report Wizard">
+        <form action="/clinic/reports/medical/create" method="POST" class="report-form">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+            <div class="wizard-container mb-4">
+                <!-- Step 1: Report Type -->
+                <t t-call="reporting_and_data_analysis.report_wizard_step">
+                    <t t-set="step_number" t-value="1"/>
+                    <t t-set="step_title" t-value="'Chọn loại báo cáo'"/>
+                    <t t-set="step_class" t-value="'active'"/>
+                    <t t-call="reporting_and_data_analysis.report_wizard_type_selection"/>
+                </t>
+
+                <!-- Step 2: Date Range -->
+                <t t-call="reporting_and_data_analysis.report_wizard_step">
+                    <t t-set="step_number" t-value="2"/>
+                    <t t-set="step_title" t-value="'Chọn khoảng thời gian'"/>
+                    <t t-set="step_class" t-value="''"/>
+                    <t t-call="reporting_and_data_analysis.report_wizard_date_range"/>
+                </t>
+
+                <!-- Step 3: Additional Options -->
+                <t t-call="reporting_and_data_analysis.report_wizard_step">
+                    <t t-set="step_number" t-value="3"/>
+                    <t t-set="step_title" t-value="'Tùy chọn bổ sung'"/>
+                    <t t-set="step_class" t-value="''"/>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <t t-call="reporting_and_data_analysis.report_wizard_department"/>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="staff_id">Người tạo báo cáo</label>
+                                <input type="text" id="staff_name" class="form-control" t-att-value="request.env.user.name" readonly="readonly"/>
+                                <input type="hidden" name="staff_id" t-att-value="request.env.user.id"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <t t-call="reporting_and_data_analysis.report_wizard_options"/>
+                </t>
+            </div>
+
+            <div class="form-group text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg px-5">
+                    <i class="fa fa-check-circle mr-2"></i>Tạo Báo Cáo
+                </button>
+                <a href="/clinic/reports/medical" class="btn btn-secondary btn-lg ml-2">
+                    <i class="fa fa-times-circle mr-2"></i>Hủy
+                </a>
+            </div>
+        </form>
+
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                // Navigate through wizard steps
+                var wizardSteps = document.querySelectorAll('.wizard-step');
+                var stepContents = document.querySelectorAll('.wizard-step-content');
+
+                function showStep(stepIndex) {
+                    for (var i = 0; i &lt; wizardSteps.length; i++) {
+                        if (i &lt; stepIndex) {
+                            wizardSteps[i].classList.add('completed');
+                            wizardSteps[i].classList.remove('active');
+                        } else if (i === stepIndex) {
+                            wizardSteps[i].classList.add('active');
+                            wizardSteps[i].classList.remove('completed');
+                        } else {
+                            wizardSteps[i].classList.remove('active', 'completed');
+                        }
+                    }
+                }
+
+                // Add click event to step headers
+                for (var i = 0; i &lt; wizardSteps.length; i++) {
+                    (function(index) {
+                        var stepHeader = wizardSteps[index].querySelector('h4');
+                        stepHeader.style.cursor = 'pointer';
+                        stepHeader.addEventListener('click', function() {
+                            showStep(index);
+                        });
+                    })(i);
+                }
+
+                // Validate dates when changed
+                var dateFrom = document.getElementById('date_from');
+                var dateTo = document.getElementById('date_to');
+
+                function validateDates() {
+                    if (dateFrom.value &amp;&amp; dateTo.value) {
+                        if (new Date(dateFrom.value) &gt; new Date(dateTo.value)) {
+                            dateTo.setCustomValidity('Ngày kết thúc phải sau ngày bắt đầu');
+                        } else {
+                            dateTo.setCustomValidity('');
+                        }
+                    }
+                }
+
+                if (dateFrom &amp;&amp; dateTo) {
+                    dateFrom.addEventListener('change', validateDates);
+                    dateTo.addEventListener('change', validateDates);
+                }
+            });
+        </script>
+    </template>
+
+    <!-- Report Preview Template -->
+    <template id="report_preview_template" name="Report Preview Template">
+        <div class="report-preview-container">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Xem trước báo cáo</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="mb-3"><t t-esc="report.name"/></h5>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <p><strong>Loại báo cáo:</strong>
+                                <t t-if="report.report_type == 'patient'">Tình hình bệnh nhân</t>
+                                <t t-elif="report.report_type == 'epidemiology'">Dịch tễ học</t>
+                                <t t-elif="report.report_type == 'service_quality'">Chất lượng dịch vụ</t>
+                                <t t-else=""><t t-esc="report.report_type"/></t>
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Thời gian:</strong> <t t-esc="report.date_from"/> - <t t-esc="report.date_to"/></p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Khoa/Phòng:</strong> <t t-esc="report.department_id.name if report.department_id else 'Tất cả'"/></p>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle mr-2"></i>
+                        Đây là bản xem trước báo cáo. Dữ liệu sẽ được tạo khi bạn xác nhận.
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a t-att-href="'/clinic/reports/medical/%s/regenerate' % report.id" class="btn btn-primary">
+                            <i class="fa fa-sync mr-2"></i>Tạo Báo Cáo
+                        </a>
+                        <a href="/clinic/reports/medical" class="btn btn-secondary ml-2">
+                            <i class="fa fa-arrow-left mr-2"></i>Quay Lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Report Metrics Summary Template -->
+    <template id="report_metrics_summary" name="Report Metrics Summary">
+        <div class="row">
+            <t t-foreach="metrics" t-as="metric">
+                <div t-attf-class="col-md-{{12 / len(metrics)}}">
+                    <div t-attf-class="report-metric {{metric.get('class', 'metric-blue')}}">
+                        <h3><t t-esc="metric.get('label', 'Metric')"/></h3>
+                        <div class="value"><t t-esc="metric.get('value', '0')"/></div>
+                        <small t-if="metric.get('change')">
+                            <t t-if="metric.get('change_type') == 'positive'">
+                                <i class="fa fa-arrow-up"></i>
+                            </t>
+                            <t t-elif="metric.get('change_type') == 'negative'">
+                                <i class="fa fa-arrow-down"></i>
+                            </t>
+                            <t t-esc="metric.get('change')"/>
+                        </small>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </template>
+
+    <!-- Report Trend Analysis Template -->
+    <template id="report_trend_analysis" name="Report Trend Analysis">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><t t-esc="title or 'Trend Analysis'"/></h5>
+            </div>
+            <div class="card-body">
+                <canvas t-att-id="chart_id or 'trendChart'" height="300"></canvas>
+            </div>
+            <div class="card-footer" t-if="description">
+                <div class="d-flex align-items-center">
+                    <i class="fa fa-info-circle text-primary mr-2"></i>
+                    <small><t t-esc="description"/></small>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                var ctx = document.getElementById('<t t-esc="chart_id or 'trendChart'"/>').getContext('2d');
+                new Chart(ctx, <t t-raw="chart_config"/>);
+            });
+        </script>
+    </template>
+
+    <!-- PDF Report Header Template -->
+    <template id="report_pdf_header" name="PDF Report Header">
+        <div class="row mb-4 print-only">
+            <div class="col-4">
+                <img t-att-src="'data:image/png;base64,%s' % company.logo" style="max-height: 70px;"/>
+            </div>
+            <div class="col-8 text-right">
+                <h3 t-esc="report.name" style="color: #1a73e8;"/>
+                <p>
+                    <t t-esc="report.date_from"/> - <t t-esc="report.date_to"/><br/>
+                    Ngày tạo: <t t-esc="datetime.datetime.now().strftime('%d/%m/%Y %H:%M')"/>
+                </p>
+            </div>
+            <div class="col-12">
+                <hr style="border-top: 2px solid #1a73e8;"/>
+            </div>
+        </div>
+    </template>
+
+    <!-- PDF Report Footer Template -->
+    <template id="report_pdf_footer" name="PDF Report Footer">
+        <div class="row mt-5 print-only">
+            <div class="col-12">
+                <hr style="border-top: 1px solid #dee2e6;"/>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p><t t-esc="company.name"/></p>
+                    </div>
+                    <div class="text-right">
+                        <p>Trang <span class="pageNumber"></span> / <span class="totalPages"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</odoo>

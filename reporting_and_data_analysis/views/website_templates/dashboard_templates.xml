@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Dashboard Template -->
+    <template id="reports_dashboard_template" name="Reports Dashboard">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="text-center">Tổng Quan Báo Cáo Y Tế</h1>
+                        <div class="d-flex justify-content-between flex-wrap mb-4">
+                            <div class="report-links mt-3">
+                                <a href="/clinic/reports/dashboard" class="btn btn-primary">
+                                    <i class="fa fa-chart-line mr-2"></i>Tổng Quan
+                                </a>
+                            </div>
+                            <div class="report-links mt-3">
+                                <div class="dropdown d-inline-block">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">
+                                        <i class="fa fa-file-invoice-dollar mr-2"></i>Báo Cáo Tài Chính
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="/clinic/reports/invoice/monthly">Doanh Thu Theo Tháng</a>
+                                        <a class="dropdown-item" href="/clinic/reports/invoice/services">Phân Tích Dịch Vụ</a>
+                                        <a class="dropdown-item" href="/clinic/reports/invoice/products">Phân Tích Thuốc</a>
+                                        <a class="dropdown-item" href="/clinic/reports/invoice/patients">Phân Tích Bệnh Nhân</a>
+                                        <a class="dropdown-item" href="/clinic/reports/invoice/status">Trạng Thái Hóa Đơn</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="report-links mt-3">
+                                <div class="dropdown d-inline-block">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">
+                                        <i class="fa fa-notes-medical mr-2"></i>Báo Cáo Y Khoa
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="/clinic/reports/medical">Danh Sách Báo Cáo</a>
+                                        <a class="dropdown-item" href="/clinic/reports/medical/create">Tạo Báo Cáo Mới</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Metrics Cards -->
+                <div class="row mt-4">
+                    <t t-if="monthly_data and len(monthly_data) > 0">
+                        <t t-set="latest_month" t-value="monthly_data[0]"/>
+
+                        <div class="col-md-3">
+                            <div class="card text-white bg-primary mb-3">
+                                <div class="card-header">Tổng Doanh Thu Tháng</div>
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <t t-esc="formatLang(latest_month['total_amount'], monetary=True)"/>
+                                    </h5>
+                                    <p class="card-text"><t t-esc="latest_month['month_name']"/> <t t-esc="latest_month['year']"/></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="card text-white bg-success mb-3">
+                                <div class="card-header">Dịch Vụ Y Tế</div>
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <t t-esc="formatLang(latest_month['service_amount'], monetary=True)"/>
+                                    </h5>
+                                    <p class="card-text"><t t-esc="round(latest_month['service_amount'] / latest_month['total_amount'] * 100 if latest_month['total_amount'] else 0, 1)"/>% doanh thu</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="card text-white bg-info mb-3">
+                                <div class="card-header">Thuốc &amp; Vật Tư</div>
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <t t-esc="formatLang(latest_month['medicine_amount'], monetary=True)"/>
+                                    </h5>
+                                    <p class="card-text"><t t-esc="round(latest_month['medicine_amount'] / latest_month['total_amount'] * 100 if latest_month['total_amount'] else 0, 1)"/>% doanh thu</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="card text-white bg-secondary mb-3">
+                                <div class="card-header">Số Lượng Hóa Đơn</div>
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <t t-esc="latest_month['invoice_count']"/>
+                                    </h5>
+                                    <p class="card-text">Trung bình: <t t-esc="formatLang(latest_month['total_amount'] / latest_month['invoice_count'] if latest_month['invoice_count'] else 0, monetary=True)"/></p>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                Chưa có dữ liệu doanh thu để hiển thị. Vui lòng tạo một số hóa đơn trước.
+                            </div>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5>Doanh Thu Theo Tháng</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="revenueChart" height="300"></canvas>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="/clinic/reports/invoice/monthly" class="btn btn-outline-primary btn-sm">
+                                    Xem Chi Tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5>Top 5 Dịch Vụ Theo Doanh Thu</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="servicesChart" height="300"></canvas>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="/clinic/reports/invoice/services" class="btn btn-outline-primary btn-sm">
+                                    Xem Chi Tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5>Top 5 Thuốc Theo Doanh Thu</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="productsChart" height="300"></canvas>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="/clinic/reports/invoice/products" class="btn btn-outline-primary btn-sm">
+                                    Xem Chi Tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5>Báo Cáo Y Khoa Gần Đây</h5>
+                            </div>
+                            <div class="card-body">
+                                <t t-set="recent_reports" t-value="env['hospital.medical.report'].search([], limit=5, order='create_date desc')"/>
+                                <t t-if="recent_reports">
+                                    <div class="list-group">
+                                        <t t-foreach="recent_reports" t-as="report">
+                                            <a t-att-href="'/clinic/reports/medical/%s' % report.id" class="list-group-item list-group-item-action">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h5 class="mb-1"><t t-esc="report.name"/></h5>
+                                                    <small>
+                                                        <t t-if="report.state == 'draft'">
+                                                            <span class="badge badge-secondary">Nháp</span>
+                                                        </t>
+                                                        <t t-elif="report.state == 'generated'">
+                                                            <span class="badge badge-primary">Đã Tạo</span>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span class="badge badge-success">Đã Duyệt</span>
+                                                        </t>
+                                                    </small>
+                                                </div>
+                                                <small><t t-esc="report.create_date.strftime('%d/%m/%Y %H:%M')"/></small>
+                                            </a>
+                                        </t>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="alert alert-info">
+                                        Chưa có báo cáo y khoa nào. <a href="/clinic/reports/medical/create">Tạo báo cáo mới</a>
+                                    </div>
+                                </t>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="/clinic/reports/medical" class="btn btn-outline-primary btn-sm">
+                                    Xem Tất Cả Báo Cáo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+            <script type="text/javascript">
+                // Monthly Revenue Chart
+                document.addEventListener('DOMContentLoaded', function() {
+                    <t t-if="monthly_data and len(monthly_data) > 0">
+                        var monthlyData = <t t-raw="json.dumps(monthly_data[:6][::-1])"/>;
+                        var labels = monthlyData.map(function(item) { return item.month_name + ' ' + item.year; });
+                        var serviceData = monthlyData.map(function(item) { return item.service_amount; });
+                        var medicineData = monthlyData.map(function(item) { return item.medicine_amount; });
+
+                        var ctx = document.getElementById('revenueChart').getContext('2d');
+                        new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Dịch Vụ Y Tế',
+                                    data: serviceData,
+                                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                    borderColor: 'rgb(54, 162, 235)',
+                                    borderWidth: 1
+                                }, {
+                                    label: 'Thuốc &amp; Vật Tư',
+                                    data: medicineData,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                                    borderColor: 'rgb(75, 192, 192)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                    },
+                                    title: {
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        stacked: true,
+                                    },
+                                    y: {
+                                        stacked: true,
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    </t>
+
+                    <t t-if="service_data and len(service_data) > 0">
+                        var serviceAnalysisData = <t t-raw="json.dumps(service_data[:5])"/>;
+                        var serviceLabels = serviceAnalysisData.map(function(item) { return item.service_name; });
+                        var serviceRevenues = serviceAnalysisData.map(function(item) { return item.total_revenue; });
+
+                        var ctxServices = document.getElementById('servicesChart').getContext('2d');
+                        new Chart(ctxServices, {
+                            type: 'pie',
+                            data: {
+                                labels: serviceLabels,
+                                datasets: [{
+                                    data: serviceRevenues,
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132, 0.7)',
+                                        'rgba(54, 162, 235, 0.7)',
+                                        'rgba(255, 206, 86, 0.7)',
+                                        'rgba(75, 192, 192, 0.7)',
+                                        'rgba(153, 102, 255, 0.7)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 99, 132, 1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)'
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'right',
+                                    }
+                                }
+                            }
+                        });
+                    </t>
+
+                    <t t-if="product_data and len(product_data) > 0">
+                        var productAnalysisData = <t t-raw="json.dumps(product_data[:5])"/>;
+                        var productLabels = productAnalysisData.map(function(item) { return item.product_name; });
+                        var productRevenues = productAnalysisData.map(function(item) { return item.total_revenue; });
+
+                        var ctxProducts = document.getElementById('productsChart').getContext('2d');
+                        new Chart(ctxProducts, {
+                            type: 'doughnut',
+                            data: {
+                                labels: productLabels,
+                                datasets: [{
+                                    data: productRevenues,
+                                    backgroundColor: [
+                                        'rgba(255, 159, 64, 0.7)',
+                                        'rgba(153, 102, 255, 0.7)',
+                                        'rgba(255, 99, 132, 0.7)',
+                                        'rgba(54, 162, 235, 0.7)',
+                                        'rgba(75, 192, 192, 0.7)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 159, 64, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                        'rgba(255, 99, 132, 1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(75, 192, 192, 1)'
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'right',
+                                    }
+                                }
+                            }
+                        });
+                    </t>
+                });
+            </script>
+        </t>
+    </template>
+</odoo>

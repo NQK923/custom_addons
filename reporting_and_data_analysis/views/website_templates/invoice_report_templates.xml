@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Navigation Bar Template for Reports -->
+    <template id="report_navigation_bar" name="Report Navigation Bar">
+        <div class="d-flex justify-content-between flex-wrap mb-4">
+            <div class="report-links mt-3">
+                <a href="/clinic/reports/dashboard" class="btn btn-primary">
+                    <i class="fa fa-chart-line mr-2"></i>Tổng Quan
+                </a>
+            </div>
+            <div class="report-links mt-3">
+                <div class="dropdown d-inline-block">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">
+                        <i class="fa fa-file-invoice-dollar mr-2"></i>Báo Cáo Tài Chính
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="/clinic/reports/invoice/monthly">Doanh Thu Theo Tháng</a>
+                        <a class="dropdown-item" href="/clinic/reports/invoice/services">Phân Tích Dịch Vụ</a>
+                        <a class="dropdown-item" href="/clinic/reports/invoice/products">Phân Tích Thuốc</a>
+                        <a class="dropdown-item" href="/clinic/reports/invoice/patients">Phân Tích Bệnh Nhân</a>
+                        <a class="dropdown-item" href="/clinic/reports/invoice/status">Trạng Thái Hóa Đơn</a>
+                    </div>
+                </div>
+            </div>
+            <div class="report-links mt-3">
+                <div class="dropdown d-inline-block">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">
+                        <i class="fa fa-notes-medical mr-2"></i>Báo Cáo Y Khoa
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="/clinic/reports/medical">Danh Sách Báo Cáo</a>
+                        <a class="dropdown-item" href="/clinic/reports/medical/create">Tạo Báo Cáo Mới</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Monthly Invoice Template -->
+    <template id="invoice_monthly_template" name="Monthly Invoice Analysis">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="text-center">Báo Cáo Doanh Thu Theo Tháng</h1>
+                        <t t-call="reporting_and_data_analysis.report_navigation_bar"/>
+                    </div>
+                </div>
+
+                <!-- Filter Section -->
+                <div class="row mb-4">
+                    <div class="col-md-6 offset-md-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Chọn Năm</h5>
+                            </div>
+                            <div class="card-body">
+                                <form action="/clinic/reports/invoice/monthly" method="GET" class="form-inline justify-content-center">
+                                    <div class="form-group mr-3">
+                                        <label for="year" class="mr-2">Năm:</label>
+                                        <select name="year" id="year" class="form-control">
+                                            <t t-foreach="years" t-as="year">
+                                                <option t-att-value="year" t-att-selected="year == selected_year">
+                                                    <t t-esc="year"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Xem</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Biểu Đồ Doanh Thu Năm <t t-esc="selected_year"/></h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="monthlyRevenueChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Section -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Bảng Doanh Thu Theo Tháng - Năm <t t-esc="selected_year"/></h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th>Tháng</th>
+                                                <th class="text-right">Số Hóa Đơn</th>
+                                                <th class="text-right">Doanh Thu Dịch Vụ</th>
+                                                <th class="text-right">Doanh Thu Thuốc</th>
+                                                <th class="text-right">Tổng Doanh Thu</th>
+                                                <th class="text-right">Bảo Hiểm Chi Trả</th>
+                                                <th class="text-right">Bệnh Nhân Chi Trả</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-set="total_invoice_count" t-value="0"/>
+                                            <t t-set="total_service_amount" t-value="0"/>
+                                            <t t-set="total_medicine_amount" t-value="0"/>
+                                            <t t-set="total_amount" t-value="0"/>
+                                            <t t-set="total_insurance_amount" t-value="0"/>
+                                            <t t-set="total_patient_amount" t-value="0"/>
+
+                                            <t t-foreach="monthly_data" t-as="month">
+                                                <t t-if="month['year'] == selected_year">
+                                                    <tr>
+                                                        <td><t t-esc="month['month_name']"/></td>
+                                                        <td class="text-right"><t t-esc="month['invoice_count']"/></td>
+                                                        <td class="text-right"><t t-esc="formatLang(month['service_amount'], monetary=True)"/></td>
+                                                        <td class="text-right"><t t-esc="formatLang(month['medicine_amount'], monetary=True)"/></td>
+                                                        <td class="text-right"><t t-esc="formatLang(month['total_amount'], monetary=True)"/></td>
+                                                        <td class="text-right"><t t-esc="formatLang(month['insurance_amount'], monetary=True)"/></td>
+                                                        <td class="text-right"><t t-esc="formatLang(month['patient_amount'], monetary=True)"/></td>
+                                                    </tr>
+                                                    <t t-set="total_invoice_count" t-value="total_invoice_count + month['invoice_count']"/>
+                                                    <t t-set="total_service_amount" t-value="total_service_amount + month['service_amount']"/>
+                                                    <t t-set="total_medicine_amount" t-value="total_medicine_amount + month['medicine_amount']"/>
+                                                    <t t-set="total_amount" t-value="total_amount + month['total_amount']"/>
+                                                    <t t-set="total_insurance_amount" t-value="total_insurance_amount + month['insurance_amount']"/>
+                                                    <t t-set="total_patient_amount" t-value="total_patient_amount + month['patient_amount']"/>
+                                                </t>
+                                            </t>
+                                        </tbody>
+                                        <tfoot class="thead-light">
+                                            <tr>
+                                                <th>Tổng</th>
+                                                <th class="text-right"><t t-esc="total_invoice_count"/></th>
+                                                <th class="text-right"><t t-esc="formatLang(total_service_amount, monetary=True)"/></th>
+                                                <th class="text-right"><t t-esc="formatLang(total_medicine_amount, monetary=True)"/></th>
+                                                <th class="text-right"><t t-esc="formatLang(total_amount, monetary=True)"/></th>
+                                                <th class="text-right"><t t-esc="formatLang(total_insurance_amount, monetary=True)"/></th>
+                                                <th class="text-right"><t t-esc="formatLang(total_patient_amount, monetary=True)"/></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    var months = <t t-raw="chart_data['months']"/>;
+                    var serviceAmounts = <t t-raw="chart_data['service_amounts']"/>;
+                    var medicineAmounts = <t t-raw="chart_data['medicine_amounts']"/>;
+                    var totalAmounts = <t t-raw="chart_data['total_amounts']"/>;
+
+                    var ctx = document.getElementById('monthlyRevenueChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: months,
+                            datasets: [{
+                                label: 'Dịch Vụ Y Tế',
+                                data: serviceAmounts,
+                                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                borderColor: 'rgb(54, 162, 235)',
+                                borderWidth: 1
+                            }, {
+                                label: 'Thuốc &amp; Vật Tư',
+                                data: medicineAmounts,
+                                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                                borderColor: 'rgb(75, 192, 192)',
+                                borderWidth: 1
+                            }, {
+                                label: 'Tổng Doanh Thu',
+                                data: totalAmounts,
+                                type: 'line',
+                                fill: false,
+                                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                borderColor: 'rgb(255, 99, 132)',
+                                borderWidth: 2,
+                                pointRadius: 5,
+                                pointHoverRadius: 7
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    stacked: true,
+                                },
+                                y: {
+                                    stacked: true,
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
+        </t>
+    </template>
+
+    <!-- Service Revenue Analysis Template -->
+    <template id="invoice_services_template" name="Service Revenue Analysis">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="text-center">Phân Tích Doanh Thu Dịch Vụ</h1>
+                        <t t-call="reporting_and_data_analysis.report_navigation_bar"/>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Top 10 Dịch Vụ Theo Doanh Thu</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="serviceRevenueChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Section -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Bảng Doanh Thu Theo Dịch Vụ</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th>Dịch Vụ</th>
+                                                <th class="text-right">Số Lượng</th>
+                                                <th class="text-right">Doanh Thu</th>
+                                                <th class="text-right">Bảo Hiểm Chi Trả</th>
+                                                <th class="text-right">Bệnh Nhân Chi Trả</th>
+                                                <th class="text-right">Số Hóa Đơn</th>
+                                                <th class="text-right">Giá TB</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="service_data" t-as="service">
+                                                <tr>
+                                                    <td><t t-esc="service['service_name']"/></td>
+                                                    <td class="text-right"><t t-esc="service['total_quantity']"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(service['total_revenue'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(service['insurance_covered'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(service['patient_paid'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="service['invoice_count']"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(service['avg_price'], monetary=True)"/></td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    var services = <t t-raw="chart_data['services']"/>;
+                    var revenues = <t t-raw="chart_data['revenues']"/>;
+
+                    var ctx = document.getElementById('serviceRevenueChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: services,
+                            datasets: [{
+                                label: 'Doanh Thu',
+                                data: revenues,
+                                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                borderColor: 'rgb(54, 162, 235)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            indexAxis: 'y',
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
+        </t>
+    </template>
+
+    <!-- Product Revenue Analysis Template -->
+    <template id="invoice_products_template" name="Product Revenue Analysis">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="text-center">Phân Tích Doanh Thu Thuốc</h1>
+                        <t t-call="reporting_and_data_analysis.report_navigation_bar"/>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Top 10 Thuốc Theo Doanh Thu</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="productRevenueChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Section -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Bảng Doanh Thu Theo Thuốc</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th>Thuốc</th>
+                                                <th class="text-right">Số Lượng</th>
+                                                <th class="text-right">Doanh Thu</th>
+                                                <th class="text-right">Bảo Hiểm Chi Trả</th>
+                                                <th class="text-right">Bệnh Nhân Chi Trả</th>
+                                                <th class="text-right">Số Hóa Đơn</th>
+                                                <th class="text-right">Giá TB</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="product_data" t-as="product">
+                                                <tr>
+                                                    <td><t t-esc="product['product_name']"/></td>
+                                                    <td class="text-right"><t t-esc="product['total_quantity']"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(product['total_revenue'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(product['insurance_covered'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(product['patient_paid'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="product['invoice_count']"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(product['avg_price'], monetary=True)"/></td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    var products = <t t-raw="chart_data['products']"/>;
+                    var revenues = <t t-raw="chart_data['revenues']"/>;
+
+                    var ctx = document.getElementById('productRevenueChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: products,
+                            datasets: [{
+                                label: 'Doanh Thu',
+                                data: revenues,
+                                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                                borderColor: 'rgb(75, 192, 192)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            indexAxis: 'y',
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
+        </t>
+    </template>
+
+    <!-- Patient Revenue Analysis Template -->
+    <template id="invoice_patients_template" name="Patient Revenue Analysis">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="text-center">Phân Tích Theo Bệnh Nhân</h1>
+                        <t t-call="reporting_and_data_analysis.report_navigation_bar"/>
+                    </div>
+                </div>
+
+                <!-- Table Section -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Bảng Doanh Thu Theo Bệnh Nhân</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th>Bệnh Nhân</th>
+                                                <th class="text-right">Số Hóa Đơn</th>
+                                                <th class="text-right">Tiền Dịch Vụ</th>
+                                                <th class="text-right">Tiền Thuốc</th>
+                                                <th class="text-right">Tổng Tiền</th>
+                                                <th class="text-right">Bảo Hiểm Chi Trả</th>
+                                                <th class="text-right">Bệnh Nhân Chi Trả</th>
+                                                <th class="text-right">Tỉ Lệ BH (%)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="patient_data" t-as="patient">
+                                                <tr>
+                                                    <td><t t-esc="patient['patient_name']"/></td>
+                                                    <td class="text-right"><t t-esc="patient['invoice_count']"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(patient['service_amount'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(patient['medicine_amount'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(patient['total_amount'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(patient['insurance_amount'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="formatLang(patient['patient_amount'], monetary=True)"/></td>
+                                                    <td class="text-right"><t t-esc="round(patient['insurance_rate'], 2)"/>%</td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Invoice Status Analysis Template -->
+    <template id="invoice_status_template" name="Invoice Status Analysis">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="text-center">Phân Tích Trạng Thái Hóa Đơn</h1>
+                        <t t-call="reporting_and_data_analysis.report_navigation_bar"/>
+                    </div>
+                </div>
+
+                <!-- Filter Section -->
+                <div class="row mb-4">
+                    <div class="col-md-6 offset-md-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Chọn Năm</h5>
+                            </div>
+                            <div class="card-body">
+                                <form action="/clinic/reports/invoice/status" method="GET" class="form-inline justify-content-center">
+                                    <div class="form-group mr-3">
+                                        <label for="year" class="mr-2">Năm:</label>
+                                        <select name="year" id="year" class="form-control">
+                                            <t t-foreach="years" t-as="year">
+                                                <option t-att-value="year" t-att-selected="year == selected_year">
+                                                    <t t-esc="year"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Xem</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Section -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Bảng Trạng Thái Hóa Đơn - Năm <t t-esc="selected_year"/></h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th>Tháng</th>
+                                                <th>Trạng Thái</th>
+                                                <th class="text-right">Số Hóa Đơn</th>
+                                                <th class="text-right">Tổng Tiền</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-set="status_labels" t-value="{'draft': 'Nháp', 'confirmed': 'Đã xác nhận', 'paid': 'Đã thanh toán', 'cancelled': 'Đã hủy'}"/>
+                                            <t t-set="status_classes" t-value="{'draft': 'secondary', 'confirmed': 'primary', 'paid': 'success', 'cancelled': 'danger'}"/>
+
+                                            <t t-foreach="status_data" t-as="status">
+                                                <t t-if="status['year'] == selected_year">
+                                                    <tr>
+                                                        <td><t t-esc="status['month_name']"/></td>
+                                                        <td>
+                                                            <span t-att-class="'badge badge-' + status_classes.get(status['state'], 'secondary')">
+                                                                <t t-esc="status_labels.get(status['state'], status['state'])"/>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-right"><t t-esc="status['invoice_count']"/></td>
+                                                        <td class="text-right"><t t-esc="formatLang(status['total_amount'], monetary=True)"/></td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
