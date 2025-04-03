@@ -110,16 +110,46 @@
             <div class="container mt-5 patient-history-container">
                 <h1 class="text-center mb-5">Lịch sử khám bệnh nhân</h1>
 
+                <!-- System error message -->
+                <t t-if="error">
+                    <div class="alert alert-danger text-center">
+                        <i class="fa fa-exclamation-triangle mr-2"></i> <t t-esc="error"/>
+                    </div>
+                </t>
+
                 <!-- Email search form (only shown if OTP not sent) -->
                 <t t-if="not otp_sent">
-                    <form method="POST" action="/clinic/patient_history" class="search-form">
+                    <form method="POST" action="/clinic/patient_history" class="search-form" id="email-form">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <div class="form-group">
                             <label for="email">Nhập địa chỉ email của bạn:</label>
                             <input type="email" class="form-control" id="email" name="email" t-att-value="email or ''" placeholder="example@example.com" required="required"/>
                         </div>
-                        <button type="submit" class="btn btn-primary">Gửi mã OTP</button>
+                        <button type="submit" class="btn btn-primary" id="submit-btn">Gửi mã OTP</button>
                     </form>
+
+                    <!-- Hiển thị thông báo lỗi khi email không tồn tại -->
+                    <t t-if="email_not_found">
+                        <div class="alert alert-danger mt-3">
+                            <i class="fa fa-exclamation-circle mr-2"></i> Không tìm thấy bệnh nhân với email này. Vui lòng kiểm tra lại hoặc liên hệ với quản trị viên.
+                        </div>
+                    </t>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const form = document.getElementById('email-form');
+                            const submitBtn = document.getElementById('submit-btn');
+
+                            form.addEventListener('submit', function(e) {
+                                // Thay đổi nút thành "Đang gửi..." và vô hiệu hóa nút
+                                submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> Đang gửi...';
+                                submitBtn.disabled = true;
+                                submitBtn.classList.add('disabled');
+
+                                // Form tiếp tục submit bình thường
+                            });
+                        });
+                    </script>
                 </t>
 
                 <!-- OTP verification form (shown after email submission) -->
@@ -128,26 +158,72 @@
                         <h4 class="text-center mb-3">Xác minh OTP</h4>
                         <p class="text-center">Chúng tôi đã gửi mã OTP đến email <strong t-esc="email"/>. Vui lòng kiểm tra hộp thư và nhập mã để xem lịch sử y tế của bạn.</p>
 
+                        <div class="alert alert-info">
+                            <strong>Lưu ý:</strong> Nếu bạn không nhận được email, vui lòng kiểm tra thư mục thư rác (spam) hoặc liên hệ với quản trị viên.
+                        </div>
+
                         <t t-if="otp_error">
                             <div class="alert alert-danger">
                                 Mã OTP không đúng hoặc đã hết hạn. Vui lòng thử lại.
                             </div>
                         </t>
 
-                        <form method="POST" action="/clinic/verify_otp">
+                        <form method="POST" action="/clinic/verify_otp" id="otp-form">
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                             <input type="hidden" name="email" t-att-value="email"/>
                             <div class="form-group">
                                 <label for="otp_code">Nhập mã OTP:</label>
                                 <input type="text" class="form-control otp-input" id="otp_code" name="otp_code" maxlength="6" placeholder="------" required="required"/>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block mt-3">Xác nhận</button>
+                            <button type="submit" class="btn btn-primary btn-block mt-3 justify-content-center" id="verify-btn">Xác nhận</button>
                         </form>
 
-                        <p class="text-center mt-3">
-                            <a href="/clinic/patient_history">Quay lại</a>
-                        </p>
+                        <div class="text-center mt-3">
+                            <p>Chưa nhận được mã OTP?</p>
+                            <form method="POST" action="/clinic/patient_history" id="resend-form">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="email" t-att-value="email"/>
+                                <button type="submit" class="btn btn-outline-secondary" id="resend-btn">Gửi lại mã OTP</button>
+                            </form>
+                            <p class="mt-3">
+                                <a href="/clinic/patient_history">Quay lại</a>
+                            </p>
+                        </div>
                     </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Xử lý form xác nhận OTP
+                            const otpForm = document.getElementById('otp-form');
+                            const verifyBtn = document.getElementById('verify-btn');
+
+                            if (otpForm) {
+                                otpForm.addEventListener('submit', function(e) {
+                                    // Thay đổi nút thành "Đang xác thực..." và vô hiệu hóa nút
+                                    verifyBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> Đang xác thực...';
+                                    verifyBtn.disabled = true;
+                                    verifyBtn.classList.add('disabled');
+
+                                    // Form tiếp tục submit bình thường
+                                });
+                            }
+
+                            // Xử lý form gửi lại OTP
+                            const resendForm = document.getElementById('resend-form');
+                            const resendBtn = document.getElementById('resend-btn');
+
+                            if (resendForm) {
+                                resendForm.addEventListener('submit', function(e) {
+                                    // Thay đổi nút thành "Đang gửi..." và vô hiệu hóa nút
+                                    resendBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> Đang gửi...';
+                                    resendBtn.disabled = true;
+                                    resendBtn.classList.add('disabled');
+
+                                    // Form tiếp tục submit bình thường
+                                });
+                            }
+                        });
+                    </script>
                 </t>
 
                 <!-- Thông tin bệnh nhân (only shown if OTP verified) -->
