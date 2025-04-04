@@ -124,6 +124,11 @@ class TreatmentAndCareController(http.Controller):
             executor_id = int(kwargs.get('executor_id'))
             state = kwargs.get('state')
             execution_time = kwargs.get('execution_time') if kwargs.get('execution_time') else False
+            prescription_id = int(kwargs.get('prescription_id')) if kwargs.get(
+                'prescription_id') else False  # Thêm prescription_id
+
+            if execution_time and 'T' in execution_time:
+                execution_time = execution_time.replace('T', ' ')
 
             # Create new treatment process
             new_process = request.env['treatment.process'].sudo().create({
@@ -133,6 +138,7 @@ class TreatmentAndCareController(http.Controller):
                 'executor_id': executor_id,
                 'state': state,
                 'execution_time': execution_time,
+                'prescription_id': prescription_id,  # Lưu prescription_id
             })
 
             return request.redirect(f'/clinic/treatment_plan_details/{plan_id}')
@@ -146,11 +152,13 @@ class TreatmentAndCareController(http.Controller):
 
         services = request.env['clinic.service'].sudo().search([])
         staff = request.env['clinic.staff'].sudo().search([])
+        prescriptions = request.env['prescription.order'].sudo().search([])  # Truy vấn đơn thuốc
 
         values = {
             'plan': plan,
             'services': services,
             'staff': staff,
+            'prescriptions': prescriptions,  # Truyền prescriptions vào template
             'now': datetime.now().strftime('%Y-%m-%dT%H:%M'),
         }
 
@@ -170,6 +178,11 @@ class TreatmentAndCareController(http.Controller):
             executor_id = int(kwargs.get('executor_id'))
             state = kwargs.get('state')
             execution_time = kwargs.get('execution_time') if kwargs.get('execution_time') else False
+            prescription_id = int(kwargs.get('prescription_id')) if kwargs.get(
+                'prescription_id') else False  # Thêm prescription_id
+
+            if execution_time and 'T' in execution_time:
+                execution_time = execution_time.replace('T', ' ')
 
             # Update treatment process
             process.sudo().write({
@@ -177,6 +190,7 @@ class TreatmentAndCareController(http.Controller):
                 'executor_id': executor_id,
                 'state': state,
                 'execution_time': execution_time,
+                'prescription_id': prescription_id,  # Cập nhật prescription_id
             })
 
             return request.redirect(f'/clinic/treatment_plan_details/{process.plan_id.id}')
@@ -184,12 +198,14 @@ class TreatmentAndCareController(http.Controller):
         # GET request: show form with current data
         services = request.env['clinic.service'].sudo().search([])
         staff = request.env['clinic.staff'].sudo().search([])
+        prescriptions = request.env['prescription.order'].sudo().search([])  # Truy vấn đơn thuốc
 
         values = {
             'process': process,
             'plan': process.plan_id,
             'services': services,
             'staff': staff,
+            'prescriptions': prescriptions,  # Truyền prescriptions vào template
         }
 
         return request.render('Treatment_and_care_management.treatment_process_edit_template', values)
