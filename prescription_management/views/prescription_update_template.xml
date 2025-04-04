@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template for updating prescription details -->
+    <template id="update_prescription_template" name="Update Prescription">
+        <t t-call="website.layout">
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-12">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/pharmacy/prescriptions">Đơn thuốc</a></li>
+                                <li class="breadcrumb-item"><a t-att-href="'/pharmacy/prescription/%s' % prescription.id">Chi tiết</a></li>
+                                <li class="breadcrumb-item active">Cập nhật thông tin</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h1>Cập nhật thông tin đơn thuốc: <t t-esc="prescription.name"/></h1>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <a t-att-href="'/pharmacy/prescription/%s' % prescription.id" class="btn btn-info">
+                            <i class="fa fa-eye"></i> Xem chi tiết
+                        </a>
+                    </div>
+                </div>
+
+                <t t-if="error_message">
+                    <div class="alert alert-danger" role="alert">
+                        <strong>Lỗi:</strong> <t t-esc="error_message"/>
+                    </div>
+                </t>
+
+                <div class="card">
+                    <div class="card-body">
+                        <form t-attf-action="/pharmacy/prescription/#{prescription.id}/update" method="POST">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="form-group row">
+                                <label for="patient_id" class="col-sm-2 col-form-label">Bệnh nhân <span class="text-danger">*</span></label>
+                                <div class="col-sm-10">
+                                    <select id="patient_id" name="patient_id" class="form-control" required="required">
+                                        <t t-foreach="patients" t-as="patient">
+                                            <option t-att-value="patient.id" t-att-selected="patient.id == prescription.patient_id.id">
+                                                <t t-esc="patient.code"/> - <t t-esc="patient.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="staff_id" class="col-sm-2 col-form-label">Bác sĩ</label>
+                                <div class="col-sm-10">
+                                    <select id="staff_id" name="staff_id" class="form-control">
+                                        <option value="">-- Chọn bác sĩ --</option>
+                                        <t t-foreach="staff" t-as="s">
+                                            <option t-att-value="s.id" t-att-selected="prescription.staff_id and s.id == prescription.staff_id.id">
+                                                <t t-esc="s.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="numdate" class="col-sm-2 col-form-label">Số ngày uống <span class="text-danger">*</span></label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="numdate" name="numdate" class="form-control"
+                                           required="required" min="1" step="0.5" t-att-value="prescription.numdate"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="notes" class="col-sm-2 col-form-label">Ghi chú</label>
+                                <div class="col-sm-10">
+                                    <textarea id="notes" name="notes" class="form-control" rows="3"><t t-esc="prescription.notes"/></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-sm-10 offset-sm-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa fa-save"></i> Cập nhật đơn thuốc
+                                    </button>
+                                    <a t-att-href="'/pharmacy/prescription/%s' % prescription.id" class="btn btn-secondary ml-2">
+                                        <i class="fa fa-times"></i> Hủy
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

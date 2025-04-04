@@ -99,34 +99,6 @@
                         </t>
                     </div>
                 </div>
-
-                <!-- Quick stats -->
-                <div class="row mt-4">
-                    <div class="col-md-4">
-                        <div class="card bg-light">
-                            <div class="card-body">
-                                <h5>Tổng thuốc trong kho</h5>
-                                <p class="h3 text-primary" t-esc="len(pharmacy_products)"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card bg-light">
-                            <div class="card-body">
-                                <h5>Thuốc sắp hết hàng</h5>
-                                <p class="h3 text-warning" t-esc="pharmacy_products.filtered(lambda p: p.is_quantity)">0</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card bg-light">
-                            <div class="card-body">
-                                <h5>Thuốc được bảo hiểm</h5>
-                                <p class="h3 text-success" t-esc="pharmacy_products.filtered(lambda p: p.insurance_covered)">0</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </t>
     </template>

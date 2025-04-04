@@ -242,17 +242,6 @@
                             isValid = false;
                         }
 
-                        // Validate appointment time (8:00 - 21:00)
-                        var time = $('#appointment_time').val();
-                        if (time) {
-                            var hour = parseInt(time.split(':')[0]);
-                            if (hour &lt; 1 || hour >= 14) {
-                                $('#appointment_time').addClass('is-invalid');
-                                alert('Thời gian hẹn phải từ 8:00 sáng đến 21:00 tối.');
-                                isValid = false;
-                            }
-                        }
-
                         if (!isValid) {
                             // Scroll to first invalid field
                             $('html, body').animate({
@@ -424,7 +413,7 @@
         </t>
     </template>
 
-    <!-- Template for appointment check form -->
+        <!-- Template for appointment check form -->
     <template id="appointment_check_form" name="Kiểm tra lịch hẹn">
         <t t-call="website.layout">
             <div class="container py-5">
@@ -435,37 +424,95 @@
                                 <h2 class="mb-0">Kiểm tra lịch hẹn</h2>
                             </div>
                             <div class="card-body p-4">
-                                <div class="text-center mb-4">
-                                    <i class="fa fa-search fa-3x text-primary mb-3"></i>
-                                    <p class="text-muted">Nhập số điện thoại đã đăng ký để kiểm tra lịch hẹn của bạn</p>
-                                </div>
+                                <!-- System error message -->
+                                <t t-if="error">
+                                    <div class="alert alert-danger text-center">
+                                        <i class="fa fa-exclamation-triangle mr-2"></i> <t t-esc="error"/>
+                                    </div>
+                                </t>
 
-                                <form action="/appointment/check/result" method="post" class="mb-4" id="check_form">
-                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <!-- Email search form (only shown if OTP not sent) -->
+                                <t t-if="not otp_sent">
+                                    <div class="text-center mb-4">
+                                        <i class="fa fa-search fa-3x text-primary mb-3"></i>
+                                        <p class="text-muted">Nhập địa chỉ email của bạn để kiểm tra lịch hẹn</p>
+                                    </div>
 
-                                    <div class="form-group mb-4">
-                                        <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                                    <form method="POST" action="/appointment/check" class="mb-4" id="email-form">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                        <div class="form-group mb-4">
+                                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                                                </div>
+                                                <input type="email" name="email" id="email" class="form-control" required="1" t-att-value="email or ''" placeholder="example@example.com"/>
                                             </div>
-                                            <input type="tel" name="phone" id="check_phone" class="form-control" required="1" placeholder="Nhập số điện thoại của bạn"/>
                                         </div>
+
+                                        <div class="text-center mt-4">
+                                            <button type="submit" class="btn btn-primary btn-lg px-5" id="submit-btn">
+                                                <i class="fa fa-paper-plane mr-2"></i>Gửi mã OTP
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                    <!-- Hiển thị thông báo lỗi khi email không tồn tại -->
+                                    <t t-if="email_not_found">
+                                        <div class="alert alert-danger mt-3">
+                                            <i class="fa fa-exclamation-circle mr-2"></i> Không tìm thấy bệnh nhân với email này. Vui lòng kiểm tra lại hoặc liên hệ với quản trị viên.
+                                        </div>
+                                    </t>
+
+                                    <div class="text-center mt-4 pt-3 border-top">
+                                        <p class="text-muted">Bạn muốn đặt lịch hẹn mới?</p>
+                                        <a href="/appointment" class="btn btn-outline-primary">
+                                            <i class="fa fa-calendar-plus-o mr-2"></i>Đặt lịch hẹn
+                                        </a>
+                                    </div>
+                                </t>
+
+                                <!-- OTP verification form (shown after email submission) -->
+                                <t t-if="otp_sent and not otp_verified">
+                                    <div class="text-center mb-4">
+                                        <i class="fa fa-key fa-3x text-primary mb-3"></i>
+                                        <h4 class="text-center mb-3">Xác minh OTP</h4>
+                                        <p class="text-center">Chúng tôi đã gửi mã OTP đến email <strong t-esc="email"/>. Vui lòng kiểm tra hộp thư và nhập mã để xem lịch hẹn của bạn.</p>
                                     </div>
 
-                                    <div class="text-center mt-4">
-                                        <button type="submit" class="btn btn-primary btn-lg px-5">
-                                            <i class="fa fa-search mr-2"></i>Kiểm tra
-                                        </button>
+                                    <div class="alert alert-info">
+                                        <strong>Lưu ý:</strong> Nếu bạn không nhận được email, vui lòng kiểm tra thư mục thư rác (spam) hoặc liên hệ với quản trị viên.
                                     </div>
-                                </form>
 
-                                <div class="text-center mt-4 pt-3 border-top">
-                                    <p class="text-muted">Bạn muốn đặt lịch hẹn mới?</p>
-                                    <a href="/appointment" class="btn btn-outline-primary">
-                                        <i class="fa fa-calendar-plus-o mr-2"></i>Đặt lịch hẹn
-                                    </a>
-                                </div>
+                                    <t t-if="otp_error">
+                                        <div class="alert alert-danger">
+                                            Mã OTP không đúng hoặc đã hết hạn. Vui lòng thử lại.
+                                        </div>
+                                    </t>
+
+                                    <form method="POST" action="/appointment/verify_otp" id="otp-form">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="email" t-att-value="email"/>
+                                        <div class="form-group">
+                                            <label for="otp_code">Nhập mã OTP:</label>
+                                            <input type="text" class="form-control otp-input" id="otp_code" name="otp_code" maxlength="6" placeholder="------" required="required"/>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-block mt-3 justify-content-center" id="verify-btn">Xác nhận</button>
+                                    </form>
+
+                                    <div class="text-center mt-3">
+                                        <p>Chưa nhận được mã OTP?</p>
+                                        <form method="POST" action="/appointment/check" id="resend-form">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="email" t-att-value="email"/>
+                                            <button type="submit" class="btn btn-outline-secondary" id="resend-btn">Gửi lại mã OTP</button>
+                                        </form>
+                                        <p class="mt-3">
+                                            <a href="/appointment/check">Quay lại</a>
+                                        </p>
+                                    </div>
+                                </t>
                             </div>
                         </div>
                     </div>
@@ -499,20 +546,48 @@
                     border-color: #3498db;
                     box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
                 }
+                .otp-input {
+                    letter-spacing: 10px;
+                    font-size: 1.5rem;
+                    text-align: center;
+                }
             </style>
 
             <!-- JavaScript Validation -->
             <script type="text/javascript">
                 $(document).ready(function() {
-                    // Form validation
-                    $("#check_form").on('submit', function(e) {
-                        var phone = $('#check_phone').val();
-                        if (!phone || !phone.match(/^[0-9]{10,11}$/)) {
-                            $('#check_phone').addClass('is-invalid');
+                    // Form validation for email form
+                    $("#email-form").on('submit', function(e) {
+                        var email = $('#email').val();
+                        if (!email || !email.match(/^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$/)) {
+                            $('#email').addClass('is-invalid');
                             e.preventDefault();
+                            return false;
                         } else {
-                            $('#check_phone').removeClass('is-invalid');
+                            $('#email').removeClass('is-invalid');
+
+                            // Ngay lập tức thay đổi nút và vô hiệu hóa
+                            $("#submit-btn").prop('disabled', true);
+                            $("#submit-btn").addClass('disabled');
+                            $("#submit-btn").html('<i class="fa fa-spinner fa-spin mr-2"></i> Đang gửi...');
+
+                            // Cho phép form tiếp tục submit
+                            return true;
                         }
+                    });
+
+                    // OTP form validation and button state
+                    $("#otp-form").on('submit', function() {
+                        $("#verify-btn").prop('disabled', true);
+                        $("#verify-btn").addClass('disabled');
+                        $("#verify-btn").html('<i class="fa fa-spinner fa-spin mr-2"></i> Đang xác thực...');
+                    });
+
+                    // Resend OTP button state
+                    $("#resend-form").on('submit', function() {
+                        $("#resend-btn").prop('disabled', true);
+                        $("#resend-btn").addClass('disabled');
+                        $("#resend-btn").html('<i class="fa fa-spinner fa-spin mr-2"></i> Đang gửi...');
                     });
                 });
             </script>

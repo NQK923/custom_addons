@@ -572,6 +572,12 @@ class HealthcareManagement(http.Controller):
         if filter_date_to:
             domain.append(('appointment_date', '<=', filter_date_to))
 
+        try:
+            request.env['appointment.reminder'].sudo().action_sync_all_appointments()
+        except Exception as e:
+            _logger = logging.getLogger(__name__)
+            _logger.error("Lỗi khi đồng bộ lịch hẹn: %s", str(e), exc_info=True)
+
         reminders = request.env['appointment.reminder'].sudo().search(domain)
         return request.render('healthcare_management.appointment_reminder_list_template', {
             'reminders': reminders,

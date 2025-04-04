@@ -8,9 +8,9 @@ class PrescriptionManagementController(http.Controller):
     @http.route('/pharmacy/prescriptions', type='http', auth='public', website=True, methods=['GET', 'POST'])
     def prescription_list(self, **kwargs):
         search_value = kwargs.get('search_value', '')
-        prescriptions = False
         patient = False
 
+        # Get all prescriptions by default
         if search_value:
             # Search for patient by code or name
             patient = request.env['clinic.patient'].sudo().search([
@@ -22,6 +22,12 @@ class PrescriptionManagementController(http.Controller):
                 prescriptions = request.env['prescription.order'].sudo().search([
                     ('patient_id', '=', patient.id)
                 ], order='date desc')
+            else:
+                # If no patient is found but search was performed, return empty set
+                prescriptions = request.env['prescription.order'].sudo().search([])
+        else:
+            # If no search, get all prescriptions
+            prescriptions = request.env['prescription.order'].sudo().search([], order='date desc')
 
         values = {
             'patient': patient,
@@ -423,3 +429,74 @@ class PrescriptionManagementController(http.Controller):
             'low_stock_products': low_stock_products,
         }
         return request.render('prescription_management.pharmacy_dashboard_template', values)
+
+    @http.route('/pharmacy/prescription/<model("prescription.order"):prescription_id>/update', type='http', auth='user',
+                website=True, methods=['GET', 'POST'])
+    def update_prescription(self, prescription_id, **kwargs):
+        if not prescription_id:
+            return request.redirect('/pharmacy/prescriptions')
+
+        if request.httprequest.method == 'POST':
+            try:
+                # Prepare values to update
+                vals = {
+                    'patient_id': int(kwargs.get('patient_id')) if kwargs.get(
+                        'patient_id') else prescription_id.patient_id.id,
+                    'numdate': float(kwargs.get('numdate', 0)) if kwargs.get('numdate') else prescription_id.numdate,
+                    'notes': kwargs.get('notes', '') if kwargs.get('notes') is not None else prescription_id.notes,
+                }
+
+                # Add staff_id if it exists
+                if kwargs.get('staff_id'):
+                    vals['staff_id'] = int(kwargs.get('staff_id'))
+                elif prescription_id.staff_id:
+                    vals['staff_id'] = prescription_id.staff_id.id
+
+                # Update the prescription
+                prescription_id.sudo().write(vals)
+                return request.redirect(f'/pharmacy/prescription/{prescription_id.id}')
+
+            except Exception as e:
+                patients = request.env['clinic.patient'].sudo().search([], order='name')
+                staff = request.env['clinic.staff'].sudo().search([], order='name')
+
+                values = {
+                    'prescription': prescription_id,
+                    'patients': patients,
+                    'staff': staff,
+                    'error_message': str(e),
+                }
+                return request.render('prescription_management.update_prescription_template', values)
+
+        # GET request - show the update form
+        patients = request.env['clinic.patient'].sudo().search([], order='name')
+        staff = request.env['clinic.staff'].sudo().search([], order='name')
+
+        values = {
+            'prescription': prescription_id,
+            'patients': patients,
+            'staff': staff,
+        }
+        return request.render('prescription_management.update_prescription_template', values)
+
+    @http.route('/pharmacy/prescription/<model("prescription.order"):prescription_id>/delete', type='http', auth='user',
+                website=True)
+    def delete_prescription(self, prescription_id, **kwargs):
+        if not prescription_id:
+            return request.redirect('/pharmacy/prescriptions')
+
+        try:
+            # First try to get the patient ID to redirect back to their prescriptions
+            patient_id = prescription_id.patient_id
+
+            # Delete the prescription
+            prescription_id.sudo().unlink()
+
+            # If we had a patient, redirect to their prescription list
+            if patient_id:
+                return request.redirect(f'/pharmacy/prescriptions?search_value={patient_id.code}')
+            else:
+                return request.redirect('/pharmacy/prescriptions?deletion_success=1')
+
+        except AccessError:
+            return request.redirect('/pharmacy/prescriptions?deletion_error=1')
