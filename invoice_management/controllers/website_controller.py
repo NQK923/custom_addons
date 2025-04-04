@@ -95,52 +95,91 @@ class InvoiceWebsiteController(http.Controller):
 
     def extract_invoice_values(self, kw):
         """Extract invoice values from form submission"""
+        # Get form object for better array handling
+        form = request.httprequest.form
+
         values = {
-            'patient_id': int(kw.get('patient_id')),
-            'invoice_date': kw.get('invoice_date'),
-            'note': kw.get('note', ''),
+            'patient_id': int(form.get('patient_id')),
+            'invoice_date': form.get('invoice_date'),
+            'note': form.get('note', ''),
         }
 
         # Process service lines
         service_lines = []
-        service_ids = kw.getlist('service_id') if hasattr(kw, 'getlist') else kw.get('service_id', [])
-        service_qtys = kw.getlist('service_qty') if hasattr(kw, 'getlist') else kw.get('service_qty', [])
+        # Get arrays from form data
+        service_ids = form.getlist('service_id[]')
+        service_qtys = form.getlist('service_qty[]')
+        service_prices = form.getlist('service_price_unit[]')
 
-        # Convert to list if not already
-        if not isinstance(service_ids, list):
-            service_ids = [service_ids]
-        if not isinstance(service_qtys, list):
-            service_qtys = [service_qtys]
-
-        for i, service_id in enumerate(service_ids):
-            if service_id and i < len(service_qtys) and service_qtys[i]:
+        # Process each service line
+        for i in range(len(service_ids)):
+            if i < len(service_qtys) and service_ids[i]:
                 try:
-                    service_lines.append((0, 0, {
-                        'service_id': int(service_id),
-                        'quantity': float(service_qtys[i]),
-                    }))
-                except (ValueError, TypeError):
+                    service_id = int(service_ids[i])
+                    quantity = float(service_qtys[i])
+
+                    if service_id > 0 and quantity > 0:
+                        # Get the price from the form or fetch from service
+                        price_unit = 0
+                        if i < len(service_prices) and service_prices[i]:
+                            price_unit = float(service_prices[i])
+
+                        # If price is still 0, get it from the service record
+                        if price_unit <= 0:
+                            service = request.env['clinic.service'].browse(service_id)
+                            if service.exists():
+                                price_unit = service.price
+
+                        service_line = {
+                            'service_id': service_id,
+                            'quantity': quantity,
+                        }
+
+                        # Only set price_unit if it's greater than 0
+                        if price_unit > 0:
+                            service_line['price_unit'] = price_unit
+
+                        service_lines.append((0, 0, service_line))
+                except (ValueError, TypeError) as e:
                     continue
 
         # Process product lines
         product_lines = []
-        product_ids = kw.getlist('product_id') if hasattr(kw, 'getlist') else kw.get('product_id', [])
-        product_qtys = kw.getlist('product_qty') if hasattr(kw, 'getlist') else kw.get('product_qty', [])
+        # Get arrays from form data
+        product_ids = form.getlist('product_id[]')
+        product_qtys = form.getlist('product_qty[]')
+        product_prices = form.getlist('product_price_unit[]')
 
-        # Convert to list if not already
-        if not isinstance(product_ids, list):
-            product_ids = [product_ids]
-        if not isinstance(product_qtys, list):
-            product_qtys = [product_qtys]
-
-        for i, product_id in enumerate(product_ids):
-            if product_id and i < len(product_qtys) and product_qtys[i]:
+        # Process each product line
+        for i in range(len(product_ids)):
+            if i < len(product_qtys) and product_ids[i]:
                 try:
-                    product_lines.append((0, 0, {
-                        'product_id': int(product_id),
-                        'quantity': float(product_qtys[i]),
-                    }))
-                except (ValueError, TypeError):
+                    product_id = int(product_ids[i])
+                    quantity = float(product_qtys[i])
+
+                    if product_id > 0 and quantity > 0:
+                        # Get the price from the form or fetch from product
+                        price_unit = 0
+                        if i < len(product_prices) and product_prices[i]:
+                            price_unit = float(product_prices[i])
+
+                        # If price is still 0, get it from the product record
+                        if price_unit <= 0:
+                            product = request.env['pharmacy.product'].browse(product_id)
+                            if product.exists():
+                                price_unit = product.unit_price
+
+                        product_line = {
+                            'product_id': product_id,
+                            'quantity': quantity,
+                        }
+
+                        # Only set price_unit if it's greater than 0
+                        if price_unit > 0:
+                            product_line['price_unit'] = price_unit
+
+                        product_lines.append((0, 0, product_line))
+                except (ValueError, TypeError) as e:
                     continue
 
         # Only include non-empty line arrays
