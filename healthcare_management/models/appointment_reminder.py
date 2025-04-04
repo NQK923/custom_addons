@@ -83,34 +83,128 @@ class AppointmentReminder(models.Model):
         for reminder in reminders:
             self._send_reminder_email(reminder)
 
-    def _send_reminder_email(self, reminder):
+    def _send_reminder_email(self):
         """Gửi email thông báo cho lịch hẹn"""
         try:
-            if not reminder.patient_id.email:
-                reminder.write({
+            import logging
+            from odoo.tools import formataddr
+            import html
+
+            _logger = logging.getLogger(__name__)
+            _logger.info(f"Attempting to send appointment reminder email to {self.patient_id.email}")
+
+            if not self.patient_id.email:
+                self.write({
                     'state': 'failed',
                     'email_status': 'Không thể gửi email: Bệnh nhân không có địa chỉ email'
                 })
                 return False
 
-            email_template = self.env.ref('healthcare_management.appointment_reminder_email_template')
+            # Get company information
+            company = self.env.company
+            company_email = company.email or 'noreply@example.com'
 
-            email_values = {
-                'email_to': reminder.patient_id.email,
+            # Format appointment date - attempt to format as in the template
+            appointment_date = self.appointment_date
+            formatted_date = appointment_date.strftime("%d/%m/%Y %H:%M:%S")
+            try:
+                user_tz = self.env.user.tz
+                if user_tz:
+                    from pytz import timezone
+                    user_timezone = timezone(user_tz)
+                    appointment_date_tz = appointment_date.astimezone(user_timezone)
+                    formatted_date = appointment_date_tz.strftime("%d/%m/%Y %H:%M:%S")
+            except Exception as e:
+                _logger.warning(f"Error formatting date with timezone: {str(e)}")
+
+            # Create email body
+            subject = "Nhắc nhở: Lịch hẹn khám"
+            body_html = f"""
+            <div style="margin: 0px; padding: 0px; font-size: 13px;">
+                <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    Kính gửi {html.escape(self.patient_id.name or 'Quý khách')},
+                </p>
+                <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    Chúng tôi xin gửi lời nhắc nhở về lịch hẹn khám sắp tới của bạn:
+                </p>
+                <ul>
+                    <li>Mã lịch hẹn: <strong>{html.escape(self.name or '')}</strong></li>
+                    <li>Thời gian: <strong>{formatted_date}</strong></li>
+                    <li>Bác sĩ: <strong>{html.escape(self.staff_id.staff_name or 'Chưa xác định')}</strong></li>
+                    <li>Phòng khám: <strong>{html.escape(self.room_id.name or 'Chưa xác định')}</strong></li>
+                </ul>
+                <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    Vui lòng đến trước 15 phút để hoàn tất thủ tục.
+                </p>
+                <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    Nếu bạn cần thay đổi lịch hẹn, vui lòng liên hệ với chúng tôi trước ít nhất 24 giờ.
+                </p>
+                <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    Trân trọng,<br/>
+                    Phòng khám {html.escape(company.name or '')}
+                </p>
+            </div>
+            """
+
+            # Create mail values
+            mail_values = {
+                'subject': subject,
+                'body_html': body_html,
+                'email_from': formataddr((company.name, company_email)) if company.name else company_email,
+                'email_to': self.patient_id.email,
+                'auto_delete': True,
             }
 
-            email_template.send_mail(reminder.id, force_send=True, email_values=email_values)
-            reminder.write({'state': 'sent', 'email_status': 'Email đã được gửi thành công'})
+            # Create and send the mail
+            mail = self.env['mail.mail'].sudo().create(mail_values)
+            _logger.info(f"Created mail.mail record with ID: {mail.id}")
 
-            return True
+            mail.send(raise_exception=False)
+            _logger.info(f"Mail send attempted for ID: {mail.id}")
+
+            # Check mail state
+            mail.refresh()
+            _logger.info(f"Mail state after sending: {mail.state}")
+
+            if mail.state == 'sent' or mail.state == 'outgoing':
+                self.write({'state': 'sent', 'email_status': 'Email đã được gửi thành công'})
+                return True
+            else:
+                self.write({'state': 'failed', 'email_status': f'Lỗi khi gửi email: Trạng thái email {mail.state}'})
+                return False
+
         except Exception as e:
-            reminder.write({'state': 'failed', 'email_status': f'Lỗi khi gửi email: {str(e)}'})
+            import traceback
+            _logger.error(f"Error sending appointment reminder email: {str(e)}")
+            _logger.error(traceback.format_exc())
+            self.write({'state': 'failed', 'email_status': f'Lỗi khi gửi email: {str(e)}'})
             return False
 
     def action_send_reminder_now(self):
         """Hành động gửi thông báo ngay lập tức"""
-        for record in self:
-            self._send_reminder_email(record)
+        self.ensure_one()
+        import logging
+        _logger = logging.getLogger(__name__)
+
+        try:
+            # Call the email sending method
+            _logger.info(f"Sending reminder for appointment {self.name}")
+            result = self._send_reminder_email()
+            if result:
+                _logger.info(f"Successfully sent reminder for appointment {self.name}")
+                return True
+            else:
+                _logger.error(f"Failed to send reminder for appointment {self.name}")
+                return False
+        except Exception as e:
+            import traceback
+            _logger.error(f"Exception when sending reminder: {str(e)}")
+            _logger.error(traceback.format_exc())
+            self.write({
+                'state': 'failed',
+                'email_status': f'Lỗi khi gửi email: {str(e)}'
+            })
+            return False
 
     def action_cancel_reminder(self):
         """Hủy thông báo"""
