@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Purchase Order Form Template -->
+        <!-- Purchase Order Form Template -->
     <template id="purchase_form_template" name="Create Purchase Order">
         <t t-call="invoice_management.invoice_management_layout">
             <t t-set="page_title">Tạo phiếu nhập hàng</t>
@@ -16,7 +17,12 @@
             <div class="im-card">
                 <h3>Tạo phiếu nhập hàng mới</h3>
 
-                <form method="POST" action="/purchase/create">
+                <!-- Error message display -->
+                <div t-if="error_message" class="alert alert-danger" role="alert">
+                    <t t-esc="error_message"/>
+                </div>
+
+                <form action="/purchase/create" method="POST" id="purchase-form">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                     <div class="form-group row">
@@ -40,27 +46,36 @@
                     <div class="product-lines-container">
                         <div class="form-row align-items-center mb-2 product-line-template">
                             <div class="col-5">
-                                <select name="product_id" class="form-control product-select">
+                                <select name="product_id[]" class="form-control product-select" required="required" onchange="updateProductPrice(this)">
                                     <option value="">-- Chọn dược phẩm --</option>
                                     <t t-foreach="products" t-as="product">
-                                        <option t-att-value="product.id"><t t-esc="product.name"/></option>
+                                        <option t-att-value="product.id" t-att-data-price="product.unit_price or 0">
+                                            <t t-esc="product.name"/>
+                                        </option>
                                     </t>
                                 </select>
                             </div>
-                            <div class="col-2">
-                                <input type="number" name="quantity" class="form-control" placeholder="Số lượng"
-                                       min="1" step="1" value="1"/>
+                            <div class="col-2 d-flex align-items-center gap-2">
+                                <strong class="mb-0">Số lượng:</strong>
+                                <input type="number" name="quantity[]" class="form-control" placeholder="Số lượng"
+                                       min="1" step="1" value="1" required="required"/>
                             </div>
-                            <div class="col-3">
-                                <input type="number" name="price_unit" class="form-control" placeholder="Đơn giá"
-                                       min="0" step="1000" value="0"/>
+                            <div class="col-3 d-flex align-items-center gap-2">
+                                <strong class="mb-0">Đơn giá:</strong>
+                                <input type="number" name="price_unit[]" class="form-control product-price" placeholder="Đơn giá"
+                                       min="0" step="1000" value="0" required="required" readonly="readonly"/>
                             </div>
+
                             <div class="col-2">
                                 <button type="button" class="btn btn-danger remove-line">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </div>
                         </div>
+
+                        <!-- Product lines will be added here -->
+                        <div id="product-lines"></div>
+
                         <div class="text-right mb-3">
                             <button type="button" class="btn btn-sm btn-info add-product-line">
                                 <i class="fa fa-plus"></i> Thêm sản phẩm
@@ -77,16 +92,38 @@
 
                     <div class="form-group row">
                         <div class="col-sm-9 offset-sm-3">
-                            <button type="submit" class="btn btn-primary">Tạo phiếu nhập</button>
+                            <button type="button" id="submit-purchase-btn" class="btn btn-primary">Tạo phiếu nhập</button>
                             <a href="/purchase/list" class="btn btn-secondary ml-2">Hủy</a>
                         </div>
                     </div>
                 </form>
 
                 <script type="text/javascript">
+                    // Global function to update product price
+                    function updateProductPrice(selectElement) {
+                        try {
+                            var selectedOption = selectElement.options[selectElement.selectedIndex];
+                            var price = selectedOption.getAttribute('data-price') || 0;
+                            var priceField = selectElement.closest('.form-row').querySelector('.product-price');
+
+                            console.log('Selected product with price:', price);
+
+                            if (priceField) {
+                                priceField.value = price;
+                            }
+                        } catch (error) {
+                            console.error('Error updating price:', error);
+                        }
+                    }
+
                     document.addEventListener('DOMContentLoaded', function() {
-                        // Add product line
-                        document.querySelector('.add-product-line').addEventListener('click', function() {
+                        console.log('DOM loaded - initializing purchase form');
+
+                        // Add first product line when the page loads
+                        addProductLine();
+
+                        // Add product line function
+                        function addProductLine() {
                             var template = document.querySelector('.product-line-template').cloneNode(true);
                             template.classList.remove('product-line-template');
                             template.classList.add('product-line');
@@ -94,16 +131,98 @@
 
                             // Add event listener to remove button
                             template.querySelector('.remove-line').addEventListener('click', function() {
-                                this.closest('.product-line').remove();
+                                var lines = document.querySelectorAll('.product-line');
+                                if (lines.length > 1) {
+                                    this.closest('.product-line').remove();
+                                } else {
+                                    alert('Phải có ít nhất một sản phẩm trong phiếu nhập.');
+                                }
                             });
 
-                            // Insert before the button's parent div (which is the text-right div)
-                            var container = document.querySelector('.product-lines-container');
-                            container.insertBefore(template, document.querySelector('.product-lines-container .text-right'));
-                        });
+                            // Set up product selection event handler
+                            var select = template.querySelector('.product-select');
+                            if (select) {
+                                select.addEventListener('change', function() {
+                                    updateProductPrice(this);
+                                });
+                            }
+
+                            // Add to product lines container
+                            document.getElementById('product-lines').appendChild(template);
+                        }
+
+                        // Add event listener to add button
+                        var addButton = document.querySelector('.add-product-line');
+                        if (addButton) {
+                            addButton.addEventListener('click', addProductLine);
+                            console.log('Add product line button event handler attached');
+                        } else {
+                            console.error('Add product line button not found');
+                        }
 
                         // Hide template line
                         document.querySelector('.product-line-template').style.display = 'none';
+
+                        // Validate form function
+                        function validatePurchaseForm() {
+                            var hasValidLine = false;
+
+                            document.querySelectorAll('.product-line').forEach(function(line) {
+                                var productId = line.querySelector('select[name="product_id[]"]').value;
+                                var quantity = line.querySelector('input[name="quantity[]"]').value;
+                                var priceUnit = line.querySelector('input[name="price_unit[]"]').value;
+
+                                console.log('Line values:', productId, quantity, priceUnit);
+
+                                if (productId &amp;&amp; quantity > 0) {
+                                    hasValidLine = true;
+
+                                    // Make sure price is set if a product is selected
+                                    if (!priceUnit || priceUnit &lt;= 0) {
+                                        // Get price from the selected option
+                                        var select = line.querySelector('select[name="product_id[]"]');
+                                        var selectedOption = select.options[select.selectedIndex];
+                                        var price = selectedOption.getAttribute('data-price') || 0;
+
+                                        // Update the price field
+                                        line.querySelector('input[name="price_unit[]"]').value = price;
+                                    }
+                                }
+                            });
+
+                            if (!hasValidLine) {
+                                alert('Vui lòng thêm ít nhất một sản phẩm hợp lệ vào phiếu nhập.');
+                                return false;
+                            }
+
+                            return true;
+                        }
+
+                        // Manual form submission handler
+                        var submitButton = document.getElementById('submit-purchase-btn');
+                        if (submitButton) {
+                            submitButton.addEventListener('click', function(e) {
+                                console.log('Submit button clicked');
+                                try {
+                                    var form = document.getElementById('purchase-form');
+                                    if (form) {
+                                        if (validatePurchaseForm()) {
+                                            console.log('Form validated - submitting');
+                                            form.submit();
+                                        }
+                                    } else {
+                                        console.error('Form not found');
+                                        alert('Lỗi: Không tìm thấy form');
+                                    }
+                                } catch (error) {
+                                    console.error('Error in submit handler:', error);
+                                    alert('Đã xảy ra lỗi: ' + error.message);
+                                }
+                            });
+                            console.log('Submit button event handler attached');
+                        } else {
+                            console.error('Submit button not found');
+                        }
                     });
                 </script>
             </div>

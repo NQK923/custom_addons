@@ -356,9 +356,6 @@
                        onclick="return confirm('Bạn có chắc chắn muốn xóa đơn thuốc này không?');">
                         <i class="fa fa-trash"></i> Xóa
                     </a>
-                </div>
-
-                <div class="btn-group mb-3">
                     <a href="/pharmacy/prescriptions" class="back-button">
                         <i class="fa fa-arrow-left"></i> Quay lại danh sách
                     </a>

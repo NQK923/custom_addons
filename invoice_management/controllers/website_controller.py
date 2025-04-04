@@ -1,5 +1,5 @@
 from odoo import http
-from odoo.http import request
+from odoo.http import request, _logger
 from datetime import datetime, timedelta
 import json
 
@@ -266,45 +266,92 @@ class InvoiceWebsiteController(http.Controller):
     @http.route('/purchase/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def purchase_create(self, **kw):
         if request.httprequest.method == 'POST':
-            # Get basic form data
-            purchase_vals = {
-                'date': kw.get('date'),
-                'supplier_name': kw.get('supplier_name'),
-                'note': kw.get('note', ''),
-            }
+            try:
+                # Get basic form data
+                purchase_vals = {
+                    'date': request.httprequest.form.get('date'),
+                    'supplier_name': request.httprequest.form.get('supplier_name'),
+                    'note': request.httprequest.form.get('note', ''),
+                }
 
-            # Process product lines
-            line_vals = []
-            product_ids = kw.getlist('product_id') if hasattr(kw, 'getlist') else kw.get('product_id', [])
-            quantities = kw.getlist('quantity') if hasattr(kw, 'getlist') else kw.get('quantity', [])
-            price_units = kw.getlist('price_unit') if hasattr(kw, 'getlist') else kw.get('price_unit', [])
+                # Log for debugging
+                _logger.info(f"Creating purchase with basic info: {purchase_vals}")
 
-            # Convert to lists if not already
-            if not isinstance(product_ids, list):
-                product_ids = [product_ids]
-            if not isinstance(quantities, list):
-                quantities = [quantities]
-            if not isinstance(price_units, list):
-                price_units = [price_units]
+                # Process product lines
+                line_vals = []
+                form = request.httprequest.form
 
-            for i, product_id in enumerate(product_ids):
-                if product_id and i < len(quantities) and i < len(price_units):
-                    try:
-                        if int(product_id) and float(quantities[i]) > 0 and float(price_units[i]) > 0:
-                            line_vals.append((0, 0, {
-                                'product_id': int(product_id),
-                                'quantity': int(quantities[i]),
-                                'price_unit': float(price_units[i]),
-                            }))
-                    except (ValueError, TypeError):
-                        continue
+                # Get arrays from form data
+                product_ids = form.getlist('product_id[]')
+                quantities = form.getlist('quantity[]')
+                price_units = form.getlist('price_unit[]')
 
-            if line_vals:
+                _logger.info(f"Received product_ids: {product_ids}")
+                _logger.info(f"Received quantities: {quantities}")
+                _logger.info(f"Received price_units: {price_units}")
+
+                # Process each line
+                for i in range(len(product_ids)):
+                    if i < len(quantities) and i < len(price_units):
+                        try:
+                            product_id = int(product_ids[i])
+                            quantity = int(quantities[i])
+
+                            if product_id > 0 and quantity > 0:
+                                # Get product record to get the price if needed
+                                product = request.env['pharmacy.product'].browse(product_id)
+
+                                # Get price from form or fallback to product's purchase_price or unit_price
+                                try:
+                                    price_unit = float(price_units[i])
+                                    if price_unit <= 0:
+                                        # Fallback to product price
+                                        price_unit = product.unit_price or 0
+                                except (ValueError, TypeError):
+                                    price_unit = product.unit_price or 0
+
+                                _logger.info(
+                                    f"Adding line: product_id={product_id}, quantity={quantity}, price_unit={price_unit}")
+
+                                if price_unit > 0:
+                                    line_vals.append((0, 0, {
+                                        'product_id': product_id,
+                                        'quantity': quantity,
+                                        'price_unit': price_unit,
+                                    }))
+                                else:
+                                    _logger.warning(f"Product {product_id} has no price, skipping line")
+                        except (ValueError, TypeError) as e:
+                            _logger.error(f"Error processing line {i}: {e}")
+                            continue
+
+                # Ensure we have at least one line
+                if not line_vals:
+                    _logger.warning("No valid product lines found")
+                    return request.render('invoice_management.purchase_form_template', {
+                        'error_message': 'Vui lòng thêm ít nhất một sản phẩm hợp lệ vào phiếu nhập.',
+                        'products': request.env['pharmacy.product'].search([]),
+                        'page_name': 'purchase_form',
+                        'today': datetime.today().strftime('%Y-%m-%d'),
+                    })
+
                 purchase_vals['line_ids'] = line_vals
 
-                # Create purchase order
-                purchase = request.env['clinic.purchase.order'].create(purchase_vals)
+                # Create purchase order with tracking disabled to avoid potential issues
+                purchase = request.env['clinic.purchase.order'].with_context(tracking_disable=True).create(
+                    purchase_vals)
+                _logger.info(f"Successfully created purchase order with ID: {purchase.id}")
+
                 return request.redirect(f'/purchase/view/{purchase.id}')
+
+            except Exception as e:
+                _logger.error(f"Error creating purchase order: {e}", exc_info=True)
+                return request.render('invoice_management.purchase_form_template', {
+                    'error_message': f'Đã xảy ra lỗi: {str(e)}',
+                    'products': request.env['pharmacy.product'].search([]),
+                    'page_name': 'purchase_form',
+                    'today': datetime.today().strftime('%Y-%m-%d'),
+                })
 
         # GET request - show form
         products = request.env['pharmacy.product'].search([])
