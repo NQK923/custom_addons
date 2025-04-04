@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Template danh sách thông báo lịch hẹn -->
-    <template id="appointment_reminder_list_template" name="Danh sách thông báo lịch hẹn">
+<template id="appointment_reminder_list_template" name="Danh sách thông báo lịch hẹn">
         <t t-call="website.layout">
             <!-- CSS Inline -->
             <style>
@@ -37,22 +36,6 @@
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
 
-                .btn-sync {
-                    transition: all 0.3s ease;
-                }
-
-                .btn-sync:hover {
-                    transform: rotate(180deg);
-                }
-
-                .btn-sync i {
-                    transition: all 0.3s ease;
-                }
-
-                .btn-sync:hover i {
-                    transform: rotate(180deg);
-                }
-
                 .badge {
                     font-size: 0.9rem;
                     padding: 0.4rem 0.6rem;
@@ -74,13 +57,8 @@
 
             <div class="container mt-4 reminder-container">
                 <div class="row mb-4">
-                    <div class="col-md-8">
+                    <div class="col-md-12">
                         <h1>Danh sách thông báo lịch hẹn</h1>
-                    </div>
-                    <div class="col-md-4 text-end">
-                        <button id="btnSyncAppointments" class="btn btn-primary btn-sync">
-                            <i class="fa fa-sync me-1"></i> Đồng bộ lịch hẹn
-                        </button>
                     </div>
                 </div>
 
@@ -161,7 +139,6 @@
                 <!-- Hiển thị khi không có dữ liệu -->
                 <div t-if="not reminders" class="alert alert-info text-center mt-4">
                     <h4>Không có thông báo lịch hẹn nào.</h4>
-                    <p>Hãy nhấn nút "Đồng bộ lịch hẹn" để tạo thông báo cho các lịch hẹn hiện có.</p>
                 </div>
             </div>
 
@@ -186,51 +163,6 @@
                     if (filterDateTo) {
                         document.getElementById('filter_date_to').value = filterDateTo;
                     }
-
-                    // Xử lý nút đồng bộ lịch hẹn
-                    document.getElementById('btnSyncAppointments').addEventListener('click', function() {
-                        var button = this;
-                        var icon = button.querySelector('i');
-
-                        if (confirm('Bạn có muốn đồng bộ tất cả các lịch hẹn từ hệ thống?')) {
-                            // Hiển thị hiệu ứng quay
-                            icon.classList.add('fa-spin');
-                            button.disabled = true;
-
-                            // Gửi yêu cầu AJAX
-                            fetch('/healthcare/appointment_reminder/sync', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-Requested-With': 'XMLHttpRequest'
-                                },
-                                body: JSON.stringify({
-                                    csrf_token: document.querySelector('meta[name="csrf-token"]')?.content
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(result => {
-                                // Dừng hiệu ứng quay
-                                icon.classList.remove('fa-spin');
-                                button.disabled = false;
-
-                                if (result.success) {
-                                    alert('Đã đồng bộ ' + result.count + ' lịch hẹn mới.');
-                                    location.reload();
-                                } else {
-                                    alert('Đã xảy ra lỗi khi đồng bộ: ' + (result.error || 'Không xác định'));
-                                }
-                            })
-                            .catch(error => {
-                                // Dừng hiệu ứng quay
-                                icon.classList.remove('fa-spin');
-                                button.disabled = false;
-
-                                console.error('Error:', error);
-                                alert('Đã xảy ra lỗi khi kết nối đến máy chủ.');
-                            });
-                        }
-                    });
                 });
             </script>
         </t>

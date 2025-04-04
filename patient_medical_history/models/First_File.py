@@ -243,7 +243,7 @@ class PatientOTP(models.Model):
     @api.model
     def generate_otp(self, email):
         try:
-            otp_code = ''.join(random.choice('0123456789') for _ in range(6))
+            otp_code = random.randint(100000, 999999)
             expiry_time = datetime.now() + timedelta(minutes=10)
             _logger.info(f"Generating OTP for email: {email}")
             old_otps = self.search([('email', '=', email)])

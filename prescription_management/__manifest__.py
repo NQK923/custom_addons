@@ -4,12 +4,13 @@
     'category': 'Healthcare',
     'summary': 'Manage pharmacy inventory and stock operations',
     'description': 'A module to manage pharmacy inventory, stock in/out, and ensure sufficient medicine supply for patients.',
-    'depends': ['base', 'website'],  # Added website dependency
+    'depends': ['base', 'website', 'staff_management'],  # Added website dependency
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/prescription_templates.xml',
         'views/prescription_edit_templates.xml',
+        'views/prescription_update_template.xml',
         'views/pharmacy_product_templates.xml',
         'views/pharmacy_product_form_template.xml',
         'views/pharmacy_dashboard_template.xml',
