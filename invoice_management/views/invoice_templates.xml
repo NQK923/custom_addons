@@ -22,7 +22,12 @@
                     <t t-else="">Tạo hóa đơn mới</t>
                 </h3>
 
-                <form method="POST" t-attf-action="/invoice/#{edit_mode and 'edit/' + str(invoice.id) or 'create'}">
+                <!-- Error message display -->
+                <div t-if="error_message" class="alert alert-danger" role="alert">
+                    <t t-esc="error_message"/>
+                </div>
+
+                <form method="POST" t-attf-action="/invoice/#{edit_mode and 'edit/' + str(invoice.id) or 'create'}" id="invoice-form">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                     <div class="form-group row">
@@ -51,48 +56,24 @@
                     <!-- Service Lines -->
                     <h4 class="mt-4 mb-3">Dịch vụ</h4>
                     <div class="service-lines-container">
-                        <div t-if="invoice and invoice.service_lines" class="mb-3">
-                            <div t-foreach="invoice.service_lines" t-as="line" class="form-row align-items-center mb-2 service-line">
-                                <div class="col-5">
-                                    <select name="service_id" class="form-control service-select">
-                                        <option value="">-- Chọn dịch vụ --</option>
-                                        <!-- We would need to fetch services here -->
-                                        <option t-att-value="line.service_id.id" selected="selected">
-                                            <t t-esc="line.service_id.service_name"/>
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="col-2">
-                                    <input type="number" name="service_qty" class="form-control" placeholder="Số lượng"
-                                           min="1" step="1" t-att-value="line.quantity"/>
-                                </div>
-                                <div class="col-3">
-                                    <span class="form-control-plaintext">
-                                        <t t-esc="'{:,.0f}'.format(line.price_unit)"/> VND
-                                    </span>
-                                </div>
-                                <div class="col-2">
-                                    <button type="button" class="btn btn-danger remove-line">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
                         <div class="form-row align-items-center mb-2 service-line-template">
                             <div class="col-5">
-                                <select name="service_id" class="form-control service-select">
+                                <select name="service_id[]" class="form-control service-select" onchange="updateServicePrice(this)">
                                     <option value="">-- Chọn dịch vụ --</option>
                                     <t t-foreach="services" t-as="service">
-                                        <option t-att-value="service.id"><t t-esc="service.service_name"/></option>
+                                        <option t-att-value="service.id" t-att-data-price="service.price">
+                                            <t t-esc="service.service_name"/>
+                                        </option>
                                     </t>
                                 </select>
                             </div>
                             <div class="col-2">
-                                <input type="number" name="service_qty" class="form-control" placeholder="Số lượng"
+                                <input type="number" name="service_qty[]" class="form-control" placeholder="Số lượng"
                                        min="1" step="1" value="1"/>
                             </div>
                             <div class="col-3">
-                                <span class="form-control-plaintext price-display">0 VND</span>
+                                <span class="form-control-plaintext service-price-display">0 VND</span>
+                                <input type="hidden" name="service_price_unit[]" class="service-price" value="0"/>
                             </div>
                             <div class="col-2">
                                 <button type="button" class="btn btn-danger remove-line">
@@ -100,6 +81,43 @@
                                 </button>
                             </div>
                         </div>
+
+                        <!-- Service lines will be added here -->
+                        <div id="service-lines">
+                            <!-- Display existing service lines for edit mode -->
+                            <t t-if="invoice and invoice.service_lines">
+                                <t t-foreach="invoice.service_lines" t-as="line">
+                                    <div class="form-row align-items-center mb-2 service-line">
+                                        <div class="col-5">
+                                            <select name="service_id[]" class="form-control service-select" onchange="updateServicePrice(this)">
+                                                <option value="">-- Chọn dịch vụ --</option>
+                                                <t t-foreach="services" t-as="service">
+                                                    <option t-att-value="service.id" t-att-data-price="service.price" t-att-selected="line.service_id.id == service.id">
+                                                        <t t-esc="service.service_name"/>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="col-2">
+                                            <input type="number" name="service_qty[]" class="form-control" placeholder="Số lượng"
+                                                   min="1" step="1" t-att-value="line.quantity"/>
+                                        </div>
+                                        <div class="col-3">
+                                            <span class="form-control-plaintext service-price-display">
+                                                <t t-esc="'{:,.0f}'.format(line.price_unit)"/> VND
+                                            </span>
+                                            <input type="hidden" name="service_price[]" class="service-price" t-att-value="line.price_unit"/>
+                                        </div>
+                                        <div class="col-2">
+                                            <button type="button" class="btn btn-danger remove-line">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </t>
+                            </t>
+                        </div>
+
                         <div class="text-right mb-3">
                             <button type="button" class="btn btn-sm btn-info add-service-line">
                                 <i class="fa fa-plus"></i> Thêm dịch vụ
@@ -110,48 +128,24 @@
                     <!-- Product Lines -->
                     <h4 class="mt-4 mb-3">Thuốc</h4>
                     <div class="product-lines-container">
-                        <div t-if="invoice and invoice.product_lines" class="mb-3">
-                            <div t-foreach="invoice.product_lines" t-as="line" class="form-row align-items-center mb-2 product-line">
-                                <div class="col-5">
-                                    <select name="product_id" class="form-control product-select">
-                                        <option value="">-- Chọn thuốc --</option>
-                                        <!-- We would need to fetch products here -->
-                                        <option t-att-value="line.product_id.id" selected="selected">
-                                            <t t-esc="line.product_id.name"/>
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="col-2">
-                                    <input type="number" name="product_qty" class="form-control" placeholder="Số lượng"
-                                           min="1" step="1" t-att-value="line.quantity"/>
-                                </div>
-                                <div class="col-3">
-                                    <span class="form-control-plaintext">
-                                        <t t-esc="'{:,.0f}'.format(line.price_unit)"/> VND
-                                    </span>
-                                </div>
-                                <div class="col-2">
-                                    <button type="button" class="btn btn-danger remove-line">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
                         <div class="form-row align-items-center mb-2 product-line-template">
                             <div class="col-5">
-                                <select name="product_id" class="form-control product-select">
+                                <select name="product_id[]" class="form-control product-select" onchange="updateProductPrice(this)">
                                     <option value="">-- Chọn thuốc --</option>
                                     <t t-foreach="products" t-as="product">
-                                        <option t-att-value="product.id"><t t-esc="product.name"/> (SL: <t t-esc="product.quantity"/>)</option>
+                                        <option t-att-value="product.id" t-att-data-price="product.unit_price">
+                                            <t t-esc="product.name"/> (SL: <t t-esc="product.quantity"/>)
+                                        </option>
                                     </t>
                                 </select>
                             </div>
                             <div class="col-2">
-                                <input type="number" name="product_qty" class="form-control" placeholder="Số lượng"
+                                <input type="number" name="product_qty[]" class="form-control" placeholder="Số lượng"
                                        min="1" step="1" value="1"/>
                             </div>
                             <div class="col-3">
-                                <span class="form-control-plaintext price-display">0 VND</span>
+                                <span class="form-control-plaintext product-price-display">0 VND</span>
+                                <input type="hidden" name="product_price_unit[]" class="product-price" value="0"/>
                             </div>
                             <div class="col-2">
                                 <button type="button" class="btn btn-danger remove-line">
@@ -159,6 +153,43 @@
                                 </button>
                             </div>
                         </div>
+
+                        <!-- Product lines will be added here -->
+                        <div id="product-lines">
+                            <!-- Display existing product lines for edit mode -->
+                            <t t-if="invoice and invoice.product_lines">
+                                <t t-foreach="invoice.product_lines" t-as="line">
+                                    <div class="form-row align-items-center mb-2 product-line">
+                                        <div class="col-5">
+                                            <select name="product_id[]" class="form-control product-select" onchange="updateProductPrice(this)">
+                                                <option value="">-- Chọn thuốc --</option>
+                                                <t t-foreach="products" t-as="product">
+                                                    <option t-att-value="product.id" t-att-data-price="product.unit_price" t-att-selected="line.product_id.id == product.id">
+                                                        <t t-esc="product.name"/> (SL: <t t-esc="product.quantity"/>)
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="col-2">
+                                            <input type="number" name="product_qty[]" class="form-control" placeholder="Số lượng"
+                                                   min="1" step="1" t-att-value="line.quantity"/>
+                                        </div>
+                                        <div class="col-3">
+                                            <span class="form-control-plaintext product-price-display">
+                                                <t t-esc="'{:,.0f}'.format(line.price_unit)"/> VND
+                                            </span>
+                                            <input type="hidden" name="product_price[]" class="product-price" t-att-value="line.price_unit"/>
+                                        </div>
+                                        <div class="col-2">
+                                            <button type="button" class="btn btn-danger remove-line">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </t>
+                            </t>
+                        </div>
+
                         <div class="text-right mb-3">
                             <button type="button" class="btn btn-sm btn-info add-product-line">
                                 <i class="fa fa-plus"></i> Thêm thuốc
@@ -175,7 +206,7 @@
 
                     <div class="form-group row">
                         <div class="col-sm-9 offset-sm-3">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="button" id="submit-invoice-btn" class="btn btn-primary">
                                 <t t-if="edit_mode">Cập nhật</t>
                                 <t t-else="">Tạo hóa đơn</t>
                             </button>
@@ -185,9 +216,50 @@
                 </form>
 
                 <script type="text/javascript">
+                    // Global functions to update prices
+                    function updateServicePrice(selectElement) {
+                        try {
+                            var selectedOption = selectElement.options[selectElement.selectedIndex];
+                            var price = selectedOption.getAttribute('data-price') || 0;
+                            var row = selectElement.closest('.form-row');
+                            var priceDisplay = row.querySelector('.service-price-display');
+                            var priceField = row.querySelector('.service-price');
+
+                            if (priceField) {
+                                priceField.value = price;
+                                if (priceDisplay) {
+                                    priceDisplay.textContent = new Intl.NumberFormat('vi-VN').format(price) + ' VND';
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Error updating service price:', error);
+                        }
+                    }
+
+                    function updateProductPrice(selectElement) {
+                        try {
+                            var selectedOption = selectElement.options[selectElement.selectedIndex];
+                            var price = selectedOption.getAttribute('data-price') || 0;
+                            var row = selectElement.closest('.form-row');
+                            var priceDisplay = row.querySelector('.product-price-display');
+                            var priceField = row.querySelector('.product-price');
+
+                            if (priceField) {
+                                priceField.value = price;
+                                if (priceDisplay) {
+                                    priceDisplay.textContent = new Intl.NumberFormat('vi-VN').format(price) + ' VND';
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Error updating product price:', error);
+                        }
+                    }
+
                     document.addEventListener('DOMContentLoaded', function() {
-                        // Add service line
-                        document.querySelector('.add-service-line').addEventListener('click', function() {
+                        console.log('DOM loaded - initializing invoice form');
+
+                        // Add service line function
+                        function addServiceLine() {
                             var template = document.querySelector('.service-line-template').cloneNode(true);
                             template.classList.remove('service-line-template');
                             template.classList.add('service-line');
@@ -195,16 +267,26 @@
 
                             // Add event listener to remove button
                             template.querySelector('.remove-line').addEventListener('click', function() {
-                                this.closest('.service-line').remove();
+                                var lines = document.querySelectorAll('.service-line');
+                                if (lines.length > 0) {
+                                    this.closest('.service-line').remove();
+                                }
                             });
 
-                            // Insert before the button's parent div (which is the text-right div)
-                            var container = document.querySelector('.service-lines-container');
-                            container.insertBefore(template, document.querySelector('.service-lines-container .text-right'));
-                        });
+                            // Set up service selection event handler
+                            var select = template.querySelector('.service-select');
+                            if (select) {
+                                select.addEventListener('change', function() {
+                                    updateServicePrice(this);
+                                });
+                            }
 
-                        // Add product line
-                        document.querySelector('.add-product-line').addEventListener('click', function() {
+                            // Add to service lines container
+                            document.getElementById('service-lines').appendChild(template);
+                        }
+
+                        // Add product line function
+                        function addProductLine() {
                             var template = document.querySelector('.product-line-template').cloneNode(true);
                             template.classList.remove('product-line-template');
                             template.classList.add('product-line');
@@ -212,24 +294,135 @@
 
                             // Add event listener to remove button
                             template.querySelector('.remove-line').addEventListener('click', function() {
-                                this.closest('.product-line').remove();
+                                var lines = document.querySelectorAll('.product-line');
+                                if (lines.length > 0) {
+                                    this.closest('.product-line').remove();
+                                }
                             });
 
-                            // Insert before the button's parent div (which is the text-right div)
-                            var container = document.querySelector('.product-lines-container');
-                            container.insertBefore(template, document.querySelector('.product-lines-container .text-right'));
+                            // Set up product selection event handler
+                            var select = template.querySelector('.product-select');
+                            if (select) {
+                                select.addEventListener('change', function() {
+                                    updateProductPrice(this);
+                                });
+                            }
+
+                            // Add to product lines container
+                            document.getElementById('product-lines').appendChild(template);
+                        }
+
+                        // Add event listeners to add buttons
+                        var addServiceButton = document.querySelector('.add-service-line');
+                        if (addServiceButton) {
+                            addServiceButton.addEventListener('click', addServiceLine);
+                            console.log('Add service line button event handler attached');
+                        }
+
+                        var addProductButton = document.querySelector('.add-product-line');
+                        if (addProductButton) {
+                            addProductButton.addEventListener('click', addProductLine);
+                            console.log('Add product line button event handler attached');
+                        }
+
+                        // Add event listeners to existing remove buttons and setup price displays
+                        document.querySelectorAll('.service-line .remove-line').forEach(function(button) {
+                            button.addEventListener('click', function() {
+                                var lines = document.querySelectorAll('.service-line');
+                                if (lines.length > 0) {
+                                    this.closest('.service-line').remove();
+                                }
+                            });
                         });
 
-                        // Add event listeners to existing remove buttons
-                        document.querySelectorAll('.service-line .remove-line, .product-line .remove-line').forEach(function(button) {
+                        document.querySelectorAll('.product-line .remove-line').forEach(function(button) {
                             button.addEventListener('click', function() {
-                                this.closest('.service-line, .product-line').remove();
+                                var lines = document.querySelectorAll('.product-line');
+                                if (lines.length > 0) {
+                                    this.closest('.product-line').remove();
+                                }
                             });
+                        });
+
+                        // Initialize price displays for existing lines
+                        document.querySelectorAll('.service-line .service-select').forEach(function(select) {
+                            updateServicePrice(select);
+                        });
+
+                        document.querySelectorAll('.product-line .product-select').forEach(function(select) {
+                            updateProductPrice(select);
                         });
 
                         // Hide template lines
                         document.querySelector('.service-line-template').style.display = 'none';
                         document.querySelector('.product-line-template').style.display = 'none';
+
+                        // Add validation and submission handler
+                        var submitButton = document.getElementById('submit-invoice-btn');
+                        if (submitButton) {
+                            submitButton.addEventListener('click', function(e) {
+                                console.log('Submit button clicked');
+                                try {
+                                    var form = document.getElementById('invoice-form');
+                                    if (form) {
+                                        if (validateInvoiceForm()) {
+                                            console.log('Form validated - submitting');
+                                            form.submit();
+                                        }
+                                    } else {
+                                        console.error('Form not found');
+                                        alert('Lỗi: Không tìm thấy form');
+                                    }
+                                } catch (error) {
+                                    console.error('Error in submit handler:', error);
+                                    alert('Đã xảy ra lỗi: ' + error.message);
+                                }
+                            });
+                        }
+
+                        // Validation function
+                        function validateInvoiceForm() {
+                            var patientId = document.getElementById('patient_id').value;
+                            if (!patientId) {
+                                alert('Vui lòng chọn bệnh nhân.');
+                                return false;
+                            }
+
+                            // Check if there's at least one valid service or product line
+                            var hasValidLine = false;
+
+                            document.querySelectorAll('.service-line').forEach(function(line) {
+                                var serviceId = line.querySelector('select[name="service_id[]"]').value;
+                                var quantity = line.querySelector('input[name="service_qty[]"]').value;
+                                if (serviceId &amp;&amp; quantity > 0) {
+                                    hasValidLine = true;
+                                }
+                            });
+
+                            document.querySelectorAll('.product-line').forEach(function(line) {
+                                var productId = line.querySelector('select[name="product_id[]"]').value;
+                                var quantity = line.querySelector('input[name="product_qty[]"]').value;
+                                if (productId &amp;&amp; quantity > 0) {
+                                    hasValidLine = true;
+                                }
+                            });
+
+                            if (!hasValidLine) {
+                                alert('Vui lòng thêm ít nhất một dịch vụ hoặc thuốc vào hóa đơn.');
+                                return false;
+                            }
+
+                            return true;
+                        }
+
+                        // Add initial lines if no existing lines (for new invoice)
+                        var existingServiceLines = document.querySelectorAll('#service-lines .service-line');
+                        var existingProductLines = document.querySelectorAll('#product-lines .product-line');
+
+                        if (existingServiceLines.length === 0 &amp;&amp; existingProductLines.length === 0) {
+                            // Only add one service line by default - optional
+                            // addServiceLine();
+                        }
                     });
                 </script>
             </div>
