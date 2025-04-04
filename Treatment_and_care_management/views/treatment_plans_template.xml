@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Main Treatment Plans Template -->
-    <template id="treatment_plans_template" name="Treatment Plans">
+        <template id="treatment_plans_template" name="Treatment Plans">
         <t t-call="website.layout">
             <style>
                 .treatment-container {
@@ -110,7 +110,7 @@
                     <button type="submit" class="btn btn-primary mt-2">Tìm kiếm</button>
                 </form>
 
-                <!-- Patient Information -->
+                <!-- Patient Information (when specific patient is found) -->
                 <t t-if="patient">
                     <div class="patient-info">
                         <h3 class="section-heading">Thông tin bệnh nhân</h3>
@@ -137,7 +137,7 @@
                         </div>
                     </div>
 
-                    <!-- Treatment Plans -->
+                    <!-- Treatment Plans for specific patient -->
                     <div class="treatment-list">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h3 class="section-heading mb-0">Danh sách kế hoạch điều trị</h3>
@@ -183,6 +183,46 @@
                         </t>
                     </div>
                 </t>
+
+                <!-- When no patient is selected, show all treatment plans -->
+                <t t-elif="all_treatment_plans">
+                    <div class="treatment-list">
+                        <h3 class="section-heading">Tất cả kế hoạch điều trị</h3>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Mã kế hoạch</th>
+                                        <th>Mã bệnh nhân</th>
+                                        <th>Tên bệnh nhân</th>
+                                        <th>Ngày bắt đầu</th>
+                                        <th>Ngày kết thúc</th>
+                                        <th>Số quá trình</th>
+                                        <th>Chi tiết</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="all_treatment_plans" t-as="plan">
+                                        <tr>
+                                            <td><t t-esc="plan.code"/></td>
+                                            <td><t t-esc="plan.patient_id.code"/></td>
+                                            <td><t t-esc="plan.patient_id.name"/></td>
+                                            <td><t t-esc="plan.start_date"/></td>
+                                            <td><t t-if="plan.end_date" t-esc="plan.end_date"/><t t-else="">Chưa kết thúc</t></td>
+                                            <td><t t-esc="len(plan.treatment_process_ids)"/></td>
+                                            <td>
+                                                <a t-att-href="'/clinic/treatment_plan_details/%s' % plan.id"
+                                                   class="action-btn">
+                                                    Xem chi tiết
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </t>
                 <t t-else="">
                     <t t-if="search_value">
                         <div class="alert alert-warning text-center">
@@ -191,7 +231,7 @@
                     </t>
                     <t t-else="">
                         <div class="alert alert-info text-center">
-                            <i class="fa fa-info-circle"></i> Vui lòng nhập thông tin để tìm kiếm bệnh nhân.
+                            <i class="fa fa-info-circle"></i> Chưa có kế hoạch điều trị nào trong hệ thống.
                         </div>
                     </t>
                 </t>

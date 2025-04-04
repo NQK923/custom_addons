@@ -11,6 +11,7 @@ class TreatmentAndCareController(http.Controller):
         search_value = kwargs.get('search_value', '')
         patient = False
         treatment_plans = False
+        all_treatment_plans = False  # All plans to show when no specific patient is selected
 
         if search_value:
             patient = request.env['clinic.patient'].sudo().search([
@@ -22,9 +23,14 @@ class TreatmentAndCareController(http.Controller):
                     ('patient_id', '=', patient.id)
                 ])
 
+        # Get all treatment plans if no search is performed or if search didn't yield results
+        if not treatment_plans:
+            all_treatment_plans = request.env['treatment.plan'].sudo().search([], order='id desc')
+
         values = {
             'patient': patient,
             'treatment_plans': treatment_plans,
+            'all_treatment_plans': all_treatment_plans,
             'search_value': search_value,
         }
 
@@ -226,6 +232,7 @@ class TreatmentAndCareController(http.Controller):
         search_value = kwargs.get('search_value', '')
         patient = False
         care_records = False
+        all_care_records = False  # All care records to show when no specific patient is selected
 
         if search_value:
             patient = request.env['clinic.patient'].sudo().search([
@@ -237,9 +244,14 @@ class TreatmentAndCareController(http.Controller):
                     ('patient_id', '=', patient.id)
                 ])
 
+        # Get all care records if no search is performed or if search didn't yield results
+        if not care_records:
+            all_care_records = request.env['patient.care.tracking'].sudo().search([], order='id desc')
+
         values = {
             'patient': patient,
             'care_records': care_records,
+            'all_care_records': all_care_records,
             'search_value': search_value,
         }
 
