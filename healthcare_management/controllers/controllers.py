@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from pydoc import html
+
 from pip._internal.utils import logging
 
 from odoo import http, fields
@@ -620,27 +622,119 @@ class HealthcareManagement(http.Controller):
 
     @http.route('/healthcare/appointment_reminder/action', type='json', auth='user', website=True)
     def appointment_reminder_action(self, **kw):
+        _logger = logging.getLogger(__name__)
         reminder_id = kw.get('reminder_id')
         action = kw.get('action')
 
         if not reminder_id or not action:
             return {'success': False, 'error': 'Thiếu thông tin cần thiết'}
+
         try:
             reminder = request.env['appointment.reminder'].sudo().browse(int(reminder_id))
             if not reminder.exists():
                 return {'success': False, 'error': 'Không tìm thấy thông báo lịch hẹn'}
+
             if action == 'send_now':
-                result = reminder._send_reminder_email(reminder)
-                request.env.cr.commit()  # Commit transaction để đảm bảo email được gửi
-                return {'success': result}
+                # Send email directly using the same approach as medical history
+                if not reminder.patient_id.email:
+                    return {'success': False, 'error': 'Bệnh nhân không có địa chỉ email'}
+
+                try:
+                    # Setup email details
+                    company = request.env['res.company'].sudo().search([], limit=1)
+                    company_email = company.email or 'noreply@example.com'
+
+                    # Format appointment date
+                    appointment_date = reminder.appointment_date
+                    formatted_date = appointment_date.strftime("%d/%m/%Y %H:%M:%S")
+                    try:
+                        user_tz = request.env.user.tz
+                        if user_tz:
+                            from pytz import timezone
+                            user_timezone = timezone(user_tz)
+                            appointment_date_tz = appointment_date.astimezone(user_timezone)
+                            formatted_date = appointment_date_tz.strftime("%d/%m/%Y %H:%M:%S")
+                    except Exception as e:
+                        _logger.warning(f"Error formatting date with timezone: {str(e)}")
+
+                    # Create email content
+                    subject = "Nhắc nhở: Lịch hẹn khám"
+                    body_html = f"""
+                    <div style="margin: 0px; padding: 0px; font-size: 13px;">
+                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                            Kính gửi {html.escape(reminder.patient_id.name or 'Quý khách')},
+                        </p>
+                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                            Chúng tôi xin gửi lời nhắc nhở về lịch hẹn khám sắp tới của bạn:
+                        </p>
+                        <ul>
+                            <li>Mã lịch hẹn: <strong>{html.escape(reminder.name or '')}</strong></li>
+                            <li>Thời gian: <strong>{formatted_date}</strong></li>
+                            <li>Bác sĩ: <strong>{html.escape(reminder.staff_id.staff_name or 'Chưa xác định')}</strong></li>
+                            <li>Phòng khám: <strong>{html.escape(reminder.room_id.name or 'Chưa xác định')}</strong></li>
+                        </ul>
+                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                            Vui lòng đến trước 15 phút để hoàn tất thủ tục.
+                        </p>
+                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                            Nếu bạn cần thay đổi lịch hẹn, vui lòng liên hệ với chúng tôi trước ít nhất 24 giờ.
+                        </p>
+                        <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                            Trân trọng,<br/>
+                            Phòng khám {html.escape(company.name or '')}
+                        </p>
+                    </div>
+                    """
+
+                    # Setup mail values
+                    mail_values = {
+                        'subject': subject,
+                        'body_html': body_html,
+                        'email_to': reminder.patient_id.email,
+                        'auto_delete': False,
+                    }
+
+                    # Create and send mail directly
+                    mail = request.env['mail.mail'].sudo().create(mail_values)
+                    _logger.info(f"Created mail.mail record with ID: {mail.id} for reminder {reminder.id}")
+
+                    mail.send(raise_exception=False)
+                    _logger.info(f"Mail send attempted for ID: {mail.id}")
+
+                    # Check mail state
+                    #mail.refresh()
+                    _logger.info(f"Mail state after sending: {mail.state}")
+
+                    # Update reminder status
+                    if mail.state in ['sent', 'outgoing']:
+                        reminder.write({
+                            'state': 'sent',
+                            'email_status': 'Email đã được gửi thành công'
+                        })
+                        return {'success': True}
+                    else:
+                        reminder.write({
+                            'state': 'failed',
+                            'email_status': f'Lỗi khi gửi email: Trạng thái email {mail.state}'
+                        })
+                        return {'success': False, 'error': f'Không thể gửi email. Trạng thái: {mail.state}'}
+
+                except Exception as e:
+                    _logger.error(f"Error sending appointment reminder email: {str(e)}")
+                    reminder.write({
+                        'state': 'failed',
+                        'email_status': f'Lỗi khi gửi email: {str(e)}'
+                    })
+                    return {'success': False, 'error': str(e)}
+
             elif action == 'cancel':
-                reminder.action_cancel_reminder()
+                reminder.write({'state': 'cancelled'})
                 return {'success': True}
             else:
                 return {'success': False, 'error': 'Hành động không hợp lệ'}
+
         except Exception as e:
-            _logger = logging.getLogger(__name__)
-            _logger.error("Lỗi khi gửi email: %s", str(e), exc_info=True)
+            _logger.error("Lỗi khi xử lý thông báo: %s", str(e), exc_info=True)
             return {'success': False, 'error': str(e)}
 
     @http.route('/healthcare/patient_complaint/create', type='http', auth='user', website=True, methods=['GET', 'POST'])

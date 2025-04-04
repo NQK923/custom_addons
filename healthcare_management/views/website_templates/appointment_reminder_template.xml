@@ -382,91 +382,138 @@
 
             <!-- JavaScript Inline -->
             <script type="text/javascript">
+                // JavaScript for handling the "Send Now" button
                 document.addEventListener('DOMContentLoaded', function() {
                     // Gửi thông báo ngay
-                    document.getElementById('btnSendReminder')?.addEventListener('click', function() {
-                        var reminderId = this.getAttribute('data-reminder-id');
-                        if (!reminderId) return;
+                    const sendNowBtn = document.getElementById('btnSendReminder');
+                    if (sendNowBtn) {
+                        sendNowBtn.addEventListener('click', function() {
+                            const reminderId = this.getAttribute('data-reminder-id');
+                            if (!reminderId) {
+                                console.error('Missing reminder ID');
+                                return;
+                            }
 
-                        if (confirm('Bạn có muốn gửi thông báo này ngay bây giờ?')) {
-                            var button = this;
-                            var icon = button.querySelector('i');
+                            if (confirm('Bạn có muốn gửi thông báo này ngay bây giờ?')) {
+                                const button = this;
+                                const icon = button.querySelector('i');
 
-                            // Hiển thị trạng thái đang gửi
-                            icon.className = 'fa fa-spinner fa-spin';
-                            button.disabled = true;
+                                // Hiển thị trạng thái đang gửi
+                                icon.className = 'fa fa-spinner fa-spin';
+                                button.disabled = true;
 
-                            // Gửi yêu cầu AJAX
-                            fetch('/healthcare/appointment_reminder/action', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-Requested-With': 'XMLHttpRequest'
-                                },
-                                body: JSON.stringify({
-                                    reminder_id: reminderId,
-                                    action: 'send_now',
-                                    csrf_token: document.querySelector('meta[name="csrf-token"]')?.content
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(result => {
-                                if (result.success) {
-                                    alert('Đã gửi thông báo thành công.');
-                                    location.reload();
-                                } else {
-                                    // Khôi phục trạng thái nút
-                                    icon.className = 'fa fa-paper-plane';
-                                    button.disabled = false;
+                                // Get CSRF token from the meta tag
+                                const csrf_token = document.querySelector('meta[name="csrf-token"]')?.content;
 
-                                    alert('Đã xảy ra lỗi khi gửi thông báo: ' + (result.error || 'Không xác định'));
-                                }
-                            })
-                            .catch(error => {
-                                // Khôi phục trạng thái nút
-                                icon.className = 'fa fa-paper-plane';
-                                button.disabled = false;
+                                console.log('Sending reminder request for ID:', reminderId);
 
-                                console.error('Error:', error);
-                                alert('Đã xảy ra lỗi khi kết nối đến máy chủ.');
-                            });
-                        }
-                    });
+                                // Use jQuery Ajax for compatibility
+                                $.ajax({
+                                    url: '/healthcare/appointment_reminder/action',
+                                    type: 'POST',
+                                    contentType: 'application/json',
+                                    dataType: 'json',
+                                    data: JSON.stringify({
+                                        jsonrpc: "2.0",
+                                        method: "call",
+                                        params: {
+                                            reminder_id: reminderId,
+                                            action: 'send_now',
+                                            csrf_token: csrf_token
+                                        },
+                                        id: Math.floor(Math.random() * 1000000000)
+                                    }),
+                                    success: function(response) {
+                                        console.log('Received response:', response);
+                                        const result = response.result;
+                                        if (result &amp;&amp; result.success) {
+                                            alert('Đã gửi thông báo thành công.');
+                                            location.reload();
+                                        } else {
+                                            // Khôi phục trạng thái nút
+                                            icon.className = 'fa fa-paper-plane';
+                                            button.disabled = false;
+
+                                            alert('Đã xảy ra lỗi khi gửi thông báo: ' +
+                                                (result &amp;&amp; result.error ? result.error : 'Không xác định'));
+                                        }
+                                    },
+                                    error: function(jqXHR, textStatus, errorThrown) {
+                                        // Khôi phục trạng thái nút
+                                        icon.className = 'fa fa-paper-plane';
+                                        button.disabled = false;
+
+                                        console.error('Error:', textStatus, errorThrown);
+                                        alert('Đã xảy ra lỗi khi kết nối đến máy chủ: ' + textStatus);
+                                    }
+                                });
+                            }
+                        });
+                    }
 
                     // Hủy thông báo
-                    document.getElementById('btnCancelReminder')?.addEventListener('click', function() {
-                        var reminderId = this.getAttribute('data-reminder-id');
-                        if (!reminderId) return;
+                    const cancelBtn = document.getElementById('btnCancelReminder');
+                    if (cancelBtn) {
+                        cancelBtn.addEventListener('click', function() {
+                            const reminderId = this.getAttribute('data-reminder-id');
+                            if (!reminderId) {
+                                console.error('Missing reminder ID');
+                                return;
+                            }
 
-                        if (confirm('Bạn có chắc chắn muốn hủy thông báo này?')) {
-                            // Gửi yêu cầu AJAX
-                            fetch('/healthcare/appointment_reminder/action', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-Requested-With': 'XMLHttpRequest'
-                                },
-                                body: JSON.stringify({
-                                    reminder_id: reminderId,
-                                    action: 'cancel',
-                                    csrf_token: document.querySelector('meta[name="csrf-token"]')?.content
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(result => {
-                                if (result.success) {
-                                    alert('Đã hủy thông báo thành công.');
-                                    location.reload();
-                                } else {
-                                    alert('Đã xảy ra lỗi khi hủy thông báo: ' + (result.error || 'Không xác định'));
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                alert('Đã xảy ra lỗi khi kết nối đến máy chủ.');
-                            });
-                        }
-                    });
+                            if (confirm('Bạn có chắc chắn muốn hủy thông báo này?')) {
+                                const button = this;
+                                const icon = button.querySelector('i');
+
+                                // Hiển thị trạng thái đang xử lý
+                                icon.className = 'fa fa-spinner fa-spin';
+                                button.disabled = true;
+
+                                // Get CSRF token from the meta tag
+                                const csrf_token = document.querySelector('meta[name="csrf-token"]')?.content;
+
+                                // Use jQuery Ajax for compatibility
+                                $.ajax({
+                                    url: '/healthcare/appointment_reminder/action',
+                                    type: 'POST',
+                                    contentType: 'application/json',
+                                    dataType: 'json',
+                                    data: JSON.stringify({
+                                        jsonrpc: "2.0",
+                                        method: "call",
+                                        params: {
+                                            reminder_id: reminderId,
+                                            action: 'cancel',
+                                            csrf_token: csrf_token
+                                        },
+                                        id: Math.floor(Math.random() * 1000000000)
+                                    }),
+                                    success: function(response) {
+                                        const result = response.result;
+                                        if (result &amp;&amp; result.success) {
+                                            alert('Đã hủy thông báo thành công.');
+                                            location.reload();
+                                        } else {
+                                            // Khôi phục trạng thái nút
+                                            icon.className = 'fa fa-times';
+                                            button.disabled = false;
+
+                                            alert('Đã xảy ra lỗi khi hủy thông báo: ' +
+                                                (result &amp;&amp; result.error ? result.error : 'Không xác định'));
+                                        }
+                                    },
+                                    error: function(jqXHR, textStatus, errorThrown) {
+                                        // Khôi phục trạng thái nút
+                                        icon.className = 'fa fa-times';
+                                        button.disabled = false;
+
+                                        console.error('Error:', textStatus, errorThrown);
+                                        alert('Đã xảy ra lỗi khi kết nối đến máy chủ: ' + textStatus);
+                                    }
+                                });
+                            }
+                        });
+                    }
                 });
             </script>
         </t>
