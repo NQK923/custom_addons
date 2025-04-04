@@ -104,8 +104,35 @@ class PrescriptionManagementController(http.Controller):
                 if kwargs.get('expiry'):
                     vals['expiry'] = kwargs.get('expiry')
 
-                # Create the product
-                product = request.env['pharmacy.product'].sudo().create(vals)
+                # Validate first, then create the product
+                # Perform validation before creating
+                purchase_price = float(kwargs.get('purchase_price', 0))
+                unit_price = float(kwargs.get('unit_price', 0))
+
+                # Mimic the validation in the model
+                if purchase_price <= 0:
+                    raise ValidationError('Giá nhập phải lớn hơn 0!')
+                if unit_price <= 0:
+                    raise ValidationError('Giá bán phải lớn hơn 0!')
+                if unit_price < purchase_price:
+                    raise ValidationError('Giá bán phải lớn hơn hoặc bằng giá nhập!')
+
+                # Get max profit margin from model
+                PharmacyProduct = request.env['pharmacy.product'].sudo()
+                # Create a temporary instance to call the instance method
+                temp_product = PharmacyProduct.new({})
+                max_profit_margin = temp_product._get_max_profit_margin(purchase_price)
+                actual_profit_margin = ((unit_price - purchase_price) / purchase_price) * 100
+
+                if actual_profit_margin > max_profit_margin:
+                    max_price = purchase_price * (1 + max_profit_margin / 100)
+                    raise ValidationError(
+                        f"Giá bán vượt quá mức thặng số tối đa cho phép ({max_profit_margin}%)! "
+                        f"Giá bán tối đa cho phép là {max_price} VNĐ."
+                    )
+
+                # If validation passes, create the product
+                product = PharmacyProduct.create(vals)
                 return request.redirect('/pharmacy/products')
 
             except (ValueError, ValidationError) as e:
@@ -148,7 +175,33 @@ class PrescriptionManagementController(http.Controller):
                 if kwargs.get('expiry'):
                     vals['expiry'] = kwargs.get('expiry')
 
-                # Update the product
+                # Validate first, then update the product
+                purchase_price = float(kwargs.get('purchase_price', 0))
+                unit_price = float(kwargs.get('unit_price', 0))
+
+                # Mimic the validation in the model
+                if purchase_price <= 0:
+                    raise ValidationError('Giá nhập phải lớn hơn 0!')
+                if unit_price <= 0:
+                    raise ValidationError('Giá bán phải lớn hơn 0!')
+                if unit_price < purchase_price:
+                    raise ValidationError('Giá bán phải lớn hơn hoặc bằng giá nhập!')
+
+                # Get max profit margin from model
+                PharmacyProduct = request.env['pharmacy.product'].sudo()
+                # Create a temporary instance to call the instance method
+                temp_product = PharmacyProduct.new({})
+                max_profit_margin = temp_product._get_max_profit_margin(purchase_price)
+                actual_profit_margin = ((unit_price - purchase_price) / purchase_price) * 100
+
+                if actual_profit_margin > max_profit_margin:
+                    max_price = purchase_price * (1 + max_profit_margin / 100)
+                    raise ValidationError(
+                        f"Giá bán vượt quá mức thặng số tối đa cho phép ({max_profit_margin}%)! "
+                        f"Giá bán tối đa cho phép là {max_price} VNĐ."
+                    )
+
+                # If validation passes, update the product
                 product_id.sudo().write(vals)
                 return request.redirect(f'/pharmacy/product/{product_id.id}')
 

@@ -44,64 +44,69 @@
                 </t>
 
                 <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <div class="row align-items-center">
-                            <div class="col-1 text-center">#</div>
-                            <div class="col-5">Tên dịch vụ</div>
-                            <div class="col-2 text-center">Giá dịch vụ (VNĐ)</div>
-                            <div class="col-2 text-center">Bảo hiểm</div>
-                            <div class="col-2 text-center">Thao tác</div>
-                        </div>
-                    </div>
-
-                    <div class="card-body p-0">
-                        <t t-if="clinic_services">
-                            <t t-foreach="clinic_services" t-as="service">
-                                <div class="row p-3 border-bottom align-items-center" t-att-class="'bg-light' if service_index % 2 == 0 else ''">
-                                    <div class="col-1 text-center" t-esc="service_index + 1"/>
-                                    <div class="col-5">
-                                        <strong t-esc="service.service_name"/>
-                                        <t t-if="service.description">
-                                            <small class="d-block text-muted" t-esc="service.description[:100] + ('...' if len(service.description) > 100 else '')"/>
-                                        </t>
-                                        <t t-if="not service.active">
-                                            <span class="badge badge-warning">Không hoạt động</span>
-                                        </t>
-                                    </div>
-                                    <div class="col-2 text-center" t-esc="'{:,.0f}'.format(service.price)"/>
-                                    <div class="col-2 text-center">
-                                        <span t-if="service.insurance_covered" class="badge badge-success">
-                                            <i class="fa fa-check-circle"></i> Có
-                                        </span>
-                                        <span t-if="not service.insurance_covered" class="badge badge-danger">
-                                            <i class="fa fa-times-circle"></i> Không
-                                        </span>
-                                    </div>
-                                    <div class="col-2 text-center">
-                                        <div class="btn-group btn-group-sm">
-                                            <a t-att-href="'/pharmacy/service/%s' % service.id" class="btn btn-info" title="Xem chi tiết">
-                                                <i class="fa fa-info-circle"></i>
-                                            </a>
-                                            <a t-att-href="'/pharmacy/service/%s/edit' % service.id" class="btn btn-primary" title="Chỉnh sửa">
-                                                <i class="fa fa-edit"></i>
-                                            </a>
-                                            <a t-att-href="'/pharmacy/service/%s/delete' % service.id"
-                                               class="btn btn-danger"
-                                               title="Xóa"
-                                               onclick="return confirm('Bạn có chắc chắn muốn xóa dịch vụ này?');">
-                                                <i class="fa fa-trash"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                    <table class="table table-bordered table-striped mb-0">
+                        <thead>
+                            <tr class="bg-primary text-white">
+                                <th width="5%" class="text-center">#</th>
+                                <th width="40%">Tên dịch vụ</th>
+                                <th width="20%" class="text-center">Giá dịch vụ (VNĐ)</th>
+                                <th width="15%" class="text-center">Bảo hiểm</th>
+                                <th width="20%" class="text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-if="clinic_services">
+                                <t t-foreach="clinic_services" t-as="service">
+                                    <tr t-att-class="'bg-light' if service_index % 2 == 0 else ''">
+                                        <td class="text-center" t-esc="service_index + 1"/>
+                                        <td>
+                                            <strong t-esc="service.service_name"/>
+                                            <t t-if="service.description">
+                                                <small class="d-block text-muted" t-esc="service.description[:100] + ('...' if len(service.description) > 100 else '')"/>
+                                            </t>
+                                            <t t-if="not service.active">
+                                                <span class="badge badge-warning">Không hoạt động</span>
+                                            </t>
+                                        </td>
+                                        <td class="text-center" t-esc="'{:,.0f}'.format(service.price)"/>
+                                        <td class="text-center">
+                                            <span t-if="service.insurance_covered" class="badge badge-success">
+                                                <i class="fa fa-check-circle"></i> Có
+                                            </span>
+                                            <span t-if="not service.insurance_covered" class="badge badge-danger">
+                                                <i class="fa fa-times-circle"></i> Không
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group btn-group-sm">
+                                                <a t-att-href="'/pharmacy/service/%s' % service.id" class="btn btn-info" title="Xem chi tiết">
+                                                    <i class="fa fa-info-circle"></i>
+                                                </a>
+                                                <a t-att-href="'/pharmacy/service/%s/edit' % service.id" class="btn btn-primary" title="Chỉnh sửa">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                                <a t-att-href="'/pharmacy/service/%s/delete' % service.id"
+                                                   class="btn btn-danger"
+                                                   title="Xóa"
+                                                   onclick="return confirm('Bạn có chắc chắn muốn xóa dịch vụ này?');">
+                                                    <i class="fa fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </t>
                             </t>
-                        </t>
-                        <t t-else="">
-                            <div class="alert alert-info m-3">
-                                Không có dịch vụ nào được tìm thấy.
-                            </div>
-                        </t>
-                    </div>
+                            <t t-else="">
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        <div class="alert alert-info m-3">
+                                            Không có dịch vụ nào được tìm thấy.
+                                        </div>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
                 </div>
 
                 <div class="mt-4">

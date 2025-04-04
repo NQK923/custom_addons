@@ -44,60 +44,66 @@
                 </t>
 
                 <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <div class="row">
-                            <div class="col-md-2">Mã thuốc</div>
-                            <div class="col-md-3">Tên thuốc</div>
-                            <div class="col-md-2">Đơn vị</div>
-                            <div class="col-md-2">Tồn kho</div>
-                            <div class="col-md-1">Giá bán</div>
-                            <div class="col-md-2 text-center">Thao tác</div>
-                        </div>
-                    </div>
-                    <div class="card-body p-0">
-                        <t t-if="pharmacy_products">
-                            <t t-foreach="pharmacy_products" t-as="product">
-                                <div class="row p-3 border-bottom" t-att-class="'bg-light' if product_index % 2 == 0 else ''">
-                                    <div class="col-md-2" t-esc="product.code"/>
-                                    <div class="col-md-3">
-                                        <strong t-esc="product.name"/>
-                                        <t t-if="product.category">
-                                            <small class="d-block text-muted" t-esc="product.category"/>
-                                        </t>
-                                    </div>
-                                    <div class="col-md-2" t-esc="product.uom_id"/>
-                                    <div class="col-md-2">
-                                        <span t-att-class="'text-danger font-weight-bold' if product.is_quantity else ''" t-esc="product.quantity"/>
-                                        <t t-if="product.is_quantity">
-                                            <i class="fa fa-exclamation-triangle text-warning ml-1" title="Sắp hết hàng"></i>
-                                        </t>
-                                    </div>
-                                    <div class="col-md-1" t-esc="'{:,.0f}'.format(product.unit_price)"/>
-                                    <div class="col-md-2 text-center">
-                                        <div class="btn-group btn-group-sm">
-                                            <a t-att-href="'/pharmacy/product/%s' % product.id" class="btn btn-info" title="Xem chi tiết">
-                                                <i class="fa fa-info-circle"></i>
-                                            </a>
-                                            <a t-att-href="'/pharmacy/product/%s/edit' % product.id" class="btn btn-primary" title="Chỉnh sửa">
-                                                <i class="fa fa-edit"></i>
-                                            </a>
-                                            <a t-att-href="'/pharmacy/product/%s/delete' % product.id"
-                                               class="btn btn-danger"
-                                               title="Xóa"
-                                               onclick="return confirm('Bạn có chắc chắn muốn xóa dược phẩm này?');">
-                                                <i class="fa fa-trash"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                    <table class="table table-bordered table-striped mb-0">
+                        <thead>
+                            <tr class="bg-primary text-white">
+                                <th width="15%">Mã thuốc</th>
+                                <th width="30%">Tên thuốc</th>
+                                <th width="15%">Đơn vị</th>
+                                <th width="15%">Tồn kho</th>
+                                <th width="10%">Giá bán</th>
+                                <th width="15%" class="text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-if="pharmacy_products">
+                                <t t-foreach="pharmacy_products" t-as="product">
+                                    <tr t-att-class="'bg-light' if product_index % 2 == 0 else ''">
+                                        <td t-esc="product.code"/>
+                                        <td>
+                                            <strong t-esc="product.name"/>
+                                            <t t-if="product.category">
+                                                <small class="d-block text-muted" t-esc="product.category"/>
+                                            </t>
+                                        </td>
+                                        <td t-esc="product.uom_id"/>
+                                        <td>
+                                            <span t-att-class="'text-danger font-weight-bold' if product.is_quantity else ''" t-esc="product.quantity"/>
+                                            <t t-if="product.is_quantity">
+                                                <i class="fa fa-exclamation-triangle text-warning ml-1" title="Sắp hết hàng"></i>
+                                            </t>
+                                        </td>
+                                        <td t-esc="'{:,.0f}'.format(product.unit_price)"/>
+                                        <td class="text-center">
+                                            <div class="btn-group btn-group-sm">
+                                                <a t-att-href="'/pharmacy/product/%s' % product.id" class="btn btn-info" title="Xem chi tiết">
+                                                    <i class="fa fa-info-circle"></i>
+                                                </a>
+                                                <a t-att-href="'/pharmacy/product/%s/edit' % product.id" class="btn btn-primary" title="Chỉnh sửa">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                                <a t-att-href="'/pharmacy/product/%s/delete' % product.id"
+                                                   class="btn btn-danger"
+                                                   title="Xóa"
+                                                   onclick="return confirm('Bạn có chắc chắn muốn xóa dược phẩm này?');">
+                                                    <i class="fa fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </t>
                             </t>
-                        </t>
-                        <t t-else="">
-                            <div class="alert alert-info m-3">
-                                Không có dược phẩm nào được tìm thấy.
-                            </div>
-                        </t>
-                    </div>
+                            <t t-else="">
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <div class="alert alert-info m-3">
+                                            Không có dược phẩm nào được tìm thấy.
+                                        </div>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </t>

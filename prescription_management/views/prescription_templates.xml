@@ -207,7 +207,7 @@
                                                         </a>
                                                         <a t-att-href="'/pharmacy/prescription/%s/edit' % prescription.id"
                                                            class="btn btn-sm btn-info">
-                                                            <i class="fa fa-pills"></i>
+                                                            <i class="fa fa-plus-circle"></i>
                                                         </a>
                                                         <a t-att-href="'/pharmacy/prescription/%s/update' % prescription.id"
                                                            class="btn btn-sm btn-warning">
