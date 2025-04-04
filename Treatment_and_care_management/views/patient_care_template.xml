@@ -132,7 +132,7 @@
                     <button type="submit" class="btn btn-primary mt-2">Tìm kiếm</button>
                 </form>
 
-                <!-- Patient Information -->
+                <!-- Patient Information (when specific patient is found) -->
                 <t t-if="patient">
                     <div class="patient-info">
                         <h3 class="section-heading">Thông tin bệnh nhân</h3>
@@ -159,7 +159,7 @@
                         </div>
                     </div>
 
-                    <!-- Care Records -->
+                    <!-- Care Records for specific patient -->
                     <div class="care-list">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h3 class="section-heading mb-0">Danh sách lịch sử chăm sóc</h3>
@@ -233,6 +233,61 @@
                         </t>
                     </div>
                 </t>
+
+                <!-- When no patient is selected, show all care records -->
+                <t t-elif="all_care_records">
+                    <div class="care-list">
+                        <h3 class="section-heading">Tất cả lịch sử chăm sóc</h3>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Mã bệnh nhân</th>
+                                        <th>Tên bệnh nhân</th>
+                                        <th>Ngày chăm sóc</th>
+                                        <th>Nhiệt độ</th>
+                                        <th>Huyết áp</th>
+                                        <th>Trạng thái</th>
+                                        <th>Khẩn cấp</th>
+                                        <th>Chi tiết</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="all_care_records" t-as="record">
+                                        <tr>
+                                            <td><t t-esc="record.patient_id.code"/></td>
+                                            <td><t t-esc="record.patient_id.name"/></td>
+                                            <td><t t-esc="record.care_date"/></td>
+                                            <td><t t-esc="record.temperature"/> °C</td>
+                                            <td><t t-esc="record.blood_pressure or '--'"/></td>
+                                            <td>
+                                                <span t-att-class="'status-badge ' + ('status-pending' if record.statenew == 'pending' else 'status-in-progress' if record.statenew == 'in_progress' else 'status-completed')">
+                                                    <t t-if="record.statenew == 'pending'">Chưa thực hiện</t>
+                                                    <t t-elif="record.statenew == 'in_progress'">Đang thực hiện</t>
+                                                    <t t-elif="record.statenew == 'completed'">Hoàn thành</t>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <t t-if="record.is_emergency">
+                                                    <span class="emergency-badge">Khẩn cấp</span>
+                                                </t>
+                                                <t t-else="">
+                                                    Không
+                                                </t>
+                                            </td>
+                                            <td>
+                                                <a t-att-href="'/clinic/patient_care_details/%s' % record.id"
+                                                   class="action-btn">
+                                                    Xem chi tiết
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </t>
                 <t t-else="">
                     <t t-if="search_value">
                         <div class="alert alert-warning text-center">
@@ -241,7 +296,7 @@
                     </t>
                     <t t-else="">
                         <div class="alert alert-info text-center">
-                            <i class="fa fa-info-circle"></i> Vui lòng nhập thông tin để tìm kiếm bệnh nhân.
+                            <i class="fa fa-info-circle"></i> Chưa có lịch sử chăm sóc nào trong hệ thống.
                         </div>
                     </t>
                 </t>

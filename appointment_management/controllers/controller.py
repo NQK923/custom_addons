@@ -21,14 +21,25 @@ class AppointmentController(http.Controller):
         domain = []
         if state_filter and state_filter != 'all':
             domain.append(('state', '=', state_filter))
+        search_term = kwargs.get('search', '')
+        if search_term:
+            domain += ['|', '|', '|',
+                       ('name', 'ilike', search_term),
+                       ('patient_id.name', 'ilike', search_term),
+                       ('patient_id.code', 'ilike', search_term),
+                       ('staff_id.name', 'ilike', search_term)
+                       ]
+        date_from = kwargs.get('date_from', False)
+        if date_from:
+            domain.append(('appointment_date', '>=', date_from + ' 00:00:00'))
 
-        # Lấy danh sách lịch hẹn
+        date_to = kwargs.get('date_to', False)
+        if date_to:
+            domain.append(('appointment_date', '<=', date_to + ' 23:59:59'))
+
         appointments = request.env['clinic.appointment'].sudo().search(domain, order='appointment_date desc')
 
-        # Xử lý chế độ xem (lịch hoặc danh sách)
         view_mode = kwargs.get('view_mode', 'list')
-
-        # Chuẩn bị dữ liệu cho calendar view
         calendar_data = []
         if view_mode == 'calendar':
             for app in appointments:
@@ -49,7 +60,10 @@ class AppointmentController(http.Controller):
             'state_filter': state_filter or 'all',
             'view_mode': view_mode,
             'calendar_data': json.dumps(calendar_data),
-            'datetime': datetime
+            'datetime': datetime,
+            'search_term': search_term,
+            'date_from': date_from,
+            'date_to': date_to
         }
         return request.render('appointment_management.appointment_list_template', values)
 
