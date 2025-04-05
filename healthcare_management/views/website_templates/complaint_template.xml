@@ -227,6 +227,10 @@
     <!-- Template xem chi tiết khiếu nại -->
     <template id="patient_complaint_detail_template" name="Chi tiết khiếu nại bệnh nhân">
         <t t-call="website.layout">
+            <t t-set="head">
+                <meta name="csrf-token" t-att-content="request.csrf_token()"/>
+                <t t-if="head" t-raw="head"/>
+            </t>
             <!-- CSS styling -->
             <style>
                 .complaint-container {
@@ -373,8 +377,8 @@
                                     <tr>
                                         <th class="detail-label">Ngày giải quyết:</th>
                                         <td>
-                                            <t t-if="complaint.resolution_date">
-                                                <t t-esc="complaint.resolution_date.strftime('%d/%m/%Y')"/>
+                                            <t t-if="complaint.resolved_date">
+                                                <t t-esc="complaint.resolved_date.strftime('%d/%m/%Y')"/>
                                             </t>
                                             <t t-else="">Chưa giải quyết</t>
                                         </td>
@@ -441,30 +445,42 @@
 
                             // Confirm before proceeding
                             if (confirm('Bạn có chắc chắn muốn thực hiện thao tác này?')) {
-                                // Send AJAX request
+                                // Send AJAX request in Odoo JSON-RPC format
                                 fetch('/healthcare/patient_complaint/action', {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
-                                        'X-Requested-With': 'XMLHttpRequest'
                                     },
                                     body: JSON.stringify({
-                                        complaint_id: complaintId,
-                                        action: action,
-                                        csrf_token: document.querySelector('meta[name="csrf-token"]')?.content
+                                        jsonrpc: "2.0",
+                                        method: "call",
+                                        params: {
+                                            complaint_id: complaintId,
+                                            action: action
+                                        },
+                                        id: Math.floor(Math.random() * 1000000)
                                     })
                                 })
                                 .then(response => response.json())
                                 .then(result => {
-                                    if (result.success) {
+                                    console.log("Full response:", result); // For debugging
+
+                                    // Check for success in the result
+                                    if (result.result &amp;&amp; result.result.success) {
                                         location.reload();
                                     } else {
-                                        alert('Lỗi: ' + (result.error || 'Không xác định'));
+                                        var errorMsg = 'Không xác định';
+                                        if (result.result &amp;&amp; result.result.error) {
+                                            errorMsg = result.result.error;
+                                        } else if (result.error) {
+                                            errorMsg = result.error.data &amp;&amp; result.error.data.message || result.error.message;
+                                        }
+                                        alert('Lỗi: ' + errorMsg);
                                     }
                                 })
                                 .catch(error => {
                                     console.error('Error:', error);
-                                    alert('Đã xảy ra lỗi khi kết nối đến máy chủ.');
+                                    alert('Đã xảy ra lỗi khi kết nối đến máy chủ: ' + error.message);
                                 });
                             }
                         });

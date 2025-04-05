@@ -244,7 +244,7 @@ class HealthcareManagement(http.Controller):
             if action == 'open':
                 complaint.write({'state': 'open'})
             elif action == 'resolve':
-                complaint.write({'state': 'resolved', 'resolution_date': fields.Date.today()})
+                complaint.write({'state': 'resolved', 'resolved_date': fields.Date.today()})
             elif action == 'cancel':
                 complaint.write({'state': 'cancelled'})
             else:
@@ -302,24 +302,42 @@ class HealthcareManagement(http.Controller):
 
     # API cho xử lý thao tác khiếu nại (AJAX)
     @http.route('/healthcare/patient_complaint/action', type='json', auth='user', website=True)
-    def patient_complaint_action(self, complaint_id, action, **kw):
-        complaint = request.env['healthcare.patient.complaint'].sudo().browse(int(complaint_id))
+    def patient_complaint_action(self, **kw):
+        _logger = logging.getLogger(__name__)
+        _logger.info("Complaint action received: %s", kw)
 
-        if not complaint.exists():
-            return {'success': False, 'error': 'Không tìm thấy khiếu nại'}
+        # For JSON-RPC, parameters come directly from kw
+        complaint_id = kw.get('complaint_id')
+        action = kw.get('action')
+
+        if not complaint_id or not action:
+            _logger.error("Missing parameters: complaint_id=%s, action=%s", complaint_id, action)
+            return {'success': False, 'error': 'Thiếu thông tin cần thiết'}
 
         try:
+            _logger.info("Processing complaint ID: %s with action: %s", complaint_id, action)
+            complaint = request.env['healthcare.patient.complaint'].sudo().browse(int(complaint_id))
+
+            if not complaint.exists():
+                _logger.error("Complaint not found with ID: %s", complaint_id)
+                return {'success': False, 'error': 'Không tìm thấy khiếu nại'}
+
             if action == 'open':
-                complaint.write({'state': 'open'})
+                complaint.action_progress()  # Use the model method for state changes
+                _logger.info("Complaint %s marked as in_progress", complaint_id)
             elif action == 'resolve':
-                complaint.write({'state': 'resolved', 'resolution_date': fields.Date.today()})
+                complaint.action_resolve()  # Use the model method
+                _logger.info("Complaint %s marked as resolved", complaint_id)
             elif action == 'cancel':
-                complaint.write({'state': 'cancelled'})
+                complaint.action_cancel()  # Use the model method
+                _logger.info("Complaint %s marked as cancelled", complaint_id)
             else:
+                _logger.error("Invalid action: %s", action)
                 return {'success': False, 'error': 'Hành động không hợp lệ'}
 
             return {'success': True}
         except Exception as e:
+            _logger.exception("Error processing complaint action: %s", str(e))
             return {'success': False, 'error': str(e)}
 
     # Tạo khiếu nại từ phản hồi bệnh nhân
