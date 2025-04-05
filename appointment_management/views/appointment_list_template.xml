@@ -116,8 +116,8 @@
                             </div>
                             <div class="col-md-6 form-group">
                                 <label for="appointment_time">Giờ hẹn <span class="text-danger">*</span></label>
-                                <input type="time" class="form-control" id="appointment_time" name="appointment_time"
-                                       value="08:00" required="required"/>
+                                <input type="time" name="appointment_time" id="appointment_time" class="form-control"
+                                                       required="1" min="08:00" max="21:00"/>
                                 <small class="text-muted">Lịch hẹn chỉ có thể được đặt từ 8:00 sáng đến 21:00 tối</small>
                             </div>
                         </div>

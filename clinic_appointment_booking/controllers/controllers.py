@@ -31,23 +31,6 @@ class AppointmentBookingController(http.Controller):
         }
         return request.render("clinic_appointment_booking.appointment_booking_form", values)
 
-    def _is_time_valid(self, appointment_time):
-        """Check if appointment time is between 8:00 and 21:00"""
-        try:
-            # Convert to user's timezone if needed
-            user_tz = pytz.timezone(request.context.get('tz', 'UTC') or 'UTC')
-            if appointment_time.tzinfo is None:
-                # If time has no timezone, assume UTC
-                appointment_time = pytz.utc.localize(appointment_time)
-            appointment_time = appointment_time.astimezone(user_tz)
-
-            hour = appointment_time.hour
-            _logger.info("Validating time: %s, hour: %s", appointment_time, hour)
-            return 1 <= hour < 14
-        except Exception as e:
-            _logger.error("Error validating time: %s", str(e))
-            return False
-
     def _check_availability(self, doctor_id, room_id, appointment_datetime):
         """
         Kiểm tra xem bác sĩ và phòng khám có rảnh vào thời gian đã chọn không
@@ -104,13 +87,6 @@ class AppointmentBookingController(http.Controller):
             except ValueError:
                 return {'status': 'error', 'message': 'Định dạng thời gian không hợp lệ.'}
 
-            # Check if time is between 8:00 and 21:00
-            if not self._is_time_valid(appointment_datetime):
-                return {
-                    'status': 'error',
-                    'message': 'Thời gian hẹn phải từ 8:00 sáng đến 21:00 tối.'
-                }
-
             is_available, message = self._check_availability(doctor_id, room_id, appointment_datetime)
 
             if not is_available:
@@ -145,12 +121,6 @@ class AppointmentBookingController(http.Controller):
                 except ValueError:
                     _logger.error("Invalid date/time format: %s", appointment_datetime_str)
                     return request.redirect('/appointment?error=Định dạng thời gian không hợp lệ')
-
-            # Step 2: Validate appointment time
-            _logger.info("Validating appointment time: %s", appointment_datetime)
-            if not self._is_time_valid(appointment_datetime):
-                _logger.warning("Invalid appointment time: %s", appointment_datetime)
-                return request.redirect('/appointment?error=Thời gian hẹn phải từ 8:00 sáng đến 21:00 tối.')
 
             # Step 3: Get doctor and room IDs
             doctor_id = int(post.get('doctor_id'))
