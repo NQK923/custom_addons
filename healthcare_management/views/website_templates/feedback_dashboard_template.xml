@@ -337,6 +337,7 @@
 
                     } catch (error) {
                         console.error('Lỗi khi tạo biểu đồ:', error);
+                        console.log('Error details:', error.stack);
                     }
 
                     // Hàm hỗ trợ lấy tên loại phản hồi

@@ -483,7 +483,7 @@
 
                     try {
                         // Feedback by Type Chart
-                        var feedbackTypeData = <t t-raw="json.dumps(feedback_by_type)"/>;
+                        var feedbackTypeData = JSON.parse(<t t-raw="feedback_by_type"/>);
                         var typeLabels = [];
                         var typeData = [];
                         var typeColors = [
@@ -526,7 +526,7 @@
                         });
 
                         // Satisfaction Rating Chart
-                        var satisfactionData = <t t-raw="json.dumps(feedback_by_rating)"/>;
+                        var satisfactionData = JSON.parse(<t t-raw="feedback_by_rating"/>);
                         var ratingLabels = [];
                         var ratingData = [];
                         var ratingColors = [
@@ -571,7 +571,8 @@
                             }
                         });
 
-                        // Create state chart
+                        // Create state chart using statistics_data
+                        var statisticsData = JSON.parse(document.getElementById('statistics_data').textContent);
                         var stateLabels = ['Mới', 'Đã ghi nhận', 'Đã hủy'];
                         var stateColors = [
                             'rgba(220, 53, 69, 0.8)',
@@ -580,8 +581,8 @@
                         ];
                         var stateData = [0, 0, 0];
 
-                        // Calculate state data
-                        statistics.forEach(function(stat) {
+                        // Calculate state data from parsed JSON
+                        statisticsData.forEach(function(stat) {
                             if (stat.state === 'new') stateData[0]++;
                             else if (stat.state === 'noted') stateData[1]++;
                             else if (stat.state === 'cancelled') stateData[2]++;
@@ -594,7 +595,9 @@
                                 labels: stateLabels,
                                 datasets: [{
                                     data: stateData,
-                                    backgroundColor: stateColors
+                                    backgroundColor: stateColors,
+                                    borderColor: '#ffffff',
+                                    borderWidth: 1
                                 }]
                             },
                             options: {
@@ -611,15 +614,44 @@
                             }
                         });
 
+                        // Add debug messages to help track data flow
+                        console.log('Chart data loaded successfully');
+                        console.log('Type data:', feedbackTypeData);
+                        console.log('Rating data:', satisfactionData);
+                        console.log('Statistics data count:', statisticsData.length);
+
                         // Hide loading indicators
                         document.querySelectorAll('.chart-loading').forEach(function(el) {
                             el.classList.add('d-none');
                         });
                     } catch (error) {
                         console.error('Error initializing charts:', error);
+                        console.log('Error details:', error.stack);
                         document.querySelectorAll('.chart-loading').forEach(function(el) {
                             el.classList.add('d-none');
                         });
+                    }
+                }
+
+                // Helper functions
+                function getFeedbackTypeName(type) {
+                    switch (type) {
+                        case 'compliment': return 'Khen ngợi';
+                        case 'complaint': return 'Khiếu nại';
+                        case 'suggestion': return 'Góp ý';
+                        case 'question': return 'Hỏi đáp';
+                        default: return 'Khác';
+                    }
+                }
+
+                function getSatisfactionName(rating) {
+                    switch (rating) {
+                        case '1': return 'Rất không hài lòng';
+                        case '2': return 'Không hài lòng';
+                        case '3': return 'Bình thường';
+                        case '4': return 'Hài lòng';
+                        case '5': return 'Rất hài lòng';
+                        default: return 'Không đánh giá';
                     }
                 }
 

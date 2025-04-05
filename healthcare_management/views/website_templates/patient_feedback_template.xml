@@ -190,6 +190,10 @@
 
     <!-- Template xem chi tiết phản hồi -->
     <template id="patient_feedback_detail_template" name="Chi tiết phản hồi bệnh nhân">
+        <t t-set="head">
+            <meta name="csrf-token" t-att-content="request.csrf_token()"/>
+            <t t-if="head" t-raw="head"/>
+        </t>
         <t t-call="website.layout">
             <!-- CSS có thể được tái sử dụng từ danh sách phản hồi -->
             <style>
@@ -381,7 +385,7 @@
             <!-- JavaScript Inline -->
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Xử lý các nút hành động phản hồi
+                // Xử lý các nút hành động phản hồi
                     document.querySelectorAll('[data-feedback-id][data-action]').forEach(function(button) {
                         button.addEventListener('click', function() {
                             var feedbackId = this.getAttribute('data-feedback-id');
@@ -389,27 +393,35 @@
 
                             if (!feedbackId || !action) return;
 
+                            console.log('Chuẩn bị gửi yêu cầu:', {
+                                feedback_id: feedbackId,
+                                action: action
+                            });
+
                             // Hiển thị dialog xác nhận
                             if (confirm('Bạn có chắc chắn muốn thực hiện thao tác này?')) {
-                                // Chuẩn bị dữ liệu và gửi request
-                                var data = {
-                                    feedback_id: feedbackId,
-                                    action: action,
-                                    csrf_token: document.querySelector('input[name="csrf_token"]').value
-                                };
-
-                                // Gửi yêu cầu AJAX
+                                // Gửi yêu cầu AJAX với định dạng JSON-RPC của Odoo
                                 fetch('/healthcare/patient_feedback/action', {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
-                                        'X-Requested-With': 'XMLHttpRequest'
                                     },
-                                    body: JSON.stringify(data)
+                                    body: JSON.stringify({
+                                        jsonrpc: "2.0",
+                                        method: "call",
+                                        params: {
+                                            feedback_id: feedbackId,
+                                            action: action
+                                        },
+                                        id: Math.floor(Math.random() * 1000000)
+                                    })
                                 })
                                 .then(response => response.json())
                                 .then(result => {
-                                    if (result.success) {
+                                    console.log("Full response:", result); // For debugging
+
+                                    // Check for success in the result
+                                    if (result.result &amp;&amp; result.result.success) {
                                         // Hiển thị thông báo thành công
                                         var message = '';
                                         if (action === 'note') {
@@ -424,13 +436,18 @@
                                         alert(message);
                                         location.reload();
                                     } else {
-                                        // Hiển thị thông báo lỗi
-                                        alert('Đã xảy ra lỗi: ' + (result.error || 'Không xác định'));
+                                        var errorMsg = 'Không xác định';
+                                        if (result.result &amp;&amp; result.result.error) {
+                                            errorMsg = result.result.error;
+                                        } else if (result.error) {
+                                            errorMsg = result.error.data &amp;&amp; result.error.data.message || result.error.message;
+                                        }
+                                        alert('Lỗi: ' + errorMsg);
                                     }
                                 })
                                 .catch(error => {
                                     console.error('Error:', error);
-                                    alert('Đã xảy ra lỗi khi xử lý yêu cầu.');
+                                    alert('Đã xảy ra lỗi khi kết nối đến máy chủ: ' + error.message);
                                 });
                             }
                         });
