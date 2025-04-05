@@ -119,16 +119,39 @@
                     background-color: rgba(220, 53, 69, 0.05);
                 }
 
-                /* Chart container styling */
+                /* Regular chart container styling */
                 .chart-container {
                     position: relative;
-                    height: 300px;
+                    height: 350px; /* Increased height */
                     width: 100%;
                     margin-bottom: 1.5rem;
-                    padding: 10px;
+                    padding: 20px; /* Increased padding */
                     background-color: white;
                     border-radius: 8px;
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                }
+
+                /* Special class for pie/doughnut charts */
+                .chart-container-circle {
+                    position: relative;
+                    height: 0;
+                    width: 100%;
+                    padding-bottom: 100%; /* Makes it square (1:1 aspect ratio) */
+                    margin-bottom: 1.5rem;
+                    background-color: white;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                }
+
+                /* Position the canvas inside the square container */
+                .chart-container-circle canvas {
+                    position: absolute;
+                    top: 10px;
+                    left: 10px;
+                    right: 10px;
+                    bottom: 10px;
+                    width: calc(100% - 20px) !important;
+                    height: calc(100% - 20px) !important;
                 }
 
                 /* Badge styling */
@@ -136,31 +159,6 @@
                     padding: 0.5em 0.75em;
                     font-weight: 500;
                     border-radius: 4px;
-                }
-
-                /* DataTable styling for complaint (red theme) */
-                div.dataTables_wrapper div.dataTables_filter {
-                    margin-bottom: 1rem;
-                }
-
-                div.dataTables_wrapper div.dataTables_filter input {
-                    margin-left: 0.5rem;
-                    border-radius: 4px;
-                    border: 1px solid #ced4da;
-                    padding: 0.375rem 0.75rem;
-                }
-
-                div.dataTables_wrapper div.dataTables_paginate .paginate_button.current {
-                    background: #dc3545;
-                    color: white !important;
-                    border: 1px solid #dc3545;
-                    border-radius: 4px;
-                }
-
-                div.dataTables_wrapper div.dataTables_paginate .paginate_button:hover {
-                    background: #c82333;
-                    color: white !important;
-                    border: 1px solid #bd2130;
                 }
 
                 /* Loading indicator */
@@ -226,7 +224,7 @@
                     }
 
                     .chart-container {
-                        height: 250px;
+                        height: 300px;
                     }
 
                     .filter-section .form-group {
@@ -242,10 +240,6 @@
                     .statistics-table th,
                     .statistics-table td {
                         padding: 0.5rem;
-                    }
-
-                    .chart-container {
-                        height: 200px;
                     }
                 }
             </style>
@@ -316,7 +310,8 @@
                                         <h5 class="mb-0">Khiếu nại theo phân loại</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="chart-container">
+                                        <!-- Changed to circle container for pie chart -->
+                                        <div class="chart-container-circle">
                                             <canvas id="complaintCategoryChart"></canvas>
                                             <div class="chart-loading d-none">
                                                 <div class="spinner-border text-danger" role="status">
@@ -333,6 +328,7 @@
                                         <h5 class="mb-0">Thời gian giải quyết trung bình</h5>
                                     </div>
                                     <div class="card-body">
+                                        <!-- Keep regular container for bar chart -->
                                         <div class="chart-container">
                                             <canvas id="resolutionTimeChart"></canvas>
                                             <div class="chart-loading d-none">
@@ -346,7 +342,7 @@
                             </div>
                         </div>
 
-                        <!-- Biểu đồ phân tích -->
+                        <!-- Biểu đồ phân tích (đã loại bỏ bảng dữ liệu) -->
                         <div class="row mt-4">
                             <div class="col-12">
                                 <h4 class="mb-3 text-danger border-bottom pb-2">
@@ -359,7 +355,8 @@
                                                 <h5 class="mb-0">Phân bố trạng thái khiếu nại</h5>
                                             </div>
                                             <div class="card-body">
-                                                <div class="chart-container">
+                                                <!-- Changed to circle container for doughnut chart -->
+                                                <div class="chart-container-circle">
                                                     <canvas id="stateChart"></canvas>
                                                 </div>
                                             </div>
@@ -371,7 +368,8 @@
                                                 <h5 class="mb-0">Khiếu nại theo mức độ ưu tiên</h5>
                                             </div>
                                             <div class="card-body">
-                                                <div class="chart-container">
+                                                <!-- Changed to circle container for pie chart -->
+                                                <div class="chart-container-circle">
                                                     <canvas id="priorityChart"></canvas>
                                                 </div>
                                             </div>
@@ -444,13 +442,34 @@
                             },
                             options: {
                                 responsive: true,
+                                maintainAspectRatio: true,
                                 plugins: {
                                     legend: {
                                         position: 'right',
+                                        align: 'center',
+                                        labels: {
+                                            boxWidth: 15,
+                                            padding: 15
+                                        }
                                     },
                                     title: {
                                         display: true,
-                                        text: 'Phân bố khiếu nại theo loại'
+                                        text: 'Phân bố khiếu nại theo loại',
+                                        font: {
+                                            size: 16
+                                        },
+                                        padding: {
+                                            top: 10,
+                                            bottom: 20
+                                        }
+                                    }
+                                },
+                                layout: {
+                                    padding: {
+                                        top: 20,
+                                        right: 20,
+                                        bottom: 20,
+                                        left: 20
                                     }
                                 }
                             }
@@ -532,13 +551,34 @@
                             },
                             options: {
                                 responsive: true,
+                                maintainAspectRatio: true,
                                 plugins: {
                                     legend: {
                                         position: 'right',
+                                        align: 'center',
+                                        labels: {
+                                            boxWidth: 15,
+                                            padding: 15
+                                        }
                                     },
                                     title: {
                                         display: true,
-                                        text: 'Phân bố trạng thái khiếu nại'
+                                        text: 'Phân bố trạng thái khiếu nại',
+                                        font: {
+                                            size: 16
+                                        },
+                                        padding: {
+                                            top: 10,
+                                            bottom: 20
+                                        }
+                                    }
+                                },
+                                layout: {
+                                    padding: {
+                                        top: 20,
+                                        right: 20,
+                                        bottom: 20,
+                                        left: 20
                                     }
                                 }
                             }
@@ -572,13 +612,34 @@
                             },
                             options: {
                                 responsive: true,
+                                maintainAspectRatio: true,
                                 plugins: {
                                     legend: {
                                         position: 'right',
+                                        align: 'center',
+                                        labels: {
+                                            boxWidth: 15,
+                                            padding: 15
+                                        }
                                     },
                                     title: {
                                         display: true,
-                                        text: 'Phân bố mức độ ưu tiên khiếu nại'
+                                        text: 'Phân bố mức độ ưu tiên khiếu nại',
+                                        font: {
+                                            size: 16
+                                        },
+                                        padding: {
+                                            top: 10,
+                                            bottom: 20
+                                        }
+                                    }
+                                },
+                                layout: {
+                                    padding: {
+                                        top: 20,
+                                        right: 20,
+                                        bottom: 20,
+                                        left: 20
                                     }
                                 }
                             }

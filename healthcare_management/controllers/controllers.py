@@ -81,68 +81,69 @@ class HealthcareManagement(http.Controller):
         date_from = kw.get('date_from', (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d'))
         date_to = kw.get('date_to', datetime.today().strftime('%Y-%m-%d'))
 
-        # Sử dụng SQL trực tiếp để lấy thống kê tương tự như model.dashboard
+        # Sử dụng SQL trực tiếp để lấy thống kê
         request.env.cr.execute("""
-            SELECT 
-                COUNT(*) as total_feedback,
-                SUM(CASE WHEN feedback_type = 'compliment' THEN 1 ELSE 0 END) AS total_compliments,
-                SUM(CASE WHEN feedback_type = 'complaint' THEN 1 ELSE 0 END) AS total_complaints,
-                SUM(CASE WHEN feedback_type = 'suggestion' THEN 1 ELSE 0 END) AS total_suggestions,
-                SUM(CASE WHEN feedback_type = 'question' THEN 1 ELSE 0 END) AS total_questions,
-                AVG(CASE WHEN satisfaction_numeric > 0 THEN satisfaction_numeric ELSE NULL END) AS avg_satisfaction
-            FROM 
-                healthcare_feedback_statistics
-            WHERE 
-                feedback_date >= %s AND feedback_date <= %s
-        """, (date_from, date_to))
+                SELECT 
+                    COUNT(*) as total_feedback,
+                    SUM(CASE WHEN feedback_type = 'compliment' THEN 1 ELSE 0 END) AS total_compliments,
+                    SUM(CASE WHEN feedback_type = 'complaint' THEN 1 ELSE 0 END) AS total_complaints,
+                    SUM(CASE WHEN feedback_type = 'suggestion' THEN 1 ELSE 0 END) AS total_suggestions,
+                    SUM(CASE WHEN feedback_type = 'question' THEN 1 ELSE 0 END) AS total_questions,
+                    AVG(CASE WHEN satisfaction_numeric > 0 THEN satisfaction_numeric ELSE NULL END) AS avg_satisfaction
+                FROM 
+                    healthcare_feedback_statistics
+                WHERE 
+                    feedback_date >= %s AND feedback_date <= %s
+            """, (date_from, date_to))
         summary_stats = request.env.cr.dictfetchone()
 
         # Thống kê theo phòng ban
         request.env.cr.execute("""
-            SELECT 
-                d.id AS department_id,
-                d.name AS department_name,
-                COUNT(fs.id) AS total_feedback,
-                SUM(CASE WHEN fs.feedback_type = 'compliment' THEN 1 ELSE 0 END) AS compliments,
-                SUM(CASE WHEN fs.feedback_type = 'complaint' THEN 1 ELSE 0 END) AS complaints,
-                SUM(CASE WHEN fs.feedback_type = 'suggestion' THEN 1 ELSE 0 END) AS suggestions,
-                SUM(CASE WHEN fs.feedback_type = 'question' THEN 1 ELSE 0 END) AS questions,
-                SUM(CASE WHEN fs.feedback_type NOT IN ('compliment', 'complaint', 'suggestion', 'question') 
-                        OR fs.feedback_type IS NULL THEN 1 ELSE 0 END) AS others,
-                AVG(CASE WHEN fs.satisfaction_numeric > 0 THEN fs.satisfaction_numeric ELSE NULL END) AS avg_satisfaction
-            FROM 
-                healthcare_feedback_statistics fs
-            JOIN 
-                clinic_department d ON fs.department_id = d.id
-            WHERE 
-                fs.feedback_date >= %s AND fs.feedback_date <= %s
-            GROUP BY 
-                d.id, d.name
-            ORDER BY 
-                d.name
-        """, (date_from, date_to))
+                SELECT 
+                    d.id AS department_id,
+                    d.name AS department_name,
+                    COUNT(fs.id) AS total_feedback,
+                    SUM(CASE WHEN fs.feedback_type = 'compliment' THEN 1 ELSE 0 END) AS compliments,
+                    SUM(CASE WHEN fs.feedback_type = 'complaint' THEN 1 ELSE 0 END) AS complaints,
+                    SUM(CASE WHEN fs.feedback_type = 'suggestion' THEN 1 ELSE 0 END) AS suggestions,
+                    SUM(CASE WHEN fs.feedback_type = 'question' THEN 1 ELSE 0 END) AS questions,
+                    SUM(CASE WHEN fs.feedback_type NOT IN ('compliment', 'complaint', 'suggestion', 'question') 
+                            OR fs.feedback_type IS NULL THEN 1 ELSE 0 END) AS others,
+                    AVG(CASE WHEN fs.satisfaction_numeric > 0 THEN fs.satisfaction_numeric ELSE NULL END) AS avg_satisfaction
+                FROM 
+                    healthcare_feedback_statistics fs
+                JOIN 
+                    clinic_department d ON fs.department_id = d.id
+                WHERE 
+                    fs.feedback_date >= %s AND fs.feedback_date <= %s
+                GROUP BY 
+                    d.id, d.name
+                ORDER BY 
+                    d.name
+            """, (date_from, date_to))
         department_stats = request.env.cr.dictfetchall()
 
-        # Dữ liệu cho biểu đồ - Có thể được xử lý thêm ở frontend với JS
+        # Dữ liệu cho biểu đồ
         request.env.cr.execute("""
-            SELECT 
-                feedback_type, 
-                COUNT(*) as count 
-            FROM 
-                healthcare_feedback_statistics 
-            WHERE 
-                feedback_date >= %s AND feedback_date <= %s 
-            GROUP BY 
-                feedback_type
-        """, (date_from, date_to))
+                SELECT 
+                    feedback_type, 
+                    COUNT(*) as count 
+                FROM 
+                    healthcare_feedback_statistics 
+                WHERE 
+                    feedback_date >= %s AND feedback_date <= %s 
+                GROUP BY 
+                    feedback_type
+            """, (date_from, date_to))
         feedback_by_type = request.env.cr.dictfetchall()
 
+        # Fix: Properly JSON encode all data
         return request.render('healthcare_management.feedback_dashboard_template', {
             'date_from': date_from,
             'date_to': date_to,
-            'summary_stats': summary_stats,
+            'summary_stats': summary_stats or {},
             'department_stats': department_stats,
-            'feedback_by_type': feedback_by_type,
+            'feedback_by_type': json.dumps(feedback_by_type),
         })
 
     # Khiếu nại bệnh nhân
@@ -173,52 +174,88 @@ class HealthcareManagement(http.Controller):
 
         statistics = request.env['healthcare.feedback.statistics'].sudo().search(domain)
 
+        # Fix: Create serializable statistics data
+        statistics_data = []
+        for stat in statistics:
+            statistics_data.append({
+                'id': stat.id,
+                'name': stat.name,
+                'patient_name': stat.patient_id.name if stat.patient_id else '',
+                'department_name': stat.department_id.name if stat.department_id else '',
+                'feedback_date': str(stat.feedback_date) if stat.feedback_date else '',
+                'feedback_type': stat.feedback_type,
+                'state': stat.state,
+                'satisfaction_rating': stat.satisfaction_rating,
+                'has_complaint': bool(stat.has_complaint),
+            })
+
         # Thống kê theo loại phản hồi
         request.env.cr.execute("""
-            SELECT 
-                feedback_type, 
-                COUNT(*) as count 
-            FROM 
-                healthcare_feedback_statistics 
-            WHERE 
-                feedback_date >= %s AND feedback_date <= %s 
-            GROUP BY 
-                feedback_type
-        """, (date_from, date_to))
+                SELECT 
+                    feedback_type, 
+                    COUNT(*) as count 
+                FROM 
+                    healthcare_feedback_statistics 
+                WHERE 
+                    feedback_date >= %s AND feedback_date <= %s 
+                GROUP BY 
+                    feedback_type
+            """, (date_from, date_to))
         feedback_by_type = request.env.cr.dictfetchall()
 
         # Thống kê theo đánh giá
         request.env.cr.execute("""
-            SELECT 
-                satisfaction_rating, 
-                COUNT(*) as count 
-            FROM 
-                healthcare_feedback_statistics 
-            WHERE 
-                feedback_date >= %s AND feedback_date <= %s AND
-                satisfaction_rating IS NOT NULL
-            GROUP BY 
-                satisfaction_rating
-        """, (date_from, date_to))
+                SELECT 
+                    satisfaction_rating, 
+                    COUNT(*) as count 
+                FROM 
+                    healthcare_feedback_statistics 
+                WHERE 
+                    feedback_date >= %s AND feedback_date <= %s AND
+                    satisfaction_rating IS NOT NULL
+                GROUP BY 
+                    satisfaction_rating
+            """, (date_from, date_to))
         feedback_by_rating = request.env.cr.dictfetchall()
 
+        # Fix: Properly JSON encode all data
         return request.render('healthcare_management.feedback_statistics_template', {
             'date_from': date_from,
             'date_to': date_to,
             'statistics': statistics,
-            'feedback_by_type': feedback_by_type,
-            'feedback_by_rating': feedback_by_rating,
+            'statistics_data': json.dumps(statistics_data),
+            'feedback_by_type': json.dumps(feedback_by_type),
+            'feedback_by_rating': json.dumps(feedback_by_rating),
         })
 
-    # API cho xử lý thao tác phản hồi (AJAX)
     @http.route('/healthcare/patient_feedback/action', type='json', auth='user', website=True)
-    def patient_feedback_action(self, feedback_id, action, **kw):
-        feedback = request.env['healthcare.patient.feedback'].sudo().browse(int(feedback_id))
+    def patient_feedback_action(self, feedback_id=None, action=None, **kw):
+        """Handle AJAX actions for patient feedback.
 
-        if not feedback.exists():
-            return {'success': False, 'error': 'Không tìm thấy phản hồi'}
+        This method can receive parameters either directly as function arguments
+        or within the kw dictionary from the JSON request body.
+        """
+        _logger = logging.getLogger(__name__)
+
+        # Get parameters either from direct arguments or from kw
+        if feedback_id is None:
+            feedback_id = kw.get('feedback_id')
+        if action is None:
+            action = kw.get('action')
+
+        _logger.info("Feedback action request: feedback_id=%s, action=%s", feedback_id, action)
+
+        if not feedback_id or not action:
+            return {'success': False, 'error': 'Thiếu thông tin cần thiết (feedback_id hoặc action)'}
 
         try:
+            feedback = request.env['healthcare.patient.feedback'].sudo().browse(int(feedback_id))
+
+            if not feedback.exists():
+                return {'success': False, 'error': 'Không tìm thấy phản hồi'}
+
+            _logger.info("Processing action '%s' for feedback %s", action, feedback.name)
+
             if action == 'note':
                 feedback.action_note()
             elif action == 'cancel':
@@ -226,12 +263,12 @@ class HealthcareManagement(http.Controller):
             elif action == 'new':
                 feedback.action_new()
             else:
-                return {'success': False, 'error': 'Hành động không hợp lệ'}
+                return {'success': False, 'error': f'Hành động không hợp lệ: {action}'}
 
             return {'success': True}
         except Exception as e:
+            _logger.error("Error in patient_feedback_action: %s", str(e), exc_info=True)
             return {'success': False, 'error': str(e)}
-
     # API cho xử lý thao tác khiếu nại (AJAX)
     @http.route('/healthcare/patient_complaint/action', type='json', auth='user', website=True)
     def patient_complaint_action(self, complaint_id, action, **kw):
