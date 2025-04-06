@@ -174,7 +174,6 @@ class HealthcareManagement(http.Controller):
 
         statistics = request.env['healthcare.feedback.statistics'].sudo().search(domain)
 
-        # Fix: Create serializable statistics data
         statistics_data = []
         for stat in statistics:
             statistics_data.append({
@@ -218,7 +217,6 @@ class HealthcareManagement(http.Controller):
             """, (date_from, date_to))
         feedback_by_rating = request.env.cr.dictfetchall()
 
-        # Fix: Properly JSON encode all data
         return request.render('healthcare_management.feedback_statistics_template', {
             'date_from': date_from,
             'date_to': date_to,
