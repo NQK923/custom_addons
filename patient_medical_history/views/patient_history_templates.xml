@@ -3,134 +3,512 @@
     <template id="patient_history_template" name="Patient History">
         <t t-call="website.layout">
             <style>
+                :root {
+                    --primary-color: #2C83F2;
+                    --primary-dark: #1A73E8;
+                    --primary-light: #E8F0FE;
+                    --secondary-color: #4CD964;
+                    --danger-color: #FF3B30;
+                    --warning-color: #FF9500;
+                    --info-color: #5AC8FA;
+                    --gray-dark: #343a40;
+                    --gray: #6c757d;
+                    --gray-light: #f8f9fa;
+                    --border-color: #dee2e6;
+                }
+
+                body {
+                    background-color: #f5f7fa;
+                    color: #333;
+                    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+                }
+
+                .page-title {
+                    color: var(--primary-dark);
+                    font-weight: 700;
+                    text-align: center;
+                    margin-bottom: 2rem;
+                    position: relative;
+                    padding-bottom: 15px;
+                }
+
+                .page-title:after {
+                    content: "";
+                    position: absolute;
+                    width: 100px;
+                    height: 4px;
+                    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+                    bottom: 0;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    border-radius: 2px;
+                }
+
                 .patient-history-container {
-                    background-color: #f8f9fa;
-                    padding: 30px;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    background-color: transparent;
+                    padding: 0;
                     max-width: 1200px;
                     margin: 0 auto;
                 }
-                .patient-info, .medical-history {
-                    background-color: #fff;
-                    padding: 20px;
-                    border-radius: 8px;
-                    margin-bottom: 25px;
-                    border: 1px solid #dee2e6;
+
+                .progress-stepper {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 30px;
+                    position: relative;
+                    max-width: 600px;
+                    margin-left: auto;
+                    margin-right: auto;
                 }
-                .patient-info h3, .medical-history h3 {
-                    color: #007bff;
-                    border-bottom: 2px solid #007bff;
-                    padding-bottom: 8px;
-                    margin-bottom: 20px;
-                    font-size: 1.5rem;
+
+                .progress-stepper:before {
+                    content: "";
+                    position: absolute;
+                    height: 2px;
+                    background-color: var(--border-color);
+                    top: 15px;
+                    left: 40px;
+                    right: 40px;
+                    z-index: 0;
                 }
-                .patient-info .row p {
-                    margin: 8px 0;
-                    font-size: 1rem;
-                    color: #343a40;
-                }
-                .patient-info .row strong {
-                    color: #495057;
-                    min-width: 150px;
-                    display: inline-block;
-                }
-                .medical-history h4 {
-                    color: #343a40;
-                    margin-top: 25px;
-                    margin-bottom: 15px;
-                    font-size: 1.25rem;
-                }
-                .table {
-                    margin-bottom: 25px;
-                    font-size: 0.95rem;
-                }
-                .table th {
-                    background-color: #007bff;
-                    color: #fff;
-                    padding: 12px;
+
+                .step {
+                    position: relative;
+                    z-index: 1;
                     text-align: center;
                 }
-                .table td {
-                    vertical-align: middle;
-                    padding: 10px;
-                    text-align: center;
-                }
-                .no-data {
-                    color: #6c757d;
-                    font-style: italic;
-                    font-size: 1rem;
-                    text-align: center;
-                }
-                .search-form {
-                    max-width: 500px;
-                    margin: 0 auto 30px auto;
-                }
-                .search-form .form-group {
-                    margin-bottom: 15px;
-                }
-                .search-form label {
+
+                .step-circle {
+                    width: 30px;
+                    height: 30px;
+                    background-color: white;
+                    border: 2px solid var(--border-color);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0 auto 8px;
                     font-weight: 600;
-                    color: #495057;
+                    color: var(--gray);
+                    transition: all 0.3s;
                 }
-                .search-form .btn-primary {
-                    width: 100%;
-                    padding: 10px;
+
+                .step-active .step-circle {
+                    background-color: var(--primary-color);
+                    border-color: var(--primary-color);
+                    color: white;
+                }
+
+                .step-completed .step-circle {
+                    background-color: var(--secondary-color);
+                    border-color: var(--secondary-color);
+                    color: white;
+                }
+
+                .step-label {
+                    font-size: 0.85rem;
+                    color: var(--gray);
+                    font-weight: 500;
+                }
+
+                .step-active .step-label, .step-completed .step-label {
+                    color: var(--gray-dark);
+                    font-weight: 600;
+                }
+
+                .card {
+                    border: none;
+                    border-radius: 12px;
+                    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+                    margin-bottom: 25px;
+                    overflow: hidden;
+                    transition: all 0.3s ease;
+                }
+
+                .card:hover {
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                    transform: translateY(-2px);
+                }
+
+                .card-header {
+                    background-color: white;
+                    border-bottom: 1px solid var(--border-color);
+                    padding: 15px 20px;
+                    display: flex;
+                    align-items: center;
+                }
+
+                .card-header-icon {
+                    width: 32px;
+                    height: 32px;
+                    background-color: var(--primary-light);
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-right: 12px;
+                    color: var(--primary-color);
+                }
+
+                .card-header h3 {
+                    margin: 0;
+                    font-size: 1.2rem;
+                    font-weight: 600;
+                    color: var(--gray-dark);
+                    flex-grow: 1;
+                }
+
+                .card-body {
+                    padding: 20px;
+                }
+
+                .form-card {
+                    max-width: 500px;
+                    margin: 0 auto 30px;
+                }
+
+                .search-form, .otp-form {
+                    background-color: white;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                    padding: 25px;
+                }
+
+                .form-group {
+                    margin-bottom: 20px;
+                }
+
+                .form-group label {
+                    font-weight: 500;
+                    color: var(--gray-dark);
+                    margin-bottom: 8px;
+                    display: block;
+                }
+
+                .form-control {
+                    border-radius: 8px;
+                    padding: 12px 15px;
+                    border: 1px solid var(--border-color);
                     font-size: 1rem;
                 }
-                .badge-valid {
-                    background-color: #28a745;
-                    color: white;
-                    padding: 5px 10px;
-                    border-radius: 20px;
+
+                .form-control:focus {
+                    border-color: var(--primary-color);
+                    box-shadow: 0 0 0 3px rgba(44, 131, 242, 0.1);
                 }
-                .badge-expired {
-                    background-color: #dc3545;
-                    color: white;
-                    padding: 5px 10px;
-                    border-radius: 20px;
-                }
-                .otp-form {
-                    max-width: 500px;
-                    margin: 0 auto 30px auto;
-                    background-color: #fff;
-                    padding: 20px;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                }
+
                 .otp-input {
                     letter-spacing: 10px;
-                    font-size: 1.5rem;
+                    font-size: 1.75rem;
+                    font-weight: 600;
                     text-align: center;
+                    padding: 15px;
                 }
+
+                .btn {
+                    padding: 12px 22px;
+                    font-weight: 500;
+                    border-radius: 8px;
+                    transition: all 0.3s;
+                }
+
+                .btn-primary {
+                    background-color: var(--primary-color);
+                    border-color: var(--primary-color);
+                }
+
+                .btn-primary:hover {
+                    background-color: var(--primary-dark);
+                    border-color: var(--primary-dark);
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 8px rgba(26, 115, 232, 0.2);
+                }
+
+                .btn-outline-secondary {
+                    border-color: var(--border-color);
+                    color: var(--gray);
+                }
+
+                .btn-outline-secondary:hover {
+                    background-color: var(--gray-light);
+                    color: var(--gray-dark);
+                }
+
+                .patient-info-row {
+                    display: flex;
+                    margin-bottom: 15px;
+                    flex-wrap: wrap;
+                }
+
+                .patient-info-label {
+                    min-width: 150px;
+                    font-weight: 500;
+                    color: var(--gray);
+                }
+
+                .patient-info-value {
+                    flex-grow: 1;
+                    color: var(--gray-dark);
+                    font-weight: 500;
+                }
+
+                .patient-summary {
+                    background-color: white;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                    padding: 5px 0;
+                    margin-bottom: 30px;
+                }
+
+                .summary-item {
+                    padding: 15px 20px;
+                    text-align: center;
+                    border-right: 1px solid var(--border-color);
+                }
+
+                .summary-item:last-child {
+                    border-right: none;
+                }
+
+                .summary-value {
+                    font-size: 1.75rem;
+                    font-weight: 700;
+                    color: var(--primary-color);
+                    margin-bottom: 5px;
+                }
+
+                .summary-label {
+                    color: var(--gray);
+                    font-size: 0.85rem;
+                }
+
+                .medical-history-section {
+                    margin-bottom: 30px;
+                }
+
+                .section-title {
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    color: var(--gray-dark);
+                    margin-bottom: 15px;
+                    display: flex;
+                    align-items: center;
+                }
+
+                .section-title i {
+                    margin-right: 8px;
+                    color: var(--primary-color);
+                }
+
+                .table {
+                    background-color: white;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+                }
+
+                .table thead {
+                    background-color: var(--gray-light);
+                    border-bottom: 2px solid var(--border-color);
+                }
+
+                .table th {
+                    color: var(--gray-dark);
+                    font-weight: 600;
+                    border-top: none;
+                    padding: 15px;
+                    vertical-align: middle;
+                }
+
+                .table td {
+                    padding: 15px;
+                    vertical-align: middle;
+                    border-top: 1px solid var(--border-color);
+                }
+
+                .badge {
+                    padding: 6px 10px;
+                    font-weight: 500;
+                    border-radius: 6px;
+                }
+
+                .badge-valid {
+                    background-color: rgba(76, 217, 100, 0.1);
+                    color: var(--secondary-color);
+                }
+
+                .badge-expired {
+                    background-color: rgba(255, 59, 48, 0.1);
+                    color: var(--danger-color);
+                }
+
+                .badge-pending {
+                    background-color: rgba(255, 149, 0, 0.1);
+                    color: var(--warning-color);
+                }
+
+                .badge-in-progress {
+                    background-color: rgba(90, 200, 250, 0.1);
+                    color: var(--info-color);
+                }
+
+                .badge-completed {
+                    background-color: rgba(76, 217, 100, 0.1);
+                    color: var(--secondary-color);
+                }
+
+                .no-data {
+                    text-align: center;
+                    padding: 30px;
+                    color: var(--gray);
+                    font-style: italic;
+                    background-color: white;
+                    border-radius: 10px;
+                    border: 1px dashed var(--border-color);
+                }
+
+                .tooltip-icon {
+                    color: var(--gray);
+                    margin-left: 5px;
+                    cursor: pointer;
+                }
+
+                .collapsible-section {
+                    background-color: white;
+                    border-radius: 10px;
+                    margin-bottom: 15px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+                    overflow: hidden;
+                }
+
+                .collapsible-header {
+                    padding: 15px 20px;
+                    background-color: var(--gray-light);
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    border-bottom: 1px solid var(--border-color);
+                }
+
+                .collapsible-header h4 {
+                    margin: 0;
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    color: var(--gray-dark);
+                }
+
+                .collapsible-body {
+                    padding: 20px;
+                }
+
                 .alert {
-                    margin-top: 15px;
+                    border-radius: 8px;
+                    padding: 15px 20px;
+                }
+
+                @media (max-width: 768px) {
+                    .summary-item {
+                        border-right: none;
+                        border-bottom: 1px solid var(--border-color);
+                    }
+
+                    .summary-item:last-child {
+                        border-bottom: none;
+                    }
+
+                    .patient-info-row {
+                        flex-direction: column;
+                        margin-bottom: 20px;
+                    }
+
+                    .patient-info-label {
+                        min-width: auto;
+                        margin-bottom: 5px;
+                    }
+
+                    .table-responsive {
+                        font-size: 0.9rem;
+                    }
+                }
+
+                /* Animation */
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
+                .fade-in {
+                    animation: fadeIn 0.5s ease forwards;
+                }
+
+                .pulse {
+                    animation: pulse 2s infinite;
+                }
+
+                @keyframes pulse {
+                    0% { box-shadow: 0 0 0 0 rgba(44, 131, 242, 0.4); }
+                    70% { box-shadow: 0 0 0 10px rgba(44, 131, 242, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(44, 131, 242, 0); }
                 }
             </style>
+
             <div class="container mt-5 patient-history-container">
-                <h1 class="text-center mb-5">Lịch sử khám bệnh nhân</h1>
+                <h1 class="page-title">Lịch sử khám bệnh nhân</h1>
+
+                <!-- Stepper for user flow -->
+                <div class="progress-stepper mb-4">
+                    <div t-att-class="'step ' + ((not otp_sent and not otp_verified) and 'step-active' or (otp_sent or otp_verified) and 'step-completed' or '')">
+                        <div class="step-circle">
+                            <i t-if="otp_sent or otp_verified" class="fa fa-check"></i>
+                            <t t-else="">1</t>
+                        </div>
+                        <div class="step-label">Nhập email</div>
+                    </div>
+                    <div t-att-class="'step ' + ((otp_sent and not otp_verified) and 'step-active' or (otp_verified) and 'step-completed' or '')">
+                        <div class="step-circle">
+                            <i t-if="otp_verified" class="fa fa-check"></i>
+                            <t t-else="">2</t>
+                        </div>
+                        <div class="step-label">Xác thực OTP</div>
+                    </div>
+                    <div t-att-class="'step ' + (otp_verified and 'step-active' or '')">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Xem lịch sử</div>
+                    </div>
+                </div>
 
                 <!-- System error message -->
                 <t t-if="error">
-                    <div class="alert alert-danger text-center">
+                    <div class="alert alert-danger text-center fade-in">
                         <i class="fa fa-exclamation-triangle mr-2"></i> <t t-esc="error"/>
                     </div>
                 </t>
 
                 <!-- Email search form (only shown if OTP not sent) -->
                 <t t-if="not otp_sent">
-                    <form method="POST" action="/clinic/patient_history" class="search-form" id="email-form">
-                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                        <div class="form-group">
-                            <label for="email">Nhập địa chỉ email của bạn:</label>
-                            <input type="email" class="form-control" id="email" name="email" t-att-value="email or ''" placeholder="example@example.com" required="required"/>
-                        </div>
-                        <button type="submit" class="btn btn-primary" id="submit-btn">Gửi mã OTP</button>
-                    </form>
+                    <div class="form-card fade-in">
+                        <form method="POST" action="/clinic/patient_history" class="search-form" id="email-form">
+                            <h3 class="mb-4 text-center">Truy cập lịch sử y tế</h3>
+                            <p class="text-center mb-4 text-muted">Vui lòng nhập địa chỉ email đã đăng ký để nhận mã xác thực</p>
+
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="form-group">
+                                <label for="email">
+                                    <i class="fa fa-envelope mr-2 text-primary"></i>
+                                    Địa chỉ email
+                                </label>
+                                <input type="email" class="form-control" id="email" name="email" t-att-value="email or ''" placeholder="example@example.com" required="required"/>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-4" id="submit-btn">
+                                <i class="fa fa-paper-plane mr-2"></i> Gửi mã xác thực
+                            </button>
+                        </form>
+                    </div>
 
                     <!-- Hiển thị thông báo lỗi khi email không tồn tại -->
                     <t t-if="email_not_found">
-                        <div class="alert alert-danger mt-3">
+                        <div class="alert alert-danger mt-3 fade-in text-center">
                             <i class="fa fa-exclamation-circle mr-2"></i> Không tìm thấy bệnh nhân với email này. Vui lòng kiểm tra lại hoặc liên hệ với quản trị viên.
                         </div>
                     </t>
@@ -154,45 +532,70 @@
 
                 <!-- OTP verification form (shown after email submission) -->
                 <t t-if="otp_sent and not otp_verified">
-                    <div class="otp-form">
-                        <h4 class="text-center mb-3">Xác minh OTP</h4>
-                        <p class="text-center">Chúng tôi đã gửi mã OTP đến email <strong t-esc="email"/>. Vui lòng kiểm tra hộp thư và nhập mã để xem lịch sử y tế của bạn.</p>
-
-                        <div class="alert alert-info">
-                            <strong>Lưu ý:</strong> Nếu bạn không nhận được email, vui lòng kiểm tra thư mục thư rác (spam) hoặc liên hệ với quản trị viên.
-                        </div>
-
-                        <t t-if="otp_error">
-                            <div class="alert alert-danger">
-                                Mã OTP không đúng hoặc đã hết hạn. Vui lòng thử lại.
+                    <div class="form-card fade-in">
+                        <div class="otp-form">
+                            <h3 class="text-center mb-3">Xác minh OTP</h3>
+                            <div class="text-center mb-4">
+                                <span class="badge badge-primary py-2 px-3">
+                                    <i class="fa fa-envelope mr-1"></i> <t t-esc="email"/>
+                                </span>
                             </div>
-                        </t>
 
-                        <form method="POST" action="/clinic/verify_otp" id="otp-form">
-                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                            <input type="hidden" name="email" t-att-value="email"/>
-                            <div class="form-group">
-                                <label for="otp_code">Nhập mã OTP:</label>
-                                <input type="text" class="form-control otp-input" id="otp_code" name="otp_code" maxlength="6" placeholder="------" required="required"/>
+                            <p class="text-center mb-4">Chúng tôi đã gửi mã OTP đến email của bạn. Vui lòng kiểm tra hộp thư và nhập mã để tiếp tục.</p>
+
+                            <div class="alert alert-info mb-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa fa-info-circle mr-3 fa-lg"></i>
+                                    <div>
+                                        <strong>Lưu ý:</strong> Nếu bạn không nhận được email, vui lòng kiểm tra thư mục thư rác (spam) hoặc liên hệ với quản trị viên.
+                                    </div>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block mt-3 justify-content-center" id="verify-btn">Xác nhận</button>
-                        </form>
 
-                        <div class="text-center mt-3">
-                            <p>Chưa nhận được mã OTP?</p>
-                            <form method="POST" action="/clinic/patient_history" id="resend-form">
+                            <t t-if="otp_error">
+                                <div class="alert alert-danger mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa fa-exclamation-triangle mr-3 fa-lg"></i>
+                                        <div>
+                                            Mã OTP không đúng hoặc đã hết hạn. Vui lòng thử lại hoặc yêu cầu mã mới.
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <form method="POST" action="/clinic/verify_otp" id="otp-form">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                 <input type="hidden" name="email" t-att-value="email"/>
-                                <button type="submit" class="btn btn-outline-secondary" id="resend-btn">Gửi lại mã OTP</button>
+                                <div class="form-group">
+                                    <label for="otp_code" class="text-center d-block">Nhập mã OTP 6 số:</label>
+                                    <input type="text" class="form-control otp-input pulse" id="otp_code" name="otp_code" maxlength="6" placeholder="------" required="required"/>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block mt-4" id="verify-btn">
+                                    <i class="fa fa-check-circle mr-2"></i> Xác nhận
+                                </button>
                             </form>
-                            <p class="mt-3">
-                                <a href="/clinic/patient_history">Quay lại</a>
-                            </p>
+
+                            <div class="text-center mt-4">
+                                <p class="text-muted">Chưa nhận được mã OTP?</p>
+                                <form method="POST" action="/clinic/patient_history" id="resend-form" class="mb-3">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="email" t-att-value="email"/>
+                                    <button type="submit" class="btn btn-outline-secondary" id="resend-btn">
+                                        <i class="fa fa-redo mr-2"></i> Gửi lại mã OTP
+                                    </button>
+                                </form>
+                                <a href="/clinic/patient_history" class="text-primary">
+                                    <i class="fa fa-arrow-left mr-1"></i> Quay lại
+                                </a>
+                            </div>
                         </div>
                     </div>
 
                     <script>
                         document.addEventListener('DOMContentLoaded', function() {
+                            // Tự động focus vào ô nhập OTP
+                            document.getElementById('otp_code').focus();
+
                             // Xử lý form xác nhận OTP
                             const otpForm = document.getElementById('otp-form');
                             const verifyBtn = document.getElementById('verify-btn');
@@ -207,6 +610,12 @@
                                     // Form tiếp tục submit bình thường
                                 });
                             }
+
+                            // Định dạng input OTP
+                            const otpInput = document.getElementById('otp_code');
+                            otpInput.addEventListener('input', function() {
+                                this.value = this.value.replace(/[^0-9]/g, '');
+                            });
 
                             // Xử lý form gửi lại OTP
                             const resendForm = document.getElementById('resend-form');
@@ -226,155 +635,499 @@
                     </script>
                 </t>
 
-                <!-- Thông tin bệnh nhân (only shown if OTP verified) -->
+                <!-- Thông tin bệnh nhân và lịch sử (only shown if OTP verified) -->
                 <t t-if="otp_verified and patient">
-                    <div class="patient-info">
-                        <h3>Thông tin bệnh nhân</h3>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>Mã:</strong> <t t-esc="patient.code"/></p>
-                                <p><strong>Họ tên:</strong> <t t-esc="patient.name"/></p>
-                                <p><strong>Giới tính:</strong>
-                                    <t t-if="patient.gender == 'male'">Nam</t>
-                                    <t t-elif="patient.gender == 'female'">Nữ</t>
-                                    <t t-else="">Khác</t>
-                                </p>
-                                <p><strong>Tuổi:</strong> <t t-esc="patient.age"/></p>
-                                <p><strong>Ngày sinh:</strong> <t t-esc="patient.date_of_birth"/></p>
-                                <p><strong>Điện thoại:</strong> <t t-esc="patient.phone or 'Không có'"/></p>
+                    <!-- Thông tin tổng quan -->
+                    <div class="row patient-summary fade-in">
+                        <div class="col-md-4 col-sm-12 summary-item">
+                            <div class="summary-value">
+                                <t t-esc="len(history.medical_tests) if history and history.medical_tests else 0"/>
                             </div>
-                            <div class="col-md-6">
-                                <h4 class="mb-3">Thông tin bảo hiểm y tế</h4>
-                                <t t-if="patient.has_insurance">
-                                    <p><strong>Số thẻ BHYT:</strong> <t t-esc="patient.insurance_number"/></p>
-                                    <p><strong>Nơi ĐKKCB:</strong> <t t-esc="patient.insurance_facility"/></p>
-                                    <p><strong>Mức chi trả:</strong> <t t-esc="patient.insurance_number and patient.coverage_rate or '100'"/>%</p>
-                                    <p><strong>Có giá trị đến:</strong> <t t-esc="patient.insurance_expiry"/></p>
-                                    <p><strong>Trạng thái:</strong>
-                                        <span t-if="patient.insurance_state == 'Hợp lệ'" class="badge badge-valid">
-                                            <i class="fa fa-check-circle mr-1"></i> Hợp lệ
-                                        </span>
-                                        <span t-else="" class="badge badge-expired">
-                                            <i class="fa fa-times-circle mr-1"></i> Hết hạn
-                                        </span>
-                                    </p>
-                                </t>
-                                <t t-else="">
-                                    <p class="no-data">Không có thông tin bảo hiểm y tế</p>
-                                </t>
+                            <div class="summary-label">Xét nghiệm</div>
+                        </div>
+                        <div class="col-md-4 col-sm-12 summary-item">
+                            <div class="summary-value">
+                                <t t-esc="len(history.treatment_plans) if history and history.treatment_plans else 0"/>
+                            </div>
+                            <div class="summary-label">Kế hoạch điều trị</div>
+                        </div>
+                        <div class="col-md-4 col-sm-12 summary-item">
+                            <div class="summary-value">
+                                <t t-esc="len(history.treatment_processes) if history and history.treatment_processes else 0"/>
+                            </div>
+                            <div class="summary-label">Quá trình điều trị</div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin bệnh nhân -->
+                    <div class="card fade-in">
+                        <div class="card-header">
+                            <div class="card-header-icon">
+                                <i class="fa fa-user"></i>
+                            </div>
+                            <h3>Thông tin bệnh nhân</h3>
+                            <a href="#" class="text-muted" data-toggle="collapse" data-target="#patientInfoCollapse" aria-expanded="true">
+                                <i class="fa fa-chevron-down"></i>
+                            </a>
+                        </div>
+                        <div class="card-body collapse show" id="patientInfoCollapse">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="patient-info-row">
+                                        <div class="patient-info-label">
+                                            <i class="fa fa-id-card text-primary mr-2"></i> Mã bệnh nhân:
+                                        </div>
+                                        <div class="patient-info-value">
+                                            <t t-esc="patient.code"/>
+                                        </div>
+                                    </div>
+                                    <div class="patient-info-row">
+                                        <div class="patient-info-label">
+                                            <i class="fa fa-user text-primary mr-2"></i> Họ tên:
+                                        </div>
+                                        <div class="patient-info-value">
+                                            <t t-esc="patient.name"/>
+                                        </div>
+                                    </div>
+                                    <div class="patient-info-row">
+                                        <div class="patient-info-label">
+                                            <i class="fa fa-venus-mars text-primary mr-2"></i> Giới tính:
+                                        </div>
+                                        <div class="patient-info-value">
+                                            <t t-if="patient.gender == 'male'">Nam</t>
+                                            <t t-elif="patient.gender == 'female'">Nữ</t>
+                                            <t t-else="">Khác</t>
+                                        </div>
+                                    </div>
+                                    <div class="patient-info-row">
+                                        <div class="patient-info-label">
+                                            <i class="fa fa-birthday-cake text-primary mr-2"></i> Tuổi:
+                                        </div>
+                                        <div class="patient-info-value">
+                                            <t t-esc="patient.age"/> tuổi
+                                        </div>
+                                    </div>
+                                    <div class="patient-info-row">
+                                        <div class="patient-info-label">
+                                            <i class="fa fa-calendar text-primary mr-2"></i> Ngày sinh:
+                                        </div>
+                                        <div class="patient-info-value">
+                                            <t t-esc="patient.date_of_birth"/>
+                                        </div>
+                                    </div>
+                                    <div class="patient-info-row">
+                                        <div class="patient-info-label">
+                                            <i class="fa fa-phone text-primary mr-2"></i> Điện thoại:
+                                        </div>
+                                        <div class="patient-info-value">
+                                            <t t-esc="patient.phone or 'Không có'"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h4 class="mb-3">
+                                        <i class="fa fa-medkit text-primary mr-2"></i> Thông tin bảo hiểm y tế
+                                    </h4>
+                                    <t t-if="patient.has_insurance">
+                                        <div class="patient-info-row">
+                                            <div class="patient-info-label">Số thẻ BHYT:</div>
+                                            <div class="patient-info-value">
+                                                <t t-esc="patient.insurance_number"/>
+                                            </div>
+                                        </div>
+                                        <div class="patient-info-row">
+                                            <div class="patient-info-label">Nơi ĐKKCB:</div>
+                                            <div class="patient-info-value">
+                                                <t t-esc="patient.insurance_facility"/>
+                                            </div>
+                                        </div>
+                                        <div class="patient-info-row">
+                                            <div class="patient-info-label">Mức chi trả:</div>
+                                            <div class="patient-info-value">
+                                                <t t-esc="patient.insurance_number and patient.coverage_rate or '100'"/>%
+                                            </div>
+                                        </div>
+                                        <div class="patient-info-row">
+                                            <div class="patient-info-label">Có giá trị đến:</div>
+                                            <div class="patient-info-value">
+                                                <t t-esc="patient.insurance_expiry"/>
+                                            </div>
+                                        </div>
+                                        <div class="patient-info-row">
+                                            <div class="patient-info-label">Trạng thái:</div>
+                                            <div class="patient-info-value">
+                                                <span t-if="patient.insurance_state == 'Hợp lệ'" class="badge badge-valid">
+                                                    <i class="fa fa-check-circle mr-1"></i> Hợp lệ
+                                                </span>
+                                                <span t-else="" class="badge badge-expired">
+                                                    <i class="fa fa-times-circle mr-1"></i> Hết hạn
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="no-data">
+                                            <i class="fa fa-info-circle mr-2"></i> Không có thông tin bảo hiểm y tế
+                                        </div>
+                                    </t>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Lịch sử y tế -->
                     <t t-if="history">
-                        <div class="medical-history">
-                            <h3>Lịch sử y tế</h3>
-                            <p><strong>Ngày ghi nhận:</strong> <t t-esc="history.history_date"/></p>
+                        <!-- Kế hoạch điều trị -->
+                        <div class="card fade-in">
+                            <div class="card-header">
+                                <div class="card-header-icon">
+                                    <i class="fa fa-clipboard-list"></i>
+                                </div>
+                                <h3>Kế hoạch điều trị</h3>
+                                <a href="#" class="text-muted" data-toggle="collapse" data-target="#treatmentPlansCollapse" aria-expanded="true">
+                                    <i class="fa fa-chevron-down"></i>
+                                </a>
+                            </div>
+                            <div class="card-body collapse show" id="treatmentPlansCollapse">
+                                <t t-if="history.treatment_plans">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 15%">Mã kế hoạch</th>
+                                                    <th style="width: 25%">Ngày bắt đầu</th>
+                                                    <th style="width: 25%">Ngày kết thúc</th>
+                                                    <th style="width: 35%">Thời gian điều trị</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="history.treatment_plans" t-as="plan">
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-primary text-white">
+                                                                <t t-esc="plan.code"/>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <i class="fa fa-calendar-plus text-success mr-1"></i>
+                                                            <t t-esc="plan.start_date"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-if="plan.end_date">
+                                                                <i class="fa fa-calendar-check text-danger mr-1"></i>
+                                                                <t t-esc="plan.end_date"/>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span class="text-muted">
+                                                                    <i class="fa fa-clock mr-1"></i> Đang tiến hành
+                                                                </span>
+                                                            </t>
+                                                        </td>
+                                                        <td>
+                                                            <t t-if="plan.end_date">
+                                                                <t t-set="days" t-value="(plan.end_date - plan.start_date).days"/>
+                                                                <span class="badge badge-info">
+                                                                    <t t-esc="days"/> ngày
+                                                                </span>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span class="badge badge-warning">
+                                                                    <i class="fa fa-hourglass-half mr-1"></i> Đang tiến hành
+                                                                </span>
+                                                            </t>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="no-data">
+                                        <i class="fa fa-clipboard mr-2"></i> Chưa có kế hoạch điều trị
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
 
-                            <h4>Kế hoạch điều trị</h4>
-                            <t t-if="history.treatment_plans">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Mã</th>
-                                            <th>Ngày bắt đầu</th>
-                                            <th>Ngày kết thúc</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <t t-foreach="history.treatment_plans" t-as="plan">
-                                            <tr>
-                                                <td><t t-esc="plan.code"/></td>
-                                                <td><t t-esc="plan.start_date"/></td>
-                                                <td><t t-esc="plan.end_date or 'Chưa xác định'"/></td>
-                                            </tr>
-                                        </t>
-                                    </tbody>
-                                </table>
-                            </t>
-                            <t t-else="">
-                                <p class="no-data">Chưa có kế hoạch điều trị.</p>
-                            </t>
+                        <!-- Quá trình điều trị -->
+                        <div class="card fade-in">
+                            <div class="card-header">
+                                <div class="card-header-icon">
+                                    <i class="fa fa-procedures"></i>
+                                </div>
+                                <h3>Quá trình điều trị</h3>
+                                <a href="#" class="text-muted" data-toggle="collapse" data-target="#treatmentProcessesCollapse" aria-expanded="true">
+                                    <i class="fa fa-chevron-down"></i>
+                                </a>
+                            </div>
+                            <div class="card-body collapse show" id="treatmentProcessesCollapse">
+                                <t t-if="history.treatment_processes">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 15%">Mã</th>
+                                                    <th style="width: 30%">Dịch vụ</th>
+                                                    <th style="width: 20%">Người thực hiện</th>
+                                                    <th style="width: 15%">Trạng thái</th>
+                                                    <th style="width: 20%">Thời gian</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="history.treatment_processes" t-as="process">
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-primary text-white">
+                                                                <t t-esc="process.code"/>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="process.service_id.name"/>
+                                                        </td>
+                                                        <td>
+                                                            <i class="fa fa-user-md mr-1 text-primary"></i>
+                                                            <t t-esc="process.executor_id.name"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-if="process.state == 'pending'">
+                                                                <span class="badge badge-pending">
+                                                                    <i class="fa fa-clock mr-1"></i> Chưa thực hiện
+                                                                </span>
+                                                            </t>
+                                                            <t t-elif="process.state == 'in_progress'">
+                                                                <span class="badge badge-in-progress">
+                                                                    <i class="fa fa-spinner mr-1"></i> Đang thực hiện
+                                                                </span>
+                                                            </t>
+                                                            <t t-elif="process.state == 'completed'">
+                                                                <span class="badge badge-completed">
+                                                                    <i class="fa fa-check-circle mr-1"></i> Hoàn thành
+                                                                </span>
+                                                            </t>
+                                                        </td>
+                                                        <td>
+                                                            <t t-if="process.execution_time">
+                                                                <i class="fa fa-calendar-check text-success mr-1"></i>
+                                                                <t t-esc="process.execution_time"/>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span class="text-muted">
+                                                                    <i class="fa fa-hourglass-start mr-1"></i> Chưa thực hiện
+                                                                </span>
+                                                            </t>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="no-data">
+                                        <i class="fa fa-procedures mr-2"></i> Chưa có quá trình điều trị
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
 
-                            <h4>Quá trình điều trị</h4>
-                            <t t-if="history.treatment_processes">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Mã</th>
-                                            <th>Dịch vụ</th>
-                                            <th>Trạng thái</th>
-                                            <th>Thời gian</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <t t-foreach="history.treatment_processes" t-as="process">
-                                            <tr>
-                                                <td><t t-esc="process.code"/></td>
-                                                <td><t t-esc="process.service_id.name"/></td>
-                                                <td>
-                                                    <t t-if="process.state == 'pending'">Chưa thực hiện</t>
-                                                    <t t-elif="process.state == 'in_progress'">Đang thực hiện</t>
-                                                    <t t-elif="process.state == 'completed'">Hoàn thành</t>
-                                                </td>
-                                                <td><t t-esc="process.execution_time or 'Chưa thực hiện'"/></td>
-                                            </tr>
-                                        </t>
-                                    </tbody>
-                                </table>
-                            </t>
-                            <t t-else="">
-                                <p class="no-data">Chưa có quá trình điều trị.</p>
-                            </t>
+                        <!-- Xét nghiệm và chuẩn đoán -->
+                        <div class="card fade-in">
+                            <div class="card-header">
+                                <div class="card-header-icon">
+                                    <i class="fa fa-flask"></i>
+                                </div>
+                                <h3>Xét nghiệm và chuẩn đoán</h3>
+                                <a href="#" class="text-muted" data-toggle="collapse" data-target="#medicalTestsCollapse" aria-expanded="true">
+                                    <i class="fa fa-chevron-down"></i>
+                                </a>
+                            </div>
+                            <div class="card-body collapse show" id="medicalTestsCollapse">
+                                <t t-if="history.medical_tests">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 15%">Mã</th>
+                                                    <th style="width: 20%">Loại</th>
+                                                    <th style="width: 20%">Ngày thực hiện</th>
+                                                    <th style="width: 15%">Trạng thái</th>
+                                                    <th style="width: 30%">Kết quả</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="history.medical_tests" t-as="test">
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-primary text-white">
+                                                                <t t-esc="test.test_code"/>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <t t-if="test.test_type == 'test'">
+                                                                <i class="fa fa-stethoscope mr-1 text-primary"></i> Chuẩn đoán
+                                                            </t>
+                                                            <t t-elif="test.test_type == 'blood'">
+                                                                <i class="fa fa-tint mr-1 text-danger"></i> Xét nghiệm máu
+                                                            </t>
+                                                            <t t-elif="test.test_type == 'urine'">
+                                                                <i class="fa fa-flask mr-1 text-warning"></i> Xét nghiệm nước tiểu
+                                                            </t>
+                                                            <t t-elif="test.test_type == 'xray'">
+                                                                <i class="fa fa-x-ray mr-1 text-info"></i> X-Quang
+                                                            </t>
+                                                            <t t-elif="test.test_type == 'ecg'">
+                                                                <i class="fa fa-heartbeat mr-1 text-danger"></i> ECG
+                                                            </t>
+                                                            <t t-else="">
+                                                                <i class="fa fa-file-medical mr-1 text-secondary"></i> Khác
+                                                            </t>
+                                                        </td>
+                                                        <td>
+                                                            <i class="fa fa-calendar text-primary mr-1"></i>
+                                                            <t t-esc="test.test_date"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-if="test.status == 'request'">
+                                                                <span class="badge badge-pending">
+                                                                    <i class="fa fa-clock mr-1"></i> Yêu cầu
+                                                                </span>
+                                                            </t>
+                                                            <t t-elif="test.status == 'processing'">
+                                                                <span class="badge badge-in-progress">
+                                                                    <i class="fa fa-spinner mr-1"></i> Đang xử lý
+                                                                </span>
+                                                            </t>
+                                                            <t t-elif="test.status == 'completed'">
+                                                                <span class="badge badge-completed">
+                                                                    <i class="fa fa-check-circle mr-1"></i> Hoàn tất
+                                                                </span>
+                                                            </t>
+                                                        </td>
+                                                        <td>
+                                                            <t t-if="test.result">
+                                                                <t t-esc="test.result"/>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span class="text-muted">Chưa có kết quả</span>
+                                                            </t>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
 
-                            <h4>Xét nghiệm</h4>
-                            <t t-if="history.medical_tests">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Mã</th>
-                                            <th>Loại</th>
-                                            <th>Ngày</th>
-                                            <th>Kết quả</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <t t-foreach="history.medical_tests" t-as="test">
-                                            <tr>
-                                                <td><t t-esc="test.test_code"/></td>
-                                                <td>
-                                                    <t t-if="test.test_type == 'test'">Chuẩn đoán</t>
-                                                    <t t-elif="test.test_type == 'blood'">Máu</t>
-                                                    <t t-elif="test.test_type == 'urine'">Nước tiểu</t>
-                                                    <t t-elif="test.test_type == 'xray'">X-Quang</t>
-                                                    <t t-elif="test.test_type == 'ecg'">ECG</t>
-                                                    <t t-else="">Khác</t>
-                                                </td>
-                                                <td><t t-esc="test.test_date"/></td>
-                                                <td><t t-esc="test.result or 'Chưa có'"/></td>
-                                            </tr>
-                                        </t>
-                                    </tbody>
-                                </table>
-                            </t>
-                            <t t-else="">
-                                <p class="no-data">Chưa có xét nghiệm.</p>
-                            </t>
+                                    <!-- Hình ảnh y tế nếu có -->
+                                    <t t-if="history.medical_images">
+                                        <div class="medical-history-section mt-4">
+                                            <h4 class="section-title">
+                                                <i class="fa fa-images"></i> Hình ảnh y tế
+                                            </h4>
+                                            <div class="row">
+                                                <t t-foreach="history.medical_images" t-as="image">
+                                                    <div class="col-md-4 col-sm-6 mb-4">
+                                                        <div class="card h-100">
+                                                            <div class="card-header py-2 px-3">
+                                                                <small class="text-muted">
+                                                                    <t t-if="image.test_type_img == 'test'">
+                                                                        <i class="fa fa-stethoscope mr-1"></i> Chuẩn đoán
+                                                                    </t>
+                                                                    <t t-elif="image.test_type_img == 'xray'">
+                                                                        <i class="fa fa-x-ray mr-1"></i> X-Quang
+                                                                    </t>
+                                                                    <t t-elif="image.test_type_img == 'ecg'">
+                                                                        <i class="fa fa-heartbeat mr-1"></i> ECG
+                                                                    </t>
+                                                                    <t t-else="">
+                                                                        <i class="fa fa-file-medical mr-1"></i> <t t-esc="image.test_type_img"/>
+                                                                    </t>
+                                                                </small>
+                                                            </div>
+                                                            <div class="card-body p-2 text-center">
+                                                                <t t-if="image.Img">
+                                                                    <img t-att-src="'data:image/png;base64,' + image.Img" class="img-fluid mb-2" alt="Medical Image"/>
+                                                                </t>
+                                                                <t t-else="">
+                                                                    <div class="no-data p-4">
+                                                                        <i class="fa fa-image fa-2x mb-2"></i><br/>
+                                                                        Không có hình ảnh
+                                                                    </div>
+                                                                </t>
+                                                            </div>
+                                                            <div class="card-footer py-2 px-3">
+                                                                <small class="text-muted">
+                                                                    <i class="fa fa-calendar-alt mr-1"></i> <t t-esc="image.img_date"/>
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <div class="no-data">
+                                        <i class="fa fa-flask mr-2"></i> Chưa có xét nghiệm
+                                    </div>
+                                </t>
+                            </div>
                         </div>
                     </t>
-                    <t t-else="">
-                        <p class="no-data">Chưa có lịch sử y tế.</p>
+
+                    <t t-if="not history">
+                        <div class="alert alert-info text-center mt-4 fade-in">
+                            <i class="fa fa-info-circle fa-2x mb-3"></i>
+                            <h4>Chưa có lịch sử y tế</h4>
+                            <p class="mb-0">Hiện tại chưa có thông tin về lịch sử y tế của bạn trong hệ thống.</p>
+                        </div>
                     </t>
+
+                    <!-- Nút quay lại -->
+                    <div class="text-center mt-4 mb-5">
+                        <a href="/clinic/patient_history" class="btn btn-outline-primary">
+                            <i class="fa fa-home mr-2"></i> Quay lại trang chính
+                        </a>
+                    </div>
                 </t>
 
+                <!-- Thông báo lỗi nếu xác thực thành công nhưng không tìm thấy bệnh nhân -->
                 <t t-if="otp_sent and otp_verified and not patient">
-                    <p class="mt-3 text-danger text-center">Không tìm thấy thông tin bệnh nhân với email này.</p>
+                    <div class="alert alert-danger mt-4 text-center fade-in">
+                        <i class="fa fa-exclamation-triangle fa-2x mb-3"></i>
+                        <h4>Không tìm thấy thông tin bệnh nhân</h4>
+                        <p>Không tìm thấy thông tin bệnh nhân với email này.</p>
+                        <a href="/clinic/patient_history" class="btn btn-outline-danger mt-3">
+                            <i class="fa fa-arrow-left mr-2"></i> Quay lại
+                        </a>
+                    </div>
                 </t>
 
-                <t t-if="otp_sent and not otp_verified and not patient">
-                    <p class="mt-3 text-warning text-center">Email không tồn tại trong hệ thống. Vui lòng kiểm tra lại.</p>
-                </t>
+                <!-- Script chung -->
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Xử lý toggle collapse
+                        const toggles = document.querySelectorAll('[data-toggle="collapse"]');
+                        toggles.forEach(toggle => {
+                            toggle.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                const target = document.querySelector(this.getAttribute('data-target'));
+                                if (target) {
+                                    if (target.classList.contains('show')) {
+                                        target.classList.remove('show');
+                                        this.querySelector('i').classList.remove('fa-chevron-down');
+                                        this.querySelector('i').classList.add('fa-chevron-right');
+                                    } else {
+                                        target.classList.add('show');
+                                        this.querySelector('i').classList.remove('fa-chevron-right');
+                                        this.querySelector('i').classList.add('fa-chevron-down');
+                                    }
+                                }
+                            });
+                        });
+                    });
+                </script>
             </div>
         </t>
     </template>
