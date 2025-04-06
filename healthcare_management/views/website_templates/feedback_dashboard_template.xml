@@ -235,11 +235,11 @@
             </div>
 
             <!-- Lưu trữ dữ liệu cho biểu đồ -->
-            <div id="feedback_type_data" class="d-none" t-raw="json.dumps(feedback_by_type)"></div>
-            <div id="department_data" class="d-none" t-raw="json.dumps(department_stats)"></div>
+            <div id="feedback_type_data" class="d-none" t-esc="feedback_by_type"/>
+            <div id="department_data" class="d-none" t-esc="json.dumps(department_stats)"/>
 
             <!-- JavaScript Inline - Tải Chart.js từ CDN -->
-            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"/>
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
                     // Đảm bảo Chart.js đã được tải
@@ -249,9 +249,12 @@
                     }
 
                     try {
-                        // Lấy dữ liệu từ các thẻ ẩn
-                        var feedbackTypeData = JSON.parse(document.getElementById('feedback_type_data').textContent);
-                        var departmentData = JSON.parse(document.getElementById('department_data').textContent);
+                        // Lấy dữ liệu từ các thẻ ẩn - FIX: Proper JSON parsing
+                        var feedbackTypeData = JSON.parse(document.getElementById('feedback_type_data').textContent || "[]");
+                        var departmentData = JSON.parse(document.getElementById('department_data').textContent || "[]");
+
+                        console.log('Feedback type data:', feedbackTypeData);
+                        console.log('Department data:', departmentData);
 
                         // Chuẩn bị dữ liệu cho biểu đồ loại phản hồi
                         var typeLabels = [];
@@ -264,10 +267,14 @@
                             'rgba(73, 80, 87, 0.8)'     // dark
                         ];
 
-                        feedbackTypeData.forEach(function(item) {
-                            typeLabels.push(getFeedbackTypeName(item.feedback_type));
-                            typeData.push(item.count);
-                        });
+                        if (Array.isArray(feedbackTypeData)) {
+                            feedbackTypeData.forEach(function(item) {
+                                typeLabels.push(getFeedbackTypeName(item.feedback_type));
+                                typeData.push(item.count);
+                            });
+                        } else {
+                            console.error('feedbackTypeData is not an array:', feedbackTypeData);
+                        }
 
                         // Tạo biểu đồ loại phản hồi
                         var typeCtx = document.getElementById('feedbackTypeChart').getContext('2d');
@@ -305,10 +312,14 @@
                         var deptLabels = [];
                         var deptTotals = [];
 
-                        departmentData.forEach(function(dept) {
-                            deptLabels.push(dept.department_name);
-                            deptTotals.push(dept.total_feedback);
-                        });
+                        if (Array.isArray(departmentData)) {
+                            departmentData.forEach(function(dept) {
+                                deptLabels.push(dept.department_name);
+                                deptTotals.push(dept.total_feedback);
+                            });
+                        } else {
+                            console.error('departmentData is not an array:', departmentData);
+                        }
 
                         // Tạo biểu đồ phản hồi theo phòng ban
                         var deptCtx = document.getElementById('departmentFeedbackChart').getContext('2d');
