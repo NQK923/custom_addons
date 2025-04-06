@@ -19,9 +19,9 @@
     'data': [
         'security/certification_security.xml',
         'security/ir.model.access.csv',
-        'views/certification_views.xml',
-        'views/inspection_views.xml',
-        'views/menu_views.xml',
+        # 'views/certification_views.xml',
+        # 'views/inspection_views.xml',
+        # 'views/menu_views.xml',
         'views/certification_templates.xml',
         'views/inspection_templates.xml',
         'views/form_templates.xml',

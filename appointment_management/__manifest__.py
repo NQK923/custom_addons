@@ -9,7 +9,7 @@
     'depends': ['base', 'hr', 'patient_management', 'room_management', 'staff_management', 'website'],
     'data': [
         'security/ir.model.access.csv',
-        'views/views.xml',
+        # 'views/views.xml',
         'views/appointment_templates.xml',
         'views/appointment_list_template.xml',
         'views/appointment_detail_template.xml',

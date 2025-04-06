@@ -18,9 +18,9 @@
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
-        'views/health_compliance_views.xml',
-        'views/health_regulation_views.xml',
-        'views/menu_views.xml',
+        # 'views/health_compliance_views.xml',
+        # 'views/health_regulation_views.xml',
+        # 'views/menu_views.xml',
         'views/website_menu.xml',
         'views/compliance_dashboard.xml',
         'views/compliance_form.xml',
