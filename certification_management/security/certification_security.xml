@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="0">
-        <!-- Nhóm quản lý chứng nhận -->
-        <record id="group_certification_user" model="res.groups">
-            <field name="name">Người dùng chứng nhận</field>
-            <field name="category_id" ref="base.module_category_hidden"/>
-        </record>
+    <!-- Nhóm người dùng -->
+    <record id="module_category_certification_management" model="ir.module.category">
+        <field name="name">Quản lý Chứng nhận Y tế</field>
+        <field name="description">Quản lý chứng nhận và kiểm tra y tế</field>
+        <field name="sequence">20</field>
+    </record>
 
-        <record id="group_certification_manager" model="res.groups">
-            <field name="name">Quản lý chứng nhận</field>
-            <field name="category_id" ref="base.module_category_hidden"/>
-            <field name="implied_ids" eval="[(4, ref('group_certification_user'))]"/>
-            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
-        </record>
-    </data>
+    <record id="group_certification_user" model="res.groups">
+        <field name="name">Người dùng</field>
+        <field name="category_id" ref="module_category_certification_management"/>
+    </record>
+
+    <record id="group_certification_manager" model="res.groups">
+        <field name="name">Quản lý</field>
+        <field name="category_id" ref="module_category_certification_management"/>
+        <field name="implied_ids" eval="[(4, ref('group_certification_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+    </record>
 </odoo>

@@ -8,6 +8,7 @@
     # Added website dependency
     'data': [
         'security/ir.model.access.csv',
+        'security/security.xml',
         'views/treatment_plans_template.xml',
         'views/patient_care_template.xml',
         'views/treatment_plan_forms.xml',

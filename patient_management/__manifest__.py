@@ -13,6 +13,7 @@
     'depends': ['base', 'website'],
     'data': [
         'security/ir.model.access.csv',
+        'security/security.xml',
         # 'views/clinic_patient_views.xml',
         'views/patient_list_template.xml',
         'views/patient_form_template.xml',
