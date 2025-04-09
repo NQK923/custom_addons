@@ -13,6 +13,10 @@ class PatientController(http.Controller):
         gender = kw.get('gender', '')
         sort = kw.get('sort', 'date desc')  # Mặc định sắp xếp theo ngày giảm dần
 
+        # Xử lý thông báo nếu có
+        message = kw.get('message', '')
+        message_type = kw.get('message_type', '')
+
         # Xây dựng domain
         domain = []
         if search:
@@ -57,6 +61,8 @@ class PatientController(http.Controller):
             'patient_type': patient_type,
             'gender': gender,
             'sort': sort,
+            'message': message,
+            'message_type': message_type,
         })
 
     def _get_pager(self, page, limit, total, url, url_args=None):
@@ -182,3 +188,21 @@ class PatientController(http.Controller):
             'patient': patient,
             'genders': [('male', 'Nam'), ('female', 'Nữ'), ('other', 'Khác')],
         })
+
+    @http.route('/patients/<model("clinic.patient"):patient>/delete', type='http', auth='user', website=True,
+                methods=['POST'])
+    def patient_delete(self, patient, **kw):
+        try:
+            # Lấy tên của bệnh nhân để hiển thị trong thông báo
+            patient_name = patient.name
+
+            # Xóa bệnh nhân
+            patient.unlink()
+
+            # Chuyển hướng đến danh sách bệnh nhân với thông báo thành công
+            return werkzeug.utils.redirect(
+                f'/patients?message=Đã xóa bệnh nhân {patient_name} thành công&message_type=success')
+        except Exception as e:
+            # Chuyển hướng đến chi tiết bệnh nhân với thông báo lỗi
+            return werkzeug.utils.redirect(
+                f'/patients/{patient.id}?message=Lỗi khi xóa bệnh nhân: {str(e)}&message_type=error')

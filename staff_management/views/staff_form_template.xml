@@ -37,6 +37,24 @@
                                     </div>
 
                                     <div class="form-group">
+                                        <label for="phone">Số điện thoại <span class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" required="required"
+                                               t-att-value="staff.phone if staff else ''"/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="email">Email <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" id="email" name="email" required="required"
+                                               t-att-value="staff.email if staff else ''"/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="id_card">Số CCCD/CMND <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="id_card" name="id_card" required="required"
+                                               t-att-value="staff.id_card if staff else ''"/>
+                                    </div>
+
+                                    <div class="form-group">
                                         <label for="date_of_birth">Ngày sinh</label>
                                         <input type="date" class="form-control" id="date_of_birth" name="date_of_birth"
                                                t-att-value="staff.date_of_birth if staff else ''"/>
@@ -51,20 +69,14 @@
                                             <option value="other" t-att-selected="staff and staff.gender == 'other'">Khác</option>
                                         </select>
                                     </div>
+                                </div>
 
-                                    <div class="form-group">
-                                        <label for="contact_info">Thông tin liên lạc</label>
-                                        <input type="text" class="form-control" id="contact_info" name="contact_info"
-                                               t-att-value="staff.contact_info if staff else ''"/>
-                                    </div>
-
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="address">Địa chỉ</label>
                                         <textarea class="form-control" id="address" name="address" rows="3"><t t-esc="staff.address if staff else ''"/></textarea>
                                     </div>
-                                </div>
 
-                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="staff_type">Chức vụ</label>
                                         <select class="form-control" id="staff_type" name="staff_type">
@@ -105,14 +117,6 @@
                                         <label for="experience_year">Số năm kinh nghiệm</label>
                                         <input type="number" class="form-control" id="experience_year" name="experience_year" min="0"
                                                t-att-value="staff.experience_year if staff else '0'"/>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="labor_type">Loại lao động</label>
-                                        <select class="form-control" id="labor_type" name="labor_type">
-                                            <option value="full_time" t-att-selected="not staff or staff.labor_type == 'full_time'">Toàn thời gian</option>
-                                            <option value="part_time" t-att-selected="staff and staff.labor_type == 'part_time'">Bán thời gian</option>
-                                        </select>
                                     </div>
 
                                     <div class="form-group">
