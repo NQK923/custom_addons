@@ -13,18 +13,5 @@
             <field name="implied_ids" eval="[(4, ref('group_certification_user'))]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
-
-<!--        &lt;!&ndash; Quy tắc bảo mật hồ sơ &ndash;&gt;
-        <record id="certification_comp_rule" model="ir.rule">
-            <field name="name">Chứng nhận: quy tắc đa công ty</field>
-            <field name="model_id" ref="model_hospital_certification"/>
-            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
-        </record>
-
-        <record id="inspection_comp_rule" model="ir.rule">
-            <field name="name">Kiểm tra: quy tắc đa công ty</field>
-            <field name="model_id" ref="model_hospital_inspection"/>
-            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
-        </record>-->
     </data>
 </odoo>

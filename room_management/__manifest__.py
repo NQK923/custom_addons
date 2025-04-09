@@ -7,7 +7,7 @@
     'depends': ['base', 'website'],
     'data': [
         'security/ir.model.access.csv',
-        'views/views.xml',
+        # 'views/views.xml',
         'views/room_templates.xml',
         'views/menu.xml',
     ],

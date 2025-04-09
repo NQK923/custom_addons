@@ -24,7 +24,7 @@ Các chức năng chính:
 
     'data': [
         'security/ir.model.access.csv',
-        'views/views.xml',
+        # 'views/views.xml',
         'views/salary_templates.xml',
         'views/salary_sheet_templates.xml',
         'views/salary_detail_templates.xml',
