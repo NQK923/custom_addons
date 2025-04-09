@@ -20,6 +20,7 @@ Module quản lý xét nghiệm và chẩn đoán y tế với giao diện websi
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/security.xml',
         # 'views/views.xml',
         'views/website_templates.xml',
         'views/website_templates_create.xml',

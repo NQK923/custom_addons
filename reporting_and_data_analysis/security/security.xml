@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Nhóm người dùng -->
+    <record id="module_category_reporting_data_analysis" model="ir.module.category">
+        <field name="name">Báo cáo và Phân tích Dữ liệu</field>
+        <field name="description">Quản lý báo cáo và phân tích dữ liệu y tế</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="group_reporting_user" model="res.groups">
+        <field name="name">Người dùng</field>
+        <field name="category_id" ref="module_category_reporting_data_analysis"/>
+    </record>
+
+    <record id="group_reporting_manager" model="res.groups">
+        <field name="name">Quản lý</field>
+        <field name="category_id" ref="module_category_reporting_data_analysis"/>
+        <field name="implied_ids" eval="[(4, ref('group_reporting_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+    </record>
+</odoo>

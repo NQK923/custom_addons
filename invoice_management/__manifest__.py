@@ -10,6 +10,7 @@
     'depends': ['base', 'prescription_management', 'website', 'patient_management', 'insurance_management'],
     'data': [
         'security/ir.model.access.csv',
+        'security/security.xml',
         # 'views/views.xml',
         # 'views/statistics_view.xml',
         # 'views/statistics_wizard_view.xml',

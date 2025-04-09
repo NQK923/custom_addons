@@ -17,6 +17,7 @@
                 'invoice_management', 'website'],  # Added website dependency
     'data': [
         'security/ir.model.access.csv',
+        'security/security.xml',
         'views/website_templates/invoice_report_templates.xml',
         'views/website_templates/medical_report_templates.xml',
         'views/website_templates/dashboard_templates.xml',

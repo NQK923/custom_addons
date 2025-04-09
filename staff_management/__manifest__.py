@@ -20,6 +20,7 @@ Module cho phép quản lý thông tin nhân sự y tế, chấm công và đán
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/security.xml',
         # 'views/views.xml',
         'views/website_menu.xml',
         'views/tab_menu_template.xml',

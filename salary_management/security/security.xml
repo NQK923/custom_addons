@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Nhóm người dùng -->
+    <record id="module_category_salary_management" model="ir.module.category">
+        <field name="name">Quản lý Lương</field>
+        <field name="description">Quản lý lương và phụ cấp nhân viên</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="group_salary_user" model="res.groups">
+        <field name="name">Người dùng</field>
+        <field name="category_id" ref="module_category_salary_management"/>
+    </record>
+
+    <record id="group_salary_manager" model="res.groups">
+        <field name="name">Quản lý</field>
+        <field name="category_id" ref="module_category_salary_management"/>
+        <field name="implied_ids" eval="[(4, ref('group_salary_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+    </record>
+</odoo>

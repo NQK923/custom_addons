@@ -18,6 +18,7 @@
     'data': [
         # Security
         'security/ir.model.access.csv',
+        'security/security.xml',
         # Data
         'data/sequence.xml',
         'data/appointment_reminder_cron.xml',
