@@ -6,7 +6,8 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1>Đánh giá Tuân thủ</h1>
                 <a href="/compliance/assessment/new" class="btn btn-primary">
-                    <i class="fa fa-plus"></i> Tạo mới
+                    <i class="fa fa-plus"></i>
+                    Tạo mới
                 </a>
             </div>
 
@@ -19,7 +20,8 @@
                     <form method="GET" action="/compliance/assessments" class="row">
                         <div class="col-md-4 mb-2">
                             <div class="input-group">
-                                <input type="text" name="search" class="form-control" placeholder="Tìm theo tên hoặc quy định..."
+                                <input type="text" name="search" class="form-control"
+                                       placeholder="Tìm theo tên hoặc quy định..."
                                        t-att-value="search or ''"/>
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fa fa-search"></i>
@@ -30,10 +32,16 @@
                             <select name="state" class="form-select">
                                 <option value="">-- Tất cả trạng thái --</option>
                                 <option t-att-selected="filter_state == 'draft'" value="draft">Nháp</option>
-                                <option t-att-selected="filter_state == 'in_progress'" value="in_progress">Đang thực hiện</option>
+                                <option t-att-selected="filter_state == 'in_progress'" value="in_progress">Đang thực
+                                    hiện
+                                </option>
                                 <option t-att-selected="filter_state == 'compliant'" value="compliant">Tuân thủ</option>
-                                <option t-att-selected="filter_state == 'non_compliant'" value="non_compliant">Không tuân thủ</option>
-                                <option t-att-selected="filter_state == 'partly_compliant'" value="partly_compliant">Tuân thủ một phần</option>
+                                <option t-att-selected="filter_state == 'non_compliant'" value="non_compliant">Không
+                                    tuân thủ
+                                </option>
+                                <option t-att-selected="filter_state == 'partly_compliant'" value="partly_compliant">
+                                    Tuân thủ một phần
+                                </option>
                             </select>
                         </div>
                         <div class="col-md-2 mb-2">
@@ -75,10 +83,18 @@
                                                     <t t-esc="compliance.name"/>
                                                 </a>
                                             </td>
-                                            <td><t t-esc="compliance.regulation_id.name"/></td>
-                                            <td><t t-esc="compliance.department_id.name or '-'"/></td>
-                                            <td><t t-esc="compliance.date_assessment"/></td>
-                                            <td><t t-esc="compliance.next_assessment"/></td>
+                                            <td>
+                                                <t t-esc="compliance.regulation_id.name"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="compliance.department_id.name or '-'"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="compliance.date_assessment"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="compliance.next_assessment"/>
+                                            </td>
                                             <td>
                                                 <span t-att-class="'badge ' + (
                                                     'bg-success' if compliance.state == 'compliant' else
@@ -90,7 +106,9 @@
                                                     <t t-esc="dict(compliance._fields['state'].selection).get(compliance.state)"/>
                                                 </span>
                                             </td>
-                                            <td><t t-esc="compliance.responsible_id.name"/></td>
+                                            <td>
+                                                <t t-esc="compliance.responsible_id.name"/>
+                                            </td>
                                         </tr>
                                     </t>
                                 </tbody>
@@ -110,7 +128,8 @@
         <t t-call="compliance_management.compliance_layout">
             <div class="mb-4">
                 <a href="/compliance/assessments" class="btn btn-secondary">
-                    <i class="fa fa-arrow-left"></i> Quay lại
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại
                 </a>
             </div>
 
@@ -118,7 +137,8 @@
                 <div class="card-header bg-primary text-white">
                     <h3 class="card-title mb-0">
                         <t t-if="compliance">
-                            Chi tiết Đánh giá: <t t-esc="compliance.name"/>
+                            Chi tiết Đánh giá:
+                            <t t-esc="compliance.name"/>
                         </t>
                         <t t-else="">
                             Tạo Đánh giá Tuân thủ Mới
@@ -133,7 +153,8 @@
                         </div>
                     </t>
 
-                    <form method="POST" t-att-action="'/compliance/assessment/%s' % compliance.id if compliance else '/compliance/assessment/new'">
+                    <form method="POST"
+                          t-att-action="'/compliance/assessment/%s' % compliance.id if compliance else '/compliance/assessment/new'">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                         <div class="row mb-3">
@@ -147,8 +168,10 @@
                                 <select class="form-select" id="regulation_id" name="regulation_id" required="required">
                                     <option value="">-- Chọn quy định --</option>
                                     <t t-foreach="regulations" t-as="regulation">
-                                        <option t-att-value="regulation.id" t-att-selected="compliance and compliance.regulation_id.id == regulation.id">
-                                            <t t-esc="regulation.name"/> (<t t-esc="regulation.code"/>)
+                                        <option t-att-value="regulation.id"
+                                                t-att-selected="compliance and compliance.regulation_id.id == regulation.id">
+                                            <t t-esc="regulation.name"/>
+                                            (<t t-esc="regulation.code"/>)
                                         </option>
                                     </t>
                                 </select>
@@ -161,7 +184,8 @@
                                 <select class="form-select" id="department_id" name="department_id">
                                     <option value="">-- Chọn phòng ban --</option>
                                     <t t-foreach="departments" t-as="department">
-                                        <option t-att-value="department.id" t-att-selected="compliance and compliance.department_id.id == department.id">
+                                        <option t-att-value="department.id"
+                                                t-att-selected="compliance and compliance.department_id.id == department.id">
                                             <t t-esc="department.name"/>
                                         </option>
                                     </t>
@@ -169,10 +193,12 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label" for="responsible_id">Người phụ trách</label>
-                                <select class="form-select" id="responsible_id" name="responsible_id" required="required">
+                                <select class="form-select" id="responsible_id" name="responsible_id"
+                                        required="required">
                                     <option value="">-- Chọn người phụ trách --</option>
                                     <t t-foreach="users" t-as="user">
-                                        <option t-att-value="user.id" t-att-selected="compliance and compliance.responsible_id.id == user.id">
+                                        <option t-att-value="user.id"
+                                                t-att-selected="compliance and compliance.responsible_id.id == user.id">
                                             <t t-esc="user.name"/>
                                         </option>
                                     </t>
@@ -183,7 +209,8 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label" for="date_assessment">Ngày đánh giá</label>
-                                <input type="date" class="form-control" id="date_assessment" name="date_assessment" required="required"
+                                <input type="date" class="form-control" id="date_assessment" name="date_assessment"
+                                       required="required"
                                        t-att-value="compliance.date_assessment if compliance else form_data.get('date_assessment', '')"/>
                             </div>
                             <div class="col-md-6">
@@ -197,18 +224,33 @@
                             <div class="col-md-6">
                                 <label class="form-label" for="state">Trạng thái</label>
                                 <select class="form-select" id="state" name="state" required="required">
-                                    <option value="draft" t-att-selected="compliance and compliance.state == 'draft'">Nháp</option>
-                                    <option value="in_progress" t-att-selected="compliance and compliance.state == 'in_progress'">Đang thực hiện</option>
-                                    <option value="compliant" t-att-selected="compliance and compliance.state == 'compliant'">Tuân thủ</option>
-                                    <option value="non_compliant" t-att-selected="compliance and compliance.state == 'non_compliant'">Không tuân thủ</option>
-                                    <option value="partly_compliant" t-att-selected="compliance and compliance.state == 'partly_compliant'">Tuân thủ một phần</option>
+                                    <option value="draft" t-att-selected="compliance and compliance.state == 'draft'">
+                                        Nháp
+                                    </option>
+                                    <option value="in_progress"
+                                            t-att-selected="compliance and compliance.state == 'in_progress'">Đang thực
+                                        hiện
+                                    </option>
+                                    <option value="compliant"
+                                            t-att-selected="compliance and compliance.state == 'compliant'">Tuân thủ
+                                    </option>
+                                    <option value="non_compliant"
+                                            t-att-selected="compliance and compliance.state == 'non_compliant'">Không
+                                        tuân thủ
+                                    </option>
+                                    <option value="partly_compliant"
+                                            t-att-selected="compliance and compliance.state == 'partly_compliant'">Tuân
+                                        thủ một phần
+                                    </option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label" for="notes">Ghi chú</label>
-                            <textarea class="form-control" id="notes" name="notes" rows="5"><t t-esc="compliance.notes if compliance else form_data.get('notes', '')"/></textarea>
+                            <textarea class="form-control" id="notes" name="notes" rows="5">
+                                <t t-esc="compliance.notes if compliance else form_data.get('notes', '')"/>
+                            </textarea>
                         </div>
 
                         <div class="d-flex justify-content-between">
@@ -245,10 +287,18 @@
                                     <tbody>
                                         <t t-foreach="compliance.action_ids" t-as="action">
                                             <tr>
-                                                <td><t t-esc="action.name"/></td>
-                                                <td><t t-esc="action.description or '-'"/></td>
-                                                <td><t t-esc="action.responsible_id.name"/></td>
-                                                <td><t t-esc="action.deadline"/></td>
+                                                <td>
+                                                    <t t-esc="action.name"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="action.description or '-'"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="action.responsible_id.name"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="action.deadline"/>
+                                                </td>
                                                 <td>
                                                     <span t-att-class="'badge ' + (
                                                         'bg-success' if action.state == 'done' else
@@ -259,7 +309,9 @@
                                                         <t t-esc="dict(action._fields['state'].selection).get(action.state)"/>
                                                     </span>
                                                 </td>
-                                                <td><t t-esc="action.completion_date or '-'"/></td>
+                                                <td>
+                                                    <t t-esc="action.completion_date or '-'"/>
+                                                </td>
                                             </tr>
                                         </t>
                                     </tbody>

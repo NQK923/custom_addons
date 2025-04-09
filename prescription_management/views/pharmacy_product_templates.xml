@@ -8,7 +8,9 @@
                     <div class="col-12">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/pharmacy">Dashboard</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/pharmacy">Dashboard</a>
+                                </li>
                                 <li class="breadcrumb-item active">Kho dược phẩm</li>
                             </ol>
                         </nav>
@@ -20,7 +22,8 @@
                     </div>
                     <div class="col-md-3">
                         <form action="/pharmacy/products" method="GET" class="input-group">
-                            <input type="text" name="search" class="form-control" placeholder="Tìm kiếm thuốc..." t-att-value="search or ''"/>
+                            <input type="text" name="search" class="form-control" placeholder="Tìm kiếm thuốc..."
+                                   t-att-value="search or ''"/>
                             <div class="input-group-append">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fa fa-search"></i>
@@ -30,7 +33,8 @@
                     </div>
                     <div class="col-md-3 text-right">
                         <a href="/pharmacy/product/new" class="btn btn-success">
-                            <i class="fa fa-plus"></i> Thêm dược phẩm mới
+                            <i class="fa fa-plus"></i>
+                            Thêm dược phẩm mới
                         </a>
                     </div>
                 </div>
@@ -78,18 +82,22 @@
                                         </td>
                                         <td t-esc="product.uom_id"/>
                                         <td>
-                                            <span t-att-class="'text-danger font-weight-bold' if product.is_quantity else ''" t-esc="product.quantity"/>
+                                            <span t-att-class="'text-danger font-weight-bold' if product.is_quantity else ''"
+                                                  t-esc="product.quantity"/>
                                             <t t-if="product.is_quantity">
-                                                <i class="fa fa-exclamation-triangle text-warning ml-1" title="Sắp hết hàng"></i>
+                                                <i class="fa fa-exclamation-triangle text-warning ml-1"
+                                                   title="Sắp hết hàng"></i>
                                             </t>
                                         </td>
                                         <td t-esc="'{:,.0f}'.format(product.unit_price)"/>
                                         <td class="text-center">
                                             <div class="btn-group btn-group-sm">
-                                                <a t-att-href="'/pharmacy/product/%s' % product.id" class="btn btn-info" title="Xem chi tiết">
+                                                <a t-att-href="'/pharmacy/product/%s' % product.id" class="btn btn-info"
+                                                   title="Xem chi tiết">
                                                     <i class="fa fa-info-circle"></i>
                                                 </a>
-                                                <a t-att-href="'/pharmacy/product/%s/edit' % product.id" class="btn btn-primary" title="Chỉnh sửa">
+                                                <a t-att-href="'/pharmacy/product/%s/edit' % product.id"
+                                                   class="btn btn-primary" title="Chỉnh sửa">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
                                                 <a t-att-href="'/pharmacy/product/%s/delete' % product.id"
@@ -127,7 +135,9 @@
                     <div class="col-12">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/pharmacy">Dashboard</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/pharmacy">Dashboard</a>
+                                </li>
                                 <li class="breadcrumb-item active">Kho dược phẩm</li>
                             </ol>
                         </nav>
@@ -137,8 +147,12 @@
                     <div class="col-md-6">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/pharmacy">Dashboard</a></li>
-                                <li class="breadcrumb-item"><a href="/pharmacy/products">Kho dược phẩm</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/pharmacy">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="/pharmacy/products">Kho dược phẩm</a>
+                                </li>
                                 <li class="breadcrumb-item active">Chi tiết dược phẩm</li>
                             </ol>
                         </nav>
@@ -146,15 +160,18 @@
                     <div class="col-md-6 text-right">
                         <div class="btn-group">
                             <a href="/pharmacy/products" class="btn btn-secondary">
-                                <i class="fa fa-arrow-left"></i> Quay lại
+                                <i class="fa fa-arrow-left"></i>
+                                Quay lại
                             </a>
                             <a t-att-href="'/pharmacy/product/%s/edit' % product.id" class="btn btn-primary">
-                                <i class="fa fa-edit"></i> Chỉnh sửa
+                                <i class="fa fa-edit"></i>
+                                Chỉnh sửa
                             </a>
                             <a t-att-href="'/pharmacy/product/%s/delete' % product.id"
                                class="btn btn-danger"
                                onclick="return confirm('Bạn có chắc chắn muốn xóa dược phẩm này?');">
-                                <i class="fa fa-trash"></i> Xóa
+                                <i class="fa fa-trash"></i>
+                                Xóa
                             </a>
                         </div>
                     </div>
@@ -191,11 +208,13 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <strong>Giá nhập:</strong>
-                                    <span class="ml-2" t-esc="'{:,.0f}'.format(product.purchase_price)"/> VNĐ
+                                    <span class="ml-2" t-esc="'{:,.0f}'.format(product.purchase_price)"/>
+                                    VNĐ
                                 </div>
                                 <div class="mb-3">
                                     <strong>Giá bán:</strong>
-                                    <span class="ml-2" t-esc="'{:,.0f}'.format(product.unit_price)"/> VNĐ
+                                    <span class="ml-2" t-esc="'{:,.0f}'.format(product.unit_price)"/>
+                                    VNĐ
                                 </div>
                                 <div class="mb-3">
                                     <strong>Lợi nhuận:</strong>
@@ -203,18 +222,22 @@
                                 </div>
                                 <div class="mb-3">
                                     <strong>Số lượng tồn kho:</strong>
-                                    <span t-att-class="'ml-2 ' + ('text-danger font-weight-bold' if product.is_quantity else '')" t-esc="product.quantity"/>
+                                    <span t-att-class="'ml-2 ' + ('text-danger font-weight-bold' if product.is_quantity else '')"
+                                          t-esc="product.quantity"/>
                                     <t t-if="product.is_quantity">
-                                        <i class="fa fa-exclamation-triangle text-warning ml-1" title="Sắp hết hàng"></i>
+                                        <i class="fa fa-exclamation-triangle text-warning ml-1"
+                                           title="Sắp hết hàng"></i>
                                     </t>
                                 </div>
                                 <div class="mb-3">
                                     <strong>Được bảo hiểm chi trả:</strong>
                                     <span class="ml-2" t-if="product.insurance_covered">
-                                        <i class="fa fa-check-circle text-success"></i> Có
+                                        <i class="fa fa-check-circle text-success"></i>
+                                        Có
                                     </span>
                                     <span class="ml-2" t-if="not product.insurance_covered">
-                                        <i class="fa fa-times-circle text-danger"></i> Không
+                                        <i class="fa fa-times-circle text-danger"></i>
+                                        Không
                                     </span>
                                 </div>
                             </div>

@@ -1,57 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<template id="appointment_reminder_list_template" name="Danh sách thông báo lịch hẹn">
+    <template id="appointment_reminder_list_template" name="Danh sách thông báo lịch hẹn">
         <t t-call="website.layout">
             <!-- CSS Inline -->
             <style>
                 .reminder-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
                 }
 
                 .reminder-card {
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    margin-bottom: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
                 }
 
                 .reminder-table {
-                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                    border-radius: 8px;
-                    overflow: hidden;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                overflow: hidden;
                 }
 
                 .reminder-table thead th {
-                    background-color: #343a40;
-                    color: white;
-                    border-color: #454d55;
+                background-color: #343a40;
+                color: white;
+                border-color: #454d55;
                 }
 
                 .reminder-filter {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 15px;
-                    margin-bottom: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
 
                 .badge {
-                    font-size: 0.9rem;
-                    padding: 0.4rem 0.6rem;
+                font-size: 0.9rem;
+                padding: 0.4rem 0.6rem;
                 }
 
                 @media (max-width: 768px) {
-                    .btn-group {
-                        flex-direction: column;
-                        width: 100%;
-                    }
+                .btn-group {
+                flex-direction: column;
+                width: 100%;
+                }
 
-                    .btn-group .btn {
-                        margin-right: 0;
-                        margin-bottom: 5px;
-                        width: 100%;
-                    }
+                .btn-group .btn {
+                margin-right: 0;
+                margin-bottom: 5px;
+                width: 100%;
+                }
                 }
             </style>
 
@@ -79,7 +79,8 @@
                                 </div>
                                 <div class="col-md-3 mb-2">
                                     <label for="filter_date_from" class="me-2">Từ ngày:</label>
-                                    <input type="date" class="form-control" id="filter_date_from" name="filter_date_from"/>
+                                    <input type="date" class="form-control" id="filter_date_from"
+                                           name="filter_date_from"/>
                                 </div>
                                 <div class="col-md-3 mb-2">
                                     <label for="filter_date_to" class="me-2">Đến ngày:</label>
@@ -111,12 +112,24 @@
                         <tbody>
                             <t t-foreach="reminders" t-as="reminder">
                                 <tr t-att-class="'table-warning' if reminder.state == 'to_send' else 'table-success' if reminder.state == 'sent' else 'table-danger' if reminder.state == 'failed' else 'table-secondary'">
-                                    <td><t t-esc="reminder.name"/></td>
-                                    <td><t t-esc="reminder.patient_id.name"/></td>
-                                    <td><t t-esc="reminder.appointment_date"/></td>
-                                    <td><t t-esc="reminder.notification_date"/></td>
-                                    <td><t t-esc="reminder.staff_id.staff_name or '-'"/></td>
-                                    <td><t t-esc="reminder.room_id.name or '-'"/></td>
+                                    <td>
+                                        <t t-esc="reminder.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="reminder.patient_id.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="reminder.appointment_date"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="reminder.notification_date"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="reminder.staff_id.staff_name or '-'"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="reminder.room_id.name or '-'"/>
+                                    </td>
                                     <td>
                                         <span t-att-class="'badge ' + ('bg-warning text-dark' if reminder.state == 'to_send' else 'bg-success' if reminder.state == 'sent' else 'bg-danger' if reminder.state == 'failed' else 'bg-secondary')">
                                             <t t-if="reminder.state == 'to_send'">Chờ gửi</t>
@@ -126,8 +139,10 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a t-att-href="'/healthcare/appointment_reminder/%s' % reminder.id" class="btn btn-sm btn-info">
-                                            <i class="fa fa-eye"></i> Xem
+                                        <a t-att-href="'/healthcare/appointment_reminder/%s' % reminder.id"
+                                           class="btn btn-sm btn-info">
+                                            <i class="fa fa-eye"></i>
+                                            Xem
                                         </a>
                                     </td>
                                 </tr>
@@ -145,24 +160,24 @@
             <!-- JavaScript Inline -->
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Khởi tạo URL parameters cho filters
-                    var urlParams = new URLSearchParams(window.location.search);
-                    var filterState = urlParams.get('filter_state');
-                    var filterDateFrom = urlParams.get('filter_date_from');
-                    var filterDateTo = urlParams.get('filter_date_to');
+                // Khởi tạo URL parameters cho filters
+                var urlParams = new URLSearchParams(window.location.search);
+                var filterState = urlParams.get('filter_state');
+                var filterDateFrom = urlParams.get('filter_date_from');
+                var filterDateTo = urlParams.get('filter_date_to');
 
-                    // Đặt giá trị đã chọn vào selects
-                    if (filterState) {
-                        document.getElementById('filter_state').value = filterState;
-                    }
+                // Đặt giá trị đã chọn vào selects
+                if (filterState) {
+                document.getElementById('filter_state').value = filterState;
+                }
 
-                    if (filterDateFrom) {
-                        document.getElementById('filter_date_from').value = filterDateFrom;
-                    }
+                if (filterDateFrom) {
+                document.getElementById('filter_date_from').value = filterDateFrom;
+                }
 
-                    if (filterDateTo) {
-                        document.getElementById('filter_date_to').value = filterDateTo;
-                    }
+                if (filterDateTo) {
+                document.getElementById('filter_date_to').value = filterDateTo;
+                }
                 });
             </script>
         </t>
@@ -174,68 +189,68 @@
             <!-- CSS Inline -->
             <style>
                 .reminder-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
                 }
 
                 .reminder-card {
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    margin-bottom: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
                 }
 
                 .reminder-card .card-header {
-                    border-radius: 8px 8px 0 0;
-                    font-weight: bold;
+                border-radius: 8px 8px 0 0;
+                font-weight: bold;
                 }
 
                 .reminder-section {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 15px;
-                    margin-bottom: 20px;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 20px;
                 }
 
                 .btn {
-                    border-radius: 4px;
+                border-radius: 4px;
                 }
 
                 .breadcrumb {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 12px 15px;
-                    margin-bottom: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 12px 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
 
                 .detail-label {
-                    font-weight: 600;
-                    color: #495057;
+                font-weight: 600;
+                color: #495057;
                 }
 
                 .preview-email {
-                    border: 1px solid #dee2e6;
-                    padding: 20px;
-                    border-radius: 8px;
-                    background-color: white;
+                border: 1px solid #dee2e6;
+                padding: 20px;
+                border-radius: 8px;
+                background-color: white;
                 }
 
                 .btn-group .btn {
-                    margin-right: 5px;
+                margin-right: 5px;
                 }
 
                 @media (max-width: 768px) {
-                    .btn-group {
-                        flex-direction: column;
-                        width: 100%;
-                    }
+                .btn-group {
+                flex-direction: column;
+                width: 100%;
+                }
 
-                    .btn-group .btn {
-                        margin-right: 0;
-                        margin-bottom: 5px;
-                        width: 100%;
-                    }
+                .btn-group .btn {
+                margin-right: 0;
+                margin-bottom: 5px;
+                width: 100%;
+                }
                 }
             </style>
 
@@ -244,8 +259,12 @@
                     <div class="col">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a href="/healthcare/appointment_reminder">Thông báo lịch hẹn</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/healthcare/dashboard">Trang chủ</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="/healthcare/appointment_reminder">Thông báo lịch hẹn</a>
+                                </li>
                                 <li class="breadcrumb-item active" aria-current="page">Chi tiết thông báo</li>
                             </ol>
                         </nav>
@@ -256,7 +275,8 @@
                     <div class="card-header bg-primary text-white">
                         <h3 class="mb-0">
                             <i class="fa fa-calendar-check me-2"></i>
-                            Thông báo lịch hẹn: <t t-esc="reminder.name"/>
+                            Thông báo lịch hẹn:
+                            <t t-esc="reminder.name"/>
                         </h3>
                     </div>
                     <div class="card-body">
@@ -266,19 +286,27 @@
                                 <table class="table table-borderless">
                                     <tr>
                                         <th class="detail-label" style="width: 40%">Mã thông báo:</th>
-                                        <td><t t-esc="reminder.name"/></td>
+                                        <td>
+                                            <t t-esc="reminder.name"/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th class="detail-label">Bệnh nhân:</th>
-                                        <td><t t-esc="reminder.patient_id.name"/></td>
+                                        <td>
+                                            <t t-esc="reminder.patient_id.name"/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th class="detail-label">Email:</th>
-                                        <td><t t-esc="reminder.patient_id.email or 'Không có'"/></td>
+                                        <td>
+                                            <t t-esc="reminder.patient_id.email or 'Không có'"/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th class="detail-label">Điện thoại:</th>
-                                        <td><t t-esc="reminder.patient_id.phone or 'Không có'"/></td>
+                                        <td>
+                                            <t t-esc="reminder.patient_id.phone or 'Không có'"/>
+                                        </td>
                                     </tr>
                                 </table>
                             </div>
@@ -287,19 +315,27 @@
                                 <table class="table table-borderless">
                                     <tr>
                                         <th class="detail-label" style="width: 40%">Ngày giờ hẹn:</th>
-                                        <td><t t-esc="reminder.appointment_date"/></td>
+                                        <td>
+                                            <t t-esc="reminder.appointment_date"/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th class="detail-label">Ngày gửi thông báo:</th>
-                                        <td><t t-esc="reminder.notification_date"/></td>
+                                        <td>
+                                            <t t-esc="reminder.notification_date"/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th class="detail-label">Bác sĩ:</th>
-                                        <td><t t-esc="reminder.staff_id.staff_name or '-'"/></td>
+                                        <td>
+                                            <t t-esc="reminder.staff_id.staff_name or '-'"/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th class="detail-label">Phòng khám:</th>
-                                        <td><t t-esc="reminder.room_id.name or '-'"/></td>
+                                        <td>
+                                            <t t-esc="reminder.room_id.name or '-'"/>
+                                        </td>
                                     </tr>
                                 </table>
                             </div>
@@ -319,7 +355,9 @@
                                         </span>
                                     </p>
                                     <t t-if="reminder.email_status">
-                                        <p><strong>Thông tin trạng thái:</strong></p>
+                                        <p>
+                                            <strong>Thông tin trạng thái:</strong>
+                                        </p>
                                         <div class="alert alert-info">
                                             <t t-esc="reminder.email_status"/>
                                         </div>
@@ -334,26 +372,45 @@
                                 <div class="preview-email">
                                     <div style="margin: 0px; padding: 0px; font-size: 13px;">
                                         <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                                            Kính gửi <t t-esc="reminder.patient_id.name or 'Quý khách'"/>,
+                                            Kính gửi<t t-esc="reminder.patient_id.name or 'Quý khách'"/>,
                                         </p>
                                         <p style="margin: 0px; padding: 0px; font-size: 13px;">
                                             Chúng tôi xin gửi lời nhắc nhở về lịch hẹn khám sắp tới của bạn:
                                         </p>
                                         <ul>
-                                            <li>Mã lịch hẹn: <strong><t t-esc="reminder.name or ''"/></strong></li>
-                                            <li>Thời gian: <strong><t t-esc="reminder.appointment_date or ''"/></strong></li>
-                                            <li>Bác sĩ: <strong><t t-esc="reminder.staff_id.staff_name or 'Chưa xác định'"/></strong></li>
-                                            <li>Phòng khám: <strong><t t-esc="reminder.room_id.name or 'Chưa xác định'"/></strong></li>
+                                            <li>Mã lịch hẹn:
+                                                <strong>
+                                                    <t t-esc="reminder.name or ''"/>
+                                                </strong>
+                                            </li>
+                                            <li>Thời gian:
+                                                <strong>
+                                                    <t t-esc="reminder.appointment_date or ''"/>
+                                                </strong>
+                                            </li>
+                                            <li>Bác sĩ:
+                                                <strong>
+                                                    <t t-esc="reminder.staff_id.staff_name or 'Chưa xác định'"/>
+                                                </strong>
+                                            </li>
+                                            <li>Phòng khám:
+                                                <strong>
+                                                    <t t-esc="reminder.room_id.name or 'Chưa xác định'"/>
+                                                </strong>
+                                            </li>
                                         </ul>
                                         <p style="margin: 0px; padding: 0px; font-size: 13px;">
                                             Vui lòng đến trước 15 phút để hoàn tất thủ tục.
                                         </p>
                                         <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                                            Nếu bạn cần thay đổi lịch hẹn, vui lòng liên hệ với chúng tôi trước ít nhất 24 giờ.
+                                            Nếu bạn cần thay đổi lịch hẹn, vui lòng liên hệ với chúng tôi trước ít nhất
+                                            24 giờ.
                                         </p>
                                         <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                                            Trân trọng,<br/>
-                                            Phòng khám <t t-esc="company_name or ''"/>
+                                            Trân trọng,
+                                            <br/>
+                                            Phòng khám
+                                            <t t-esc="company_name or ''"/>
                                         </p>
                                     </div>
                                 </div>
@@ -363,17 +420,20 @@
                     <div class="card-footer">
                         <div class="btn-group">
                             <a href="/healthcare/appointment_reminder" class="btn btn-secondary">
-                                <i class="fa fa-arrow-left"></i> Quay lại
+                                <i class="fa fa-arrow-left"></i>
+                                Quay lại
                             </a>
                             <button type="button" class="btn btn-primary" id="btnSendReminder"
                                     t-att-data-reminder-id="reminder.id"
                                     t-att-disabled="reminder.state not in ['to_send', 'failed']">
-                                <i class="fa fa-paper-plane"></i> Gửi thông báo ngay
+                                <i class="fa fa-paper-plane"></i>
+                                Gửi thông báo ngay
                             </button>
                             <button type="button" class="btn btn-danger" id="btnCancelReminder"
                                     t-att-data-reminder-id="reminder.id"
                                     t-att-disabled="reminder.state not in ['to_send', 'failed']">
-                                <i class="fa fa-times"></i> Hủy thông báo
+                                <i class="fa fa-times"></i>
+                                Hủy thông báo
                             </button>
                         </div>
                     </div>
@@ -384,136 +444,136 @@
             <script type="text/javascript">
                 // JavaScript for handling the "Send Now" button
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Gửi thông báo ngay
-                    const sendNowBtn = document.getElementById('btnSendReminder');
-                    if (sendNowBtn) {
-                        sendNowBtn.addEventListener('click', function() {
-                            const reminderId = this.getAttribute('data-reminder-id');
-                            if (!reminderId) {
-                                console.error('Missing reminder ID');
-                                return;
-                            }
+                // Gửi thông báo ngay
+                const sendNowBtn = document.getElementById('btnSendReminder');
+                if (sendNowBtn) {
+                sendNowBtn.addEventListener('click', function() {
+                const reminderId = this.getAttribute('data-reminder-id');
+                if (!reminderId) {
+                console.error('Missing reminder ID');
+                return;
+                }
 
-                            if (confirm('Bạn có muốn gửi thông báo này ngay bây giờ?')) {
-                                const button = this;
-                                const icon = button.querySelector('i');
+                if (confirm('Bạn có muốn gửi thông báo này ngay bây giờ?')) {
+                const button = this;
+                const icon = button.querySelector('i');
 
-                                // Hiển thị trạng thái đang gửi
-                                icon.className = 'fa fa-spinner fa-spin';
-                                button.disabled = true;
+                // Hiển thị trạng thái đang gửi
+                icon.className = 'fa fa-spinner fa-spin';
+                button.disabled = true;
 
-                                // Get CSRF token from the meta tag
-                                const csrf_token = document.querySelector('meta[name="csrf-token"]')?.content;
+                // Get CSRF token from the meta tag
+                const csrf_token = document.querySelector('meta[name="csrf-token"]')?.content;
 
-                                console.log('Sending reminder request for ID:', reminderId);
+                console.log('Sending reminder request for ID:', reminderId);
 
-                                // Use jQuery Ajax for compatibility
-                                $.ajax({
-                                    url: '/healthcare/appointment_reminder/action',
-                                    type: 'POST',
-                                    contentType: 'application/json',
-                                    dataType: 'json',
-                                    data: JSON.stringify({
-                                        jsonrpc: "2.0",
-                                        method: "call",
-                                        params: {
-                                            reminder_id: reminderId,
-                                            action: 'send_now',
-                                            csrf_token: csrf_token
-                                        },
-                                        id: Math.floor(Math.random() * 1000000000)
-                                    }),
-                                    success: function(response) {
-                                        console.log('Received response:', response);
-                                        const result = response.result;
-                                        if (result &amp;&amp; result.success) {
-                                            alert('Đã gửi thông báo thành công.');
-                                            location.reload();
-                                        } else {
-                                            // Khôi phục trạng thái nút
-                                            icon.className = 'fa fa-paper-plane';
-                                            button.disabled = false;
+                // Use jQuery Ajax for compatibility
+                $.ajax({
+                url: '/healthcare/appointment_reminder/action',
+                type: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                jsonrpc: "2.0",
+                method: "call",
+                params: {
+                reminder_id: reminderId,
+                action: 'send_now',
+                csrf_token: csrf_token
+                },
+                id: Math.floor(Math.random() * 1000000000)
+                }),
+                success: function(response) {
+                console.log('Received response:', response);
+                const result = response.result;
+                if (result &amp;&amp; result.success) {
+                alert('Đã gửi thông báo thành công.');
+                location.reload();
+                } else {
+                // Khôi phục trạng thái nút
+                icon.className = 'fa fa-paper-plane';
+                button.disabled = false;
 
-                                            alert('Đã xảy ra lỗi khi gửi thông báo: ' +
-                                                (result &amp;&amp; result.error ? result.error : 'Không xác định'));
-                                        }
-                                    },
-                                    error: function(jqXHR, textStatus, errorThrown) {
-                                        // Khôi phục trạng thái nút
-                                        icon.className = 'fa fa-paper-plane';
-                                        button.disabled = false;
+                alert('Đã xảy ra lỗi khi gửi thông báo: ' +
+                (result &amp;&amp; result.error ? result.error : 'Không xác định'));
+                }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                // Khôi phục trạng thái nút
+                icon.className = 'fa fa-paper-plane';
+                button.disabled = false;
 
-                                        console.error('Error:', textStatus, errorThrown);
-                                        alert('Đã xảy ra lỗi khi kết nối đến máy chủ: ' + textStatus);
-                                    }
-                                });
-                            }
-                        });
-                    }
+                console.error('Error:', textStatus, errorThrown);
+                alert('Đã xảy ra lỗi khi kết nối đến máy chủ: ' + textStatus);
+                }
+                });
+                }
+                });
+                }
 
-                    // Hủy thông báo
-                    const cancelBtn = document.getElementById('btnCancelReminder');
-                    if (cancelBtn) {
-                        cancelBtn.addEventListener('click', function() {
-                            const reminderId = this.getAttribute('data-reminder-id');
-                            if (!reminderId) {
-                                console.error('Missing reminder ID');
-                                return;
-                            }
+                // Hủy thông báo
+                const cancelBtn = document.getElementById('btnCancelReminder');
+                if (cancelBtn) {
+                cancelBtn.addEventListener('click', function() {
+                const reminderId = this.getAttribute('data-reminder-id');
+                if (!reminderId) {
+                console.error('Missing reminder ID');
+                return;
+                }
 
-                            if (confirm('Bạn có chắc chắn muốn hủy thông báo này?')) {
-                                const button = this;
-                                const icon = button.querySelector('i');
+                if (confirm('Bạn có chắc chắn muốn hủy thông báo này?')) {
+                const button = this;
+                const icon = button.querySelector('i');
 
-                                // Hiển thị trạng thái đang xử lý
-                                icon.className = 'fa fa-spinner fa-spin';
-                                button.disabled = true;
+                // Hiển thị trạng thái đang xử lý
+                icon.className = 'fa fa-spinner fa-spin';
+                button.disabled = true;
 
-                                // Get CSRF token from the meta tag
-                                const csrf_token = document.querySelector('meta[name="csrf-token"]')?.content;
+                // Get CSRF token from the meta tag
+                const csrf_token = document.querySelector('meta[name="csrf-token"]')?.content;
 
-                                // Use jQuery Ajax for compatibility
-                                $.ajax({
-                                    url: '/healthcare/appointment_reminder/action',
-                                    type: 'POST',
-                                    contentType: 'application/json',
-                                    dataType: 'json',
-                                    data: JSON.stringify({
-                                        jsonrpc: "2.0",
-                                        method: "call",
-                                        params: {
-                                            reminder_id: reminderId,
-                                            action: 'cancel',
-                                            csrf_token: csrf_token
-                                        },
-                                        id: Math.floor(Math.random() * 1000000000)
-                                    }),
-                                    success: function(response) {
-                                        const result = response.result;
-                                        if (result &amp;&amp; result.success) {
-                                            alert('Đã hủy thông báo thành công.');
-                                            location.reload();
-                                        } else {
-                                            // Khôi phục trạng thái nút
-                                            icon.className = 'fa fa-times';
-                                            button.disabled = false;
+                // Use jQuery Ajax for compatibility
+                $.ajax({
+                url: '/healthcare/appointment_reminder/action',
+                type: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                jsonrpc: "2.0",
+                method: "call",
+                params: {
+                reminder_id: reminderId,
+                action: 'cancel',
+                csrf_token: csrf_token
+                },
+                id: Math.floor(Math.random() * 1000000000)
+                }),
+                success: function(response) {
+                const result = response.result;
+                if (result &amp;&amp; result.success) {
+                alert('Đã hủy thông báo thành công.');
+                location.reload();
+                } else {
+                // Khôi phục trạng thái nút
+                icon.className = 'fa fa-times';
+                button.disabled = false;
 
-                                            alert('Đã xảy ra lỗi khi hủy thông báo: ' +
-                                                (result &amp;&amp; result.error ? result.error : 'Không xác định'));
-                                        }
-                                    },
-                                    error: function(jqXHR, textStatus, errorThrown) {
-                                        // Khôi phục trạng thái nút
-                                        icon.className = 'fa fa-times';
-                                        button.disabled = false;
+                alert('Đã xảy ra lỗi khi hủy thông báo: ' +
+                (result &amp;&amp; result.error ? result.error : 'Không xác định'));
+                }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                // Khôi phục trạng thái nút
+                icon.className = 'fa fa-times';
+                button.disabled = false;
 
-                                        console.error('Error:', textStatus, errorThrown);
-                                        alert('Đã xảy ra lỗi khi kết nối đến máy chủ: ' + textStatus);
-                                    }
-                                });
-                            }
-                        });
-                    }
+                console.error('Error:', textStatus, errorThrown);
+                alert('Đã xảy ra lỗi khi kết nối đến máy chủ: ' + textStatus);
+                }
+                });
+                }
+                });
+                }
                 });
             </script>
         </t>

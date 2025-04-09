@@ -6,60 +6,60 @@
             <!-- CSS Inline -->
             <style>
                 .feedback-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
                 }
 
                 .feedback-table {
-                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                    border-radius: 8px;
-                    overflow: hidden;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                overflow: hidden;
                 }
 
                 .feedback-table thead th {
-                    background-color: #343a40;
-                    color: white;
-                    border-color: #454d55;
+                background-color: #343a40;
+                color: white;
+                border-color: #454d55;
                 }
 
                 .feedback-card {
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    margin-bottom: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
                 }
 
                 .feedback-card .card-header {
-                    border-radius: 8px 8px 0 0;
-                    font-weight: bold;
+                border-radius: 8px 8px 0 0;
+                font-weight: bold;
                 }
 
                 .feedback-filter {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 15px;
-                    margin-bottom: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
 
                 .ratings {
-                    color: #ccc;
+                color: #ccc;
                 }
 
                 .ratings .fa-star.text-warning {
-                    color: #ffc107 !important;
+                color: #ffc107 !important;
                 }
 
                 .btn {
-                    border-radius: 4px;
+                border-radius: 4px;
                 }
 
                 .breadcrumb {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 12px 15px;
-                    margin-bottom: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 12px 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
             </style>
 
@@ -70,7 +70,8 @@
                     </div>
                     <div class="col-md-4 text-end">
                         <a href="/healthcare/patient_feedback/create" class="btn btn-primary">
-                            <i class="fa fa-plus-circle me-1"></i> Tạo phản hồi mới
+                            <i class="fa fa-plus-circle me-1"></i>
+                            Tạo phản hồi mới
                         </a>
                     </div>
                 </div>
@@ -125,9 +126,15 @@
                         <tbody>
                             <t t-foreach="feedbacks" t-as="feedback">
                                 <tr t-att-class="'table-danger' if feedback.state == 'new' else 'table-success' if feedback.state == 'noted' else 'table-secondary'">
-                                    <td><t t-esc="feedback.name"/></td>
-                                    <td><t t-esc="feedback.patient_id.name"/></td>
-                                    <td><t t-esc="feedback.feedback_date"/></td>
+                                    <td>
+                                        <t t-esc="feedback.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="feedback.patient_id.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="feedback.feedback_date"/>
+                                    </td>
                                     <td>
                                         <t t-if="feedback.feedback_type == 'compliment'">Khen ngợi</t>
                                         <t t-elif="feedback.feedback_type == 'suggestion'">Góp ý</t>
@@ -150,8 +157,10 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <a t-att-href="'/healthcare/patient_feedback/%s' % feedback.id" class="btn btn-sm btn-info">
-                                            <i class="fa fa-eye"></i> Xem
+                                        <a t-att-href="'/healthcare/patient_feedback/%s' % feedback.id"
+                                           class="btn btn-sm btn-info">
+                                            <i class="fa fa-eye"></i>
+                                            Xem
                                         </a>
                                     </td>
                                 </tr>
@@ -170,19 +179,19 @@
             <!-- JavaScript Inline -->
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Khởi tạo URL parameters cho filters
-                    var urlParams = new URLSearchParams(window.location.search);
-                    var filterType = urlParams.get('filter_type');
-                    var filterState = urlParams.get('filter_state');
+                // Khởi tạo URL parameters cho filters
+                var urlParams = new URLSearchParams(window.location.search);
+                var filterType = urlParams.get('filter_type');
+                var filterState = urlParams.get('filter_state');
 
-                    // Đặt giá trị đã chọn vào selects
-                    if (filterType) {
-                        document.getElementById('filter_type').value = filterType;
-                    }
+                // Đặt giá trị đã chọn vào selects
+                if (filterType) {
+                document.getElementById('filter_type').value = filterType;
+                }
 
-                    if (filterState) {
-                        document.getElementById('filter_state').value = filterState;
-                    }
+                if (filterState) {
+                document.getElementById('filter_state').value = filterState;
+                }
                 });
             </script>
         </t>
@@ -198,51 +207,51 @@
             <!-- CSS có thể được tái sử dụng từ danh sách phản hồi -->
             <style>
                 .feedback-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
                 }
 
                 .feedback-card {
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    margin-bottom: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
                 }
 
                 .feedback-card .card-header {
-                    border-radius: 8px 8px 0 0;
-                    font-weight: bold;
+                border-radius: 8px 8px 0 0;
+                font-weight: bold;
                 }
 
                 .feedback-section {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 15px;
-                    margin-bottom: 20px;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 20px;
                 }
 
                 .ratings {
-                    color: #ccc;
+                color: #ccc;
                 }
 
                 .ratings .fa-star.text-warning {
-                    color: #ffc107 !important;
+                color: #ffc107 !important;
                 }
 
                 .btn {
-                    border-radius: 4px;
+                border-radius: 4px;
                 }
 
                 .breadcrumb {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 12px 15px;
-                    margin-bottom: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 12px 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
 
                 .btn-group .btn {
-                    margin-right: 5px;
+                margin-right: 5px;
                 }
             </style>
 
@@ -251,8 +260,12 @@
                     <div class="col">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a href="/healthcare/patient_feedback">Phản hồi bệnh nhân</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/healthcare/dashboard">Trang chủ</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="/healthcare/patient_feedback">Phản hồi bệnh nhân</a>
+                                </li>
                                 <li class="breadcrumb-item active" aria-current="page">Chi tiết phản hồi</li>
                             </ol>
                         </nav>
@@ -263,7 +276,8 @@
                     <div class="card-header bg-primary text-white">
                         <h3 class="mb-0">
                             <i class="fa fa-comment-dots me-2"></i>
-                            Chi tiết phản hồi: <t t-esc="feedback.name"/>
+                            Chi tiết phản hồi:
+                            <t t-esc="feedback.name"/>
                         </h3>
                     </div>
                     <div class="card-body">
@@ -273,19 +287,27 @@
                                 <table class="table table-borderless">
                                     <tr>
                                         <th style="width: 40%">Mã phản hồi:</th>
-                                        <td><t t-esc="feedback.name"/></td>
+                                        <td>
+                                            <t t-esc="feedback.name"/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th>Bệnh nhân:</th>
-                                        <td><t t-esc="feedback.patient_id.name"/></td>
+                                        <td>
+                                            <t t-esc="feedback.patient_id.name"/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th>Phòng ban:</th>
-                                        <td><t t-esc="feedback.department_id.name or 'Không có'"/></td>
+                                        <td>
+                                            <t t-esc="feedback.department_id.name or 'Không có'"/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th>Người phụ trách:</th>
-                                        <td><t t-esc="feedback.user_id.name"/></td>
+                                        <td>
+                                            <t t-esc="feedback.user_id.name"/>
+                                        </td>
                                     </tr>
                                 </table>
                             </div>
@@ -294,7 +316,9 @@
                                 <table class="table table-borderless">
                                     <tr>
                                         <th style="width: 40%">Ngày phản hồi:</th>
-                                        <td><t t-esc="feedback.feedback_date"/></td>
+                                        <td>
+                                            <t t-esc="feedback.feedback_date"/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th>Loại phản hồi:</th>
@@ -343,17 +367,23 @@
                             <div class="col-12">
                                 <h5 class="border-bottom pb-2">Khiếu nại liên quan</h5>
                                 <div t-if="feedback.complaint_id" class="p-3 feedback-section rounded">
-                                    <a t-att-href="'/healthcare/patient_complaint/%s' % feedback.complaint_id.id" class="btn btn-info">
+                                    <a t-att-href="'/healthcare/patient_complaint/%s' % feedback.complaint_id.id"
+                                       class="btn btn-info">
                                         <i class="fa fa-exclamation-circle"></i>
-                                        Xem khiếu nại: <t t-esc="feedback.complaint_id.name"/>
+                                        Xem khiếu nại:
+                                        <t t-esc="feedback.complaint_id.name"/>
                                     </a>
                                 </div>
                                 <div t-else="" class="p-3 feedback-section rounded">
                                     <p class="text-muted">Không có khiếu nại liên quan.</p>
-                                    <form method="post" t-att-action="'/healthcare/patient_complaint/create?feedback_id=%s' % feedback.id" id="create-complaint-form">
+                                    <form method="post"
+                                          t-att-action="'/healthcare/patient_complaint/create?feedback_id=%s' % feedback.id"
+                                          id="create-complaint-form">
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                        <button type="submit" class="btn btn-outline-primary" t-att-disabled="feedback.complaint_id">
-                                            <i class="fa fa-plus-circle"></i> Tạo khiếu nại từ phản hồi này
+                                        <button type="submit" class="btn btn-outline-primary"
+                                                t-att-disabled="feedback.complaint_id">
+                                            <i class="fa fa-plus-circle"></i>
+                                            Tạo khiếu nại từ phản hồi này
                                         </button>
                                     </form>
                                 </div>
@@ -363,19 +393,27 @@
                     <div class="card-footer">
                         <div class="btn-group">
                             <a href="/healthcare/patient_feedback" class="btn btn-secondary">
-                                <i class="fa fa-arrow-left"></i> Quay lại
+                                <i class="fa fa-arrow-left"></i>
+                                Quay lại
                             </a>
-                            <button type="button" class="btn btn-success" id="btnNote" t-att-data-feedback-id="feedback.id"
+                            <button type="button" class="btn btn-success" id="btnNote"
+                                    t-att-data-feedback-id="feedback.id"
                                     t-att-data-action="'note'" t-att-disabled="feedback.state != 'new'">
-                                <i class="fa fa-check"></i> Ghi nhận
+                                <i class="fa fa-check"></i>
+                                Ghi nhận
                             </button>
-                            <button type="button" class="btn btn-danger" id="btnCancel" t-att-data-feedback-id="feedback.id"
-                                    t-att-data-action="'cancel'" t-att-disabled="feedback.state not in ['new', 'noted']">
-                                <i class="fa fa-times"></i> Hủy
+                            <button type="button" class="btn btn-danger" id="btnCancel"
+                                    t-att-data-feedback-id="feedback.id"
+                                    t-att-data-action="'cancel'"
+                                    t-att-disabled="feedback.state not in ['new', 'noted']">
+                                <i class="fa fa-times"></i>
+                                Hủy
                             </button>
-                            <button type="button" class="btn btn-warning" id="btnReNew" t-att-data-feedback-id="feedback.id"
+                            <button type="button" class="btn btn-warning" id="btnReNew"
+                                    t-att-data-feedback-id="feedback.id"
                                     t-att-data-action="'new'" t-att-disabled="feedback.state != 'cancelled'">
-                                <i class="fa fa-redo"></i> Thiết lập thành Mới
+                                <i class="fa fa-redo"></i>
+                                Thiết lập thành Mới
                             </button>
                         </div>
                     </div>
@@ -386,72 +424,72 @@
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
                 // Xử lý các nút hành động phản hồi
-                    document.querySelectorAll('[data-feedback-id][data-action]').forEach(function(button) {
-                        button.addEventListener('click', function() {
-                            var feedbackId = this.getAttribute('data-feedback-id');
-                            var action = this.getAttribute('data-action');
+                document.querySelectorAll('[data-feedback-id][data-action]').forEach(function(button) {
+                button.addEventListener('click', function() {
+                var feedbackId = this.getAttribute('data-feedback-id');
+                var action = this.getAttribute('data-action');
 
-                            if (!feedbackId || !action) return;
+                if (!feedbackId || !action) return;
 
-                            console.log('Chuẩn bị gửi yêu cầu:', {
-                                feedback_id: feedbackId,
-                                action: action
-                            });
+                console.log('Chuẩn bị gửi yêu cầu:', {
+                feedback_id: feedbackId,
+                action: action
+                });
 
-                            // Hiển thị dialog xác nhận
-                            if (confirm('Bạn có chắc chắn muốn thực hiện thao tác này?')) {
-                                // Gửi yêu cầu AJAX với định dạng JSON-RPC của Odoo
-                                fetch('/healthcare/patient_feedback/action', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                    },
-                                    body: JSON.stringify({
-                                        jsonrpc: "2.0",
-                                        method: "call",
-                                        params: {
-                                            feedback_id: feedbackId,
-                                            action: action
-                                        },
-                                        id: Math.floor(Math.random() * 1000000)
-                                    })
-                                })
-                                .then(response => response.json())
-                                .then(result => {
-                                    console.log("Full response:", result); // For debugging
+                // Hiển thị dialog xác nhận
+                if (confirm('Bạn có chắc chắn muốn thực hiện thao tác này?')) {
+                // Gửi yêu cầu AJAX với định dạng JSON-RPC của Odoo
+                fetch('/healthcare/patient_feedback/action', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                jsonrpc: "2.0",
+                method: "call",
+                params: {
+                feedback_id: feedbackId,
+                action: action
+                },
+                id: Math.floor(Math.random() * 1000000)
+                })
+                })
+                .then(response => response.json())
+                .then(result => {
+                console.log("Full response:", result); // For debugging
 
-                                    // Check for success in the result
-                                    if (result.result &amp;&amp; result.result.success) {
-                                        // Hiển thị thông báo thành công
-                                        var message = '';
-                                        if (action === 'note') {
-                                            message = 'Phản hồi đã được ghi nhận.';
-                                        } else if (action === 'cancel') {
-                                            message = 'Phản hồi đã được hủy.';
-                                        } else if (action === 'new') {
-                                            message = 'Phản hồi đã được thiết lập thành Mới.';
-                                        }
+                // Check for success in the result
+                if (result.result &amp;&amp; result.result.success) {
+                // Hiển thị thông báo thành công
+                var message = '';
+                if (action === 'note') {
+                message = 'Phản hồi đã được ghi nhận.';
+                } else if (action === 'cancel') {
+                message = 'Phản hồi đã được hủy.';
+                } else if (action === 'new') {
+                message = 'Phản hồi đã được thiết lập thành Mới.';
+                }
 
-                                        // Hiển thị thông báo và làm mới trang
-                                        alert(message);
-                                        location.reload();
-                                    } else {
-                                        var errorMsg = 'Không xác định';
-                                        if (result.result &amp;&amp; result.result.error) {
-                                            errorMsg = result.result.error;
-                                        } else if (result.error) {
-                                            errorMsg = result.error.data &amp;&amp; result.error.data.message || result.error.message;
-                                        }
-                                        alert('Lỗi: ' + errorMsg);
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error:', error);
-                                    alert('Đã xảy ra lỗi khi kết nối đến máy chủ: ' + error.message);
-                                });
-                            }
-                        });
-                    });
+                // Hiển thị thông báo và làm mới trang
+                alert(message);
+                location.reload();
+                } else {
+                var errorMsg = 'Không xác định';
+                if (result.result &amp;&amp; result.result.error) {
+                errorMsg = result.result.error;
+                } else if (result.error) {
+                errorMsg = result.error.data &amp;&amp; result.error.data.message || result.error.message;
+                }
+                alert('Lỗi: ' + errorMsg);
+                }
+                })
+                .catch(error => {
+                console.error('Error:', error);
+                alert('Đã xảy ra lỗi khi kết nối đến máy chủ: ' + error.message);
+                });
+                }
+                });
+                });
                 });
             </script>
         </t>
@@ -463,41 +501,41 @@
             <!-- CSS có thể được tái sử dụng từ danh sách phản hồi -->
             <style>
                 .feedback-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
                 }
 
                 .feedback-card {
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    margin-bottom: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
                 }
 
                 .feedback-card .card-header {
-                    border-radius: 8px 8px 0 0;
-                    font-weight: bold;
+                border-radius: 8px 8px 0 0;
+                font-weight: bold;
                 }
 
                 .form-group label {
-                    font-weight: 600;
-                    color: #495057;
+                font-weight: 600;
+                color: #495057;
                 }
 
                 .form-group .text-danger {
-                    font-weight: bold;
+                font-weight: bold;
                 }
 
                 .btn {
-                    border-radius: 4px;
+                border-radius: 4px;
                 }
 
                 .breadcrumb {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 12px 15px;
-                    margin-bottom: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 12px 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
             </style>
 
@@ -506,8 +544,12 @@
                     <div class="col">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a href="/healthcare/patient_feedback">Phản hồi bệnh nhân</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/healthcare/dashboard">Trang chủ</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="/healthcare/patient_feedback">Phản hồi bệnh nhân</a>
+                                </li>
                             </ol>
                         </nav>
                     </div>
@@ -527,12 +569,16 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
-                                        <label for="patient_id" class="form-label">Bệnh nhân <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="patient_id" name="patient_id" required="required">
+                                        <label for="patient_id" class="form-label">Bệnh nhân
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select" id="patient_id" name="patient_id"
+                                                required="required">
                                             <option value="">-- Chọn bệnh nhân --</option>
                                             <t t-foreach="patients" t-as="patient">
                                                 <option t-att-value="patient.id">
-                                                    <t t-esc="patient.name"/> (<t t-esc="patient.code"/>)
+                                                    <t t-esc="patient.name"/>
+                                                    (<t t-esc="patient.code"/>)
                                                 </option>
                                             </t>
                                         </select>
@@ -553,21 +599,29 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
-                                        <label for="feedback_type" class="form-label">Loại phản hồi <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="feedback_type" name="feedback_type" required="required">
+                                        <label for="feedback_type" class="form-label">Loại phản hồi
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select" id="feedback_type" name="feedback_type"
+                                                required="required">
                                             <option value="">-- Chọn loại phản hồi --</option>
                                             <t t-foreach="feedback_types" t-as="type">
-                                                <option t-att-value="type[0]"><t t-esc="type[1]"/></option>
+                                                <option t-att-value="type[0]">
+                                                    <t t-esc="type[1]"/>
+                                                </option>
                                             </t>
                                         </select>
                                     </div>
 
                                     <div class="form-group mb-3">
-                                        <label for="satisfaction_rating" class="form-label">Đánh giá mức độ hài lòng</label>
+                                        <label for="satisfaction_rating" class="form-label">Đánh giá mức độ hài lòng
+                                        </label>
                                         <select class="form-select" id="satisfaction_rating" name="satisfaction_rating">
                                             <option value="">-- Chọn đánh giá --</option>
                                             <t t-foreach="satisfaction_ratings" t-as="rating">
-                                                <option t-att-value="rating[0]"><t t-esc="rating[1]"/></option>
+                                                <option t-att-value="rating[0]">
+                                                    <t t-esc="rating[1]"/>
+                                                </option>
                                             </t>
                                         </select>
                                     </div>
@@ -575,17 +629,22 @@
                             </div>
 
                             <div class="form-group mb-3">
-                                <label for="description" class="form-label">Nội dung phản hồi <span class="text-danger">*</span></label>
-                                <textarea class="form-control" id="description" name="description" rows="5" required="required"
-                                         placeholder="Nhập chi tiết phản hồi từ bệnh nhân..."></textarea>
+                                <label for="description" class="form-label">Nội dung phản hồi
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <textarea class="form-control" id="description" name="description" rows="5"
+                                          required="required"
+                                          placeholder="Nhập chi tiết phản hồi từ bệnh nhân..."></textarea>
                             </div>
 
                             <div class="form-group text-end mt-4">
                                 <a href="/healthcare/patient_feedback" class="btn btn-secondary me-2">
-                                    <i class="fa fa-times"></i> Hủy
+                                    <i class="fa fa-times"></i>
+                                    Hủy
                                 </a>
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-save"></i> Lưu
+                                    <i class="fa fa-save"></i>
+                                    Lưu
                                 </button>
                             </div>
                         </form>
@@ -596,17 +655,17 @@
             <!-- JavaScript Inline -->
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Xác thực form trước khi gửi
-                    document.getElementById('feedback-form').addEventListener('submit', function(event) {
-                        var patientId = document.getElementById('patient_id').value;
-                        var feedbackType = document.getElementById('feedback_type').value;
-                        var description = document.getElementById('description').value;
+                // Xác thực form trước khi gửi
+                document.getElementById('feedback-form').addEventListener('submit', function(event) {
+                var patientId = document.getElementById('patient_id').value;
+                var feedbackType = document.getElementById('feedback_type').value;
+                var description = document.getElementById('description').value;
 
-                        if (!patientId || !feedbackType || !description.trim()) {
-                            event.preventDefault();
-                            alert('Vui lòng điền đầy đủ thông tin bắt buộc.');
-                        }
-                    });
+                if (!patientId || !feedbackType || !description.trim()) {
+                event.preventDefault();
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc.');
+                }
+                });
                 });
             </script>
         </t>

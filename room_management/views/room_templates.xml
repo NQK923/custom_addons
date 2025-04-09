@@ -21,7 +21,8 @@
                 <!-- Nút tạo phòng mới -->
                 <div class="text-right mb-4">
                     <a href="/clinic/rooms/create" class="btn btn-success">
-                        <i class="fa fa-plus mr-2"></i> Tạo phòng mới
+                        <i class="fa fa-plus mr-2"></i>
+                        Tạo phòng mới
                     </a>
                 </div>
 
@@ -30,7 +31,9 @@
                         <div class="col-md-4 mb-4">
                             <div class="card">
                                 <div class="card-header bg-primary text-white">
-                                    <h5 class="card-title mb-0"><t t-esc="room.name"/></h5>
+                                    <h5 class="card-title mb-0">
+                                        <t t-esc="room.name"/>
+                                    </h5>
                                 </div>
                                 <div class="card-body d-flex flex-column">
                                     <div>
@@ -46,11 +49,15 @@
                                     </div>
 
                                     <p class="card-text mt-2">
-                                        <i class="fa fa-bed mr-2"></i> <strong>Sức chứa:</strong> <t t-esc="room.capacity"/> giường
+                                        <i class="fa fa-bed mr-2"></i>
+                                        <strong>Sức chứa:</strong>
+                                        <t t-esc="room.capacity"/>
+                                        giường
                                     </p>
 
                                     <p class="card-text">
-                                        <i class="fa fa-info-circle mr-2"></i> <strong>Trạng thái:</strong>
+                                        <i class="fa fa-info-circle mr-2"></i>
+                                        <strong>Trạng thái:</strong>
                                         <t t-if="room.status == 'available'">
                                             <span class="text-success font-weight-bold">Còn trống</span>
                                         </t>
@@ -60,7 +67,8 @@
                                     </p>
 
                                     <a t-att-href="'/clinic/room/%s' % room.id" class="btn btn-primary mt-auto">
-                                        <i class="fa fa-eye mr-2"></i> Xem chi tiết
+                                        <i class="fa fa-eye mr-2"></i>
+                                        Xem chi tiết
                                     </a>
                                 </div>
                             </div>
@@ -71,10 +79,12 @@
                 <!-- Thông báo khi không có phòng nào -->
                 <t t-if="not rooms">
                     <div class="alert alert-info text-center">
-                        <i class="fa fa-info-circle mr-2"></i> Chưa có phòng nào được tạo.
+                        <i class="fa fa-info-circle mr-2"></i>
+                        Chưa có phòng nào được tạo.
                         <div class="mt-3">
                             <a href="/clinic/rooms/create" class="btn btn-primary">
-                                <i class="fa fa-plus mr-2"></i> Tạo phòng mới ngay
+                                <i class="fa fa-plus mr-2"></i>
+                                Tạo phòng mới ngay
                             </a>
                         </div>
                     </div>
@@ -116,13 +126,17 @@
                             </h2>
                             <div>
                                 <a href="/clinic/rooms" class="btn btn-light">
-                                    <i class="fa fa-arrow-left mr-2"></i> Quay lại
+                                    <i class="fa fa-arrow-left mr-2"></i>
+                                    Quay lại
                                 </a>
                                 <a t-att-href="'/clinic/room/%s/edit' % room.id" class="btn btn-info ml-2">
-                                    <i class="fa fa-edit mr-2"></i> Chỉnh sửa
+                                    <i class="fa fa-edit mr-2"></i>
+                                    Chỉnh sửa
                                 </a>
-                                <button type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#deleteModal">
-                                    <i class="fa fa-trash mr-2"></i> Xóa
+                                <button type="button" class="btn btn-danger ml-2" data-toggle="modal"
+                                        data-target="#deleteModal">
+                                    <i class="fa fa-trash mr-2"></i>
+                                    Xóa
                                 </button>
                             </div>
                         </div>
@@ -132,9 +146,15 @@
                         <h4 class="border-bottom pb-2 mb-3">Thông tin phòng</h4>
                         <div class="row">
                             <div class="col-md-6">
-                                <p><i class="fa fa-bed mr-2"></i> <strong>Sức chứa:</strong> <t t-esc="room.capacity"/> giường</p>
                                 <p>
-                                    <i class="fa fa-info-circle mr-2"></i> <strong>Trạng thái:</strong>
+                                    <i class="fa fa-bed mr-2"></i>
+                                    <strong>Sức chứa:</strong>
+                                    <t t-esc="room.capacity"/>
+                                    giường
+                                </p>
+                                <p>
+                                    <i class="fa fa-info-circle mr-2"></i>
+                                    <strong>Trạng thái:</strong>
                                     <t t-if="room.status == 'available'">
                                         <span class="text-success font-weight-bold">Còn trống</span>
                                     </t>
@@ -144,7 +164,11 @@
                                 </p>
                             </div>
                             <div class="col-md-6">
-                                <p><i class="fa fa-sticky-note mr-2"></i> <strong>Ghi chú:</strong> <t t-esc="room.note or 'Không có'"/></p>
+                                <p>
+                                    <i class="fa fa-sticky-note mr-2"></i>
+                                    <strong>Ghi chú:</strong>
+                                    <t t-esc="room.note or 'Không có'"/>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -169,7 +193,9 @@
                                 <tbody>
                                     <t t-foreach="room.bed_ids" t-as="bed">
                                         <tr>
-                                            <td><t t-esc="bed.id"/></td>
+                                            <td>
+                                                <t t-esc="bed.id"/>
+                                            </td>
                                             <td>
                                                 <t t-if="bed.status == 'available'">
                                                     <span class="text-success font-weight-bold">Còn trống</span>
@@ -178,17 +204,25 @@
                                                     <span class="text-danger font-weight-bold">Có bệnh nhân</span>
                                                 </t>
                                             </td>
-                                            <td><t t-esc="bed.patient_id.code or '-'"/></td>
-                                            <td><t t-esc="bed.patient_name or '-'"/></td>
+                                            <td>
+                                                <t t-esc="bed.patient_id.code or '-'"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="bed.patient_name or '-'"/>
+                                            </td>
                                             <td>
                                                 <t t-if="bed.status == 'available'">
-                                                    <a t-att-href="'/clinic/bed/%s/assign' % bed.id" class="btn btn-sm btn-primary">
-                                                        <i class="fa fa-user-plus mr-1"></i> Xếp bệnh nhân
+                                                    <a t-att-href="'/clinic/bed/%s/assign' % bed.id"
+                                                       class="btn btn-sm btn-primary">
+                                                        <i class="fa fa-user-plus mr-1"></i>
+                                                        Xếp bệnh nhân
                                                     </a>
                                                 </t>
                                                 <t t-else="">
-                                                    <a t-att-href="'/clinic/bed/%s/discharge' % bed.id" class="btn btn-sm btn-danger">
-                                                        <i class="fa fa-sign-out mr-1"></i> Xuất viện
+                                                    <a t-att-href="'/clinic/bed/%s/discharge' % bed.id"
+                                                       class="btn btn-sm btn-danger">
+                                                        <i class="fa fa-sign-out mr-1"></i>
+                                                        Xuất viện
                                                     </a>
                                                 </t>
                                             </td>
@@ -201,7 +235,8 @@
                 </div>
 
                 <!-- Modal xác nhận xóa -->
-                <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+                     aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header bg-danger text-white">
@@ -211,13 +246,17 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <p>Bạn có chắc chắn muốn xóa phòng "<t t-esc="room.name"/>"?</p>
+                                <p>Bạn có chắc chắn muốn xóa phòng "<t t-esc="room.name"/>"?
+                                </p>
                                 <p class="text-danger">Hành động này không thể hoàn tác.</p>
-                                <p class="font-italic">Lưu ý: Không thể xóa phòng nếu có bệnh nhân đang sử dụng giường.</p>
+                                <p class="font-italic">Lưu ý: Không thể xóa phòng nếu có bệnh nhân đang sử dụng
+                                    giường.
+                                </p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                                <a t-att-href="'/clinic/room/%s/delete' % room.id" class="btn btn-danger">Xác nhận xóa</a>
+                                <a t-att-href="'/clinic/room/%s/delete' % room.id" class="btn btn-danger">Xác nhận xóa
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -238,7 +277,8 @@
                                 <t t-else="">Tạo phòng mới</t>
                             </h2>
                             <a href="javascript:history.back()" class="btn btn-light">
-                                <i class="fa fa-arrow-left mr-2"></i> Quay lại
+                                <i class="fa fa-arrow-left mr-2"></i>
+                                Quay lại
                             </a>
                         </div>
                     </div>
@@ -247,37 +287,52 @@
                         <!-- Thông báo lỗi hoặc thành công -->
                         <t t-if="error">
                             <div class="alert alert-danger">
-                                <i class="fa fa-exclamation-circle mr-2"></i> <t t-esc="error"/>
+                                <i class="fa fa-exclamation-circle mr-2"></i>
+                                <t t-esc="error"/>
                             </div>
                         </t>
                         <t t-if="success">
                             <div class="alert alert-success">
-                                <i class="fa fa-check-circle mr-2"></i> <t t-esc="success"/>
+                                <i class="fa fa-check-circle mr-2"></i>
+                                <t t-esc="success"/>
                             </div>
                         </t>
 
-                        <form method="POST" t-att-action="'/clinic/room/%s/edit' % room.id if room else '/clinic/rooms/create'">
+                        <form method="POST"
+                              t-att-action="'/clinic/room/%s/edit' % room.id if room else '/clinic/rooms/create'">
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                             <div class="form-group">
-                                <label for="name">Tên phòng <span class="text-danger">*</span></label>
+                                <label for="name">Tên phòng
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <input type="text" class="form-control" id="name" name="name"
                                        t-att-value="default.get('name', '')" required="required"
                                        placeholder="Nhập tên phòng"/>
                             </div>
 
                             <div class="form-group">
-                                <label for="room_type">Loại phòng <span class="text-danger">*</span></label>
+                                <label for="room_type">Loại phòng
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <select class="form-control" id="room_type" name="room_type" required="required">
                                     <option value="">-- Chọn loại phòng --</option>
-                                    <option value="exam" t-att-selected="default.get('room_type') == 'exam'">Phòng khám</option>
-                                    <option value="treatment" t-att-selected="default.get('room_type') == 'treatment'">Phòng điều trị</option>
-                                    <option value="emergency" t-att-selected="default.get('room_type') == 'emergency'">Phòng cấp cứu</option>
+                                    <option value="exam" t-att-selected="default.get('room_type') == 'exam'">Phòng
+                                        khám
+                                    </option>
+                                    <option value="treatment" t-att-selected="default.get('room_type') == 'treatment'">
+                                        Phòng điều trị
+                                    </option>
+                                    <option value="emergency" t-att-selected="default.get('room_type') == 'emergency'">
+                                        Phòng cấp cứu
+                                    </option>
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <label for="capacity">Sức chứa (số giường) <span class="text-danger">*</span></label>
+                                <label for="capacity">Sức chứa (số giường)
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <input type="number" class="form-control" id="capacity" name="capacity"
                                        t-att-value="default.get('capacity', 1)" min="1" required="required"/>
                                 <small class="form-text text-muted">Số giường sẽ được tự động tạo theo sức chứa.</small>
@@ -286,22 +341,27 @@
                             <div class="form-group">
                                 <label for="note">Ghi chú</label>
                                 <textarea class="form-control" id="note" name="note" rows="4"
-                                          placeholder="Nhập ghi chú (nếu có)"><t t-esc="default.get('note', '')"/></textarea>
+                                          placeholder="Nhập ghi chú (nếu có)">
+                                    <t t-esc="default.get('note', '')"/>
+                                </textarea>
                             </div>
 
                             <div class="form-group mt-4">
                                 <t t-if="room">
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="fa fa-save mr-2"></i> Cập nhật phòng
+                                        <i class="fa fa-save mr-2"></i>
+                                        Cập nhật phòng
                                     </button>
                                 </t>
                                 <t t-else="">
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="fa fa-plus mr-2"></i> Tạo phòng
+                                        <i class="fa fa-plus mr-2"></i>
+                                        Tạo phòng
                                     </button>
                                 </t>
                                 <a href="javascript:history.back()" class="btn btn-secondary ml-2">
-                                    <i class="fa fa-times mr-2"></i> Hủy
+                                    <i class="fa fa-times mr-2"></i>
+                                    Hủy
                                 </a>
                             </div>
                         </form>
@@ -320,7 +380,8 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <h2 class="mb-0">Xếp bệnh nhân vào giường</h2>
                             <a t-att-href="'/clinic/room/%s' % bed.room_id.id" class="btn btn-light">
-                                <i class="fa fa-arrow-left mr-2"></i> Quay lại
+                                <i class="fa fa-arrow-left mr-2"></i>
+                                Quay lại
                             </a>
                         </div>
                     </div>
@@ -330,12 +391,21 @@
                             <h4 class="border-bottom pb-2 mb-3">Thông tin giường</h4>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p><i class="fa fa-hospital-o mr-2"></i> <strong>Phòng:</strong> <t t-esc="bed.room_id.name"/></p>
-                                    <p><i class="fa fa-bed mr-2"></i> <strong>Giường ID:</strong> <t t-esc="bed.id"/></p>
+                                    <p>
+                                        <i class="fa fa-hospital-o mr-2"></i>
+                                        <strong>Phòng:</strong>
+                                        <t t-esc="bed.room_id.name"/>
+                                    </p>
+                                    <p>
+                                        <i class="fa fa-bed mr-2"></i>
+                                        <strong>Giường ID:</strong>
+                                        <t t-esc="bed.id"/>
+                                    </p>
                                 </div>
                                 <div class="col-md-6">
                                     <p>
-                                        <i class="fa fa-info-circle mr-2"></i> <strong>Trạng thái:</strong>
+                                        <i class="fa fa-info-circle mr-2"></i>
+                                        <strong>Trạng thái:</strong>
                                         <span class="text-success font-weight-bold">Còn trống</span>
                                     </p>
                                 </div>
@@ -346,12 +416,18 @@
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                             <div class="form-group">
-                                <label for="patient_id"><i class="fa fa-user mr-2"></i> Chọn bệnh nhân <span class="text-danger">*</span></label>
+                                <label for="patient_id">
+                                    <i class="fa fa-user mr-2"></i>
+                                    Chọn bệnh nhân
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <select class="form-control" id="patient_id" name="patient_id" required="required">
                                     <option value="">-- Chọn bệnh nhân --</option>
                                     <t t-foreach="patients" t-as="patient">
                                         <option t-att-value="patient.id">
-                                            <t t-esc="patient.code"/> - <t t-esc="patient.name"/>
+                                            <t t-esc="patient.code"/>
+                                            -
+                                            <t t-esc="patient.name"/>
                                         </option>
                                     </t>
                                 </select>
@@ -359,10 +435,12 @@
 
                             <div class="form-group mt-4">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-check mr-2"></i> Xác nhận
+                                    <i class="fa fa-check mr-2"></i>
+                                    Xác nhận
                                 </button>
                                 <a t-att-href="'/clinic/room/%s' % bed.room_id.id" class="btn btn-secondary ml-2">
-                                    <i class="fa fa-times mr-2"></i> Hủy
+                                    <i class="fa fa-times mr-2"></i>
+                                    Hủy
                                 </a>
                             </div>
                         </form>

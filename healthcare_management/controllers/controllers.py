@@ -267,6 +267,7 @@ class HealthcareManagement(http.Controller):
         except Exception as e:
             _logger.error("Error in patient_feedback_action: %s", str(e), exc_info=True)
             return {'success': False, 'error': str(e)}
+
     # API cho xử lý thao tác khiếu nại (AJAX)
     @http.route('/healthcare/patient_complaint/action', type='json', auth='user', website=True)
     def patient_complaint_action(self, complaint_id, action, **kw):
@@ -755,7 +756,7 @@ class HealthcareManagement(http.Controller):
                     _logger.info(f"Mail send attempted for ID: {mail.id}")
 
                     # Check mail state
-                    #mail.refresh()
+                    # mail.refresh()
                     _logger.info(f"Mail state after sending: {mail.state}")
 
                     # Update reminder status

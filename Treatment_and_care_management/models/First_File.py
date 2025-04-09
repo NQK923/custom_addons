@@ -4,6 +4,7 @@ from pkg_resources import require
 
 from odoo import models, fields, api
 
+
 # Kế hoạch điều trị
 class TreatmentPlan(models.Model):
     _name = 'treatment.plan'
@@ -35,6 +36,7 @@ class TreatmentPlan(models.Model):
 
 from odoo.exceptions import ValidationError
 
+
 class TreatmentProcess(models.Model):
     _name = 'treatment.process'
     _description = 'Treatment Process'
@@ -49,7 +51,7 @@ class TreatmentProcess(models.Model):
         required=True,
         ondelete='cascade'
     )
-    service_id= fields.Many2one(
+    service_id = fields.Many2one(
         'clinic.service',
         string='Loại dịch vụ',
         required=True
@@ -126,7 +128,6 @@ class PatientCareTracking(models.Model):
     created_at = fields.Datetime(string="Ngày tạo", default=fields.Datetime.now)
     updated_at = fields.Datetime(string="Ngày cập nhật")
 
-
     @api.model
     def create(self, vals):
         vals['updated_at'] = datetime.now()
@@ -135,4 +136,3 @@ class PatientCareTracking(models.Model):
     def write(self, vals):
         vals['updated_at'] = datetime.now()
         return super(PatientCareTracking, self).write(vals)
-

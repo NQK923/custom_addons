@@ -7,11 +7,15 @@
                 <div class="row">
                     <div class="col-12">
                         <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/pharmacy">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="/pharmacy/prescriptions">Đơn thuốc</a></li>
-                            <li class="breadcrumb-item active">Thêm mới</li>
-                        </ol>
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="/pharmacy">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="/pharmacy/prescriptions">Đơn thuốc</a>
+                                </li>
+                                <li class="breadcrumb-item active">Thêm mới</li>
+                            </ol>
                         </nav>
                     </div>
                 </div>
@@ -28,13 +32,17 @@
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                             <div class="form-group row">
-                                <label for="patient_id" class="col-sm-2 col-form-label">Bệnh nhân <span class="text-danger">*</span></label>
+                                <label for="patient_id" class="col-sm-2 col-form-label">Bệnh nhân
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <div class="col-sm-10">
                                     <select id="patient_id" name="patient_id" class="form-control" required="required">
                                         <option value="">-- Chọn bệnh nhân --</option>
                                         <t t-foreach="patients" t-as="patient">
                                             <option t-att-value="patient.id">
-                                                <t t-esc="patient.code"/> - <t t-esc="patient.name"/>
+                                                <t t-esc="patient.code"/>
+                                                -
+                                                <t t-esc="patient.name"/>
                                             </option>
                                         </t>
                                     </select>
@@ -56,9 +64,12 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="numdate" class="col-sm-2 col-form-label">Số ngày uống <span class="text-danger">*</span></label>
+                                <label for="numdate" class="col-sm-2 col-form-label">Số ngày uống
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <div class="col-sm-10">
-                                    <input type="number" id="numdate" name="numdate" class="form-control" required="required" min="1" step="0.5" value="7"/>
+                                    <input type="number" id="numdate" name="numdate" class="form-control"
+                                           required="required" min="1" step="0.5" value="7"/>
                                 </div>
                             </div>
 
@@ -72,10 +83,12 @@
                             <div class="form-group row">
                                 <div class="col-sm-10 offset-sm-2">
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="fa fa-save"></i> Tạo đơn thuốc
+                                        <i class="fa fa-save"></i>
+                                        Tạo đơn thuốc
                                     </button>
                                     <a href="/pharmacy/prescriptions" class="btn btn-secondary ml-2">
-                                        <i class="fa fa-times"></i> Hủy
+                                        <i class="fa fa-times"></i>
+                                        Hủy
                                     </a>
                                 </div>
                             </div>
@@ -94,9 +107,15 @@
                     <div class="col-12">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/pharmacy">Dashboard</a></li>
-                                <li class="breadcrumb-item"><a href="/pharmacy/prescriptions">Đơn thuốc</a></li>
-                                <li class="breadcrumb-item"><a t-att-href="'/pharmacy/prescription/%s' % prescription.id">Chi tiết</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/pharmacy">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="/pharmacy/prescriptions">Đơn thuốc</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a t-att-href="'/pharmacy/prescription/%s' % prescription.id">Chi tiết</a>
+                                </li>
                                 <li class="breadcrumb-item active">Chỉnh sửa</li>
                             </ol>
                         </nav>
@@ -105,11 +124,14 @@
 
                 <div class="row mb-4">
                     <div class="col-md-8">
-                        <h1>Chỉnh sửa đơn thuốc: <t t-esc="prescription.name"/></h1>
+                        <h1>Chỉnh sửa đơn thuốc:
+                            <t t-esc="prescription.name"/>
+                        </h1>
                     </div>
                     <div class="col-md-4 text-right">
                         <a t-att-href="'/pharmacy/prescription/%s' % prescription.id" class="btn btn-info">
-                            <i class="fa fa-eye"></i> Xem chi tiết
+                            <i class="fa fa-eye"></i>
+                            Xem chi tiết
                         </a>
                     </div>
                 </div>
@@ -117,11 +139,16 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="alert alert-info">
-                            <strong>Bệnh nhân:</strong> <t t-esc="prescription.patient_id.name"/> (<t t-esc="prescription.patient_id.code"/>)
+                            <strong>Bệnh nhân:</strong>
+                            <t t-esc="prescription.patient_id.name"/>
+                            (<t t-esc="prescription.patient_id.code"/>)
                             <t t-if="prescription.staff_id">
-                                | <strong>Bác sĩ:</strong> <t t-esc="prescription.staff_id.staff_name"/>
+                                | <strong>Bác sĩ:</strong>
+                                <t t-esc="prescription.staff_id.staff_name"/>
                             </t>
-                            | <strong>Số ngày uống:</strong> <t t-esc="prescription.numdate"/> ngày
+                            | <strong>Số ngày uống:</strong>
+                            <t t-esc="prescription.numdate"/>
+                            ngày
                         </div>
                     </div>
                 </div>
@@ -162,7 +189,8 @@
                                                         <td t-esc="line_index + 1"/>
                                                         <td>
                                                             <div t-esc="line.product_id.name"/>
-                                                            <small class="text-muted d-block" t-esc="line.product_id.code"/>
+                                                            <small class="text-muted d-block"
+                                                                   t-esc="line.product_id.code"/>
                                                         </td>
                                                         <td>
                                                             <span t-esc="line.quantity"/>
@@ -204,14 +232,21 @@
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                                     <div class="form-group row">
-                                        <label for="product_id" class="col-sm-2 col-form-label">Thuốc <span class="text-danger">*</span></label>
+                                        <label for="product_id" class="col-sm-2 col-form-label">Thuốc
+                                            <span class="text-danger">*</span>
+                                        </label>
                                         <div class="col-sm-10">
-                                            <select id="product_id" name="product_id" class="form-control" required="required">
+                                            <select id="product_id" name="product_id" class="form-control"
+                                                    required="required">
                                                 <option value="">-- Chọn thuốc --</option>
                                                 <t t-foreach="products" t-as="product">
                                                     <option t-att-value="product.id">
-                                                        <t t-esc="product.code"/> - <t t-esc="product.name"/>
-                                                        (<t t-esc="product.quantity"/> <t t-esc="product.uom_id"/>)
+                                                        <t t-esc="product.code"/>
+                                                        -
+                                                        <t t-esc="product.name"/>
+                                                        (
+                                                        <t t-esc="product.quantity"/>
+                                                        <t t-esc="product.uom_id"/>)
                                                     </option>
                                                 </t>
                                             </select>
@@ -219,31 +254,41 @@
                                     </div>
 
                                     <div class="form-group row">
-                                        <label for="quantity" class="col-sm-2 col-form-label">Số lượng <span class="text-danger">*</span></label>
+                                        <label for="quantity" class="col-sm-2 col-form-label">Số lượng
+                                            <span class="text-danger">*</span>
+                                        </label>
                                         <div class="col-sm-4">
-                                            <input type="number" id="quantity" name="quantity" class="form-control" required="required" min="0.5" step="0.5"/>
+                                            <input type="number" id="quantity" name="quantity" class="form-control"
+                                                   required="required" min="0.5" step="0.5"/>
                                         </div>
 
-                                        <label for="dosage" class="col-sm-2 col-form-label">Liều lượng <span class="text-danger">*</span></label>
+                                        <label for="dosage" class="col-sm-2 col-form-label">Liều lượng
+                                            <span class="text-danger">*</span>
+                                        </label>
                                         <div class="col-sm-4">
-                                            <input type="text" id="dosage" name="dosage" class="form-control" required="required" placeholder="Ví dụ: 1 viên/ngày/3 bữa"/>
+                                            <input type="text" id="dosage" name="dosage" class="form-control"
+                                                   required="required" placeholder="Ví dụ: 1 viên/ngày/3 bữa"/>
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
                                         <label for="instructions" class="col-sm-2 col-form-label">Hướng dẫn</label>
                                         <div class="col-sm-10">
-                                            <textarea id="instructions" name="instructions" class="form-control" rows="3" placeholder="Ví dụ: Uống sau khi ăn"></textarea>
+                                            <textarea id="instructions" name="instructions" class="form-control"
+                                                      rows="3" placeholder="Ví dụ: Uống sau khi ăn"></textarea>
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
                                         <div class="col-sm-10 offset-sm-2">
                                             <button type="submit" class="btn btn-success">
-                                                <i class="fa fa-plus"></i> Thêm thuốc
+                                                <i class="fa fa-plus"></i>
+                                                Thêm thuốc
                                             </button>
-                                            <a t-att-href="'/pharmacy/prescription/%s' % prescription.id" class="btn btn-secondary ml-2">
-                                                <i class="fa fa-check"></i> Hoàn tất
+                                            <a t-att-href="'/pharmacy/prescription/%s' % prescription.id"
+                                               class="btn btn-secondary ml-2">
+                                                <i class="fa fa-check"></i>
+                                                Hoàn tất
                                             </a>
                                         </div>
                                     </div>

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-     'name': "Medical Test Management",
+    'name': "Medical Test Management",
 
     'summary': "Quản lý xét nghiệm và chẩn đoán y tế",
 

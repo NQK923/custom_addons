@@ -13,12 +13,14 @@
                 <!-- Notification messages -->
                 <t t-if="error">
                     <div class="alert alert-danger" role="alert">
-                        <i class="fa fa-exclamation-triangle"/> <t t-esc="error"/>
+                        <i class="fa fa-exclamation-triangle"/>
+                        <t t-esc="error"/>
                     </div>
                 </t>
                 <t t-if="success">
                     <div class="alert alert-success" role="alert">
-                        <i class="fa fa-check-circle"/> <t t-esc="success"/>
+                        <i class="fa fa-check-circle"/>
+                        <t t-esc="success"/>
                     </div>
                 </t>
 
@@ -37,16 +39,23 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="search_department">Khoa:</label>
-                                    <input type="text" class="form-control" id="search_department" name="search_department"
+                                    <input type="text" class="form-control" id="search_department"
+                                           name="search_department"
                                            t-att-value="search_department or ''" placeholder="Nhập tên khoa..."/>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="search_status">Trạng thái:</label>
                                     <select class="form-control" id="search_status" name="search_status">
                                         <option value="">-- Tất cả --</option>
-                                        <option value="active" t-att-selected="search_status == 'active'">Đang làm việc</option>
-                                        <option value="inactive" t-att-selected="search_status == 'inactive'">Nghỉ phép</option>
-                                        <option value="retired" t-att-selected="search_status == 'retired'">Đã nghỉ hưu</option>
+                                        <option value="active" t-att-selected="search_status == 'active'">Đang làm
+                                            việc
+                                        </option>
+                                        <option value="inactive" t-att-selected="search_status == 'inactive'">Nghỉ
+                                            phép
+                                        </option>
+                                        <option value="retired" t-att-selected="search_status == 'retired'">Đã nghỉ
+                                            hưu
+                                        </option>
                                     </select>
                                 </div>
                             </div>
@@ -64,9 +73,12 @@
                         <h4 class="mb-0">Danh sách nhân sự</h4>
                         <div>
                             <a href="/clinic/staff/create" class="btn btn-light">
-                                <i class="fa fa-plus-circle"/> Thêm nhân viên mới
+                                <i class="fa fa-plus-circle"/>
+                                Thêm nhân viên mới
                             </a>
-                            <span class="badge badge-light ml-2">Tổng số: <t t-esc="len(staff_members)"/></span>
+                            <span class="badge badge-light ml-2">Tổng số:
+                                <t t-esc="len(staff_members)"/>
+                            </span>
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -88,7 +100,8 @@
                                         <t t-foreach="staff_members" t-as="staff">
                                             <tr>
                                                 <td>
-                                                    <a t-att-href="'/clinic/staff/%s' % staff.id" class="font-weight-bold">
+                                                    <a t-att-href="'/clinic/staff/%s' % staff.id"
+                                                       class="font-weight-bold">
                                                         <t t-esc="staff.staff_name"/>
                                                     </a>
                                                 </td>
@@ -97,45 +110,68 @@
                                                         <t t-esc="staff.staff_type.position"/>
                                                     </t>
                                                 </td>
-                                                <td><t t-esc="staff.phone"/></td>
-                                                <td><t t-esc="staff.email"/></td>
+                                                <td>
+                                                    <t t-esc="staff.phone"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="staff.email"/>
+                                                </td>
                                                 <td>
                                                     <t t-if="staff.department_id">
                                                         <t t-esc="staff.department_id.department_name"/>
                                                     </t>
                                                 </td>
                                                 <td>
-                                                    <span t-if="staff.status == 'active'" class="badge badge-success">Đang làm việc</span>
-                                                    <span t-elif="staff.status == 'inactive'" class="badge badge-warning">Nghỉ phép</span>
-                                                    <span t-elif="staff.status == 'retired'" class="badge badge-secondary">Đã nghỉ hưu</span>
+                                                    <span t-if="staff.status == 'active'" class="badge badge-success">
+                                                        Đang làm việc
+                                                    </span>
+                                                    <span t-elif="staff.status == 'inactive'"
+                                                          class="badge badge-warning">Nghỉ phép
+                                                    </span>
+                                                    <span t-elif="staff.status == 'retired'"
+                                                          class="badge badge-secondary">Đã nghỉ hưu
+                                                    </span>
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="btn-group">
-                                                        <a t-att-href="'/clinic/staff/%s' % staff.id" class="btn btn-sm btn-info"
+                                                        <a t-att-href="'/clinic/staff/%s' % staff.id"
+                                                           class="btn btn-sm btn-info"
                                                            title="Chi tiết">
-                                                            <i class="fa fa-eye"/> Chi tiết
+                                                            <i class="fa fa-eye"/>
+                                                            Chi tiết
                                                         </a>
-                                                        <a t-att-href="'/clinic/staff/%s/edit' % staff.id" class="btn btn-sm btn-primary ml-1"
+                                                        <a t-att-href="'/clinic/staff/%s/edit' % staff.id"
+                                                           class="btn btn-sm btn-primary ml-1"
                                                            title="Chỉnh sửa">
-                                                            <i class="fa fa-edit"/> Sửa
+                                                            <i class="fa fa-edit"/>
+                                                            Sửa
                                                         </a>
                                                         <div class="dropdown d-inline-block ml-1">
-                                                            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">
-                                                                <i class="fa fa-cog"/> Thao tác
+                                                            <button class="btn btn-sm btn-secondary dropdown-toggle"
+                                                                    type="button" data-toggle="dropdown">
+                                                                <i class="fa fa-cog"/>
+                                                                Thao tác
                                                             </button>
                                                             <div class="dropdown-menu">
-                                                                <a t-att-href="'/clinic/staff/attendance/%s' % staff.id" class="dropdown-item"
+                                                                <a t-att-href="'/clinic/staff/attendance/%s' % staff.id"
+                                                                   class="dropdown-item"
                                                                    title="Chấm công">
-                                                                    <i class="fa fa-clock-o"/> Chấm công
+                                                                    <i class="fa fa-clock-o"/>
+                                                                    Chấm công
                                                                 </a>
-                                                                <a t-att-href="'/clinic/staff/performance/%s' % staff.id" class="dropdown-item"
+                                                                <a t-att-href="'/clinic/staff/performance/%s' % staff.id"
+                                                                   class="dropdown-item"
                                                                    title="Đánh giá hiệu suất">
-                                                                    <i class="fa fa-star"/> Đánh giá
+                                                                    <i class="fa fa-star"/>
+                                                                    Đánh giá
                                                                 </a>
                                                                 <div class="dropdown-divider"></div>
-                                                                <a t-att-href="'/clinic/staff/%s/delete' % staff.id" class="dropdown-item text-danger"
-                                                                   title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa nhân viên này?');">
-                                                                    <i class="fa fa-trash"/> Xóa
+                                                                <a t-att-href="'/clinic/staff/%s/delete' % staff.id"
+                                                                   class="dropdown-item text-danger"
+                                                                   title="Xóa"
+                                                                   onclick="return confirm('Bạn có chắc chắn muốn xóa nhân viên này?');">
+                                                                    <i class="fa fa-trash"/>
+                                                                    Xóa
                                                                 </a>
                                                             </div>
                                                         </div>
@@ -148,9 +184,11 @@
                                         <tr>
                                             <td colspan="7" class="text-center py-4">
                                                 <div class="alert alert-info mb-0">
-                                                    <i class="fa fa-info-circle"/> Không tìm thấy nhân viên nào phù hợp với điều kiện tìm kiếm.
+                                                    <i class="fa fa-info-circle"/>
+                                                    Không tìm thấy nhân viên nào phù hợp với điều kiện tìm kiếm.
                                                     <a href="/clinic/staff/create" class="btn btn-primary btn-sm ml-3">
-                                                        <i class="fa fa-plus-circle"/> Thêm nhân viên mới
+                                                        <i class="fa fa-plus-circle"/>
+                                                        Thêm nhân viên mới
                                                     </a>
                                                 </div>
                                             </td>

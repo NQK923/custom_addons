@@ -45,7 +45,6 @@ class PatientComplaint(models.Model):
     deadline = fields.Date(string='Hạn chót', compute='_compute_deadline', store=True)
     is_overdue = fields.Boolean(string='Quá hạn', compute='_compute_is_overdue', store=True)
 
-
     @api.depends('complaint_date', 'priority')
     def _compute_deadline(self):
         for record in self:
@@ -63,7 +62,8 @@ class PatientComplaint(models.Model):
     def _compute_is_overdue(self):
         today = fields.Date.context_today(self)
         for record in self:
-            record.is_overdue = record.deadline and record.deadline < today and record.state not in ['resolved', 'cancelled']
+            record.is_overdue = record.deadline and record.deadline < today and record.state not in ['resolved',
+                                                                                                     'cancelled']
 
     @api.model_create_multi
     def create(self, vals_list):

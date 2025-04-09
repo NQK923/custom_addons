@@ -1,17 +1,17 @@
 // Corrected Room Management JavaScript
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Auto-hide alerts after 5 seconds
-    setTimeout(function() {
+    setTimeout(function () {
         const alerts = document.querySelectorAll('.alert-dismissible');
-        alerts.forEach(function(alert) {
+        alerts.forEach(function (alert) {
             $(alert).fadeOut(500);
         });
     }, 5000);
 
     // Confirm delete actions
     const deleteButtons = document.querySelectorAll('.btn-delete-confirm');
-    deleteButtons.forEach(function(button) {
-        button.addEventListener('click', function(e) {
+    deleteButtons.forEach(function (button) {
+        button.addEventListener('click', function (e) {
             if (!confirm('Bạn có chắc chắn muốn xóa?')) {
                 e.preventDefault();
             }
@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Enhanced modal functionality
     const assignButtons = document.querySelectorAll('.btn-assign-patient');
-    assignButtons.forEach(function(button) {
-        button.addEventListener('click', function(e) {
+    assignButtons.forEach(function (button) {
+        button.addEventListener('click', function (e) {
             const bedId = this.getAttribute('data-bed-id');
             console.log('Assign button clicked for bed:', bedId);
 
@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Debug form submissions
     const assignForms = document.querySelectorAll('.assign-patient-form');
-    assignForms.forEach(function(form) {
-        form.addEventListener('submit', function(e) {
+    assignForms.forEach(function (form) {
+        form.addEventListener('submit', function (e) {
             // Don't prevent default - allow normal submission
             const action = this.getAttribute('action');
             const patientId = this.querySelector('select[name="patient_id"]').value;

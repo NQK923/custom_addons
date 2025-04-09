@@ -24,7 +24,10 @@
                                     <h5 class="card-title">
                                         <t t-esc="formatLang(latest_month['total_amount'])"/>
                                     </h5>
-                                    <p class="card-text"><t t-esc="latest_month['month_name']"/> <t t-esc="latest_month['year']"/></p>
+                                    <p class="card-text">
+                                        <t t-esc="latest_month['month_name']"/>
+                                        <t t-esc="latest_month['year']"/>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -36,7 +39,10 @@
                                     <h5 class="card-title">
                                         <t t-esc="formatLang(latest_month['service_amount'])"/>
                                     </h5>
-                                    <p class="card-text"><t t-esc="round(latest_month['service_amount'] / latest_month['total_amount'] * 100 if latest_month['total_amount'] else 0, 1)"/>% doanh thu</p>
+                                    <p class="card-text"><t
+                                            t-esc="round(latest_month['service_amount'] / latest_month['total_amount'] * 100 if latest_month['total_amount'] else 0, 1)"/>
+                                        % doanh thu
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -48,7 +54,10 @@
                                     <h5 class="card-title">
                                         <t t-esc="formatLang(latest_month['medicine_amount'])"/>
                                     </h5>
-                                    <p class="card-text"><t t-esc="round(latest_month['medicine_amount'] / latest_month['total_amount'] * 100 if latest_month['total_amount'] else 0, 1)"/>% doanh thu</p>
+                                    <p class="card-text"><t
+                                            t-esc="round(latest_month['medicine_amount'] / latest_month['total_amount'] * 100 if latest_month['total_amount'] else 0, 1)"/>
+                                        % doanh thu
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -60,7 +69,9 @@
                                     <h5 class="card-title">
                                         <t t-esc="latest_month['invoice_count']"/>
                                     </h5>
-                                    <p class="card-text">Trung bình: <t t-esc="formatLang(latest_month['total_amount'] / latest_month['invoice_count'] if latest_month['invoice_count'] else 0)"/></p>
+                                    <p class="card-text">Trung bình:
+                                        <t t-esc="formatLang(latest_month['total_amount'] / latest_month['invoice_count'] if latest_month['invoice_count'] else 0)"/>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -132,13 +143,17 @@
                                 <h5>Báo Cáo Y Khoa Gần Đây</h5>
                             </div>
                             <div class="card-body">
-                                <t t-set="recent_reports" t-value="env['hospital.medical.report'].search([], limit=5, order='create_date desc')"/>
+                                <t t-set="recent_reports"
+                                   t-value="env['hospital.medical.report'].search([], limit=5, order='create_date desc')"/>
                                 <t t-if="recent_reports">
                                     <div class="list-group">
                                         <t t-foreach="recent_reports" t-as="report">
-                                            <a t-att-href="'/clinic/reports/medical/%s' % report.id" class="list-group-item list-group-item-action">
+                                            <a t-att-href="'/clinic/reports/medical/%s' % report.id"
+                                               class="list-group-item list-group-item-action">
                                                 <div class="d-flex w-100 justify-content-between">
-                                                    <h5 class="mb-1"><t t-esc="report.name"/></h5>
+                                                    <h5 class="mb-1">
+                                                        <t t-esc="report.name"/>
+                                                    </h5>
                                                     <small>
                                                         <t t-if="report.state == 'draft'">
                                                             <span class="badge badge-secondary">Nháp</span>
@@ -151,14 +166,17 @@
                                                         </t>
                                                     </small>
                                                 </div>
-                                                <small><t t-esc="report.create_date.strftime('%d/%m/%Y %H:%M')"/></small>
+                                                <small>
+                                                    <t t-esc="report.create_date.strftime('%d/%m/%Y %H:%M')"/>
+                                                </small>
                                             </a>
                                         </t>
                                     </div>
                                 </t>
                                 <t t-else="">
                                     <div class="alert alert-info">
-                                        Chưa có báo cáo y khoa nào. <a href="/clinic/reports/medical/create">Tạo báo cáo mới</a>
+                                        Chưa có báo cáo y khoa nào.
+                                        <a href="/clinic/reports/medical/create">Tạo báo cáo mới</a>
                                     </div>
                                 </t>
                             </div>
@@ -172,137 +190,138 @@
                 </div>
             </div>
 
-            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+            <script type="text/javascript"
+                    src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
             <script type="text/javascript">
                 // Monthly Revenue Chart
                 document.addEventListener('DOMContentLoaded', function() {
-                    <t t-if="monthly_data and len(monthly_data) > 0">
-                        var monthlyData = <t t-raw="json.dumps(monthly_data[:6][::-1])"/>;
-                        var labels = monthlyData.map(function(item) { return item.month_name + ' ' + item.year; });
-                        var serviceData = monthlyData.map(function(item) { return item.service_amount; });
-                        var medicineData = monthlyData.map(function(item) { return item.medicine_amount; });
+                <t t-if="monthly_data and len(monthly_data) > 0">
+                    var monthlyData =<t t-raw="json.dumps(monthly_data[:6][::-1])"/>;
+                    var labels = monthlyData.map(function(item) { return item.month_name + ' ' + item.year; });
+                    var serviceData = monthlyData.map(function(item) { return item.service_amount; });
+                    var medicineData = monthlyData.map(function(item) { return item.medicine_amount; });
 
-                        var ctx = document.getElementById('revenueChart').getContext('2d');
-                        new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: labels,
-                                datasets: [{
-                                    label: 'Dịch Vụ Y Tế',
-                                    data: serviceData,
-                                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                                    borderColor: 'rgb(54, 162, 235)',
-                                    borderWidth: 1
-                                }, {
-                                    label: 'Thuốc &amp; Vật Tư',
-                                    data: medicineData,
-                                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                                    borderColor: 'rgb(75, 192, 192)',
-                                    borderWidth: 1
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                plugins: {
-                                    legend: {
-                                        position: 'top',
-                                    },
-                                    title: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        stacked: true,
-                                    },
-                                    y: {
-                                        stacked: true,
-                                        beginAtZero: true
-                                    }
-                                }
-                            }
-                        });
-                    </t>
+                    var ctx = document.getElementById('revenueChart').getContext('2d');
+                    new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                    labels: labels,
+                    datasets: [{
+                    label: 'Dịch Vụ Y Tế',
+                    data: serviceData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    borderWidth: 1
+                    }, {
+                    label: 'Thuốc &amp; Vật Tư',
+                    data: medicineData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    borderColor: 'rgb(75, 192, 192)',
+                    borderWidth: 1
+                    }]
+                    },
+                    options: {
+                    responsive: true,
+                    plugins: {
+                    legend: {
+                    position: 'top',
+                    },
+                    title: {
+                    display: false
+                    }
+                    },
+                    scales: {
+                    x: {
+                    stacked: true,
+                    },
+                    y: {
+                    stacked: true,
+                    beginAtZero: true
+                    }
+                    }
+                    }
+                    });
+                </t>
 
-                    <t t-if="service_data and len(service_data) > 0">
-                        var serviceAnalysisData = <t t-raw="json.dumps(service_data[:5])"/>;
-                        var serviceLabels = serviceAnalysisData.map(function(item) { return item.service_name; });
-                        var serviceRevenues = serviceAnalysisData.map(function(item) { return item.total_revenue; });
+                <t t-if="service_data and len(service_data) > 0">
+                    var serviceAnalysisData =<t t-raw="json.dumps(service_data[:5])"/>;
+                    var serviceLabels = serviceAnalysisData.map(function(item) { return item.service_name; });
+                    var serviceRevenues = serviceAnalysisData.map(function(item) { return item.total_revenue; });
 
-                        var ctxServices = document.getElementById('servicesChart').getContext('2d');
-                        new Chart(ctxServices, {
-                            type: 'pie',
-                            data: {
-                                labels: serviceLabels,
-                                datasets: [{
-                                    data: serviceRevenues,
-                                    backgroundColor: [
-                                        'rgba(255, 99, 132, 0.7)',
-                                        'rgba(54, 162, 235, 0.7)',
-                                        'rgba(255, 206, 86, 0.7)',
-                                        'rgba(75, 192, 192, 0.7)',
-                                        'rgba(153, 102, 255, 0.7)'
-                                    ],
-                                    borderColor: [
-                                        'rgba(255, 99, 132, 1)',
-                                        'rgba(54, 162, 235, 1)',
-                                        'rgba(255, 206, 86, 1)',
-                                        'rgba(75, 192, 192, 1)',
-                                        'rgba(153, 102, 255, 1)'
-                                    ],
-                                    borderWidth: 1
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                plugins: {
-                                    legend: {
-                                        position: 'right',
-                                    }
-                                }
-                            }
-                        });
-                    </t>
+                    var ctxServices = document.getElementById('servicesChart').getContext('2d');
+                    new Chart(ctxServices, {
+                    type: 'pie',
+                    data: {
+                    labels: serviceLabels,
+                    datasets: [{
+                    data: serviceRevenues,
+                    backgroundColor: [
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(153, 102, 255, 0.7)'
+                    ],
+                    borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                    }]
+                    },
+                    options: {
+                    responsive: true,
+                    plugins: {
+                    legend: {
+                    position: 'right',
+                    }
+                    }
+                    }
+                    });
+                </t>
 
-                    <t t-if="product_data and len(product_data) > 0">
-                        var productAnalysisData = <t t-raw="json.dumps(product_data[:5])"/>;
-                        var productLabels = productAnalysisData.map(function(item) { return item.product_name; });
-                        var productRevenues = productAnalysisData.map(function(item) { return item.total_revenue; });
+                <t t-if="product_data and len(product_data) > 0">
+                    var productAnalysisData =<t t-raw="json.dumps(product_data[:5])"/>;
+                    var productLabels = productAnalysisData.map(function(item) { return item.product_name; });
+                    var productRevenues = productAnalysisData.map(function(item) { return item.total_revenue; });
 
-                        var ctxProducts = document.getElementById('productsChart').getContext('2d');
-                        new Chart(ctxProducts, {
-                            type: 'doughnut',
-                            data: {
-                                labels: productLabels,
-                                datasets: [{
-                                    data: productRevenues,
-                                    backgroundColor: [
-                                        'rgba(255, 159, 64, 0.7)',
-                                        'rgba(153, 102, 255, 0.7)',
-                                        'rgba(255, 99, 132, 0.7)',
-                                        'rgba(54, 162, 235, 0.7)',
-                                        'rgba(75, 192, 192, 0.7)'
-                                    ],
-                                    borderColor: [
-                                        'rgba(255, 159, 64, 1)',
-                                        'rgba(153, 102, 255, 1)',
-                                        'rgba(255, 99, 132, 1)',
-                                        'rgba(54, 162, 235, 1)',
-                                        'rgba(75, 192, 192, 1)'
-                                    ],
-                                    borderWidth: 1
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                plugins: {
-                                    legend: {
-                                        position: 'right',
-                                    }
-                                }
-                            }
-                        });
-                    </t>
+                    var ctxProducts = document.getElementById('productsChart').getContext('2d');
+                    new Chart(ctxProducts, {
+                    type: 'doughnut',
+                    data: {
+                    labels: productLabels,
+                    datasets: [{
+                    data: productRevenues,
+                    backgroundColor: [
+                    'rgba(255, 159, 64, 0.7)',
+                    'rgba(153, 102, 255, 0.7)',
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(75, 192, 192, 0.7)'
+                    ],
+                    borderColor: [
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                    }]
+                    },
+                    options: {
+                    responsive: true,
+                    plugins: {
+                    legend: {
+                    position: 'right',
+                    }
+                    }
+                    }
+                    });
+                </t>
                 });
             </script>
         </t>

@@ -15,7 +15,7 @@
 .insurance-card {
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     /* Đã bỏ hiệu ứng hover */
 }
 
@@ -32,7 +32,7 @@
     padding: 0.6rem 1.5rem;
     color: white;
     font-weight: 500;
-    box-shadow: 0 3px 5px rgba(0,123,255,0.15);
+    box-shadow: 0 3px 5px rgba(0, 123, 255, 0.15);
 }
 
 .btn-insurance-secondary {
@@ -48,7 +48,7 @@
 .table-insurance {
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .table-insurance thead th {
@@ -148,13 +148,13 @@
 .insurance-search input {
     border-radius: 30px;
     padding: 0.8rem 1.5rem;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
     border: 1px solid #e0e0e0;
     transition: all 0.3s;
 }
 
 .insurance-search input:focus {
-    box-shadow: 0 3px 8px rgba(0,123,255,0.1);
+    box-shadow: 0 3px 8px rgba(0, 123, 255, 0.1);
     border-color: var(--primary-color);
 }
 

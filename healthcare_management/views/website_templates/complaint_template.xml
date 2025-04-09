@@ -6,63 +6,63 @@
             <!-- CSS styling -->
             <style>
                 .complaint-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
                 }
 
                 .complaint-card {
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    margin-bottom: 20px;
-                    transition: all 0.3s ease;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+                transition: all 0.3s ease;
                 }
 
                 .complaint-card:hover {
-                    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-                    transform: translateY(-2px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+                transform: translateY(-2px);
                 }
 
                 .complaint-table {
-                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                    border-radius: 8px;
-                    overflow: hidden;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                overflow: hidden;
                 }
 
                 .complaint-table thead th {
-                    background-color: #343a40;
-                    color: white;
-                    border-color: #454d55;
-                    font-weight: 500;
-                    text-transform: uppercase;
-                    font-size: 0.85rem;
+                background-color: #343a40;
+                color: white;
+                border-color: #454d55;
+                font-weight: 500;
+                text-transform: uppercase;
+                font-size: 0.85rem;
                 }
 
                 .complaint-filter {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 15px;
-                    margin-bottom: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
 
                 .complaint-filter label {
-                    font-weight: 600;
-                    color: #495057;
+                font-weight: 600;
+                color: #495057;
                 }
 
                 .badge {
-                    padding: 0.5em 0.75em;
-                    font-weight: 500;
-                    border-radius: 4px;
+                padding: 0.5em 0.75em;
+                font-weight: 500;
+                border-radius: 4px;
                 }
 
                 .breadcrumb {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 12px 15px;
-                    margin-bottom: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 12px 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
             </style>
 
@@ -71,7 +71,9 @@
                     <div class="col">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/healthcare/dashboard">Trang chủ</a>
+                                </li>
                                 <li class="breadcrumb-item active" aria-current="page">Khiếu nại bệnh nhân</li>
                             </ol>
                         </nav>
@@ -89,7 +91,8 @@
                             </div>
                             <div class="col-md-4 text-end">
                                 <a href="/healthcare/patient_complaint/create" class="btn btn-primary">
-                                    <i class="fa fa-plus-circle me-1"></i> Tạo khiếu nại mới
+                                    <i class="fa fa-plus-circle me-1"></i>
+                                    Tạo khiếu nại mới
                                 </a>
                             </div>
                         </div>
@@ -156,9 +159,15 @@
                                 <tbody>
                                     <t t-foreach="complaints" t-as="complaint">
                                         <tr t-att-class="'table-danger' if complaint.state == 'new' else 'table-primary' if complaint.state == 'in_progress' else 'table-success' if complaint.state == 'resolved' else 'table-secondary'">
-                                            <td><t t-esc="complaint.name"/></td>
-                                            <td><t t-esc="complaint.patient_id.name"/></td>
-                                            <td><t t-esc="complaint.create_date.strftime('%d/%m/%Y')"/></td>
+                                            <td>
+                                                <t t-esc="complaint.name"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="complaint.patient_id.name"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="complaint.create_date.strftime('%d/%m/%Y')"/>
+                                            </td>
                                             <td>
                                                 <t t-if="complaint.category == 'service'">Dịch vụ</t>
                                                 <t t-elif="complaint.category == 'staff'">Nhân viên</t>
@@ -181,10 +190,14 @@
                                                     <t t-elif="complaint.state == 'cancelled'">Đã hủy</t>
                                                 </span>
                                             </td>
-                                            <td><t t-esc="complaint.user_id.name"/></td>
                                             <td>
-                                                <a t-att-href="'/healthcare/patient_complaint/%s' % complaint.id" class="btn btn-sm btn-info">
-                                                    <i class="fa fa-eye"></i> Xem
+                                                <t t-esc="complaint.user_id.name"/>
+                                            </td>
+                                            <td>
+                                                <a t-att-href="'/healthcare/patient_complaint/%s' % complaint.id"
+                                                   class="btn btn-sm btn-info">
+                                                    <i class="fa fa-eye"></i>
+                                                    Xem
                                                 </a>
                                             </td>
                                         </tr>
@@ -196,7 +209,8 @@
                         <!-- Hiển thị khi không có dữ liệu -->
                         <div t-if="not complaints" class="alert alert-info text-center mt-4">
                             <h4>Không có khiếu nại nào.</h4>
-                            <p>Hãy tạo khiếu nại bệnh nhân đầu tiên bằng cách nhấn vào nút "Tạo khiếu nại mới" ở trên.</p>
+                            <p>Hãy tạo khiếu nại bệnh nhân đầu tiên bằng cách nhấn vào nút "Tạo khiếu nại mới" ở trên.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -205,20 +219,20 @@
             <!-- JavaScript for filter -->
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Set filter values from URL parameters
-                    var urlParams = new URLSearchParams(window.location.search);
+                // Set filter values from URL parameters
+                var urlParams = new URLSearchParams(window.location.search);
 
-                    if (urlParams.get('filter_category')) {
-                        document.getElementById('filter_category').value = urlParams.get('filter_category');
-                    }
+                if (urlParams.get('filter_category')) {
+                document.getElementById('filter_category').value = urlParams.get('filter_category');
+                }
 
-                    if (urlParams.get('filter_priority')) {
-                        document.getElementById('filter_priority').value = urlParams.get('filter_priority');
-                    }
+                if (urlParams.get('filter_priority')) {
+                document.getElementById('filter_priority').value = urlParams.get('filter_priority');
+                }
 
-                    if (urlParams.get('filter_state')) {
-                        document.getElementById('filter_state').value = urlParams.get('filter_state');
-                    }
+                if (urlParams.get('filter_state')) {
+                document.getElementById('filter_state').value = urlParams.get('filter_state');
+                }
                 });
             </script>
         </t>
@@ -234,54 +248,54 @@
             <!-- CSS styling -->
             <style>
                 .complaint-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
                 }
 
                 .complaint-card {
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    margin-bottom: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
                 }
 
                 .complaint-card .card-header {
-                    border-radius: 8px 8px 0 0;
-                    font-weight: bold;
+                border-radius: 8px 8px 0 0;
+                font-weight: bold;
                 }
 
                 .complaint-section {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 15px;
-                    margin-bottom: 20px;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 20px;
                 }
 
                 .badge {
-                    padding: 0.5em 0.75em;
-                    font-weight: 500;
-                    border-radius: 4px;
+                padding: 0.5em 0.75em;
+                font-weight: 500;
+                border-radius: 4px;
                 }
 
                 .btn {
-                    border-radius: 4px;
+                border-radius: 4px;
                 }
 
                 .breadcrumb {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 12px 15px;
-                    margin-bottom: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 12px 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
 
                 .detail-label {
-                    font-weight: 600;
-                    color: #495057;
+                font-weight: 600;
+                color: #495057;
                 }
 
                 .btn-group .btn {
-                    margin-right: 5px;
+                margin-right: 5px;
                 }
             </style>
 
@@ -290,8 +304,12 @@
                     <div class="col">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a href="/healthcare/patient_complaint">Khiếu nại bệnh nhân</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/healthcare/dashboard">Trang chủ</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="/healthcare/patient_complaint">Khiếu nại bệnh nhân</a>
+                                </li>
                                 <li class="breadcrumb-item active" aria-current="page">Chi tiết khiếu nại</li>
                             </ol>
                         </nav>
@@ -304,7 +322,8 @@
                             <div class="col-md-8">
                                 <h3 class="mb-0">
                                     <i class="fa fa-exclamation-circle me-2"></i>
-                                    Khiếu nại: <t t-esc="complaint.name"/>
+                                    Khiếu nại:
+                                    <t t-esc="complaint.name"/>
                                 </h3>
                             </div>
                             <div class="col-md-4 text-end">
@@ -324,11 +343,15 @@
                                 <table class="table table-borderless">
                                     <tr>
                                         <th class="detail-label" style="width: 40%">Mã khiếu nại:</th>
-                                        <td><t t-esc="complaint.name"/></td>
+                                        <td>
+                                            <t t-esc="complaint.name"/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th class="detail-label">Bệnh nhân:</th>
-                                        <td><t t-esc="complaint.patient_id.name"/></td>
+                                        <td>
+                                            <t t-esc="complaint.patient_id.name"/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th class="detail-label">Phản hồi liên quan:</th>
@@ -343,7 +366,9 @@
                                     </tr>
                                     <tr>
                                         <th class="detail-label">Người phụ trách:</th>
-                                        <td><t t-esc="complaint.user_id.name"/></td>
+                                        <td>
+                                            <t t-esc="complaint.user_id.name"/>
+                                        </td>
                                     </tr>
                                 </table>
                             </div>
@@ -352,7 +377,9 @@
                                 <table class="table table-borderless">
                                     <tr>
                                         <th class="detail-label" style="width: 40%">Ngày tạo:</th>
-                                        <td><t t-esc="complaint.create_date.strftime('%d/%m/%Y')"/></td>
+                                        <td>
+                                            <t t-esc="complaint.create_date.strftime('%d/%m/%Y')"/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th class="detail-label">Phân loại:</th>
@@ -413,19 +440,24 @@
                     <div class="card-footer">
                         <div class="btn-group">
                             <a href="/healthcare/patient_complaint" class="btn btn-secondary">
-                                <i class="fa fa-arrow-left me-1"></i> Quay lại
+                                <i class="fa fa-arrow-left me-1"></i>
+                                Quay lại
                             </a>
                             <button type="button" class="btn btn-warning" t-att-data-complaint-id="complaint.id"
                                     t-att-data-action="'open'" t-att-disabled="complaint.state != 'new'">
-                                <i class="fa fa-play me-1"></i> Xử lý
+                                <i class="fa fa-play me-1"></i>
+                                Xử lý
                             </button>
                             <button type="button" class="btn btn-success" t-att-data-complaint-id="complaint.id"
                                     t-att-data-action="'resolve'" t-att-disabled="complaint.state != 'in_progress'">
-                                <i class="fa fa-check me-1"></i> Giải quyết
+                                <i class="fa fa-check me-1"></i>
+                                Giải quyết
                             </button>
                             <button type="button" class="btn btn-danger" t-att-data-complaint-id="complaint.id"
-                                    t-att-data-action="'cancel'" t-att-disabled="complaint.state in ['resolved', 'cancelled']">
-                                <i class="fa fa-times me-1"></i> Hủy
+                                    t-att-data-action="'cancel'"
+                                    t-att-disabled="complaint.state in ['resolved', 'cancelled']">
+                                <i class="fa fa-times me-1"></i>
+                                Hủy
                             </button>
                         </div>
                     </div>
@@ -435,56 +467,56 @@
             <!-- JavaScript for buttons -->
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Add event listeners to all action buttons
-                    document.querySelectorAll('[data-complaint-id][data-action]').forEach(function(button) {
-                        button.addEventListener('click', function() {
-                            var complaintId = this.getAttribute('data-complaint-id');
-                            var action = this.getAttribute('data-action');
+                // Add event listeners to all action buttons
+                document.querySelectorAll('[data-complaint-id][data-action]').forEach(function(button) {
+                button.addEventListener('click', function() {
+                var complaintId = this.getAttribute('data-complaint-id');
+                var action = this.getAttribute('data-action');
 
-                            if (!complaintId || !action) return;
+                if (!complaintId || !action) return;
 
-                            // Confirm before proceeding
-                            if (confirm('Bạn có chắc chắn muốn thực hiện thao tác này?')) {
-                                // Send AJAX request in Odoo JSON-RPC format
-                                fetch('/healthcare/patient_complaint/action', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                    },
-                                    body: JSON.stringify({
-                                        jsonrpc: "2.0",
-                                        method: "call",
-                                        params: {
-                                            complaint_id: complaintId,
-                                            action: action
-                                        },
-                                        id: Math.floor(Math.random() * 1000000)
-                                    })
-                                })
-                                .then(response => response.json())
-                                .then(result => {
-                                    console.log("Full response:", result); // For debugging
+                // Confirm before proceeding
+                if (confirm('Bạn có chắc chắn muốn thực hiện thao tác này?')) {
+                // Send AJAX request in Odoo JSON-RPC format
+                fetch('/healthcare/patient_complaint/action', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                jsonrpc: "2.0",
+                method: "call",
+                params: {
+                complaint_id: complaintId,
+                action: action
+                },
+                id: Math.floor(Math.random() * 1000000)
+                })
+                })
+                .then(response => response.json())
+                .then(result => {
+                console.log("Full response:", result); // For debugging
 
-                                    // Check for success in the result
-                                    if (result.result &amp;&amp; result.result.success) {
-                                        location.reload();
-                                    } else {
-                                        var errorMsg = 'Không xác định';
-                                        if (result.result &amp;&amp; result.result.error) {
-                                            errorMsg = result.result.error;
-                                        } else if (result.error) {
-                                            errorMsg = result.error.data &amp;&amp; result.error.data.message || result.error.message;
-                                        }
-                                        alert('Lỗi: ' + errorMsg);
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error:', error);
-                                    alert('Đã xảy ra lỗi khi kết nối đến máy chủ: ' + error.message);
-                                });
-                            }
-                        });
-                    });
+                // Check for success in the result
+                if (result.result &amp;&amp; result.result.success) {
+                location.reload();
+                } else {
+                var errorMsg = 'Không xác định';
+                if (result.result &amp;&amp; result.result.error) {
+                errorMsg = result.result.error;
+                } else if (result.error) {
+                errorMsg = result.error.data &amp;&amp; result.error.data.message || result.error.message;
+                }
+                alert('Lỗi: ' + errorMsg);
+                }
+                })
+                .catch(error => {
+                console.error('Error:', error);
+                alert('Đã xảy ra lỗi khi kết nối đến máy chủ: ' + error.message);
+                });
+                }
+                });
+                });
                 });
             </script>
         </t>
@@ -496,41 +528,41 @@
             <!-- CSS styling -->
             <style>
                 .complaint-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
                 }
 
                 .complaint-card {
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    margin-bottom: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
                 }
 
                 .complaint-card .card-header {
-                    border-radius: 8px 8px 0 0;
-                    font-weight: bold;
+                border-radius: 8px 8px 0 0;
+                font-weight: bold;
                 }
 
                 .form-group label {
-                    font-weight: 600;
-                    color: #495057;
+                font-weight: 600;
+                color: #495057;
                 }
 
                 .form-group .text-danger {
-                    font-weight: bold;
+                font-weight: bold;
                 }
 
                 .btn {
-                    border-radius: 4px;
+                border-radius: 4px;
                 }
 
                 .breadcrumb {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 12px 15px;
-                    margin-bottom: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 12px 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
             </style>
 
@@ -539,8 +571,12 @@
                     <div class="col">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a href="/healthcare/patient_complaint">Khiếu nại bệnh nhân</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/healthcare/dashboard">Trang chủ</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="/healthcare/patient_complaint">Khiếu nại bệnh nhân</a>
+                                </li>
                                 <li class="breadcrumb-item active" aria-current="page">Tạo khiếu nại mới</li>
                             </ol>
                         </nav>
@@ -562,11 +598,15 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
-                                        <label for="patient_id" class="form-label">Bệnh nhân <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="patient_id" name="patient_id" required="required">
+                                        <label for="patient_id" class="form-label">Bệnh nhân
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select" id="patient_id" name="patient_id"
+                                                required="required">
                                             <option value="">-- Chọn bệnh nhân --</option>
                                             <t t-foreach="patients" t-as="patient">
-                                                <option t-att-value="patient.id" t-att-selected="patient_id == patient.id">
+                                                <option t-att-value="patient.id"
+                                                        t-att-selected="patient_id == patient.id">
                                                     <t t-esc="patient.name"/>
                                                 </option>
                                             </t>
@@ -574,7 +614,9 @@
                                     </div>
 
                                     <div class="form-group mb-3">
-                                        <label for="category" class="form-label">Phân loại khiếu nại <span class="text-danger">*</span></label>
+                                        <label for="category" class="form-label">Phân loại khiếu nại
+                                            <span class="text-danger">*</span>
+                                        </label>
                                         <select class="form-select" id="category" name="category" required="required">
                                             <option value="">-- Chọn phân loại --</option>
                                             <option value="service">Dịch vụ</option>
@@ -588,7 +630,9 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
-                                        <label for="priority" class="form-label">Mức độ ưu tiên <span class="text-danger">*</span></label>
+                                        <label for="priority" class="form-label">Mức độ ưu tiên
+                                            <span class="text-danger">*</span>
+                                        </label>
                                         <select class="form-select" id="priority" name="priority" required="required">
                                             <option value="1">Trung bình</option>
                                             <option value="0">Thấp</option>
@@ -598,24 +642,32 @@
 
                                     <div class="form-group mb-3">
                                         <label for="complaint_date" class="form-label">Ngày khiếu nại</label>
-                                        <input type="date" class="form-control" id="complaint_date" name="complaint_date"
+                                        <input type="date" class="form-control" id="complaint_date"
+                                               name="complaint_date"
                                                t-att-value="datetime.date.today().strftime('%Y-%m-%d')"/>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group mb-3">
-                                <label for="description" class="form-label">Nội dung khiếu nại <span class="text-danger">*</span></label>
-                                <textarea class="form-control" id="description" name="description" rows="5" required="required"
-                                         placeholder="Nhập chi tiết khiếu nại..."><t t-esc="description or ''"/></textarea>
+                                <label for="description" class="form-label">Nội dung khiếu nại
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <textarea class="form-control" id="description" name="description" rows="5"
+                                          required="required"
+                                          placeholder="Nhập chi tiết khiếu nại...">
+                                    <t t-esc="description or ''"/>
+                                </textarea>
                             </div>
 
                             <div class="form-group text-end mt-4">
                                 <a href="/healthcare/patient_complaint" class="btn btn-secondary me-2">
-                                    <i class="fa fa-times me-1"></i> Hủy
+                                    <i class="fa fa-times me-1"></i>
+                                    Hủy
                                 </a>
                                 <button type="submit" class="btn btn-danger">
-                                    <i class="fa fa-save me-1"></i> Lưu
+                                    <i class="fa fa-save me-1"></i>
+                                    Lưu
                                 </button>
                             </div>
                         </form>
@@ -626,17 +678,17 @@
             <!-- JavaScript -->
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Form validation before submission
-                    document.getElementById('complaint-form').addEventListener('submit', function(event) {
-                        var patientId = document.getElementById('patient_id').value;
-                        var category = document.getElementById('category').value;
-                        var description = document.getElementById('description').value;
+                // Form validation before submission
+                document.getElementById('complaint-form').addEventListener('submit', function(event) {
+                var patientId = document.getElementById('patient_id').value;
+                var category = document.getElementById('category').value;
+                var description = document.getElementById('description').value;
 
-                        if (!patientId || !category || !description.trim()) {
-                            event.preventDefault();
-                            alert('Vui lòng điền đầy đủ thông tin bắt buộc.');
-                        }
-                    });
+                if (!patientId || !category || !description.trim()) {
+                event.preventDefault();
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc.');
+                }
+                });
                 });
             </script>
         </t>

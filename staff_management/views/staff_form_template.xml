@@ -5,7 +5,9 @@
             <div class="container mt-4 mb-5">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/clinic/staff">Danh sách nhân sự</a></li>
+                        <li class="breadcrumb-item">
+                            <a href="/clinic/staff">Danh sách nhân sự</a>
+                        </li>
                         <li class="breadcrumb-item active" aria-current="page">
                             <t t-if="mode == 'create'">Thêm nhân viên mới</t>
                             <t t-else="">Chỉnh sửa nhân viên</t>
@@ -17,7 +19,9 @@
                     <div class="card-header bg-primary text-white">
                         <h4 class="mb-0">
                             <t t-if="mode == 'create'">Thêm nhân viên mới</t>
-                            <t t-else="">Chỉnh sửa nhân viên: <t t-esc="staff.staff_name"/></t>
+                            <t t-else="">Chỉnh sửa nhân viên:
+                                <t t-esc="staff.staff_name"/>
+                            </t>
                         </h4>
                     </div>
                     <div class="card-body">
@@ -31,26 +35,38 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="staff_name">Họ và tên <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="staff_name" name="staff_name" required="required"
+                                        <label for="staff_name">Họ và tên
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control" id="staff_name" name="staff_name"
+                                               required="required"
                                                t-att-value="staff.staff_name if staff else ''"/>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="phone">Số điện thoại <span class="text-danger">*</span></label>
-                                        <input type="tel" class="form-control" id="phone" name="phone" required="required"
+                                        <label for="phone">Số điện thoại
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="tel" class="form-control" id="phone" name="phone"
+                                               required="required"
                                                t-att-value="staff.phone if staff else ''"/>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="email">Email <span class="text-danger">*</span></label>
-                                        <input type="email" class="form-control" id="email" name="email" required="required"
+                                        <label for="email">Email
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="email" class="form-control" id="email" name="email"
+                                               required="required"
                                                t-att-value="staff.email if staff else ''"/>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="id_card">Số CCCD/CMND <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="id_card" name="id_card" required="required"
+                                        <label for="id_card">Số CCCD/CMND
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control" id="id_card" name="id_card"
+                                               required="required"
                                                t-att-value="staff.id_card if staff else ''"/>
                                     </div>
 
@@ -61,12 +77,19 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="gender">Giới tính <span class="text-danger">*</span></label>
+                                        <label for="gender">Giới tính
+                                            <span class="text-danger">*</span>
+                                        </label>
                                         <select class="form-control" id="gender" name="gender" required="required">
                                             <option value="">-- Chọn giới tính --</option>
-                                            <option value="male" t-att-selected="staff and staff.gender == 'male'">Nam</option>
-                                            <option value="female" t-att-selected="staff and staff.gender == 'female'">Nữ</option>
-                                            <option value="other" t-att-selected="staff and staff.gender == 'other'">Khác</option>
+                                            <option value="male" t-att-selected="staff and staff.gender == 'male'">Nam
+                                            </option>
+                                            <option value="female" t-att-selected="staff and staff.gender == 'female'">
+                                                Nữ
+                                            </option>
+                                            <option value="other" t-att-selected="staff and staff.gender == 'other'">
+                                                Khác
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
@@ -74,7 +97,9 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="address">Địa chỉ</label>
-                                        <textarea class="form-control" id="address" name="address" rows="3"><t t-esc="staff.address if staff else ''"/></textarea>
+                                        <textarea class="form-control" id="address" name="address" rows="3">
+                                            <t t-esc="staff.address if staff else ''"/>
+                                        </textarea>
                                     </div>
 
                                     <div class="form-group">
@@ -82,7 +107,8 @@
                                         <select class="form-control" id="staff_type" name="staff_type">
                                             <option value="">-- Chọn chức vụ --</option>
                                             <t t-foreach="staff_types" t-as="staff_type">
-                                                <option t-att-value="staff_type.id" t-att-selected="staff and staff.staff_type and staff.staff_type.id == staff_type.id">
+                                                <option t-att-value="staff_type.id"
+                                                        t-att-selected="staff and staff.staff_type and staff.staff_type.id == staff_type.id">
                                                     <t t-esc="staff_type.position"/>
                                                 </option>
                                             </t>
@@ -94,7 +120,8 @@
                                         <select class="form-control" id="department_id" name="department_id">
                                             <option value="">-- Chọn khoa --</option>
                                             <t t-foreach="departments" t-as="department">
-                                                <option t-att-value="department.id" t-att-selected="staff and staff.department_id and staff.department_id.id == department.id">
+                                                <option t-att-value="department.id"
+                                                        t-att-selected="staff and staff.department_id and staff.department_id.id == department.id">
                                                     <t t-esc="department.department_name"/>
                                                 </option>
                                             </t>
@@ -103,7 +130,8 @@
 
                                     <div class="form-group">
                                         <label for="license_number">Số giấy phép hành nghề</label>
-                                        <input type="text" class="form-control" id="license_number" name="license_number"
+                                        <input type="text" class="form-control" id="license_number"
+                                               name="license_number"
                                                t-att-value="staff.license_number if staff else ''"/>
                                     </div>
 
@@ -115,16 +143,23 @@
 
                                     <div class="form-group">
                                         <label for="experience_year">Số năm kinh nghiệm</label>
-                                        <input type="number" class="form-control" id="experience_year" name="experience_year" min="0"
+                                        <input type="number" class="form-control" id="experience_year"
+                                               name="experience_year" min="0"
                                                t-att-value="staff.experience_year if staff else '0'"/>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="status">Trạng thái</label>
                                         <select class="form-control" id="status" name="status">
-                                            <option value="active" t-att-selected="not staff or staff.status == 'active'">Đang làm việc</option>
-                                            <option value="inactive" t-att-selected="staff and staff.status == 'inactive'">Nghỉ phép</option>
-                                            <option value="retired" t-att-selected="staff and staff.status == 'retired'">Đã nghỉ hưu</option>
+                                            <option value="active"
+                                                    t-att-selected="not staff or staff.status == 'active'">Đang làm việc
+                                            </option>
+                                            <option value="inactive"
+                                                    t-att-selected="staff and staff.status == 'inactive'">Nghỉ phép
+                                            </option>
+                                            <option value="retired"
+                                                    t-att-selected="staff and staff.status == 'retired'">Đã nghỉ hưu
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
@@ -132,10 +167,12 @@
 
                             <div class="form-group text-center mt-4">
                                 <button type="submit" class="btn btn-primary px-4">
-                                    <i class="fa fa-save"/> Lưu
+                                    <i class="fa fa-save"/>
+                                    Lưu
                                 </button>
                                 <a href="/clinic/staff" class="btn btn-secondary ml-2">
-                                    <i class="fa fa-times"/> Hủy
+                                    <i class="fa fa-times"/>
+                                    Hủy
                                 </a>
                             </div>
                         </form>

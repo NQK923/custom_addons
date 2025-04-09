@@ -10,9 +10,17 @@
                             <h1>Chỉnh sửa chứng nhận</h1>
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/certification/dashboard">Trang chủ</a></li>
-                                    <li class="breadcrumb-item"><a href="/certification/certificates">Chứng nhận</a></li>
-                                    <li class="breadcrumb-item"><a t-att-href="'/certification/certificate/%s' % certificate.id"><t t-esc="certificate.name"/></a></li>
+                                    <li class="breadcrumb-item">
+                                        <a href="/certification/dashboard">Trang chủ</a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <a href="/certification/certificates">Chứng nhận</a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <a t-att-href="'/certification/certificate/%s' % certificate.id">
+                                            <t t-esc="certificate.name"/>
+                                        </a>
+                                    </li>
                                     <li class="breadcrumb-item active">Chỉnh sửa</li>
                                 </ol>
                             </nav>
@@ -21,8 +29,12 @@
                             <h1>Tạo chứng nhận mới</h1>
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/certification/dashboard">Trang chủ</a></li>
-                                    <li class="breadcrumb-item"><a href="/certification/certificates">Chứng nhận</a></li>
+                                    <li class="breadcrumb-item">
+                                        <a href="/certification/dashboard">Trang chủ</a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <a href="/certification/certificates">Chứng nhận</a>
+                                    </li>
                                     <li class="breadcrumb-item active">Tạo mới</li>
                                 </ol>
                             </nav>
@@ -51,13 +63,17 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="name">Tên chứng nhận</label>
-                                                <input type="text" class="form-control" id="name" name="name" t-att-value="form_data.get('name') or (certificate and certificate.name or '')" required="required"/>
+                                                <input type="text" class="form-control" id="name" name="name"
+                                                       t-att-value="form_data.get('name') or (certificate and certificate.name or '')"
+                                                       required="required"/>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="number">Số hiệu</label>
-                                                <input type="text" class="form-control" id="number" name="number" t-att-value="form_data.get('number') or (certificate and certificate.number or '')" required="required"/>
+                                                <input type="text" class="form-control" id="number" name="number"
+                                                       t-att-value="form_data.get('number') or (certificate and certificate.number or '')"
+                                                       required="required"/>
                                             </div>
                                         </div>
                                     </div>
@@ -66,20 +82,41 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="certification_type">Loại chứng nhận</label>
-                                                <select class="form-control" id="certification_type" name="certification_type" required="required">
-                                                    <option value="" t-if="not form_data.get('certification_type') and not (certificate and certificate.certification_type)">-- Chọn loại --</option>
-                                                    <option value="operation" t-att-selected="form_data.get('certification_type') == 'operation' or (certificate and certificate.certification_type == 'operation')">Giấy phép hoạt động</option>
-                                                    <option value="quality" t-att-selected="form_data.get('certification_type') == 'quality' or (certificate and certificate.certification_type == 'quality')">Chứng nhận chất lượng</option>
-                                                    <option value="safety" t-att-selected="form_data.get('certification_type') == 'safety' or (certificate and certificate.certification_type == 'safety')">Chứng nhận an toàn</option>
-                                                    <option value="environment" t-att-selected="form_data.get('certification_type') == 'environment' or (certificate and certificate.certification_type == 'environment')">Chứng nhận môi trường</option>
-                                                    <option value="other" t-att-selected="form_data.get('certification_type') == 'other' or (certificate and certificate.certification_type == 'other')">Khác</option>
+                                                <select class="form-control" id="certification_type"
+                                                        name="certification_type" required="required">
+                                                    <option value=""
+                                                            t-if="not form_data.get('certification_type') and not (certificate and certificate.certification_type)">
+                                                        -- Chọn loại --
+                                                    </option>
+                                                    <option value="operation"
+                                                            t-att-selected="form_data.get('certification_type') == 'operation' or (certificate and certificate.certification_type == 'operation')">
+                                                        Giấy phép hoạt động
+                                                    </option>
+                                                    <option value="quality"
+                                                            t-att-selected="form_data.get('certification_type') == 'quality' or (certificate and certificate.certification_type == 'quality')">
+                                                        Chứng nhận chất lượng
+                                                    </option>
+                                                    <option value="safety"
+                                                            t-att-selected="form_data.get('certification_type') == 'safety' or (certificate and certificate.certification_type == 'safety')">
+                                                        Chứng nhận an toàn
+                                                    </option>
+                                                    <option value="environment"
+                                                            t-att-selected="form_data.get('certification_type') == 'environment' or (certificate and certificate.certification_type == 'environment')">
+                                                        Chứng nhận môi trường
+                                                    </option>
+                                                    <option value="other"
+                                                            t-att-selected="form_data.get('certification_type') == 'other' or (certificate and certificate.certification_type == 'other')">
+                                                        Khác
+                                                    </option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="authority">Cơ quan cấp</label>
-                                                <input type="text" class="form-control" id="authority" name="authority" t-att-value="form_data.get('authority') or (certificate and certificate.authority or '')" required="required"/>
+                                                <input type="text" class="form-control" id="authority" name="authority"
+                                                       t-att-value="form_data.get('authority') or (certificate and certificate.authority or '')"
+                                                       required="required"/>
                                             </div>
                                         </div>
                                     </div>
@@ -88,13 +125,19 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="issue_date">Ngày cấp</label>
-                                                <input type="date" class="form-control" id="issue_date" name="issue_date" t-att-value="form_data.get('issue_date') or (certificate and certificate.issue_date or '')" required="required"/>
+                                                <input type="date" class="form-control" id="issue_date"
+                                                       name="issue_date"
+                                                       t-att-value="form_data.get('issue_date') or (certificate and certificate.issue_date or '')"
+                                                       required="required"/>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="expiry_date">Ngày hết hạn</label>
-                                                <input type="date" class="form-control" id="expiry_date" name="expiry_date" t-att-value="form_data.get('expiry_date') or (certificate and certificate.expiry_date or '')" required="required"/>
+                                                <input type="date" class="form-control" id="expiry_date"
+                                                       name="expiry_date"
+                                                       t-att-value="form_data.get('expiry_date') or (certificate and certificate.expiry_date or '')"
+                                                       required="required"/>
                                             </div>
                                         </div>
                                     </div>
@@ -104,9 +147,13 @@
                                             <div class="form-group">
                                                 <label for="staff_id">Người phụ trách</label>
                                                 <select class="form-control" id="staff_id" name="staff_id">
-                                                    <option value="" t-if="not form_data.get('staff_id') and not (certificate and certificate.staff_id)">-- Không chọn --</option>
+                                                    <option value=""
+                                                            t-if="not form_data.get('staff_id') and not (certificate and certificate.staff_id)">
+                                                        -- Không chọn --
+                                                    </option>
                                                     <t t-foreach="staff" t-as="s">
-                                                        <option t-att-value="s.id" t-att-selected="str(form_data.get('staff_id')) == str(s.id) or (certificate and certificate.staff_id and certificate.staff_id.id == s.id)">
+                                                        <option t-att-value="s.id"
+                                                                t-att-selected="str(form_data.get('staff_id')) == str(s.id) or (certificate and certificate.staff_id and certificate.staff_id.id == s.id)">
                                                             <t t-esc="s.name"/>
                                                         </option>
                                                     </t>
@@ -117,9 +164,13 @@
                                             <div class="form-group">
                                                 <label for="department_id">Phòng ban liên quan</label>
                                                 <select class="form-control" id="department_id" name="department_id">
-                                                    <option value="" t-if="not form_data.get('department_id') and not (certificate and certificate.department_id)">-- Không chọn --</option>
+                                                    <option value=""
+                                                            t-if="not form_data.get('department_id') and not (certificate and certificate.department_id)">
+                                                        -- Không chọn --
+                                                    </option>
                                                     <t t-foreach="departments" t-as="dept">
-                                                        <option t-att-value="dept.id" t-att-selected="str(form_data.get('department_id')) == str(dept.id) or (certificate and certificate.department_id and certificate.department_id.id == dept.id)">
+                                                        <option t-att-value="dept.id"
+                                                                t-att-selected="str(form_data.get('department_id')) == str(dept.id) or (certificate and certificate.department_id and certificate.department_id.id == dept.id)">
                                                             <t t-esc="dept.name"/>
                                                         </option>
                                                     </t>
@@ -132,7 +183,10 @@
                                         <div class="col-12">
                                             <div class="form-group">
                                                 <label for="description">Mô tả</label>
-                                                <textarea class="form-control" id="description" name="description" rows="5"><t t-esc="form_data.get('description') or (certificate and certificate.description or '')"/></textarea>
+                                                <textarea class="form-control" id="description" name="description"
+                                                          rows="5">
+                                                    <t t-esc="form_data.get('description') or (certificate and certificate.description or '')"/>
+                                                </textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -143,10 +197,14 @@
                                             <t t-else="">Tạo chứng nhận</t>
                                         </button>
                                         <t t-if="certificate">
-                                            <a t-att-href="'/certification/certificate/%s' % certificate.id" class="btn btn-secondary ml-2">Hủy bỏ</a>
+                                            <a t-att-href="'/certification/certificate/%s' % certificate.id"
+                                               class="btn btn-secondary ml-2">Hủy bỏ
+                                            </a>
                                         </t>
                                         <t t-else="">
-                                            <a href="/certification/certificates" class="btn btn-secondary ml-2">Hủy bỏ</a>
+                                            <a href="/certification/certificates" class="btn btn-secondary ml-2">Hủy
+                                                bỏ
+                                            </a>
                                         </t>
                                     </div>
                                 </form>
@@ -168,9 +226,17 @@
                             <h1>Chỉnh sửa kiểm tra</h1>
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/certification/dashboard">Trang chủ</a></li>
-                                    <li class="breadcrumb-item"><a href="/certification/inspections">Kiểm tra</a></li>
-                                    <li class="breadcrumb-item"><a t-att-href="'/certification/inspection/%s' % inspection.id"><t t-esc="inspection.name"/></a></li>
+                                    <li class="breadcrumb-item">
+                                        <a href="/certification/dashboard">Trang chủ</a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <a href="/certification/inspections">Kiểm tra</a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <a t-att-href="'/certification/inspection/%s' % inspection.id">
+                                            <t t-esc="inspection.name"/>
+                                        </a>
+                                    </li>
                                     <li class="breadcrumb-item active">Chỉnh sửa</li>
                                 </ol>
                             </nav>
@@ -179,8 +245,12 @@
                             <h1>Tạo kiểm tra mới</h1>
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/certification/dashboard">Trang chủ</a></li>
-                                    <li class="breadcrumb-item"><a href="/certification/inspections">Kiểm tra</a></li>
+                                    <li class="breadcrumb-item">
+                                        <a href="/certification/dashboard">Trang chủ</a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <a href="/certification/inspections">Kiểm tra</a>
+                                    </li>
                                     <li class="breadcrumb-item active">Tạo mới</li>
                                 </ol>
                             </nav>
@@ -209,17 +279,25 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="name">Tên kiểm tra</label>
-                                                <input type="text" class="form-control" id="name" name="name" t-att-value="form_data.get('name') or (inspection and inspection.name or '')" required="required"/>
+                                                <input type="text" class="form-control" id="name" name="name"
+                                                       t-att-value="form_data.get('name') or (inspection and inspection.name or '')"
+                                                       required="required"/>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="certification_id">Chứng nhận liên quan</label>
-                                                <select class="form-control" id="certification_id" name="certification_id" required="required">
-                                                    <option value="" t-if="not form_data.get('certification_id') and not (inspection and inspection.certification_id) and not selected_certification">-- Chọn chứng nhận --</option>
+                                                <select class="form-control" id="certification_id"
+                                                        name="certification_id" required="required">
+                                                    <option value=""
+                                                            t-if="not form_data.get('certification_id') and not (inspection and inspection.certification_id) and not selected_certification">
+                                                        -- Chọn chứng nhận --
+                                                    </option>
                                                     <t t-foreach="certifications" t-as="cert">
-                                                        <option t-att-value="cert.id" t-att-selected="str(form_data.get('certification_id')) == str(cert.id) or (inspection and inspection.certification_id and inspection.certification_id.id == cert.id) or (selected_certification and selected_certification.id == cert.id)">
-                                                            <t t-esc="cert.name"/> (<t t-esc="cert.number"/>)
+                                                        <option t-att-value="cert.id"
+                                                                t-att-selected="str(form_data.get('certification_id')) == str(cert.id) or (inspection and inspection.certification_id and inspection.certification_id.id == cert.id) or (selected_certification and selected_certification.id == cert.id)">
+                                                            <t t-esc="cert.name"/>
+                                                            (<t t-esc="cert.number"/>)
                                                         </option>
                                                     </t>
                                                 </select>
@@ -231,14 +309,19 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="planned_date">Ngày dự kiến kiểm tra</label>
-                                                <input type="date" class="form-control" id="planned_date" name="planned_date" t-att-value="form_data.get('planned_date') or (inspection and inspection.planned_date or '')"/>
+                                                <input type="date" class="form-control" id="planned_date"
+                                                       name="planned_date"
+                                                       t-att-value="form_data.get('planned_date') or (inspection and inspection.planned_date or '')"/>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="date">Ngày kiểm tra thực tế</label>
-                                                <input type="date" class="form-control" id="date" name="date" t-att-value="form_data.get('date') or (inspection and inspection.date or '')"/>
-                                                <small class="form-text text-muted">Điền ngày kiểm tra thực tế khi đã thực hiện kiểm tra.</small>
+                                                <input type="date" class="form-control" id="date" name="date"
+                                                       t-att-value="form_data.get('date') or (inspection and inspection.date or '')"/>
+                                                <small class="form-text text-muted">Điền ngày kiểm tra thực tế khi đã
+                                                    thực hiện kiểm tra.
+                                                </small>
                                             </div>
                                         </div>
                                     </div>
@@ -247,17 +330,30 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="inspector">Người/Đơn vị kiểm tra</label>
-                                                <input type="text" class="form-control" id="inspector" name="inspector" t-att-value="form_data.get('inspector') or (inspection and inspection.inspector or '')"/>
+                                                <input type="text" class="form-control" id="inspector" name="inspector"
+                                                       t-att-value="form_data.get('inspector') or (inspection and inspection.inspector or '')"/>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="result">Kết quả</label>
                                                 <select class="form-control" id="result" name="result">
-                                                    <option value="pending" t-att-selected="form_data.get('result') == 'pending' or (inspection and inspection.result == 'pending') or (not inspection)">Đang chờ</option>
-                                                    <option value="passed" t-att-selected="form_data.get('result') == 'passed' or (inspection and inspection.result == 'passed')">Đạt</option>
-                                                    <option value="failed" t-att-selected="form_data.get('result') == 'failed' or (inspection and inspection.result == 'failed')">Không đạt</option>
-                                                    <option value="conditional" t-att-selected="form_data.get('result') == 'conditional' or (inspection and inspection.result == 'conditional')">Đạt có điều kiện</option>
+                                                    <option value="pending"
+                                                            t-att-selected="form_data.get('result') == 'pending' or (inspection and inspection.result == 'pending') or (not inspection)">
+                                                        Đang chờ
+                                                    </option>
+                                                    <option value="passed"
+                                                            t-att-selected="form_data.get('result') == 'passed' or (inspection and inspection.result == 'passed')">
+                                                        Đạt
+                                                    </option>
+                                                    <option value="failed"
+                                                            t-att-selected="form_data.get('result') == 'failed' or (inspection and inspection.result == 'failed')">
+                                                        Không đạt
+                                                    </option>
+                                                    <option value="conditional"
+                                                            t-att-selected="form_data.get('result') == 'conditional' or (inspection and inspection.result == 'conditional')">
+                                                        Đạt có điều kiện
+                                                    </option>
                                                 </select>
                                             </div>
                                         </div>
@@ -267,13 +363,18 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="findings">Phát hiện</label>
-                                                <textarea class="form-control" id="findings" name="findings" rows="4"><t t-esc="form_data.get('findings') or (inspection and inspection.findings or '')"/></textarea>
+                                                <textarea class="form-control" id="findings" name="findings" rows="4">
+                                                    <t t-esc="form_data.get('findings') or (inspection and inspection.findings or '')"/>
+                                                </textarea>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="recommendations">Khuyến nghị</label>
-                                                <textarea class="form-control" id="recommendations" name="recommendations" rows="4"><t t-esc="form_data.get('recommendations') or (inspection and inspection.recommendations or '')"/></textarea>
+                                                <textarea class="form-control" id="recommendations"
+                                                          name="recommendations" rows="4">
+                                                    <t t-esc="form_data.get('recommendations') or (inspection and inspection.recommendations or '')"/>
+                                                </textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -282,19 +383,29 @@
                                         <div class="col-12">
                                             <div class="form-group">
                                                 <label for="notes">Ghi chú</label>
-                                                <textarea class="form-control" id="notes" name="notes" rows="3"><t t-esc="form_data.get('notes') or (inspection and inspection.notes or '')"/></textarea>
+                                                <textarea class="form-control" id="notes" name="notes" rows="3">
+                                                    <t t-esc="form_data.get('notes') or (inspection and inspection.notes or '')"/>
+                                                </textarea>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="form-group form-check">
-                                        <input type="checkbox" class="form-check-input" id="corrective_action_required" name="corrective_action_required" t-att-checked="form_data.get('corrective_action_required') == 'on' or (inspection and inspection.corrective_action_required)"/>
-                                        <label class="form-check-label" for="corrective_action_required">Yêu cầu hành động khắc phục</label>
+                                        <input type="checkbox" class="form-check-input" id="corrective_action_required"
+                                               name="corrective_action_required"
+                                               t-att-checked="form_data.get('corrective_action_required') == 'on' or (inspection and inspection.corrective_action_required)"/>
+                                        <label class="form-check-label" for="corrective_action_required">Yêu cầu hành
+                                            động khắc phục
+                                        </label>
                                     </div>
 
-                                    <div id="corrective_action_section" t-attf-class="form-group #{form_data.get('corrective_action_required') == 'on' or (inspection and inspection.corrective_action_required) or 'd-none'}">
+                                    <div id="corrective_action_section"
+                                         t-attf-class="form-group #{form_data.get('corrective_action_required') == 'on' or (inspection and inspection.corrective_action_required) or 'd-none'}">
                                         <label for="corrective_action">Hành động khắc phục</label>
-                                        <textarea class="form-control" id="corrective_action" name="corrective_action" rows="4"><t t-esc="form_data.get('corrective_action') or (inspection and inspection.corrective_action or '')"/></textarea>
+                                        <textarea class="form-control" id="corrective_action" name="corrective_action"
+                                                  rows="4">
+                                            <t t-esc="form_data.get('corrective_action') or (inspection and inspection.corrective_action or '')"/>
+                                        </textarea>
                                     </div>
 
                                     <div class="form-group">
@@ -303,13 +414,18 @@
                                             <t t-else="">Tạo kiểm tra</t>
                                         </button>
                                         <t t-if="inspection">
-                                            <a t-att-href="'/certification/inspection/%s' % inspection.id" class="btn btn-secondary ml-2">Hủy bỏ</a>
+                                            <a t-att-href="'/certification/inspection/%s' % inspection.id"
+                                               class="btn btn-secondary ml-2">Hủy bỏ
+                                            </a>
                                         </t>
                                         <t t-elif="selected_certification">
-                                            <a t-att-href="'/certification/certificate/%s' % selected_certification.id" class="btn btn-secondary ml-2">Hủy bỏ</a>
+                                            <a t-att-href="'/certification/certificate/%s' % selected_certification.id"
+                                               class="btn btn-secondary ml-2">Hủy bỏ
+                                            </a>
                                         </t>
                                         <t t-else="">
-                                            <a href="/certification/inspections" class="btn btn-secondary ml-2">Hủy bỏ</a>
+                                            <a href="/certification/inspections" class="btn btn-secondary ml-2">Hủy bỏ
+                                            </a>
                                         </t>
                                     </div>
                                 </form>
@@ -321,19 +437,19 @@
 
             <script type="text/javascript">
                 $(document).ready(function() {
-                    // Show/hide corrective action section based on checkbox
-                    $('#corrective_action_required').change(function() {
-                        if($(this).is(":checked")) {
-                            $('#corrective_action_section').removeClass('d-none');
-                        } else {
-                            $('#corrective_action_section').addClass('d-none');
-                        }
-                    });
+                // Show/hide corrective action section based on checkbox
+                $('#corrective_action_required').change(function() {
+                if($(this).is(":checked")) {
+                $('#corrective_action_section').removeClass('d-none');
+                } else {
+                $('#corrective_action_section').addClass('d-none');
+                }
+                });
 
-                    // Trigger on page load if checkbox is checked
-                    if($('#corrective_action_required').is(":checked")) {
-                        $('#corrective_action_section').removeClass('d-none');
-                    }
+                // Trigger on page load if checkbox is checked
+                if($('#corrective_action_required').is(":checked")) {
+                $('#corrective_action_section').removeClass('d-none');
+                }
                 });
             </script>
         </t>

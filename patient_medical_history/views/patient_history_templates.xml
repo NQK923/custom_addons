@@ -4,452 +4,452 @@
         <t t-call="website.layout">
             <style>
                 :root {
-                    --primary-color: #2C83F2;
-                    --primary-dark: #1A73E8;
-                    --primary-light: #E8F0FE;
-                    --secondary-color: #4CD964;
-                    --danger-color: #FF3B30;
-                    --warning-color: #FF9500;
-                    --info-color: #5AC8FA;
-                    --gray-dark: #343a40;
-                    --gray: #6c757d;
-                    --gray-light: #f8f9fa;
-                    --border-color: #dee2e6;
+                --primary-color: #2C83F2;
+                --primary-dark: #1A73E8;
+                --primary-light: #E8F0FE;
+                --secondary-color: #4CD964;
+                --danger-color: #FF3B30;
+                --warning-color: #FF9500;
+                --info-color: #5AC8FA;
+                --gray-dark: #343a40;
+                --gray: #6c757d;
+                --gray-light: #f8f9fa;
+                --border-color: #dee2e6;
                 }
 
                 body {
-                    background-color: #f5f7fa;
-                    color: #333;
-                    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+                background-color: #f5f7fa;
+                color: #333;
+                font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
                 }
 
                 .page-title {
-                    color: var(--primary-dark);
-                    font-weight: 700;
-                    text-align: center;
-                    margin-bottom: 2rem;
-                    position: relative;
-                    padding-bottom: 15px;
+                color: var(--primary-dark);
+                font-weight: 700;
+                text-align: center;
+                margin-bottom: 2rem;
+                position: relative;
+                padding-bottom: 15px;
                 }
 
                 .page-title:after {
-                    content: "";
-                    position: absolute;
-                    width: 100px;
-                    height: 4px;
-                    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-                    bottom: 0;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    border-radius: 2px;
+                content: "";
+                position: absolute;
+                width: 100px;
+                height: 4px;
+                background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 2px;
                 }
 
                 .patient-history-container {
-                    background-color: transparent;
-                    padding: 0;
-                    max-width: 1200px;
-                    margin: 0 auto;
+                background-color: transparent;
+                padding: 0;
+                max-width: 1200px;
+                margin: 0 auto;
                 }
 
                 .progress-stepper {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-bottom: 30px;
-                    position: relative;
-                    max-width: 600px;
-                    margin-left: auto;
-                    margin-right: auto;
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 30px;
+                position: relative;
+                max-width: 600px;
+                margin-left: auto;
+                margin-right: auto;
                 }
 
                 .progress-stepper:before {
-                    content: "";
-                    position: absolute;
-                    height: 2px;
-                    background-color: var(--border-color);
-                    top: 15px;
-                    left: 40px;
-                    right: 40px;
-                    z-index: 0;
+                content: "";
+                position: absolute;
+                height: 2px;
+                background-color: var(--border-color);
+                top: 15px;
+                left: 40px;
+                right: 40px;
+                z-index: 0;
                 }
 
                 .step {
-                    position: relative;
-                    z-index: 1;
-                    text-align: center;
+                position: relative;
+                z-index: 1;
+                text-align: center;
                 }
 
                 .step-circle {
-                    width: 30px;
-                    height: 30px;
-                    background-color: white;
-                    border: 2px solid var(--border-color);
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin: 0 auto 8px;
-                    font-weight: 600;
-                    color: var(--gray);
-                    transition: all 0.3s;
+                width: 30px;
+                height: 30px;
+                background-color: white;
+                border: 2px solid var(--border-color);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 8px;
+                font-weight: 600;
+                color: var(--gray);
+                transition: all 0.3s;
                 }
 
                 .step-active .step-circle {
-                    background-color: var(--primary-color);
-                    border-color: var(--primary-color);
-                    color: white;
+                background-color: var(--primary-color);
+                border-color: var(--primary-color);
+                color: white;
                 }
 
                 .step-completed .step-circle {
-                    background-color: var(--secondary-color);
-                    border-color: var(--secondary-color);
-                    color: white;
+                background-color: var(--secondary-color);
+                border-color: var(--secondary-color);
+                color: white;
                 }
 
                 .step-label {
-                    font-size: 0.85rem;
-                    color: var(--gray);
-                    font-weight: 500;
+                font-size: 0.85rem;
+                color: var(--gray);
+                font-weight: 500;
                 }
 
                 .step-active .step-label, .step-completed .step-label {
-                    color: var(--gray-dark);
-                    font-weight: 600;
+                color: var(--gray-dark);
+                font-weight: 600;
                 }
 
                 .card {
-                    border: none;
-                    border-radius: 12px;
-                    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-                    margin-bottom: 25px;
-                    overflow: hidden;
-                    transition: all 0.3s ease;
+                border: none;
+                border-radius: 12px;
+                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+                margin-bottom: 25px;
+                overflow: hidden;
+                transition: all 0.3s ease;
                 }
 
                 .card:hover {
-                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-                    transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                transform: translateY(-2px);
                 }
 
                 .card-header {
-                    background-color: white;
-                    border-bottom: 1px solid var(--border-color);
-                    padding: 15px 20px;
-                    display: flex;
-                    align-items: center;
+                background-color: white;
+                border-bottom: 1px solid var(--border-color);
+                padding: 15px 20px;
+                display: flex;
+                align-items: center;
                 }
 
                 .card-header-icon {
-                    width: 32px;
-                    height: 32px;
-                    background-color: var(--primary-light);
-                    border-radius: 8px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin-right: 12px;
-                    color: var(--primary-color);
+                width: 32px;
+                height: 32px;
+                background-color: var(--primary-light);
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 12px;
+                color: var(--primary-color);
                 }
 
                 .card-header h3 {
-                    margin: 0;
-                    font-size: 1.2rem;
-                    font-weight: 600;
-                    color: var(--gray-dark);
-                    flex-grow: 1;
+                margin: 0;
+                font-size: 1.2rem;
+                font-weight: 600;
+                color: var(--gray-dark);
+                flex-grow: 1;
                 }
 
                 .card-body {
-                    padding: 20px;
+                padding: 20px;
                 }
 
                 .form-card {
-                    max-width: 500px;
-                    margin: 0 auto 30px;
+                max-width: 500px;
+                margin: 0 auto 30px;
                 }
 
                 .search-form, .otp-form {
-                    background-color: white;
-                    border-radius: 12px;
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-                    padding: 25px;
+                background-color: white;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                padding: 25px;
                 }
 
                 .form-group {
-                    margin-bottom: 20px;
+                margin-bottom: 20px;
                 }
 
                 .form-group label {
-                    font-weight: 500;
-                    color: var(--gray-dark);
-                    margin-bottom: 8px;
-                    display: block;
+                font-weight: 500;
+                color: var(--gray-dark);
+                margin-bottom: 8px;
+                display: block;
                 }
 
                 .form-control {
-                    border-radius: 8px;
-                    padding: 12px 15px;
-                    border: 1px solid var(--border-color);
-                    font-size: 1rem;
+                border-radius: 8px;
+                padding: 12px 15px;
+                border: 1px solid var(--border-color);
+                font-size: 1rem;
                 }
 
                 .form-control:focus {
-                    border-color: var(--primary-color);
-                    box-shadow: 0 0 0 3px rgba(44, 131, 242, 0.1);
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(44, 131, 242, 0.1);
                 }
 
                 .otp-input {
-                    letter-spacing: 10px;
-                    font-size: 1.75rem;
-                    font-weight: 600;
-                    text-align: center;
-                    padding: 15px;
+                letter-spacing: 10px;
+                font-size: 1.75rem;
+                font-weight: 600;
+                text-align: center;
+                padding: 15px;
                 }
 
                 .btn {
-                    padding: 12px 22px;
-                    font-weight: 500;
-                    border-radius: 8px;
-                    transition: all 0.3s;
+                padding: 12px 22px;
+                font-weight: 500;
+                border-radius: 8px;
+                transition: all 0.3s;
                 }
 
                 .btn-primary {
-                    background-color: var(--primary-color);
-                    border-color: var(--primary-color);
+                background-color: var(--primary-color);
+                border-color: var(--primary-color);
                 }
 
                 .btn-primary:hover {
-                    background-color: var(--primary-dark);
-                    border-color: var(--primary-dark);
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 8px rgba(26, 115, 232, 0.2);
+                background-color: var(--primary-dark);
+                border-color: var(--primary-dark);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 8px rgba(26, 115, 232, 0.2);
                 }
 
                 .btn-outline-secondary {
-                    border-color: var(--border-color);
-                    color: var(--gray);
+                border-color: var(--border-color);
+                color: var(--gray);
                 }
 
                 .btn-outline-secondary:hover {
-                    background-color: var(--gray-light);
-                    color: var(--gray-dark);
+                background-color: var(--gray-light);
+                color: var(--gray-dark);
                 }
 
                 .patient-info-row {
-                    display: flex;
-                    margin-bottom: 15px;
-                    flex-wrap: wrap;
+                display: flex;
+                margin-bottom: 15px;
+                flex-wrap: wrap;
                 }
 
                 .patient-info-label {
-                    min-width: 150px;
-                    font-weight: 500;
-                    color: var(--gray);
+                min-width: 150px;
+                font-weight: 500;
+                color: var(--gray);
                 }
 
                 .patient-info-value {
-                    flex-grow: 1;
-                    color: var(--gray-dark);
-                    font-weight: 500;
+                flex-grow: 1;
+                color: var(--gray-dark);
+                font-weight: 500;
                 }
 
                 .patient-summary {
-                    background-color: white;
-                    border-radius: 12px;
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-                    padding: 5px 0;
-                    margin-bottom: 30px;
+                background-color: white;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                padding: 5px 0;
+                margin-bottom: 30px;
                 }
 
                 .summary-item {
-                    padding: 15px 20px;
-                    text-align: center;
-                    border-right: 1px solid var(--border-color);
+                padding: 15px 20px;
+                text-align: center;
+                border-right: 1px solid var(--border-color);
                 }
 
                 .summary-item:last-child {
-                    border-right: none;
+                border-right: none;
                 }
 
                 .summary-value {
-                    font-size: 1.75rem;
-                    font-weight: 700;
-                    color: var(--primary-color);
-                    margin-bottom: 5px;
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: var(--primary-color);
+                margin-bottom: 5px;
                 }
 
                 .summary-label {
-                    color: var(--gray);
-                    font-size: 0.85rem;
+                color: var(--gray);
+                font-size: 0.85rem;
                 }
 
                 .medical-history-section {
-                    margin-bottom: 30px;
+                margin-bottom: 30px;
                 }
 
                 .section-title {
-                    font-size: 1.1rem;
-                    font-weight: 600;
-                    color: var(--gray-dark);
-                    margin-bottom: 15px;
-                    display: flex;
-                    align-items: center;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: var(--gray-dark);
+                margin-bottom: 15px;
+                display: flex;
+                align-items: center;
                 }
 
                 .section-title i {
-                    margin-right: 8px;
-                    color: var(--primary-color);
+                margin-right: 8px;
+                color: var(--primary-color);
                 }
 
                 .table {
-                    background-color: white;
-                    border-radius: 10px;
-                    overflow: hidden;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+                background-color: white;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
                 }
 
                 .table thead {
-                    background-color: var(--gray-light);
-                    border-bottom: 2px solid var(--border-color);
+                background-color: var(--gray-light);
+                border-bottom: 2px solid var(--border-color);
                 }
 
                 .table th {
-                    color: var(--gray-dark);
-                    font-weight: 600;
-                    border-top: none;
-                    padding: 15px;
-                    vertical-align: middle;
+                color: var(--gray-dark);
+                font-weight: 600;
+                border-top: none;
+                padding: 15px;
+                vertical-align: middle;
                 }
 
                 .table td {
-                    padding: 15px;
-                    vertical-align: middle;
-                    border-top: 1px solid var(--border-color);
+                padding: 15px;
+                vertical-align: middle;
+                border-top: 1px solid var(--border-color);
                 }
 
                 .badge {
-                    padding: 6px 10px;
-                    font-weight: 500;
-                    border-radius: 6px;
+                padding: 6px 10px;
+                font-weight: 500;
+                border-radius: 6px;
                 }
 
                 .badge-valid {
-                    background-color: rgba(76, 217, 100, 0.1);
-                    color: var(--secondary-color);
+                background-color: rgba(76, 217, 100, 0.1);
+                color: var(--secondary-color);
                 }
 
                 .badge-expired {
-                    background-color: rgba(255, 59, 48, 0.1);
-                    color: var(--danger-color);
+                background-color: rgba(255, 59, 48, 0.1);
+                color: var(--danger-color);
                 }
 
                 .badge-pending {
-                    background-color: rgba(255, 149, 0, 0.1);
-                    color: var(--warning-color);
+                background-color: rgba(255, 149, 0, 0.1);
+                color: var(--warning-color);
                 }
 
                 .badge-in-progress {
-                    background-color: rgba(90, 200, 250, 0.1);
-                    color: var(--info-color);
+                background-color: rgba(90, 200, 250, 0.1);
+                color: var(--info-color);
                 }
 
                 .badge-completed {
-                    background-color: rgba(76, 217, 100, 0.1);
-                    color: var(--secondary-color);
+                background-color: rgba(76, 217, 100, 0.1);
+                color: var(--secondary-color);
                 }
 
                 .no-data {
-                    text-align: center;
-                    padding: 30px;
-                    color: var(--gray);
-                    font-style: italic;
-                    background-color: white;
-                    border-radius: 10px;
-                    border: 1px dashed var(--border-color);
+                text-align: center;
+                padding: 30px;
+                color: var(--gray);
+                font-style: italic;
+                background-color: white;
+                border-radius: 10px;
+                border: 1px dashed var(--border-color);
                 }
 
                 .tooltip-icon {
-                    color: var(--gray);
-                    margin-left: 5px;
-                    cursor: pointer;
+                color: var(--gray);
+                margin-left: 5px;
+                cursor: pointer;
                 }
 
                 .collapsible-section {
-                    background-color: white;
-                    border-radius: 10px;
-                    margin-bottom: 15px;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-                    overflow: hidden;
+                background-color: white;
+                border-radius: 10px;
+                margin-bottom: 15px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+                overflow: hidden;
                 }
 
                 .collapsible-header {
-                    padding: 15px 20px;
-                    background-color: var(--gray-light);
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    border-bottom: 1px solid var(--border-color);
+                padding: 15px 20px;
+                background-color: var(--gray-light);
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border-bottom: 1px solid var(--border-color);
                 }
 
                 .collapsible-header h4 {
-                    margin: 0;
-                    font-size: 1.1rem;
-                    font-weight: 600;
-                    color: var(--gray-dark);
+                margin: 0;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: var(--gray-dark);
                 }
 
                 .collapsible-body {
-                    padding: 20px;
+                padding: 20px;
                 }
 
                 .alert {
-                    border-radius: 8px;
-                    padding: 15px 20px;
+                border-radius: 8px;
+                padding: 15px 20px;
                 }
 
                 @media (max-width: 768px) {
-                    .summary-item {
-                        border-right: none;
-                        border-bottom: 1px solid var(--border-color);
-                    }
+                .summary-item {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                }
 
-                    .summary-item:last-child {
-                        border-bottom: none;
-                    }
+                .summary-item:last-child {
+                border-bottom: none;
+                }
 
-                    .patient-info-row {
-                        flex-direction: column;
-                        margin-bottom: 20px;
-                    }
+                .patient-info-row {
+                flex-direction: column;
+                margin-bottom: 20px;
+                }
 
-                    .patient-info-label {
-                        min-width: auto;
-                        margin-bottom: 5px;
-                    }
+                .patient-info-label {
+                min-width: auto;
+                margin-bottom: 5px;
+                }
 
-                    .table-responsive {
-                        font-size: 0.9rem;
-                    }
+                .table-responsive {
+                font-size: 0.9rem;
+                }
                 }
 
                 /* Animation */
                 @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to { opacity: 1; transform: translateY(0); }
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
                 }
 
                 .fade-in {
-                    animation: fadeIn 0.5s ease forwards;
+                animation: fadeIn 0.5s ease forwards;
                 }
 
                 .pulse {
-                    animation: pulse 2s infinite;
+                animation: pulse 2s infinite;
                 }
 
                 @keyframes pulse {
-                    0% { box-shadow: 0 0 0 0 rgba(44, 131, 242, 0.4); }
-                    70% { box-shadow: 0 0 0 10px rgba(44, 131, 242, 0); }
-                    100% { box-shadow: 0 0 0 0 rgba(44, 131, 242, 0); }
+                0% { box-shadow: 0 0 0 0 rgba(44, 131, 242, 0.4); }
+                70% { box-shadow: 0 0 0 10px rgba(44, 131, 242, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(44, 131, 242, 0); }
                 }
             </style>
 
@@ -481,7 +481,8 @@
                 <!-- System error message -->
                 <t t-if="error">
                     <div class="alert alert-danger text-center fade-in">
-                        <i class="fa fa-exclamation-triangle mr-2"></i> <t t-esc="error"/>
+                        <i class="fa fa-exclamation-triangle mr-2"></i>
+                        <t t-esc="error"/>
                     </div>
                 </t>
 
@@ -490,7 +491,9 @@
                     <div class="form-card fade-in">
                         <form method="POST" action="/clinic/patient_history" class="search-form" id="email-form">
                             <h3 class="mb-4 text-center">Truy cập lịch sử y tế</h3>
-                            <p class="text-center mb-4 text-muted">Vui lòng nhập địa chỉ email đã đăng ký để nhận mã xác thực</p>
+                            <p class="text-center mb-4 text-muted">Vui lòng nhập địa chỉ email đã đăng ký để nhận mã xác
+                                thực
+                            </p>
 
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                             <div class="form-group">
@@ -498,10 +501,12 @@
                                     <i class="fa fa-envelope mr-2 text-primary"></i>
                                     Địa chỉ email
                                 </label>
-                                <input type="email" class="form-control" id="email" name="email" t-att-value="email or ''" placeholder="example@example.com" required="required"/>
+                                <input type="email" class="form-control" id="email" name="email"
+                                       t-att-value="email or ''" placeholder="example@example.com" required="required"/>
                             </div>
                             <button type="submit" class="btn btn-primary btn-block mt-4" id="submit-btn">
-                                <i class="fa fa-paper-plane mr-2"></i> Gửi mã xác thực
+                                <i class="fa fa-paper-plane mr-2"></i>
+                                Gửi mã xác thực
                             </button>
                         </form>
                     </div>
@@ -509,23 +514,25 @@
                     <!-- Hiển thị thông báo lỗi khi email không tồn tại -->
                     <t t-if="email_not_found">
                         <div class="alert alert-danger mt-3 fade-in text-center">
-                            <i class="fa fa-exclamation-circle mr-2"></i> Không tìm thấy bệnh nhân với email này. Vui lòng kiểm tra lại hoặc liên hệ với quản trị viên.
+                            <i class="fa fa-exclamation-circle mr-2"></i>
+                            Không tìm thấy bệnh nhân với email này. Vui lòng kiểm tra lại hoặc liên hệ với quản trị
+                            viên.
                         </div>
                     </t>
 
                     <script>
                         document.addEventListener('DOMContentLoaded', function() {
-                            const form = document.getElementById('email-form');
-                            const submitBtn = document.getElementById('submit-btn');
+                        const form = document.getElementById('email-form');
+                        const submitBtn = document.getElementById('submit-btn');
 
-                            form.addEventListener('submit', function(e) {
-                                // Thay đổi nút thành "Đang gửi..." và vô hiệu hóa nút
-                                submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> Đang gửi...';
-                                submitBtn.disabled = true;
-                                submitBtn.classList.add('disabled');
+                        form.addEventListener('submit', function(e) {
+                        // Thay đổi nút thành "Đang gửi..." và vô hiệu hóa nút
+                        submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> Đang gửi...';
+                        submitBtn.disabled = true;
+                        submitBtn.classList.add('disabled');
 
-                                // Form tiếp tục submit bình thường
-                            });
+                        // Form tiếp tục submit bình thường
+                        });
                         });
                     </script>
                 </t>
@@ -537,17 +544,22 @@
                             <h3 class="text-center mb-3">Xác minh OTP</h3>
                             <div class="text-center mb-4">
                                 <span class="badge badge-primary py-2 px-3">
-                                    <i class="fa fa-envelope mr-1"></i> <t t-esc="email"/>
+                                    <i class="fa fa-envelope mr-1"></i>
+                                    <t t-esc="email"/>
                                 </span>
                             </div>
 
-                            <p class="text-center mb-4">Chúng tôi đã gửi mã OTP đến email của bạn. Vui lòng kiểm tra hộp thư và nhập mã để tiếp tục.</p>
+                            <p class="text-center mb-4">Chúng tôi đã gửi mã OTP đến email của bạn. Vui lòng kiểm tra hộp
+                                thư và nhập mã để tiếp tục.
+                            </p>
 
                             <div class="alert alert-info mb-4">
                                 <div class="d-flex align-items-center">
                                     <i class="fa fa-info-circle mr-3 fa-lg"></i>
                                     <div>
-                                        <strong>Lưu ý:</strong> Nếu bạn không nhận được email, vui lòng kiểm tra thư mục thư rác (spam) hoặc liên hệ với quản trị viên.
+                                        <strong>Lưu ý:</strong>
+                                        Nếu bạn không nhận được email, vui lòng kiểm tra thư mục thư rác (spam) hoặc
+                                        liên hệ với quản trị viên.
                                     </div>
                                 </div>
                             </div>
@@ -568,10 +580,12 @@
                                 <input type="hidden" name="email" t-att-value="email"/>
                                 <div class="form-group">
                                     <label for="otp_code" class="text-center d-block">Nhập mã OTP 6 số:</label>
-                                    <input type="text" class="form-control otp-input pulse" id="otp_code" name="otp_code" maxlength="6" placeholder="------" required="required"/>
+                                    <input type="text" class="form-control otp-input pulse" id="otp_code"
+                                           name="otp_code" maxlength="6" placeholder="------" required="required"/>
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-block mt-4" id="verify-btn">
-                                    <i class="fa fa-check-circle mr-2"></i> Xác nhận
+                                    <i class="fa fa-check-circle mr-2"></i>
+                                    Xác nhận
                                 </button>
                             </form>
 
@@ -581,11 +595,13 @@
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                     <input type="hidden" name="email" t-att-value="email"/>
                                     <button type="submit" class="btn btn-outline-secondary" id="resend-btn">
-                                        <i class="fa fa-redo mr-2"></i> Gửi lại mã OTP
+                                        <i class="fa fa-redo mr-2"></i>
+                                        Gửi lại mã OTP
                                     </button>
                                 </form>
                                 <a href="/clinic/patient_history" class="text-primary">
-                                    <i class="fa fa-arrow-left mr-1"></i> Quay lại
+                                    <i class="fa fa-arrow-left mr-1"></i>
+                                    Quay lại
                                 </a>
                             </div>
                         </div>
@@ -593,44 +609,44 @@
 
                     <script>
                         document.addEventListener('DOMContentLoaded', function() {
-                            // Tự động focus vào ô nhập OTP
-                            document.getElementById('otp_code').focus();
+                        // Tự động focus vào ô nhập OTP
+                        document.getElementById('otp_code').focus();
 
-                            // Xử lý form xác nhận OTP
-                            const otpForm = document.getElementById('otp-form');
-                            const verifyBtn = document.getElementById('verify-btn');
+                        // Xử lý form xác nhận OTP
+                        const otpForm = document.getElementById('otp-form');
+                        const verifyBtn = document.getElementById('verify-btn');
 
-                            if (otpForm) {
-                                otpForm.addEventListener('submit', function(e) {
-                                    // Thay đổi nút thành "Đang xác thực..." và vô hiệu hóa nút
-                                    verifyBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> Đang xác thực...';
-                                    verifyBtn.disabled = true;
-                                    verifyBtn.classList.add('disabled');
+                        if (otpForm) {
+                        otpForm.addEventListener('submit', function(e) {
+                        // Thay đổi nút thành "Đang xác thực..." và vô hiệu hóa nút
+                        verifyBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> Đang xác thực...';
+                        verifyBtn.disabled = true;
+                        verifyBtn.classList.add('disabled');
 
-                                    // Form tiếp tục submit bình thường
-                                });
-                            }
+                        // Form tiếp tục submit bình thường
+                        });
+                        }
 
-                            // Định dạng input OTP
-                            const otpInput = document.getElementById('otp_code');
-                            otpInput.addEventListener('input', function() {
-                                this.value = this.value.replace(/[^0-9]/g, '');
-                            });
+                        // Định dạng input OTP
+                        const otpInput = document.getElementById('otp_code');
+                        otpInput.addEventListener('input', function() {
+                        this.value = this.value.replace(/[^0-9]/g, '');
+                        });
 
-                            // Xử lý form gửi lại OTP
-                            const resendForm = document.getElementById('resend-form');
-                            const resendBtn = document.getElementById('resend-btn');
+                        // Xử lý form gửi lại OTP
+                        const resendForm = document.getElementById('resend-form');
+                        const resendBtn = document.getElementById('resend-btn');
 
-                            if (resendForm) {
-                                resendForm.addEventListener('submit', function(e) {
-                                    // Thay đổi nút thành "Đang gửi..." và vô hiệu hóa nút
-                                    resendBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> Đang gửi...';
-                                    resendBtn.disabled = true;
-                                    resendBtn.classList.add('disabled');
+                        if (resendForm) {
+                        resendForm.addEventListener('submit', function(e) {
+                        // Thay đổi nút thành "Đang gửi..." và vô hiệu hóa nút
+                        resendBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> Đang gửi...';
+                        resendBtn.disabled = true;
+                        resendBtn.classList.add('disabled');
 
-                                    // Form tiếp tục submit bình thường
-                                });
-                            }
+                        // Form tiếp tục submit bình thường
+                        });
+                        }
                         });
                     </script>
                 </t>
@@ -666,7 +682,8 @@
                                 <i class="fa fa-user"></i>
                             </div>
                             <h3>Thông tin bệnh nhân</h3>
-                            <a href="#" class="text-muted" data-toggle="collapse" data-target="#patientInfoCollapse" aria-expanded="true">
+                            <a href="#" class="text-muted" data-toggle="collapse" data-target="#patientInfoCollapse"
+                               aria-expanded="true">
                                 <i class="fa fa-chevron-down"></i>
                             </a>
                         </div>
@@ -675,7 +692,8 @@
                                 <div class="col-md-6">
                                     <div class="patient-info-row">
                                         <div class="patient-info-label">
-                                            <i class="fa fa-id-card text-primary mr-2"></i> Mã bệnh nhân:
+                                            <i class="fa fa-id-card text-primary mr-2"></i>
+                                            Mã bệnh nhân:
                                         </div>
                                         <div class="patient-info-value">
                                             <t t-esc="patient.code"/>
@@ -683,7 +701,8 @@
                                     </div>
                                     <div class="patient-info-row">
                                         <div class="patient-info-label">
-                                            <i class="fa fa-user text-primary mr-2"></i> Họ tên:
+                                            <i class="fa fa-user text-primary mr-2"></i>
+                                            Họ tên:
                                         </div>
                                         <div class="patient-info-value">
                                             <t t-esc="patient.name"/>
@@ -691,7 +710,8 @@
                                     </div>
                                     <div class="patient-info-row">
                                         <div class="patient-info-label">
-                                            <i class="fa fa-venus-mars text-primary mr-2"></i> Giới tính:
+                                            <i class="fa fa-venus-mars text-primary mr-2"></i>
+                                            Giới tính:
                                         </div>
                                         <div class="patient-info-value">
                                             <t t-if="patient.gender == 'male'">Nam</t>
@@ -701,15 +721,18 @@
                                     </div>
                                     <div class="patient-info-row">
                                         <div class="patient-info-label">
-                                            <i class="fa fa-birthday-cake text-primary mr-2"></i> Tuổi:
+                                            <i class="fa fa-birthday-cake text-primary mr-2"></i>
+                                            Tuổi:
                                         </div>
                                         <div class="patient-info-value">
-                                            <t t-esc="patient.age"/> tuổi
+                                            <t t-esc="patient.age"/>
+                                            tuổi
                                         </div>
                                     </div>
                                     <div class="patient-info-row">
                                         <div class="patient-info-label">
-                                            <i class="fa fa-calendar text-primary mr-2"></i> Ngày sinh:
+                                            <i class="fa fa-calendar text-primary mr-2"></i>
+                                            Ngày sinh:
                                         </div>
                                         <div class="patient-info-value">
                                             <t t-esc="patient.date_of_birth"/>
@@ -717,7 +740,8 @@
                                     </div>
                                     <div class="patient-info-row">
                                         <div class="patient-info-label">
-                                            <i class="fa fa-phone text-primary mr-2"></i> Điện thoại:
+                                            <i class="fa fa-phone text-primary mr-2"></i>
+                                            Điện thoại:
                                         </div>
                                         <div class="patient-info-value">
                                             <t t-esc="patient.phone or 'Không có'"/>
@@ -726,7 +750,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <h4 class="mb-3">
-                                        <i class="fa fa-medkit text-primary mr-2"></i> Thông tin bảo hiểm y tế
+                                        <i class="fa fa-medkit text-primary mr-2"></i>
+                                        Thông tin bảo hiểm y tế
                                     </h4>
                                     <t t-if="patient.has_insurance">
                                         <div class="patient-info-row">
@@ -744,7 +769,8 @@
                                         <div class="patient-info-row">
                                             <div class="patient-info-label">Mức chi trả:</div>
                                             <div class="patient-info-value">
-                                                <t t-esc="patient.insurance_number and patient.coverage_rate or '100'"/>%
+                                                <t t-esc="patient.insurance_number and patient.coverage_rate or '100'"/>
+                                                %
                                             </div>
                                         </div>
                                         <div class="patient-info-row">
@@ -756,18 +782,22 @@
                                         <div class="patient-info-row">
                                             <div class="patient-info-label">Trạng thái:</div>
                                             <div class="patient-info-value">
-                                                <span t-if="patient.insurance_state == 'Hợp lệ'" class="badge badge-valid">
-                                                    <i class="fa fa-check-circle mr-1"></i> Hợp lệ
+                                                <span t-if="patient.insurance_state == 'Hợp lệ'"
+                                                      class="badge badge-valid">
+                                                    <i class="fa fa-check-circle mr-1"></i>
+                                                    Hợp lệ
                                                 </span>
                                                 <span t-else="" class="badge badge-expired">
-                                                    <i class="fa fa-times-circle mr-1"></i> Hết hạn
+                                                    <i class="fa fa-times-circle mr-1"></i>
+                                                    Hết hạn
                                                 </span>
                                             </div>
                                         </div>
                                     </t>
                                     <t t-else="">
                                         <div class="no-data">
-                                            <i class="fa fa-info-circle mr-2"></i> Không có thông tin bảo hiểm y tế
+                                            <i class="fa fa-info-circle mr-2"></i>
+                                            Không có thông tin bảo hiểm y tế
                                         </div>
                                     </t>
                                 </div>
@@ -784,7 +814,8 @@
                                     <i class="fa fa-clipboard-list"></i>
                                 </div>
                                 <h3>Kế hoạch điều trị</h3>
-                                <a href="#" class="text-muted" data-toggle="collapse" data-target="#treatmentPlansCollapse" aria-expanded="true">
+                                <a href="#" class="text-muted" data-toggle="collapse"
+                                   data-target="#treatmentPlansCollapse" aria-expanded="true">
                                     <i class="fa fa-chevron-down"></i>
                                 </a>
                             </div>
@@ -819,20 +850,24 @@
                                                             </t>
                                                             <t t-else="">
                                                                 <span class="text-muted">
-                                                                    <i class="fa fa-clock mr-1"></i> Đang tiến hành
+                                                                    <i class="fa fa-clock mr-1"></i>
+                                                                    Đang tiến hành
                                                                 </span>
                                                             </t>
                                                         </td>
                                                         <td>
                                                             <t t-if="plan.end_date">
-                                                                <t t-set="days" t-value="(plan.end_date - plan.start_date).days"/>
+                                                                <t t-set="days"
+                                                                   t-value="(plan.end_date - plan.start_date).days"/>
                                                                 <span class="badge badge-info">
-                                                                    <t t-esc="days"/> ngày
+                                                                    <t t-esc="days"/>
+                                                                    ngày
                                                                 </span>
                                                             </t>
                                                             <t t-else="">
                                                                 <span class="badge badge-warning">
-                                                                    <i class="fa fa-hourglass-half mr-1"></i> Đang tiến hành
+                                                                    <i class="fa fa-hourglass-half mr-1"></i>
+                                                                    Đang tiến hành
                                                                 </span>
                                                             </t>
                                                         </td>
@@ -844,7 +879,8 @@
                                 </t>
                                 <t t-else="">
                                     <div class="no-data">
-                                        <i class="fa fa-clipboard mr-2"></i> Chưa có kế hoạch điều trị
+                                        <i class="fa fa-clipboard mr-2"></i>
+                                        Chưa có kế hoạch điều trị
                                     </div>
                                 </t>
                             </div>
@@ -857,7 +893,8 @@
                                     <i class="fa fa-procedures"></i>
                                 </div>
                                 <h3>Quá trình điều trị</h3>
-                                <a href="#" class="text-muted" data-toggle="collapse" data-target="#treatmentProcessesCollapse" aria-expanded="true">
+                                <a href="#" class="text-muted" data-toggle="collapse"
+                                   data-target="#treatmentProcessesCollapse" aria-expanded="true">
                                     <i class="fa fa-chevron-down"></i>
                                 </a>
                             </div>
@@ -892,17 +929,20 @@
                                                         <td>
                                                             <t t-if="process.state == 'pending'">
                                                                 <span class="badge badge-pending">
-                                                                    <i class="fa fa-clock mr-1"></i> Chưa thực hiện
+                                                                    <i class="fa fa-clock mr-1"></i>
+                                                                    Chưa thực hiện
                                                                 </span>
                                                             </t>
                                                             <t t-elif="process.state == 'in_progress'">
                                                                 <span class="badge badge-in-progress">
-                                                                    <i class="fa fa-spinner mr-1"></i> Đang thực hiện
+                                                                    <i class="fa fa-spinner mr-1"></i>
+                                                                    Đang thực hiện
                                                                 </span>
                                                             </t>
                                                             <t t-elif="process.state == 'completed'">
                                                                 <span class="badge badge-completed">
-                                                                    <i class="fa fa-check-circle mr-1"></i> Hoàn thành
+                                                                    <i class="fa fa-check-circle mr-1"></i>
+                                                                    Hoàn thành
                                                                 </span>
                                                             </t>
                                                         </td>
@@ -913,7 +953,8 @@
                                                             </t>
                                                             <t t-else="">
                                                                 <span class="text-muted">
-                                                                    <i class="fa fa-hourglass-start mr-1"></i> Chưa thực hiện
+                                                                    <i class="fa fa-hourglass-start mr-1"></i>
+                                                                    Chưa thực hiện
                                                                 </span>
                                                             </t>
                                                         </td>
@@ -925,7 +966,8 @@
                                 </t>
                                 <t t-else="">
                                     <div class="no-data">
-                                        <i class="fa fa-procedures mr-2"></i> Chưa có quá trình điều trị
+                                        <i class="fa fa-procedures mr-2"></i>
+                                        Chưa có quá trình điều trị
                                     </div>
                                 </t>
                             </div>
@@ -938,7 +980,8 @@
                                     <i class="fa fa-flask"></i>
                                 </div>
                                 <h3>Xét nghiệm và chuẩn đoán</h3>
-                                <a href="#" class="text-muted" data-toggle="collapse" data-target="#medicalTestsCollapse" aria-expanded="true">
+                                <a href="#" class="text-muted" data-toggle="collapse"
+                                   data-target="#medicalTestsCollapse" aria-expanded="true">
                                     <i class="fa fa-chevron-down"></i>
                                 </a>
                             </div>
@@ -965,22 +1008,28 @@
                                                         </td>
                                                         <td>
                                                             <t t-if="test.test_type == 'test'">
-                                                                <i class="fa fa-stethoscope mr-1 text-primary"></i> Chuẩn đoán
+                                                                <i class="fa fa-stethoscope mr-1 text-primary"></i>
+                                                                Chuẩn đoán
                                                             </t>
                                                             <t t-elif="test.test_type == 'blood'">
-                                                                <i class="fa fa-tint mr-1 text-danger"></i> Xét nghiệm máu
+                                                                <i class="fa fa-tint mr-1 text-danger"></i>
+                                                                Xét nghiệm máu
                                                             </t>
                                                             <t t-elif="test.test_type == 'urine'">
-                                                                <i class="fa fa-flask mr-1 text-warning"></i> Xét nghiệm nước tiểu
+                                                                <i class="fa fa-flask mr-1 text-warning"></i>
+                                                                Xét nghiệm nước tiểu
                                                             </t>
                                                             <t t-elif="test.test_type == 'xray'">
-                                                                <i class="fa fa-x-ray mr-1 text-info"></i> X-Quang
+                                                                <i class="fa fa-x-ray mr-1 text-info"></i>
+                                                                X-Quang
                                                             </t>
                                                             <t t-elif="test.test_type == 'ecg'">
-                                                                <i class="fa fa-heartbeat mr-1 text-danger"></i> ECG
+                                                                <i class="fa fa-heartbeat mr-1 text-danger"></i>
+                                                                ECG
                                                             </t>
                                                             <t t-else="">
-                                                                <i class="fa fa-file-medical mr-1 text-secondary"></i> Khác
+                                                                <i class="fa fa-file-medical mr-1 text-secondary"></i>
+                                                                Khác
                                                             </t>
                                                         </td>
                                                         <td>
@@ -990,17 +1039,20 @@
                                                         <td>
                                                             <t t-if="test.status == 'request'">
                                                                 <span class="badge badge-pending">
-                                                                    <i class="fa fa-clock mr-1"></i> Yêu cầu
+                                                                    <i class="fa fa-clock mr-1"></i>
+                                                                    Yêu cầu
                                                                 </span>
                                                             </t>
                                                             <t t-elif="test.status == 'processing'">
                                                                 <span class="badge badge-in-progress">
-                                                                    <i class="fa fa-spinner mr-1"></i> Đang xử lý
+                                                                    <i class="fa fa-spinner mr-1"></i>
+                                                                    Đang xử lý
                                                                 </span>
                                                             </t>
                                                             <t t-elif="test.status == 'completed'">
                                                                 <span class="badge badge-completed">
-                                                                    <i class="fa fa-check-circle mr-1"></i> Hoàn tất
+                                                                    <i class="fa fa-check-circle mr-1"></i>
+                                                                    Hoàn tất
                                                                 </span>
                                                             </t>
                                                         </td>
@@ -1022,7 +1074,8 @@
                                     <t t-if="history.medical_images">
                                         <div class="medical-history-section mt-4">
                                             <h4 class="section-title">
-                                                <i class="fa fa-images"></i> Hình ảnh y tế
+                                                <i class="fa fa-images"></i>
+                                                Hình ảnh y tế
                                             </h4>
                                             <div class="row">
                                                 <t t-foreach="history.medical_images" t-as="image">
@@ -1031,33 +1084,40 @@
                                                             <div class="card-header py-2 px-3">
                                                                 <small class="text-muted">
                                                                     <t t-if="image.test_type_img == 'test'">
-                                                                        <i class="fa fa-stethoscope mr-1"></i> Chuẩn đoán
+                                                                        <i class="fa fa-stethoscope mr-1"></i>
+                                                                        Chuẩn đoán
                                                                     </t>
                                                                     <t t-elif="image.test_type_img == 'xray'">
-                                                                        <i class="fa fa-x-ray mr-1"></i> X-Quang
+                                                                        <i class="fa fa-x-ray mr-1"></i>
+                                                                        X-Quang
                                                                     </t>
                                                                     <t t-elif="image.test_type_img == 'ecg'">
-                                                                        <i class="fa fa-heartbeat mr-1"></i> ECG
+                                                                        <i class="fa fa-heartbeat mr-1"></i>
+                                                                        ECG
                                                                     </t>
                                                                     <t t-else="">
-                                                                        <i class="fa fa-file-medical mr-1"></i> <t t-esc="image.test_type_img"/>
+                                                                        <i class="fa fa-file-medical mr-1"></i>
+                                                                        <t t-esc="image.test_type_img"/>
                                                                     </t>
                                                                 </small>
                                                             </div>
                                                             <div class="card-body p-2 text-center">
                                                                 <t t-if="image.Img">
-                                                                    <img t-att-src="'data:image/png;base64,' + image.Img" class="img-fluid mb-2" alt="Medical Image"/>
+                                                                    <img t-att-src="'data:image/png;base64,' + image.Img"
+                                                                         class="img-fluid mb-2" alt="Medical Image"/>
                                                                 </t>
                                                                 <t t-else="">
                                                                     <div class="no-data p-4">
-                                                                        <i class="fa fa-image fa-2x mb-2"></i><br/>
+                                                                        <i class="fa fa-image fa-2x mb-2"></i>
+                                                                        <br/>
                                                                         Không có hình ảnh
                                                                     </div>
                                                                 </t>
                                                             </div>
                                                             <div class="card-footer py-2 px-3">
                                                                 <small class="text-muted">
-                                                                    <i class="fa fa-calendar-alt mr-1"></i> <t t-esc="image.img_date"/>
+                                                                    <i class="fa fa-calendar-alt mr-1"></i>
+                                                                    <t t-esc="image.img_date"/>
                                                                 </small>
                                                             </div>
                                                         </div>
@@ -1069,7 +1129,8 @@
                                 </t>
                                 <t t-else="">
                                     <div class="no-data">
-                                        <i class="fa fa-flask mr-2"></i> Chưa có xét nghiệm
+                                        <i class="fa fa-flask mr-2"></i>
+                                        Chưa có xét nghiệm
                                     </div>
                                 </t>
                             </div>
@@ -1087,7 +1148,8 @@
                     <!-- Nút quay lại -->
                     <div class="text-center mt-4 mb-5">
                         <a href="/clinic/patient_history" class="btn btn-outline-primary">
-                            <i class="fa fa-home mr-2"></i> Quay lại trang chính
+                            <i class="fa fa-home mr-2"></i>
+                            Quay lại trang chính
                         </a>
                     </div>
                 </t>
@@ -1099,7 +1161,8 @@
                         <h4>Không tìm thấy thông tin bệnh nhân</h4>
                         <p>Không tìm thấy thông tin bệnh nhân với email này.</p>
                         <a href="/clinic/patient_history" class="btn btn-outline-danger mt-3">
-                            <i class="fa fa-arrow-left mr-2"></i> Quay lại
+                            <i class="fa fa-arrow-left mr-2"></i>
+                            Quay lại
                         </a>
                     </div>
                 </t>
@@ -1107,25 +1170,25 @@
                 <!-- Script chung -->
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
-                        // Xử lý toggle collapse
-                        const toggles = document.querySelectorAll('[data-toggle="collapse"]');
-                        toggles.forEach(toggle => {
-                            toggle.addEventListener('click', function(e) {
-                                e.preventDefault();
-                                const target = document.querySelector(this.getAttribute('data-target'));
-                                if (target) {
-                                    if (target.classList.contains('show')) {
-                                        target.classList.remove('show');
-                                        this.querySelector('i').classList.remove('fa-chevron-down');
-                                        this.querySelector('i').classList.add('fa-chevron-right');
-                                    } else {
-                                        target.classList.add('show');
-                                        this.querySelector('i').classList.remove('fa-chevron-right');
-                                        this.querySelector('i').classList.add('fa-chevron-down');
-                                    }
-                                }
-                            });
-                        });
+                    // Xử lý toggle collapse
+                    const toggles = document.querySelectorAll('[data-toggle="collapse"]');
+                    toggles.forEach(toggle => {
+                    toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('data-target'));
+                    if (target) {
+                    if (target.classList.contains('show')) {
+                    target.classList.remove('show');
+                    this.querySelector('i').classList.remove('fa-chevron-down');
+                    this.querySelector('i').classList.add('fa-chevron-right');
+                    } else {
+                    target.classList.add('show');
+                    this.querySelector('i').classList.remove('fa-chevron-right');
+                    this.querySelector('i').classList.add('fa-chevron-down');
+                    }
+                    }
+                    });
+                    });
                     });
                 </script>
             </div>

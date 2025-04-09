@@ -11,7 +11,8 @@
             <!-- Actions -->
             <div class="im-actions">
                 <a href="/invoice/list" class="btn btn-secondary">
-                    <i class="fa fa-arrow-left"></i> Quay lại
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại
                 </a>
             </div>
 
@@ -27,7 +28,8 @@
                     <t t-esc="error_message"/>
                 </div>
 
-                <form method="POST" t-attf-action="/invoice/#{edit_mode and 'edit/' + str(invoice.id) or 'create'}" id="invoice-form">
+                <form method="POST" t-attf-action="/invoice/#{edit_mode and 'edit/' + str(invoice.id) or 'create'}"
+                      id="invoice-form">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                     <div class="form-group row">
@@ -36,8 +38,10 @@
                             <select name="patient_id" id="patient_id" class="form-control" required="required">
                                 <option value="">-- Chọn bệnh nhân --</option>
                                 <t t-foreach="patients" t-as="patient">
-                                    <option t-att-value="patient.id" t-att-selected="invoice and invoice.patient_id.id == patient.id">
-                                        <t t-esc="patient.name"/> (<t t-esc="patient.code"/>)
+                                    <option t-att-value="patient.id"
+                                            t-att-selected="invoice and invoice.patient_id.id == patient.id">
+                                        <t t-esc="patient.name"/>
+                                        (<t t-esc="patient.code"/>)
                                     </option>
                                 </t>
                             </select>
@@ -69,7 +73,8 @@
                     <div class="service-lines-container">
                         <div class="form-row align-items-center mb-2 service-line-template">
                             <div class="col-5">
-                                <select name="service_id[]" class="form-control service-select" onchange="updateServicePrice(this)">
+                                <select name="service_id[]" class="form-control service-select"
+                                        onchange="updateServicePrice(this)">
                                     <option value="">-- Chọn dịch vụ --</option>
                                     <t t-foreach="services" t-as="service">
                                         <option t-att-value="service.id" t-att-data-price="service.price">
@@ -100,24 +105,29 @@
                                 <t t-foreach="invoice.service_lines" t-as="line">
                                     <div class="form-row align-items-center mb-2 service-line">
                                         <div class="col-5">
-                                            <select name="service_id[]" class="form-control service-select" onchange="updateServicePrice(this)">
+                                            <select name="service_id[]" class="form-control service-select"
+                                                    onchange="updateServicePrice(this)">
                                                 <option value="">-- Chọn dịch vụ --</option>
                                                 <t t-foreach="services" t-as="service">
-                                                    <option t-att-value="service.id" t-att-data-price="service.price" t-att-selected="line.service_id.id == service.id">
+                                                    <option t-att-value="service.id" t-att-data-price="service.price"
+                                                            t-att-selected="line.service_id.id == service.id">
                                                         <t t-esc="service.service_name"/>
                                                     </option>
                                                 </t>
                                             </select>
                                         </div>
                                         <div class="col-2">
-                                            <input type="number" name="service_qty[]" class="form-control" placeholder="Số lượng"
+                                            <input type="number" name="service_qty[]" class="form-control"
+                                                   placeholder="Số lượng"
                                                    min="1" step="1" t-att-value="line.quantity"/>
                                         </div>
                                         <div class="col-3">
                                             <span class="form-control-plaintext service-price-display">
-                                                <t t-esc="'{:,.0f}'.format(line.price_unit)"/> VND
+                                                <t t-esc="'{:,.0f}'.format(line.price_unit)"/>
+                                                VND
                                             </span>
-                                            <input type="hidden" name="service_price[]" class="service-price" t-att-value="line.price_unit"/>
+                                            <input type="hidden" name="service_price[]" class="service-price"
+                                                   t-att-value="line.price_unit"/>
                                         </div>
                                         <div class="col-2">
                                             <button type="button" class="btn btn-danger remove-line">
@@ -131,7 +141,8 @@
 
                         <div class="text-right mb-3">
                             <button type="button" class="btn btn-sm btn-info add-service-line">
-                                <i class="fa fa-plus"></i> Thêm dịch vụ
+                                <i class="fa fa-plus"></i>
+                                Thêm dịch vụ
                             </button>
                         </div>
                     </div>
@@ -141,11 +152,13 @@
                     <div class="product-lines-container">
                         <div class="form-row align-items-center mb-2 product-line-template">
                             <div class="col-5">
-                                <select name="product_id[]" class="form-control product-select" onchange="updateProductPrice(this)">
+                                <select name="product_id[]" class="form-control product-select"
+                                        onchange="updateProductPrice(this)">
                                     <option value="">-- Chọn thuốc --</option>
                                     <t t-foreach="products" t-as="product">
                                         <option t-att-value="product.id" t-att-data-price="product.unit_price">
-                                            <t t-esc="product.name"/> (SL: <t t-esc="product.quantity"/>)
+                                            <t t-esc="product.name"/>
+                                            (SL:<t t-esc="product.quantity"/>)
                                         </option>
                                     </t>
                                 </select>
@@ -172,24 +185,31 @@
                                 <t t-foreach="invoice.product_lines" t-as="line">
                                     <div class="form-row align-items-center mb-2 product-line">
                                         <div class="col-5">
-                                            <select name="product_id[]" class="form-control product-select" onchange="updateProductPrice(this)">
+                                            <select name="product_id[]" class="form-control product-select"
+                                                    onchange="updateProductPrice(this)">
                                                 <option value="">-- Chọn thuốc --</option>
                                                 <t t-foreach="products" t-as="product">
-                                                    <option t-att-value="product.id" t-att-data-price="product.unit_price" t-att-selected="line.product_id.id == product.id">
-                                                        <t t-esc="product.name"/> (SL: <t t-esc="product.quantity"/>)
+                                                    <option t-att-value="product.id"
+                                                            t-att-data-price="product.unit_price"
+                                                            t-att-selected="line.product_id.id == product.id">
+                                                        <t t-esc="product.name"/>
+                                                        (SL:<t t-esc="product.quantity"/>)
                                                     </option>
                                                 </t>
                                             </select>
                                         </div>
                                         <div class="col-2">
-                                            <input type="number" name="product_qty[]" class="form-control" placeholder="Số lượng"
+                                            <input type="number" name="product_qty[]" class="form-control"
+                                                   placeholder="Số lượng"
                                                    min="1" step="1" t-att-value="line.quantity"/>
                                         </div>
                                         <div class="col-3">
                                             <span class="form-control-plaintext product-price-display">
-                                                <t t-esc="'{:,.0f}'.format(line.price_unit)"/> VND
+                                                <t t-esc="'{:,.0f}'.format(line.price_unit)"/>
+                                                VND
                                             </span>
-                                            <input type="hidden" name="product_price[]" class="product-price" t-att-value="line.price_unit"/>
+                                            <input type="hidden" name="product_price[]" class="product-price"
+                                                   t-att-value="line.price_unit"/>
                                         </div>
                                         <div class="col-2">
                                             <button type="button" class="btn btn-danger remove-line">
@@ -203,7 +223,8 @@
 
                         <div class="text-right mb-3">
                             <button type="button" class="btn btn-sm btn-info add-product-line">
-                                <i class="fa fa-plus"></i> Thêm thuốc
+                                <i class="fa fa-plus"></i>
+                                Thêm thuốc
                             </button>
                         </div>
                     </div>
@@ -211,7 +232,9 @@
                     <div class="form-group row">
                         <label for="note" class="col-sm-3 col-form-label">Ghi chú</label>
                         <div class="col-sm-9">
-                            <textarea class="form-control" id="note" name="note" rows="3"><t t-esc="invoice and invoice.note or ''"/></textarea>
+                            <textarea class="form-control" id="note" name="note" rows="3">
+                                <t t-esc="invoice and invoice.note or ''"/>
+                            </textarea>
                         </div>
                     </div>
 
@@ -229,297 +252,297 @@
                 <script type="text/javascript">
                     // Global functions to update prices
                     function updateServicePrice(selectElement) {
-                        try {
-                            var selectedOption = selectElement.options[selectElement.selectedIndex];
-                            var price = selectedOption.getAttribute('data-price') || 0;
-                            var row = selectElement.closest('.form-row');
-                            var priceDisplay = row.querySelector('.service-price-display');
-                            var priceField = row.querySelector('.service-price');
+                    try {
+                    var selectedOption = selectElement.options[selectElement.selectedIndex];
+                    var price = selectedOption.getAttribute('data-price') || 0;
+                    var row = selectElement.closest('.form-row');
+                    var priceDisplay = row.querySelector('.service-price-display');
+                    var priceField = row.querySelector('.service-price');
 
-                            if (priceField) {
-                                priceField.value = price;
-                                if (priceDisplay) {
-                                    priceDisplay.textContent = new Intl.NumberFormat('vi-VN').format(price) + ' VND';
-                                }
-                            }
-                        } catch (error) {
-                            console.error('Error updating service price:', error);
-                        }
+                    if (priceField) {
+                    priceField.value = price;
+                    if (priceDisplay) {
+                    priceDisplay.textContent = new Intl.NumberFormat('vi-VN').format(price) + ' VND';
+                    }
+                    }
+                    } catch (error) {
+                    console.error('Error updating service price:', error);
+                    }
                     }
 
                     function updateProductPrice(selectElement) {
-                        try {
-                            var selectedOption = selectElement.options[selectElement.selectedIndex];
-                            var price = selectedOption.getAttribute('data-price') || 0;
-                            var row = selectElement.closest('.form-row');
-                            var priceDisplay = row.querySelector('.product-price-display');
-                            var priceField = row.querySelector('.product-price');
+                    try {
+                    var selectedOption = selectElement.options[selectElement.selectedIndex];
+                    var price = selectedOption.getAttribute('data-price') || 0;
+                    var row = selectElement.closest('.form-row');
+                    var priceDisplay = row.querySelector('.product-price-display');
+                    var priceField = row.querySelector('.product-price');
 
-                            if (priceField) {
-                                priceField.value = price;
-                                if (priceDisplay) {
-                                    priceDisplay.textContent = new Intl.NumberFormat('vi-VN').format(price) + ' VND';
-                                }
-                            }
-                        } catch (error) {
-                            console.error('Error updating product price:', error);
-                        }
+                    if (priceField) {
+                    priceField.value = price;
+                    if (priceDisplay) {
+                    priceDisplay.textContent = new Intl.NumberFormat('vi-VN').format(price) + ' VND';
+                    }
+                    }
+                    } catch (error) {
+                    console.error('Error updating product price:', error);
+                    }
                     }
 
                     document.addEventListener('DOMContentLoaded', function() {
-                        console.log('DOM loaded - initializing invoice form');
+                    console.log('DOM loaded - initializing invoice form');
 
-                        // Add service line function
-                        function addServiceLine() {
-                            var template = document.querySelector('.service-line-template').cloneNode(true);
-                            template.classList.remove('service-line-template');
-                            template.classList.add('service-line');
-                            template.style.display = 'flex';
+                    // Add service line function
+                    function addServiceLine() {
+                    var template = document.querySelector('.service-line-template').cloneNode(true);
+                    template.classList.remove('service-line-template');
+                    template.classList.add('service-line');
+                    template.style.display = 'flex';
 
-                            // Add event listener to remove button
-                            template.querySelector('.remove-line').addEventListener('click', function() {
-                                var lines = document.querySelectorAll('.service-line');
-                                if (lines.length > 0) {
-                                    this.closest('.service-line').remove();
-                                }
-                            });
+                    // Add event listener to remove button
+                    template.querySelector('.remove-line').addEventListener('click', function() {
+                    var lines = document.querySelectorAll('.service-line');
+                    if (lines.length > 0) {
+                    this.closest('.service-line').remove();
+                    }
+                    });
 
-                            // Set up service selection event handler
-                            var select = template.querySelector('.service-select');
-                            if (select) {
-                                select.addEventListener('change', function() {
-                                    updateServicePrice(this);
-                                });
-                            }
+                    // Set up service selection event handler
+                    var select = template.querySelector('.service-select');
+                    if (select) {
+                    select.addEventListener('change', function() {
+                    updateServicePrice(this);
+                    });
+                    }
 
-                            // Add to service lines container
-                            document.getElementById('service-lines').appendChild(template);
-                        }
+                    // Add to service lines container
+                    document.getElementById('service-lines').appendChild(template);
+                    }
 
-                        // Add product line function
-                        function addProductLine(productId, quantity, price) {
-                            var template = document.querySelector('.product-line-template').cloneNode(true);
-                            template.classList.remove('product-line-template');
-                            template.classList.add('product-line');
-                            template.style.display = 'flex';
+                    // Add product line function
+                    function addProductLine(productId, quantity, price) {
+                    var template = document.querySelector('.product-line-template').cloneNode(true);
+                    template.classList.remove('product-line-template');
+                    template.classList.add('product-line');
+                    template.style.display = 'flex';
 
-                            // Set product ID if provided
-                            if (productId) {
-                                var productSelect = template.querySelector('.product-select');
-                                if (productSelect) {
-                                    productSelect.value = productId;
-                                    updateProductPrice(productSelect);
-                                }
-                            }
+                    // Set product ID if provided
+                    if (productId) {
+                    var productSelect = template.querySelector('.product-select');
+                    if (productSelect) {
+                    productSelect.value = productId;
+                    updateProductPrice(productSelect);
+                    }
+                    }
 
-                            // Set quantity if provided
-                            if (quantity) {
-                                var quantityInput = template.querySelector('input[name="product_qty[]"]');
-                                if (quantityInput) {
-                                    quantityInput.value = quantity;
-                                }
-                            }
+                    // Set quantity if provided
+                    if (quantity) {
+                    var quantityInput = template.querySelector('input[name="product_qty[]"]');
+                    if (quantityInput) {
+                    quantityInput.value = quantity;
+                    }
+                    }
 
-                            // Add event listener to remove button
-                            template.querySelector('.remove-line').addEventListener('click', function() {
-                                var lines = document.querySelectorAll('.product-line');
-                                if (lines.length > 0) {
-                                    this.closest('.product-line').remove();
-                                }
-                            });
+                    // Add event listener to remove button
+                    template.querySelector('.remove-line').addEventListener('click', function() {
+                    var lines = document.querySelectorAll('.product-line');
+                    if (lines.length > 0) {
+                    this.closest('.product-line').remove();
+                    }
+                    });
 
-                            // Set up product selection event handler
-                            var select = template.querySelector('.product-select');
-                            if (select) {
-                                select.addEventListener('change', function() {
-                                    updateProductPrice(this);
-                                });
-                            }
+                    // Set up product selection event handler
+                    var select = template.querySelector('.product-select');
+                    if (select) {
+                    select.addEventListener('change', function() {
+                    updateProductPrice(this);
+                    });
+                    }
 
-                            // Add to product lines container
-                            document.getElementById('product-lines').appendChild(template);
+                    // Add to product lines container
+                    document.getElementById('product-lines').appendChild(template);
 
-                            return template;
-                        }
+                    return template;
+                    }
 
-                        // Add event listeners to add buttons
-                        var addServiceButton = document.querySelector('.add-service-line');
-                        if (addServiceButton) {
-                            addServiceButton.addEventListener('click', addServiceLine);
-                            console.log('Add service line button event handler attached');
-                        }
+                    // Add event listeners to add buttons
+                    var addServiceButton = document.querySelector('.add-service-line');
+                    if (addServiceButton) {
+                    addServiceButton.addEventListener('click', addServiceLine);
+                    console.log('Add service line button event handler attached');
+                    }
 
-                        var addProductButton = document.querySelector('.add-product-line');
-                        if (addProductButton) {
-                            addProductButton.addEventListener('click', function() {
-                                addProductLine();
-                            });
-                            console.log('Add product line button event handler attached');
-                        }
+                    var addProductButton = document.querySelector('.add-product-line');
+                    if (addProductButton) {
+                    addProductButton.addEventListener('click', function() {
+                    addProductLine();
+                    });
+                    console.log('Add product line button event handler attached');
+                    }
 
-                        // Add event listeners to existing remove buttons and setup price displays
-                        document.querySelectorAll('.service-line .remove-line').forEach(function(button) {
-                            button.addEventListener('click', function() {
-                                var lines = document.querySelectorAll('.service-line');
-                                if (lines.length > 0) {
-                                    this.closest('.service-line').remove();
-                                }
-                            });
-                        });
+                    // Add event listeners to existing remove buttons and setup price displays
+                    document.querySelectorAll('.service-line .remove-line').forEach(function(button) {
+                    button.addEventListener('click', function() {
+                    var lines = document.querySelectorAll('.service-line');
+                    if (lines.length > 0) {
+                    this.closest('.service-line').remove();
+                    }
+                    });
+                    });
 
-                        document.querySelectorAll('.product-line .remove-line').forEach(function(button) {
-                            button.addEventListener('click', function() {
-                                var lines = document.querySelectorAll('.product-line');
-                                if (lines.length > 0) {
-                                    this.closest('.product-line').remove();
-                                }
-                            });
-                        });
+                    document.querySelectorAll('.product-line .remove-line').forEach(function(button) {
+                    button.addEventListener('click', function() {
+                    var lines = document.querySelectorAll('.product-line');
+                    if (lines.length > 0) {
+                    this.closest('.product-line').remove();
+                    }
+                    });
+                    });
 
-                        // Initialize price displays for existing lines
-                        document.querySelectorAll('.service-line .service-select').forEach(function(select) {
-                            updateServicePrice(select);
-                        });
+                    // Initialize price displays for existing lines
+                    document.querySelectorAll('.service-line .service-select').forEach(function(select) {
+                    updateServicePrice(select);
+                    });
 
-                        document.querySelectorAll('.product-line .product-select').forEach(function(select) {
-                            updateProductPrice(select);
-                        });
+                    document.querySelectorAll('.product-line .product-select').forEach(function(select) {
+                    updateProductPrice(select);
+                    });
 
-                        // Hide template lines
-                        document.querySelector('.service-line-template').style.display = 'none';
-                        document.querySelector('.product-line-template').style.display = 'none';
+                    // Hide template lines
+                    document.querySelector('.service-line-template').style.display = 'none';
+                    document.querySelector('.product-line-template').style.display = 'none';
 
-                        // Add patient selection handler
-                        var patientSelect = document.getElementById('patient_id');
-                        var prescriptionContainer = document.getElementById('prescription-container');
-                        var prescriptionSelect = document.getElementById('prescription_id');
+                    // Add patient selection handler
+                    var patientSelect = document.getElementById('patient_id');
+                    var prescriptionContainer = document.getElementById('prescription-container');
+                    var prescriptionSelect = document.getElementById('prescription_id');
 
-                        if (patientSelect) {
-                            patientSelect.addEventListener('change', function() {
-                                var patientId = this.value;
+                    if (patientSelect) {
+                    patientSelect.addEventListener('change', function() {
+                    var patientId = this.value;
 
-                                // Clear current prescription options
-                                prescriptionSelect.innerHTML = '<option value="">-- Chọn đơn thuốc --</option>';
+                    // Clear current prescription options
+                    prescriptionSelect.innerHTML = '<option value="">-- Chọn đơn thuốc --</option>';
 
-                                if (patientId) {
-                                    // Show prescription selection
-                                    prescriptionContainer.style.display = 'flex';
+                    if (patientId) {
+                    // Show prescription selection
+                    prescriptionContainer.style.display = 'flex';
 
-                                    // Fetch prescriptions for selected patient
-                                    fetch('/api/prescriptions?patient_id=' + patientId)
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if (data.prescriptions &amp;&amp; data.prescriptions.length > 0) {
-                                                data.prescriptions.forEach(function(prescription) {
-                                                    var option = document.createElement('option');
-                                                    option.value = prescription.id;
-                                                    option.textContent = prescription.name + ' (' + prescription.date + ')';
-                                                    prescriptionSelect.appendChild(option);
-                                                });
-                                            }
-                                        })
-                                        .catch(error => console.error('Error fetching prescriptions:', error));
-                                } else {
-                                    // Hide prescription selection if no patient selected
-                                    prescriptionContainer.style.display = 'none';
-                                }
-                            });
-                        }
+                    // Fetch prescriptions for selected patient
+                    fetch('/api/prescriptions?patient_id=' + patientId)
+                    .then(response => response.json())
+                    .then(data => {
+                    if (data.prescriptions &amp;&amp; data.prescriptions.length > 0) {
+                    data.prescriptions.forEach(function(prescription) {
+                    var option = document.createElement('option');
+                    option.value = prescription.id;
+                    option.textContent = prescription.name + ' (' + prescription.date + ')';
+                    prescriptionSelect.appendChild(option);
+                    });
+                    }
+                    })
+                    .catch(error => console.error('Error fetching prescriptions:', error));
+                    } else {
+                    // Hide prescription selection if no patient selected
+                    prescriptionContainer.style.display = 'none';
+                    }
+                    });
+                    }
 
-                        // Add prescription selection handler
-                        if (prescriptionSelect) {
-                            prescriptionSelect.addEventListener('change', function() {
-                                var prescriptionId = this.value;
+                    // Add prescription selection handler
+                    if (prescriptionSelect) {
+                    prescriptionSelect.addEventListener('change', function() {
+                    var prescriptionId = this.value;
 
-                                if (prescriptionId) {
-                                    // Fetch prescription details and add products to invoice
-                                    fetch('/api/prescription/' + prescriptionId)
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if (data.products &amp;&amp; data.products.length > 0) {
-                                                // Clear existing product lines
-                                                var productLines = document.querySelectorAll('.product-line');
-                                                productLines.forEach(function(line) {
-                                                    line.remove();
-                                                });
+                    if (prescriptionId) {
+                    // Fetch prescription details and add products to invoice
+                    fetch('/api/prescription/' + prescriptionId)
+                    .then(response => response.json())
+                    .then(data => {
+                    if (data.products &amp;&amp; data.products.length > 0) {
+                    // Clear existing product lines
+                    var productLines = document.querySelectorAll('.product-line');
+                    productLines.forEach(function(line) {
+                    line.remove();
+                    });
 
-                                                // Add product lines from prescription
-                                                data.products.forEach(function(product) {
-                                                    addProductLine(product.id, product.quantity, product.price);
-                                                });
-                                            }
-                                        })
-                                        .catch(error => console.error('Error fetching prescription details:', error));
-                                }
-                            });
-                        }
+                    // Add product lines from prescription
+                    data.products.forEach(function(product) {
+                    addProductLine(product.id, product.quantity, product.price);
+                    });
+                    }
+                    })
+                    .catch(error => console.error('Error fetching prescription details:', error));
+                    }
+                    });
+                    }
 
-                        // Add validation and submission handler
-                        var submitButton = document.getElementById('submit-invoice-btn');
-                        if (submitButton) {
-                            submitButton.addEventListener('click', function(e) {
-                                console.log('Submit button clicked');
-                                try {
-                                    var form = document.getElementById('invoice-form');
-                                    if (form) {
-                                        if (validateInvoiceForm()) {
-                                            console.log('Form validated - submitting');
-                                            form.submit();
-                                        }
-                                    } else {
-                                        console.error('Form not found');
-                                        alert('Lỗi: Không tìm thấy form');
-                                    }
-                                } catch (error) {
-                                    console.error('Error in submit handler:', error);
-                                    alert('Đã xảy ra lỗi: ' + error.message);
-                                }
-                            });
-                        }
+                    // Add validation and submission handler
+                    var submitButton = document.getElementById('submit-invoice-btn');
+                    if (submitButton) {
+                    submitButton.addEventListener('click', function(e) {
+                    console.log('Submit button clicked');
+                    try {
+                    var form = document.getElementById('invoice-form');
+                    if (form) {
+                    if (validateInvoiceForm()) {
+                    console.log('Form validated - submitting');
+                    form.submit();
+                    }
+                    } else {
+                    console.error('Form not found');
+                    alert('Lỗi: Không tìm thấy form');
+                    }
+                    } catch (error) {
+                    console.error('Error in submit handler:', error);
+                    alert('Đã xảy ra lỗi: ' + error.message);
+                    }
+                    });
+                    }
 
-                        // Validation function
-                        function validateInvoiceForm() {
-                            var patientId = document.getElementById('patient_id').value;
-                            if (!patientId) {
-                                alert('Vui lòng chọn bệnh nhân.');
-                                return false;
-                            }
+                    // Validation function
+                    function validateInvoiceForm() {
+                    var patientId = document.getElementById('patient_id').value;
+                    if (!patientId) {
+                    alert('Vui lòng chọn bệnh nhân.');
+                    return false;
+                    }
 
-                            // Check if there's at least one valid service or product line
-                            var hasValidLine = false;
+                    // Check if there's at least one valid service or product line
+                    var hasValidLine = false;
 
-                            document.querySelectorAll('.service-line').forEach(function(line) {
-                                var serviceId = line.querySelector('select[name="service_id[]"]').value;
-                                var quantity = line.querySelector('input[name="service_qty[]"]').value;
-                                if (serviceId &amp;&amp; quantity > 0) {
-                                    hasValidLine = true;
-                                }
-                            });
+                    document.querySelectorAll('.service-line').forEach(function(line) {
+                    var serviceId = line.querySelector('select[name="service_id[]"]').value;
+                    var quantity = line.querySelector('input[name="service_qty[]"]').value;
+                    if (serviceId &amp;&amp; quantity > 0) {
+                    hasValidLine = true;
+                    }
+                    });
 
-                            document.querySelectorAll('.product-line').forEach(function(line) {
-                                var productId = line.querySelector('select[name="product_id[]"]').value;
-                                var quantity = line.querySelector('input[name="product_qty[]"]').value;
-                                if (productId &amp;&amp; quantity > 0) {
-                                    hasValidLine = true;
-                                }
-                            });
+                    document.querySelectorAll('.product-line').forEach(function(line) {
+                    var productId = line.querySelector('select[name="product_id[]"]').value;
+                    var quantity = line.querySelector('input[name="product_qty[]"]').value;
+                    if (productId &amp;&amp; quantity > 0) {
+                    hasValidLine = true;
+                    }
+                    });
 
-                            if (!hasValidLine) {
-                                alert('Vui lòng thêm ít nhất một dịch vụ hoặc thuốc vào hóa đơn.');
-                                return false;
-                            }
+                    if (!hasValidLine) {
+                    alert('Vui lòng thêm ít nhất một dịch vụ hoặc thuốc vào hóa đơn.');
+                    return false;
+                    }
 
-                            return true;
-                        }
+                    return true;
+                    }
 
-                        // Add initial lines if no existing lines (for new invoice)
-                        var existingServiceLines = document.querySelectorAll('#service-lines .service-line');
-                        var existingProductLines = document.querySelectorAll('#product-lines .product-line');
+                    // Add initial lines if no existing lines (for new invoice)
+                    var existingServiceLines = document.querySelectorAll('#service-lines .service-line');
+                    var existingProductLines = document.querySelectorAll('#product-lines .product-line');
 
-                        if (existingServiceLines.length === 0 &amp;&amp; existingProductLines.length === 0) {
-                            // Only add one service line by default - optional
-                            // addServiceLine();
-                        }
+                    if (existingServiceLines.length === 0 &amp;&amp; existingProductLines.length === 0) {
+                    // Only add one service line by default - optional
+                    // addServiceLine();
+                    }
                     });
                 </script>
             </div>
@@ -563,7 +586,8 @@
             <!-- Actions -->
             <div class="im-actions text-right">
                 <a href="/invoice/create" class="btn btn-success">
-                    <i class="fa fa-plus"></i> Tạo hóa đơn mới
+                    <i class="fa fa-plus"></i>
+                    Tạo hóa đơn mới
                 </a>
             </div>
 
@@ -589,17 +613,26 @@
                             <tbody>
                                 <t t-foreach="invoices" t-as="invoice">
                                     <tr>
-                                        <td><t t-esc="invoice.name"/></td>
-                                        <td><t t-esc="invoice.patient_id.name"/></td>
-                                        <td><t t-esc="invoice.invoice_date"/></td>
-                                        <td class="im-price">
-                                            <t t-esc="'{:,.0f}'.format(invoice.amount_total)"/> VND
+                                        <td>
+                                            <t t-esc="invoice.name"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="invoice.patient_id.name"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="invoice.invoice_date"/>
                                         </td>
                                         <td class="im-price">
-                                            <t t-esc="'{:,.0f}'.format(invoice.insurance_amount)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(invoice.amount_total)"/>
+                                            VND
                                         </td>
                                         <td class="im-price">
-                                            <t t-esc="'{:,.0f}'.format(invoice.patient_amount)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(invoice.insurance_amount)"/>
+                                            VND
+                                        </td>
+                                        <td class="im-price">
+                                            <t t-esc="'{:,.0f}'.format(invoice.patient_amount)"/>
+                                            VND
                                         </td>
                                         <td class="text-center">
                                             <t t-if="invoice.state == 'draft'">
@@ -617,11 +650,14 @@
                                         </td>
                                         <td class="text-center">
                                             <a t-att-href="'/invoice/view/%s' % invoice.id" class="btn btn-sm btn-info">
-                                                <i class="fa fa-eye"></i> Xem
+                                                <i class="fa fa-eye"></i>
+                                                Xem
                                             </a>
                                             <t t-if="invoice.state == 'draft'">
-                                                <a t-att-href="'/invoice/edit/%s' % invoice.id" class="btn btn-sm btn-warning ml-1">
-                                                    <i class="fa fa-edit"></i> Sửa
+                                                <a t-att-href="'/invoice/edit/%s' % invoice.id"
+                                                   class="btn btn-sm btn-warning ml-1">
+                                                    <i class="fa fa-edit"></i>
+                                                    Sửa
                                                 </a>
                                             </t>
                                         </td>
@@ -648,33 +684,40 @@
             <!-- Actions -->
             <div class="im-actions">
                 <a href="/invoice/list" class="btn btn-secondary">
-                    <i class="fa fa-arrow-left"></i> Quay lại
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại
                 </a>
 
                 <t t-if="invoice.state == 'draft'">
                     <a t-att-href="'/invoice/edit/%s' % invoice.id" class="btn btn-warning ml-2">
-                        <i class="fa fa-edit"></i> Sửa
+                        <i class="fa fa-edit"></i>
+                        Sửa
                     </a>
                     <a t-att-href="'/invoice/action/confirm/%s' % invoice.id" class="btn btn-primary ml-2">
-                        <i class="fa fa-check"></i> Xác nhận
+                        <i class="fa fa-check"></i>
+                        Xác nhận
                     </a>
                     <a t-att-href="'/invoice/action/cancel/%s' % invoice.id" class="btn btn-danger ml-2"
                        onclick="return confirm('Bạn có chắc chắn muốn hủy hóa đơn này?')">
-                        <i class="fa fa-times"></i> Hủy
+                        <i class="fa fa-times"></i>
+                        Hủy
                     </a>
                 </t>
                 <t t-if="invoice.state == 'confirmed'">
                     <a t-att-href="'/invoice/action/pay/%s' % invoice.id" class="btn btn-success ml-2">
-                        <i class="fa fa-money"></i> Thanh toán
+                        <i class="fa fa-money"></i>
+                        Thanh toán
                     </a>
                     <a t-att-href="'/invoice/action/cancel/%s' % invoice.id" class="btn btn-danger ml-2"
                        onclick="return confirm('Bạn có chắc chắn muốn hủy hóa đơn này?')">
-                        <i class="fa fa-times"></i> Hủy
+                        <i class="fa fa-times"></i>
+                        Hủy
                     </a>
                 </t>
                 <t t-if="invoice.state == 'cancelled'">
                     <a t-att-href="'/invoice/action/reset/%s' % invoice.id" class="btn btn-warning ml-2">
-                        <i class="fa fa-refresh"></i> Đặt về nháp
+                        <i class="fa fa-refresh"></i>
+                        Đặt về nháp
                     </a>
                 </t>
             </div>
@@ -685,9 +728,16 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>Mã hóa đơn:</strong> <t t-esc="invoice.name"/></p>
-                        <p><strong>Ngày lập:</strong> <t t-esc="invoice.invoice_date"/></p>
-                        <p><strong>Trạng thái:</strong>
+                        <p>
+                            <strong>Mã hóa đơn:</strong>
+                            <t t-esc="invoice.name"/>
+                        </p>
+                        <p>
+                            <strong>Ngày lập:</strong>
+                            <t t-esc="invoice.invoice_date"/>
+                        </p>
+                        <p>
+                            <strong>Trạng thái:</strong>
                             <t t-if="invoice.state == 'draft'">
                                 <span class="im-status-draft">Nháp</span>
                             </t>
@@ -703,9 +753,16 @@
                         </p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>Bệnh nhân:</strong> <t t-esc="invoice.patient_id.name"/></p>
-                        <p><strong>Điện thoại:</strong> <t t-esc="invoice.patient_id.phone or 'N/A'"/></p>
-                        <p><strong>Bảo hiểm:</strong>
+                        <p>
+                            <strong>Bệnh nhân:</strong>
+                            <t t-esc="invoice.patient_id.name"/>
+                        </p>
+                        <p>
+                            <strong>Điện thoại:</strong>
+                            <t t-esc="invoice.patient_id.phone or 'N/A'"/>
+                        </p>
+                        <p>
+                            <strong>Bảo hiểm:</strong>
                             <t t-if="invoice.patient_id.has_insurance">
                                 <span class="badge badge-success">Có</span>
                                 <span t-esc="invoice.patient_id.insurance_number"/>
@@ -738,27 +795,40 @@
                             <tbody>
                                 <t t-foreach="invoice.service_lines" t-as="line">
                                     <tr>
-                                        <td><t t-esc="line.service_id.service_name"/></td>
-                                        <td class="text-center"><t t-esc="line.quantity"/></td>
-                                        <td class="text-right">
-                                            <t t-esc="'{:,.0f}'.format(line.price_unit)"/> VND
+                                        <td>
+                                            <t t-esc="line.service_id.service_name"/>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-esc="line.quantity"/>
                                         </td>
                                         <td class="text-right">
-                                            <t t-esc="'{:,.0f}'.format(line.price_subtotal)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(line.price_unit)"/>
+                                            VND
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(line.price_subtotal)"/>
+                                            VND
                                         </td>
                                         <td class="text-right" style="color: green;">
-                                            <t t-esc="'{:,.0f}'.format(line.insurance_amount)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(line.insurance_amount)"/>
+                                            VND
                                         </td>
                                         <td class="text-right" style="color: #b91c1c;">
-                                            <t t-esc="'{:,.0f}'.format(line.patient_amount)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(line.patient_amount)"/>
+                                            VND
                                         </td>
                                     </tr>
                                 </t>
                                 <tr class="table-info">
-                                    <td colspan="3" class="text-right"><strong>Tổng cộng:</strong></td>
-                                    <td class="text-right"><strong>
-                                        <t t-esc="'{:,.0f}'.format(invoice.service_amount)"/> VND
-                                    </strong></td>
+                                    <td colspan="3" class="text-right">
+                                        <strong>Tổng cộng:</strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong>
+                                            <t t-esc="'{:,.0f}'.format(invoice.service_amount)"/>
+                                            VND
+                                        </strong>
+                                    </td>
                                     <td colspan="2"></td>
                                 </tr>
                             </tbody>
@@ -792,27 +862,40 @@
                             <tbody>
                                 <t t-foreach="invoice.product_lines" t-as="line">
                                     <tr>
-                                        <td><t t-esc="line.product_id.name"/></td>
-                                        <td class="text-center"><t t-esc="line.quantity"/></td>
-                                        <td class="text-right">
-                                            <t t-esc="'{:,.0f}'.format(line.price_unit)"/> VND
+                                        <td>
+                                            <t t-esc="line.product_id.name"/>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-esc="line.quantity"/>
                                         </td>
                                         <td class="text-right">
-                                            <t t-esc="'{:,.0f}'.format(line.price_subtotal)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(line.price_unit)"/>
+                                            VND
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(line.price_subtotal)"/>
+                                            VND
                                         </td>
                                         <td class="text-right" style="color: green;">
-                                            <t t-esc="'{:,.0f}'.format(line.insurance_amount)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(line.insurance_amount)"/>
+                                            VND
                                         </td>
                                         <td class="text-right" style="color: #b91c1c;">
-                                            <t t-esc="'{:,.0f}'.format(line.patient_amount)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(line.patient_amount)"/>
+                                            VND
                                         </td>
                                     </tr>
                                 </t>
                                 <tr class="table-info">
-                                    <td colspan="3" class="text-right"><strong>Tổng cộng:</strong></td>
-                                    <td class="text-right"><strong>
-                                        <t t-esc="'{:,.0f}'.format(invoice.medicine_amount)"/> VND
-                                    </strong></td>
+                                    <td colspan="3" class="text-right">
+                                        <strong>Tổng cộng:</strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong>
+                                            <t t-esc="'{:,.0f}'.format(invoice.medicine_amount)"/>
+                                            VND
+                                        </strong>
+                                    </td>
                                     <td colspan="2"></td>
                                 </tr>
                             </tbody>
@@ -832,7 +915,10 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>Ghi chú:</strong> <t t-esc="invoice.note or 'Không có ghi chú'"/></p>
+                        <p>
+                            <strong>Ghi chú:</strong>
+                            <t t-esc="invoice.note or 'Không có ghi chú'"/>
+                        </p>
                     </div>
                     <div class="col-md-6">
                         <div class="table-responsive">
@@ -840,31 +926,42 @@
                                 <tr>
                                     <th class="text-right">Tổng tiền dịch vụ:</th>
                                     <td class="text-right">
-                                        <t t-esc="'{:,.0f}'.format(invoice.service_amount)"/> VND
+                                        <t t-esc="'{:,.0f}'.format(invoice.service_amount)"/>
+                                        VND
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="text-right">Tổng tiền thuốc:</th>
                                     <td class="text-right">
-                                        <t t-esc="'{:,.0f}'.format(invoice.medicine_amount)"/> VND
+                                        <t t-esc="'{:,.0f}'.format(invoice.medicine_amount)"/>
+                                        VND
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="text-right">Tổng cộng:</th>
                                     <td class="text-right">
-                                        <strong><t t-esc="'{:,.0f}'.format(invoice.amount_total)"/> VND</strong>
+                                        <strong>
+                                            <t t-esc="'{:,.0f}'.format(invoice.amount_total)"/>
+                                            VND
+                                        </strong>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="text-right">Bảo hiểm chi trả:</th>
                                     <td class="text-right" style="color: green;">
-                                        <strong><t t-esc="'{:,.0f}'.format(invoice.insurance_amount)"/> VND</strong>
+                                        <strong>
+                                            <t t-esc="'{:,.0f}'.format(invoice.insurance_amount)"/>
+                                            VND
+                                        </strong>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="text-right">Bệnh nhân chi trả:</th>
                                     <td class="text-right" style="color: #b91c1c;">
-                                        <strong><t t-esc="'{:,.0f}'.format(invoice.patient_amount)"/> VND</strong>
+                                        <strong>
+                                            <t t-esc="'{:,.0f}'.format(invoice.patient_amount)"/>
+                                            VND
+                                        </strong>
                                     </td>
                                 </tr>
                             </table>

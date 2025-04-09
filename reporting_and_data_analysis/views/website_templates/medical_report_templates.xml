@@ -42,27 +42,43 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <t t-set="report_types" t-value="{'patient': 'Tình hình bệnh nhân', 'epidemiology': 'Dịch tễ học', 'service_quality': 'Chất lượng dịch vụ'}"/>
-                                                <t t-set="status_labels" t-value="{'draft': 'Nháp', 'generated': 'Đã tạo', 'approved': 'Đã duyệt'}"/>
-                                                <t t-set="status_classes" t-value="{'draft': 'secondary', 'generated': 'primary', 'approved': 'success'}"/>
+                                                <t t-set="report_types"
+                                                   t-value="{'patient': 'Tình hình bệnh nhân', 'epidemiology': 'Dịch tễ học', 'service_quality': 'Chất lượng dịch vụ'}"/>
+                                                <t t-set="status_labels"
+                                                   t-value="{'draft': 'Nháp', 'generated': 'Đã tạo', 'approved': 'Đã duyệt'}"/>
+                                                <t t-set="status_classes"
+                                                   t-value="{'draft': 'secondary', 'generated': 'primary', 'approved': 'success'}"/>
 
                                                 <t t-foreach="reports" t-as="report">
                                                     <tr>
-                                                        <td><t t-esc="report.name"/></td>
-                                                        <td><t t-esc="report_types.get(report.report_type, report.report_type)"/></td>
-                                                        <td><t t-esc="report.date_from"/> - <t t-esc="report.date_to"/></td>
-                                                        <td><t t-esc="report.department_id.name if report.department_id else 'Tất cả'"/></td>
+                                                        <td>
+                                                            <t t-esc="report.name"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="report_types.get(report.report_type, report.report_type)"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="report.date_from"/>
+                                                            -
+                                                            <t t-esc="report.date_to"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="report.department_id.name if report.department_id else 'Tất cả'"/>
+                                                        </td>
                                                         <td>
                                                             <span t-att-class="'badge badge-' + status_classes.get(report.state, 'secondary')">
                                                                 <t t-esc="status_labels.get(report.state, report.state)"/>
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            <a t-att-href="'/clinic/reports/medical/%s' % report.id" class="btn btn-sm btn-primary">
+                                                            <a t-att-href="'/clinic/reports/medical/%s' % report.id"
+                                                               class="btn btn-sm btn-primary">
                                                                 <i class="fa fa-eye mr-1"></i>Xem
                                                             </a>
                                                             <t t-if="report.state != 'draft'">
-                                                                <a t-att-href="'/report/medical_pdf/%s' % report.id" class="btn btn-sm btn-secondary ml-1" target="_blank">
+                                                                <a t-att-href="'/report/medical_pdf/%s' % report.id"
+                                                                   class="btn btn-sm btn-secondary ml-1"
+                                                                   target="_blank">
                                                                     <i class="fa fa-file-pdf mr-1"></i>PDF
                                                                 </a>
                                                             </t>
@@ -105,28 +121,42 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header bg-primary text-white">
-                                <h3 class="mb-0"><t t-esc="report.name"/></h3>
+                                <h3 class="mb-0">
+                                    <t t-esc="report.name"/>
+                                </h3>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <p><strong>Loại báo cáo:</strong>
+                                        <p>
+                                            <strong>Loại báo cáo:</strong>
                                             <t t-if="report.report_type == 'patient'">Tình hình bệnh nhân</t>
                                             <t t-elif="report.report_type == 'epidemiology'">Dịch tễ học</t>
                                             <t t-elif="report.report_type == 'service_quality'">Chất lượng dịch vụ</t>
-                                            <t t-else=""><t t-esc="report.report_type"/></t>
+                                            <t t-else="">
+                                                <t t-esc="report.report_type"/>
+                                            </t>
                                         </p>
                                     </div>
                                     <div class="col-md-4">
-                                        <p><strong>Thời gian:</strong> <t t-esc="report.date_from"/> - <t t-esc="report.date_to"/></p>
+                                        <p>
+                                            <strong>Thời gian:</strong>
+                                            <t t-esc="report.date_from"/>
+                                            -
+                                            <t t-esc="report.date_to"/>
+                                        </p>
                                     </div>
                                     <div class="col-md-4">
-                                        <p><strong>Khoa/Phòng:</strong> <t t-esc="report.department_id.name if report.department_id else 'Tất cả'"/></p>
+                                        <p>
+                                            <strong>Khoa/Phòng:</strong>
+                                            <t t-esc="report.department_id.name if report.department_id else 'Tất cả'"/>
+                                        </p>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <p><strong>Trạng thái:</strong>
+                                        <p>
+                                            <strong>Trạng thái:</strong>
                                             <t t-if="report.state == 'draft'">
                                                 <span class="badge badge-secondary">Nháp</span>
                                             </t>
@@ -139,7 +169,10 @@
                                         </p>
                                     </div>
                                     <div class="col-md-4">
-                                        <p><strong>Người tạo:</strong> <t t-esc="report.staff_id.name if report.staff_id else ''"/></p>
+                                        <p>
+                                            <strong>Người tạo:</strong>
+                                            <t t-esc="report.staff_id.name if report.staff_id else ''"/>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -150,20 +183,24 @@
                                     </a>
                                     <div>
                                         <t t-if="report.state == 'draft'">
-                                            <a t-att-href="'/clinic/reports/medical/%s/regenerate' % report.id" class="btn btn-primary">
+                                            <a t-att-href="'/clinic/reports/medical/%s/regenerate' % report.id"
+                                               class="btn btn-primary">
                                                 <i class="fa fa-sync mr-2"></i>Tạo Báo Cáo
                                             </a>
                                         </t>
                                         <t t-elif="report.state == 'generated'">
-                                            <a t-att-href="'/clinic/reports/medical/%s/regenerate' % report.id" class="btn btn-info mr-2">
+                                            <a t-att-href="'/clinic/reports/medical/%s/regenerate' % report.id"
+                                               class="btn btn-info mr-2">
                                                 <i class="fa fa-sync mr-2"></i>Cập Nhật
                                             </a>
-                                            <a t-att-href="'/clinic/reports/medical/%s/approve' % report.id" class="btn btn-success mr-2">
+                                            <a t-att-href="'/clinic/reports/medical/%s/approve' % report.id"
+                                               class="btn btn-success mr-2">
                                                 <i class="fa fa-check-circle mr-2"></i>Duyệt
                                             </a>
                                         </t>
                                         <t t-if="report.state != 'draft'">
-                                            <a t-att-href="'/report/medical_pdf/%s' % report.id" class="btn btn-danger" target="_blank">
+                                            <a t-att-href="'/report/medical_pdf/%s' % report.id" class="btn btn-danger"
+                                               target="_blank">
                                                 <i class="fa fa-file-pdf mr-2"></i>Xuất PDF
                                             </a>
                                         </t>
@@ -180,7 +217,8 @@
                         <div class="col-md-12">
                             <ul class="nav nav-tabs" id="reportTabs" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active" id="content-tab" data-toggle="tab" href="#content" role="tab">
+                                    <a class="nav-link active" id="content-tab" data-toggle="tab" href="#content"
+                                       role="tab">
                                         Nội Dung Báo Cáo
                                     </a>
                                 </li>
@@ -217,7 +255,8 @@
                                 <t t-if="report.chart_image">
                                     <div class="tab-pane fade" id="chart" role="tabpanel">
                                         <div class="text-center py-3">
-                                            <img t-att-src="'data:image/png;base64,%s' % report.chart_image" class="img-fluid" alt="Main Chart"/>
+                                            <img t-att-src="'data:image/png;base64,%s' % report.chart_image"
+                                                 class="img-fluid" alt="Main Chart"/>
                                         </div>
                                     </div>
                                 </t>
@@ -225,7 +264,8 @@
                                 <t t-if="report.additional_chart1">
                                     <div class="tab-pane fade" id="chart1" role="tabpanel">
                                         <div class="text-center py-3">
-                                            <img t-att-src="'data:image/png;base64,%s' % report.additional_chart1" class="img-fluid" alt="Additional Chart 1"/>
+                                            <img t-att-src="'data:image/png;base64,%s' % report.additional_chart1"
+                                                 class="img-fluid" alt="Additional Chart 1"/>
                                         </div>
                                     </div>
                                 </t>
@@ -233,7 +273,8 @@
                                 <t t-if="report.additional_chart2">
                                     <div class="tab-pane fade" id="chart2" role="tabpanel">
                                         <div class="text-center py-3">
-                                            <img t-att-src="'data:image/png;base64,%s' % report.additional_chart2" class="img-fluid" alt="Additional Chart 2"/>
+                                            <img t-att-src="'data:image/png;base64,%s' % report.additional_chart2"
+                                                 class="img-fluid" alt="Additional Chart 2"/>
                                         </div>
                                     </div>
                                 </t>
@@ -290,7 +331,8 @@
 
                                     <div class="form-group">
                                         <label for="report_type">Loại Báo Cáo</label>
-                                        <select id="report_type" name="report_type" class="form-control" required="required">
+                                        <select id="report_type" name="report_type" class="form-control"
+                                                required="required">
                                             <option value="">-- Chọn Loại Báo Cáo --</option>
                                             <option value="patient">Tình hình bệnh nhân</option>
                                             <option value="epidemiology">Dịch tễ học</option>
@@ -344,7 +386,8 @@
 
                                     <div class="alert alert-info mt-3">
                                         <i class="fa fa-info-circle mr-2"></i>
-                                        <strong>Lưu ý:</strong> Hãy chọn thông tin báo cáo phù hợp để có kết quả chính xác nhất.
+                                        <strong>Lưu ý:</strong>
+                                        Hãy chọn thông tin báo cáo phù hợp để có kết quả chính xác nhất.
                                     </div>
 
                                     <div class="form-group text-center mt-4">

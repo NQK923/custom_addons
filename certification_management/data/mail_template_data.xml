@@ -5,10 +5,12 @@
             <field name="name">Nhắc nhở chứng nhận sắp hết hạn</field>
             <field name="model_id" ref="model_hospital_certification"/>
             <field name="subject">Nhắc nhở: Chứng nhận ${object.name} sắp hết hạn</field>
-            <field name="email_from">${(object.company_id.email and '%s &lt;%s&gt;' % (object.company_id.name, object.company_id.email) or '')|safe}</field>
+            <field name="email_from">
+                ${(object.company_id.email and '%s &lt;%s&gt;' % (object.company_id.name, object.company_id.email) or '')|safe}
+            </field>
             <field name="email_to">${object.responsible_id.email}</field>
             <field name="body_html">
-<![CDATA[
+                <![CDATA[
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
                         Kính gửi ${object.responsible_id.name},

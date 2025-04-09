@@ -5,89 +5,89 @@
         <style>
             /* Common Styles */
             .im-container {
-                background-color: #f8f9fa;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                max-width: 1200px;
-                margin: 0 auto;
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 0 auto;
             }
             .im-card {
-                background-color: #fff;
-                padding: 20px;
-                border-radius: 8px;
-                margin-bottom: 25px;
-                border: 1px solid #dee2e6;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid #dee2e6;
             }
             .im-card h3 {
-                color: #007bff;
-                border-bottom: 2px solid #007bff;
-                padding-bottom: 8px;
-                margin-bottom: 20px;
-                font-size: 1.5rem;
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
             }
             .im-table {
-                margin-bottom: 25px;
-                font-size: 0.95rem;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
             }
             .im-table th {
-                background-color: #007bff;
-                color: #fff;
-                padding: 12px;
-                text-align: center;
+            background-color: #007bff;
+            color: #fff;
+            padding: 12px;
+            text-align: center;
             }
             .im-table td {
-                vertical-align: middle;
-                padding: 10px;
+            vertical-align: middle;
+            padding: 10px;
             }
             .im-empty {
-                color: #6c757d;
-                font-style: italic;
-                font-size: 1rem;
-                text-align: center;
-                padding: 20px;
+            color: #6c757d;
+            font-style: italic;
+            font-size: 1rem;
+            text-align: center;
+            padding: 20px;
             }
             .im-filter-form {
-                margin-bottom: 20px;
+            margin-bottom: 20px;
             }
             .im-status-draft {
-                background-color: #ffc107;
-                color: #212529;
-                padding: 3px 8px;
-                border-radius: 4px;
-                font-size: 0.85rem;
-                font-weight: bold;
+            background-color: #ffc107;
+            color: #212529;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
             }
             .im-status-confirmed {
-                background-color: #17a2b8;
-                color: #fff;
-                padding: 3px 8px;
-                border-radius: 4px;
-                font-size: 0.85rem;
-                font-weight: bold;
+            background-color: #17a2b8;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
             }
             .im-status-paid {
-                background-color: #28a745;
-                color: #fff;
-                padding: 3px 8px;
-                border-radius: 4px;
-                font-size: 0.85rem;
-                font-weight: bold;
+            background-color: #28a745;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
             }
             .im-status-cancelled {
-                background-color: #dc3545;
-                color: #fff;
-                padding: 3px 8px;
-                border-radius: 4px;
-                font-size: 0.85rem;
-                font-weight: bold;
+            background-color: #dc3545;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
             }
             .im-price {
-                font-weight: bold;
-                text-align: right;
+            font-weight: bold;
+            text-align: right;
             }
             .im-actions {
-                margin-bottom: 20px;
+            margin-bottom: 20px;
             }
         </style>
     </template>
@@ -97,16 +97,24 @@
         <div class="im-menu mb-4">
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a t-attf-class="nav-link #{page_name == 'invoice_list' and 'active' or ''}" href="/invoice/list">Hóa đơn</a>
+                    <a t-attf-class="nav-link #{page_name == 'invoice_list' and 'active' or ''}" href="/invoice/list">
+                        Hóa đơn
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a t-attf-class="nav-link #{page_name == 'insurance_list' and 'active' or ''}" href="/insurance/list">Hóa đơn bảo hiểm</a>
+                    <a t-attf-class="nav-link #{page_name == 'insurance_list' and 'active' or ''}"
+                       href="/insurance/list">Hóa đơn bảo hiểm
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a t-attf-class="nav-link #{page_name == 'purchase_list' and 'active' or ''}" href="/purchase/list">Phiếu nhập hàng</a>
+                    <a t-attf-class="nav-link #{page_name == 'purchase_list' and 'active' or ''}" href="/purchase/list">
+                        Phiếu nhập hàng
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a t-attf-class="nav-link #{page_name == 'statistics_dashboard' and 'active' or ''}" href="/statistics/dashboard">Thống kê</a>
+                    <a t-attf-class="nav-link #{page_name == 'statistics_dashboard' and 'active' or ''}"
+                       href="/statistics/dashboard">Thống kê
+                    </a>
                 </li>
             </ul>
         </div>

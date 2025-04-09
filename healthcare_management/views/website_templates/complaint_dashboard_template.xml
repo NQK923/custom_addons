@@ -5,62 +5,62 @@
             <!-- CSS Inline -->
             <style>
                 .dashboard-card {
-                    margin-bottom: 20px;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                 }
 
                 .dashboard-card .card-header {
-                    border-radius: 8px 8px 0 0;
-                    font-weight: bold;
+                border-radius: 8px 8px 0 0;
+                font-weight: bold;
                 }
 
                 .dashboard-stats {
-                    padding: 20px;
-                    border-radius: 8px;
-                    margin-bottom: 20px;
-                    color: white;
-                    transition: transform 0.3s ease;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                color: white;
+                transition: transform 0.3s ease;
                 }
 
                 .dashboard-stats:hover {
-                    transform: translateY(-5px);
+                transform: translateY(-5px);
                 }
 
                 .dashboard-stats h2 {
-                    font-size: 2.5rem;
-                    margin-bottom: 0;
+                font-size: 2.5rem;
+                margin-bottom: 0;
                 }
 
                 .dashboard-stats h5 {
-                    opacity: 0.8;
-                    margin-bottom: 0;
+                opacity: 0.8;
+                margin-bottom: 0;
                 }
 
                 .dashboard-table thead th {
-                    background-color: #343a40;
-                    color: white;
+                background-color: #343a40;
+                color: white;
                 }
 
                 .chart-container {
-                    position: relative;
-                    height: 300px;
-                    width: 100%;
+                position: relative;
+                height: 300px;
+                width: 100%;
                 }
 
                 .date-filter {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 15px;
-                    margin-bottom: 20px;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 20px;
                 }
 
                 .breadcrumb {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 12px 15px;
-                    margin-bottom: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 12px 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
             </style>
 
@@ -69,7 +69,9 @@
                     <div class="col">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/healthcare/dashboard">Trang chủ</a>
+                                </li>
                                 <li class="breadcrumb-item active" aria-current="page">Phân tích khiếu nại</li>
                             </ol>
                         </nav>
@@ -92,13 +94,15 @@
                                         <div class="col-md-5">
                                             <div class="form-group mb-2">
                                                 <label for="date_from" class="me-2">Từ ngày:</label>
-                                                <input type="date" class="form-control" id="date_from" name="date_from" t-att-value="date_from"/>
+                                                <input type="date" class="form-control" id="date_from" name="date_from"
+                                                       t-att-value="date_from"/>
                                             </div>
                                         </div>
                                         <div class="col-md-5">
                                             <div class="form-group mb-2">
                                                 <label for="date_to" class="me-2">Đến ngày:</label>
-                                                <input type="date" class="form-control" id="date_to" name="date_to" t-att-value="date_to"/>
+                                                <input type="date" class="form-control" id="date_to" name="date_to"
+                                                       t-att-value="date_to"/>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
@@ -114,7 +118,9 @@
                             <div class="col-md-4">
                                 <div class="dashboard-stats bg-danger">
                                     <h5 class="card-title">Tổng số khiếu nại</h5>
-                                    <h2><t t-esc="summary_stats['total_complaints'] or 0"/></h2>
+                                    <h2>
+                                        <t t-esc="summary_stats['total_complaints'] or 0"/>
+                                    </h2>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -134,7 +140,8 @@
                                     <h5 class="card-title">Tỷ lệ đã giải quyết</h5>
                                     <h2>
                                         <t t-if="summary_stats['total_complaints'] and summary_stats['resolved_complaints']">
-                                            <t t-esc="round(summary_stats['resolved_complaints'] * 100 / summary_stats['total_complaints'], 1)"/>%
+                                            <t t-esc="round(summary_stats['resolved_complaints'] * 100 / summary_stats['total_complaints'], 1)"/>
+                                            %
                                         </t>
                                         <t t-else="">0%</t>
                                     </h2>
@@ -147,25 +154,33 @@
                             <div class="col-md-3">
                                 <div class="dashboard-stats bg-warning text-dark">
                                     <h5 class="card-title">Mới</h5>
-                                    <h2><t t-esc="summary_stats['new_complaints'] or 0"/></h2>
+                                    <h2>
+                                        <t t-esc="summary_stats['new_complaints'] or 0"/>
+                                    </h2>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="dashboard-stats bg-primary">
                                     <h5 class="card-title">Đang xử lý</h5>
-                                    <h2><t t-esc="summary_stats['in_progress_complaints'] or 0"/></h2>
+                                    <h2>
+                                        <t t-esc="summary_stats['in_progress_complaints'] or 0"/>
+                                    </h2>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="dashboard-stats bg-success">
                                     <h5 class="card-title">Đã giải quyết</h5>
-                                    <h2><t t-esc="summary_stats['resolved_complaints'] or 0"/></h2>
+                                    <h2>
+                                        <t t-esc="summary_stats['resolved_complaints'] or 0"/>
+                                    </h2>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="dashboard-stats bg-secondary">
                                     <h5 class="card-title">Đã hủy</h5>
-                                    <h2><t t-esc="summary_stats['cancelled_complaints'] or 0"/></h2>
+                                    <h2>
+                                        <t t-esc="summary_stats['cancelled_complaints'] or 0"/>
+                                    </h2>
                                 </div>
                             </div>
                         </div>
@@ -222,12 +237,24 @@
                                                 <tbody>
                                                     <t t-foreach="category_stats" t-as="cat">
                                                         <tr>
-                                                            <td><t t-esc="cat['category_name']"/></td>
-                                                            <td><t t-esc="cat['total_complaints']"/></td>
-                                                            <td><t t-esc="cat['new_count']"/></td>
-                                                            <td><t t-esc="cat['in_progress_count']"/></td>
-                                                            <td><t t-esc="cat['resolved_count']"/></td>
-                                                            <td><t t-esc="cat['cancelled_count']"/></td>
+                                                            <td>
+                                                                <t t-esc="cat['category_name']"/>
+                                                            </td>
+                                                            <td>
+                                                                <t t-esc="cat['total_complaints']"/>
+                                                            </td>
+                                                            <td>
+                                                                <t t-esc="cat['new_count']"/>
+                                                            </td>
+                                                            <td>
+                                                                <t t-esc="cat['in_progress_count']"/>
+                                                            </td>
+                                                            <td>
+                                                                <t t-esc="cat['resolved_count']"/>
+                                                            </td>
+                                                            <td>
+                                                                <t t-esc="cat['cancelled_count']"/>
+                                                            </td>
                                                             <td>
                                                                 <t t-if="cat['avg_resolution_time']">
                                                                     <t t-esc="round(cat['avg_resolution_time'], 1)"/>
@@ -255,138 +282,138 @@
             <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Đảm bảo Chart.js đã được tải
-                    if (typeof Chart === 'undefined') {
-                        console.error('Chart.js không được tải. Không thể tạo biểu đồ.');
-                        return;
-                    }
+                // Đảm bảo Chart.js đã được tải
+                if (typeof Chart === 'undefined') {
+                console.error('Chart.js không được tải. Không thể tạo biểu đồ.');
+                return;
+                }
 
-                    try {
-                        // Lấy dữ liệu từ các thẻ ẩn
-                        var categoryData = JSON.parse(document.getElementById('complaint_by_category_data').textContent);
-                        var monthData = JSON.parse(document.getElementById('complaint_by_month_data').textContent);
+                try {
+                // Lấy dữ liệu từ các thẻ ẩn
+                var categoryData = JSON.parse(document.getElementById('complaint_by_category_data').textContent);
+                var monthData = JSON.parse(document.getElementById('complaint_by_month_data').textContent);
 
-                        // Chuẩn bị dữ liệu cho biểu đồ khiếu nại theo loại
-                        var categoryLabels = [];
-                        var categoryValues = [];
-                        var categoryColors = [
-                            'rgba(220, 53, 69, 0.8)',
-                            'rgba(0, 123, 255, 0.8)',
-                            'rgba(255, 193, 7, 0.8)',
-                            'rgba(40, 167, 69, 0.8)',
-                            'rgba(108, 117, 125, 0.8)'
-                        ];
+                // Chuẩn bị dữ liệu cho biểu đồ khiếu nại theo loại
+                var categoryLabels = [];
+                var categoryValues = [];
+                var categoryColors = [
+                'rgba(220, 53, 69, 0.8)',
+                'rgba(0, 123, 255, 0.8)',
+                'rgba(255, 193, 7, 0.8)',
+                'rgba(40, 167, 69, 0.8)',
+                'rgba(108, 117, 125, 0.8)'
+                ];
 
-                        categoryData.forEach(function(item, index) {
-                            categoryLabels.push(item.category || 'Không xác định');
-                            categoryValues.push(item.count);
-                        });
+                categoryData.forEach(function(item, index) {
+                categoryLabels.push(item.category || 'Không xác định');
+                categoryValues.push(item.count);
+                });
 
-                        var categoryCtx = document.getElementById('complaintCategoryChart').getContext('2d');
-                        var categoryChart = new Chart(categoryCtx, {
-                            type: 'doughnut',
-                            data: {
-                                labels: categoryLabels,
-                                datasets: [{
-                                    data: categoryValues,
-                                    backgroundColor: categoryColors,
-                                    borderColor: 'rgba(255, 255, 255, 1)',
-                                    borderWidth: 1
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        position: 'right',
-                                    },
-                                    title: {
-                                        display: true,
-                                        text: 'Phân bố khiếu nại theo loại'
-                                    }
-                                },
-                                animation: {
-                                    animateScale: true,
-                                    animateRotate: true
-                                }
-                            }
-                        });
+                var categoryCtx = document.getElementById('complaintCategoryChart').getContext('2d');
+                var categoryChart = new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                labels: categoryLabels,
+                datasets: [{
+                data: categoryValues,
+                backgroundColor: categoryColors,
+                borderColor: 'rgba(255, 255, 255, 1)',
+                borderWidth: 1
+                }]
+                },
+                options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                legend: {
+                position: 'right',
+                },
+                title: {
+                display: true,
+                text: 'Phân bố khiếu nại theo loại'
+                }
+                },
+                animation: {
+                animateScale: true,
+                animateRotate: true
+                }
+                }
+                });
 
-                        // Chuẩn bị dữ liệu cho biểu đồ khiếu nại theo tháng
-                        var monthLabels = [];
-                        var newValues = [];
-                        var inProgressValues = [];
-                        var resolvedValues = [];
-                        var cancelledValues = [];
+                // Chuẩn bị dữ liệu cho biểu đồ khiếu nại theo tháng
+                var monthLabels = [];
+                var newValues = [];
+                var inProgressValues = [];
+                var resolvedValues = [];
+                var cancelledValues = [];
 
-                        monthData.forEach(function(item) {
-                            monthLabels.push(item.month_name || 'Không xác định');
-                            newValues.push(item.new || 0);
-                            inProgressValues.push(item.in_progress || 0);
-                            resolvedValues.push(item.resolved || 0);
-                            cancelledValues.push(item.cancelled || 0);
-                        });
+                monthData.forEach(function(item) {
+                monthLabels.push(item.month_name || 'Không xác định');
+                newValues.push(item.new || 0);
+                inProgressValues.push(item.in_progress || 0);
+                resolvedValues.push(item.resolved || 0);
+                cancelledValues.push(item.cancelled || 0);
+                });
 
-                        var monthCtx = document.getElementById('complaintMonthChart').getContext('2d');
-                        var monthChart = new Chart(monthCtx, {
-                            type: 'bar',
-                            data: {
-                                labels: monthLabels,
-                                datasets: [
-                                    {
-                                        label: 'Mới',
-                                        data: newValues,
-                                        backgroundColor: 'rgba(255, 193, 7, 0.8)',
-                                        borderColor: 'rgba(255, 193, 7, 1)',
-                                        borderWidth: 1
-                                    },
-                                    {
-                                        label: 'Đang xử lý',
-                                        data: inProgressValues,
-                                        backgroundColor: 'rgba(0, 123, 255, 0.8)',
-                                        borderColor: 'rgba(0, 123, 255, 1)',
-                                        borderWidth: 1
-                                    },
-                                    {
-                                        label: 'Đã giải quyết',
-                                        data: resolvedValues,
-                                        backgroundColor: 'rgba(40, 167, 69, 0.8)',
-                                        borderColor: 'rgba(40, 167, 69, 1)',
-                                        borderWidth: 1
-                                    },
-                                    {
-                                        label: 'Đã hủy',
-                                        data: cancelledValues,
-                                        backgroundColor: 'rgba(108, 117, 125, 0.8)',
-                                        borderColor: 'rgba(108, 117, 125, 1)',
-                                        borderWidth: 1
-                                    }
-                                ]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    title: {
-                                        display: true,
-                                        text: 'Khiếu nại theo tháng'
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        stacked: true
-                                    },
-                                    y: {
-                                        stacked: true,
-                                        beginAtZero: true
-                                    }
-                                }
-                            }
-                        });
-                    } catch (error) {
-                        console.error('Lỗi khi tạo biểu đồ:', error);
-                    }
+                var monthCtx = document.getElementById('complaintMonthChart').getContext('2d');
+                var monthChart = new Chart(monthCtx, {
+                type: 'bar',
+                data: {
+                labels: monthLabels,
+                datasets: [
+                {
+                label: 'Mới',
+                data: newValues,
+                backgroundColor: 'rgba(255, 193, 7, 0.8)',
+                borderColor: 'rgba(255, 193, 7, 1)',
+                borderWidth: 1
+                },
+                {
+                label: 'Đang xử lý',
+                data: inProgressValues,
+                backgroundColor: 'rgba(0, 123, 255, 0.8)',
+                borderColor: 'rgba(0, 123, 255, 1)',
+                borderWidth: 1
+                },
+                {
+                label: 'Đã giải quyết',
+                data: resolvedValues,
+                backgroundColor: 'rgba(40, 167, 69, 0.8)',
+                borderColor: 'rgba(40, 167, 69, 1)',
+                borderWidth: 1
+                },
+                {
+                label: 'Đã hủy',
+                data: cancelledValues,
+                backgroundColor: 'rgba(108, 117, 125, 0.8)',
+                borderColor: 'rgba(108, 117, 125, 1)',
+                borderWidth: 1
+                }
+                ]
+                },
+                options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                title: {
+                display: true,
+                text: 'Khiếu nại theo tháng'
+                }
+                },
+                scales: {
+                x: {
+                stacked: true
+                },
+                y: {
+                stacked: true,
+                beginAtZero: true
+                }
+                }
+                }
+                });
+                } catch (error) {
+                console.error('Lỗi khi tạo biểu đồ:', error);
+                }
                 });
             </script>
         </t>

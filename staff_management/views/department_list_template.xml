@@ -13,12 +13,14 @@
                 <!-- Notification messages -->
                 <t t-if="error">
                     <div class="alert alert-danger" role="alert">
-                        <i class="fa fa-exclamation-triangle"/> <t t-esc="error"/>
+                        <i class="fa fa-exclamation-triangle"/>
+                        <t t-esc="error"/>
                     </div>
                 </t>
                 <t t-if="success">
                     <div class="alert alert-success" role="alert">
-                        <i class="fa fa-check-circle"/> <t t-esc="success"/>
+                        <i class="fa fa-check-circle"/>
+                        <t t-esc="success"/>
                     </div>
                 </t>
 
@@ -28,9 +30,12 @@
                         <h4 class="mb-0">Danh sách khoa</h4>
                         <div>
                             <a href="/clinic/department/create" class="btn btn-light">
-                                <i class="fa fa-plus-circle"/> Thêm khoa mới
+                                <i class="fa fa-plus-circle"/>
+                                Thêm khoa mới
                             </a>
-                            <span class="badge badge-light ml-2">Tổng số: <t t-esc="len(departments)"/></span>
+                            <span class="badge badge-light ml-2">Tổng số:
+                                <t t-esc="len(departments)"/>
+                            </span>
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -56,21 +61,30 @@
                                                     <t t-esc="department.department_name"/>
                                                 </td>
                                                 <td>
-                                                    <span t-if="department.type == 'clinical'" class="badge badge-primary">Khoa lâm sàng</span>
-                                                    <span t-elif="department.type == 'subclinical'" class="badge badge-info">Khoa cận lâm sàng</span>
+                                                    <span t-if="department.type == 'clinical'"
+                                                          class="badge badge-primary">Khoa lâm sàng
+                                                    </span>
+                                                    <span t-elif="department.type == 'subclinical'"
+                                                          class="badge badge-info">Khoa cận lâm sàng
+                                                    </span>
                                                 </td>
                                                 <td>
                                                     <t t-esc="department.note or '--'"/>
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="btn-group">
-                                                        <a t-att-href="'/clinic/department/%s/edit' % department.id" class="btn btn-sm btn-info"
+                                                        <a t-att-href="'/clinic/department/%s/edit' % department.id"
+                                                           class="btn btn-sm btn-info"
                                                            title="Chỉnh sửa">
-                                                            <i class="fa fa-edit"/> Sửa
+                                                            <i class="fa fa-edit"/>
+                                                            Sửa
                                                         </a>
-                                                        <a t-att-href="'/clinic/department/%s/delete' % department.id" class="btn btn-sm btn-danger ml-1"
-                                                           title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa khoa này?');">
-                                                            <i class="fa fa-trash"/> Xóa
+                                                        <a t-att-href="'/clinic/department/%s/delete' % department.id"
+                                                           class="btn btn-sm btn-danger ml-1"
+                                                           title="Xóa"
+                                                           onclick="return confirm('Bạn có chắc chắn muốn xóa khoa này?');">
+                                                            <i class="fa fa-trash"/>
+                                                            Xóa
                                                         </a>
                                                     </div>
                                                 </td>
@@ -81,9 +95,12 @@
                                         <tr>
                                             <td colspan="5" class="text-center py-4">
                                                 <div class="alert alert-info mb-0">
-                                                    <i class="fa fa-info-circle"/> Chưa có khoa nào được tạo.
-                                                    <a href="/clinic/department/create" class="btn btn-primary btn-sm ml-3">
-                                                        <i class="fa fa-plus-circle"/> Tạo khoa mới
+                                                    <i class="fa fa-info-circle"/>
+                                                    Chưa có khoa nào được tạo.
+                                                    <a href="/clinic/department/create"
+                                                       class="btn btn-primary btn-sm ml-3">
+                                                        <i class="fa fa-plus-circle"/>
+                                                        Tạo khoa mới
                                                     </a>
                                                 </div>
                                             </td>

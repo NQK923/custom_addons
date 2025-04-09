@@ -5,8 +5,12 @@
             <div class="container mt-4 mb-5">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/clinic/staff">Quản lý nhân sự</a></li>
-                        <li class="breadcrumb-item"><a t-att-href="'/clinic/staff/%s' % staff.id">Chi tiết nhân viên</a></li>
+                        <li class="breadcrumb-item">
+                            <a href="/clinic/staff">Quản lý nhân sự</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a t-att-href="'/clinic/staff/%s' % staff.id">Chi tiết nhân viên</a>
+                        </li>
                         <li class="breadcrumb-item active" aria-current="page">Chấm công</li>
                     </ol>
                 </nav>
@@ -14,12 +18,14 @@
                 <!-- Notification messages -->
                 <t t-if="error">
                     <div class="alert alert-danger" role="alert">
-                        <i class="fa fa-exclamation-triangle"/> <t t-esc="error"/>
+                        <i class="fa fa-exclamation-triangle"/>
+                        <t t-esc="error"/>
                     </div>
                 </t>
                 <t t-if="success">
                     <div class="alert alert-success" role="alert">
-                        <i class="fa fa-check-circle"/> <t t-esc="success"/>
+                        <i class="fa fa-check-circle"/>
+                        <t t-esc="success"/>
                     </div>
                 </t>
 
@@ -37,7 +43,9 @@
                                             <t t-esc="staff.staff_name and staff.staff_name[0] or '?'"/>
                                         </span>
                                     </div>
-                                    <h3 class="mb-1"><t t-esc="staff.staff_name"/></h3>
+                                    <h3 class="mb-1">
+                                        <t t-esc="staff.staff_name"/>
+                                    </h3>
                                     <p class="text-muted">
                                         <t t-if="staff.staff_type">
                                             <t t-esc="staff.staff_type.position"/>
@@ -48,7 +56,9 @@
                                 <div class="staff-info">
                                     <p>
                                         <strong>Mã nhân sự:</strong>
-                                        <span class="float-right"><t t-esc="staff.name"/></span>
+                                        <span class="float-right">
+                                            <t t-esc="staff.name"/>
+                                        </span>
                                     </p>
                                     <p>
                                         <strong>Khoa:</strong>
@@ -61,9 +71,15 @@
                                     <p>
                                         <strong>Trạng thái:</strong>
                                         <span class="float-right">
-                                            <span t-if="staff.status == 'active'" class="badge badge-success">Đang làm việc</span>
-                                            <span t-elif="staff.status == 'inactive'" class="badge badge-warning">Nghỉ phép</span>
-                                            <span t-elif="staff.status == 'retired'" class="badge badge-secondary">Đã nghỉ hưu</span>
+                                            <span t-if="staff.status == 'active'" class="badge badge-success">Đang làm
+                                                việc
+                                            </span>
+                                            <span t-elif="staff.status == 'inactive'" class="badge badge-warning">Nghỉ
+                                                phép
+                                            </span>
+                                            <span t-elif="staff.status == 'retired'" class="badge badge-secondary">Đã
+                                                nghỉ hưu
+                                            </span>
                                         </span>
                                     </p>
                                 </div>
@@ -80,38 +96,50 @@
                                     <h5 class="mb-4">Trạng thái chấm công hôm nay</h5>
                                     <t t-if="not today_attendance">
                                         <div class="alert alert-warning">
-                                            <i class="fa fa-exclamation-circle"/> Chưa chấm công
+                                            <i class="fa fa-exclamation-circle"/>
+                                            Chưa chấm công
                                         </div>
                                         <form method="POST">
                                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                             <input type="hidden" name="action" value="check_in"/>
                                             <button type="submit" class="btn btn-primary btn-lg btn-block">
-                                                <i class="fa fa-sign-in"/> Chấm công vào
+                                                <i class="fa fa-sign-in"/>
+                                                Chấm công vào
                                             </button>
                                         </form>
                                     </t>
                                     <t t-elif="today_attendance and not today_attendance.check_out">
                                         <div class="alert alert-info">
-                                            <i class="fa fa-info-circle"/> Đã chấm công vào lúc:
-                                            <br/><strong><t t-esc="today_attendance.check_in"/></strong>
+                                            <i class="fa fa-info-circle"/>
+                                            Đã chấm công vào lúc:
+                                            <br/>
+                                            <strong>
+                                                <t t-esc="today_attendance.check_in"/>
+                                            </strong>
                                         </div>
                                         <form method="POST">
                                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                             <input type="hidden" name="action" value="check_out"/>
                                             <button type="submit" class="btn btn-danger btn-lg btn-block">
-                                                <i class="fa fa-sign-out"/> Chấm công ra
+                                                <i class="fa fa-sign-out"/>
+                                                Chấm công ra
                                             </button>
                                         </form>
                                     </t>
                                     <t t-elif="today_attendance and today_attendance.check_out">
                                         <div class="alert alert-success">
-                                            <i class="fa fa-check-circle"/> Đã chấm công đầy đủ
+                                            <i class="fa fa-check-circle"/>
+                                            Đã chấm công đầy đủ
                                             <br/>
-                                            <strong>Vào:</strong> <t t-esc="today_attendance.check_in"/>
+                                            <strong>Vào:</strong>
+                                            <t t-esc="today_attendance.check_in"/>
                                             <br/>
-                                            <strong>Ra:</strong> <t t-esc="today_attendance.check_out"/>
+                                            <strong>Ra:</strong>
+                                            <t t-esc="today_attendance.check_out"/>
                                             <br/>
-                                            <strong>Tổng giờ:</strong> <t t-esc="today_attendance.work_hours"/> giờ
+                                            <strong>Tổng giờ:</strong>
+                                            <t t-esc="today_attendance.work_hours"/>
+                                            giờ
                                         </div>
                                     </t>
                                 </div>
@@ -141,14 +169,29 @@
                                             <t t-if="attendances">
                                                 <t t-foreach="attendances" t-as="attendance">
                                                     <tr>
-                                                        <td><t t-esc="attendance.date"/></td>
-                                                        <td><t t-esc="attendance.check_in"/></td>
-                                                        <td><t t-esc="attendance.check_out or '--'"/></td>
-                                                        <td><t t-esc="attendance.work_hours"/> giờ</td>
                                                         <td>
-                                                            <span t-if="attendance.status == 'present'" class="badge badge-success">Có mặt</span>
-                                                            <span t-elif="attendance.status == 'absent'" class="badge badge-danger">Vắng mặt</span>
-                                                            <span t-elif="attendance.status == 'late'" class="badge badge-warning">Đi muộn</span>
+                                                            <t t-esc="attendance.date"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="attendance.check_in"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="attendance.check_out or '--'"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="attendance.work_hours"/>
+                                                            giờ
+                                                        </td>
+                                                        <td>
+                                                            <span t-if="attendance.status == 'present'"
+                                                                  class="badge badge-success">Có mặt
+                                                            </span>
+                                                            <span t-elif="attendance.status == 'absent'"
+                                                                  class="badge badge-danger">Vắng mặt
+                                                            </span>
+                                                            <span t-elif="attendance.status == 'late'"
+                                                                  class="badge badge-warning">Đi muộn
+                                                            </span>
                                                         </td>
                                                     </tr>
                                                 </t>
@@ -173,25 +216,25 @@
 
             <style>
                 .avatar-circle {
-                    width: 100px;
-                    height: 100px;
-                    background-color: #3498db;
-                    border-radius: 50%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
+                width: 100px;
+                height: 100px;
+                background-color: #3498db;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 }
 
                 .initials {
-                    font-size: 50px;
-                    color: white;
-                    text-transform: uppercase;
+                font-size: 50px;
+                color: white;
+                text-transform: uppercase;
                 }
 
                 .staff-info p {
-                    padding: 8px 0;
-                    border-bottom: 1px solid #eee;
-                    margin-bottom: 0;
+                padding: 8px 0;
+                border-bottom: 1px solid #eee;
+                margin-bottom: 0;
                 }
             </style>
         </t>

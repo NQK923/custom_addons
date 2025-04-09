@@ -21,7 +21,7 @@
             <form string="Treatment Plan">
                 <sheet>
                     <group>
-                        <field name="code" />
+                        <field name="code"/>
                         <field name="patient_id"/>
                         <field name="start_date"/>
                         <field name="end_date"/>
@@ -52,7 +52,7 @@
         <field name="view_mode">list,form</field>
     </record>
 
-     <record id="view_patient_care_tracking_list" model="ir.ui.view">
+    <record id="view_patient_care_tracking_list" model="ir.ui.view">
         <field name="name">patient.care.tracking.list</field>
         <field name="model">patient.care.tracking</field>
         <field name="arch" type="xml">
@@ -98,7 +98,7 @@
                         <field name="is_alert_triggered"/>
                     </group>
                     <group string="Thông tin người chăm sóc">
-                         <field name="doctor_id"/>
+                        <field name="doctor_id"/>
                         <field name="caregiver_role"/>
                     </group>
                 </sheet>
@@ -114,9 +114,10 @@
     </record>
 
 
-
     <!-- Menus -->
     <menuitem id="menu_treatment_plan_root" name="Quản lý điều trị" sequence="10"/>
-    <menuitem id="menu_treatment_plan" name="Kế hoạch điều trị" parent="menu_treatment_plan_root" action="action_treatment_plan"/>
-    <menuitem id="menu_patient_care_tracking" name="Theo dõi chăm sóc bệnh nhân" parent="menu_treatment_plan_root" action="action_patient_care_tracking"/>
+    <menuitem id="menu_treatment_plan" name="Kế hoạch điều trị" parent="menu_treatment_plan_root"
+              action="action_treatment_plan"/>
+    <menuitem id="menu_patient_care_tracking" name="Theo dõi chăm sóc bệnh nhân" parent="menu_treatment_plan_root"
+              action="action_patient_care_tracking"/>
 </odoo>

@@ -4,6 +4,7 @@ from datetime import date
 import re
 import uuid
 
+
 class ClinicInsurance(models.Model):
     _name = 'clinic.insurance.policy'
     _description = 'Thông tin bảo hiểm y tế'
@@ -13,8 +14,8 @@ class ClinicInsurance(models.Model):
     number = fields.Char(string='Số thẻ BHYT', required=True)
     facility = fields.Char(string='Nơi ĐKKCB')
     patient_id = fields.Many2one(
-        'clinic.patient', 
-        string='Bệnh nhân', 
+        'clinic.patient',
+        string='Bệnh nhân',
         required=True,
         ondelete='restrict'
     )
@@ -31,7 +32,7 @@ class ClinicInsurance(models.Model):
 
     _sql_constraints = [
         ('unique_patient', 'unique(patient_id)', 'Bệnh nhân này đã có bảo hiểm y tế!'),
-        ('number_unique', 
+        ('number_unique',
          'UNIQUE(number)',
          'Số thẻ BHYT đã tồn tại!')
     ]
@@ -54,7 +55,7 @@ class ClinicInsurance(models.Model):
                 raise ValidationError('''Số thẻ BHYT không hợp lệ! 
                     Định dạng phải là 10 chữ số
                     Ví dụ: 0123456789''')
-            
+
             duplicate = self.search([
                 ('id', '!=', record.id),
                 ('number', '=', record.number)
@@ -75,6 +76,3 @@ class ClinicInsurance(models.Model):
         default = dict(default or {})
         default.update(name='New')
         return super().copy(default)
-
-   
-

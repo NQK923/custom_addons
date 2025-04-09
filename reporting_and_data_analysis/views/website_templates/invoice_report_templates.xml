@@ -7,7 +7,8 @@
             <ul class="nav nav-tabs nav-fill" id="reportTabs" role="tablist">
                 <!-- Overview Tab -->
                 <li class="nav-item">
-                    <a href="/clinic/reports/dashboard" class="nav-link" t-att-class="'active' if page_name == 'dashboard' else ''">
+                    <a href="/clinic/reports/dashboard" class="nav-link"
+                       t-att-class="'active' if page_name == 'dashboard' else ''">
                         <i class="fa fa-chart-line mr-2"/>Tổng Quan
                     </a>
                 </li>
@@ -62,7 +63,7 @@
         </div>
     </template>
 
-<!-- Monthly Invoice Template -->
+    <!-- Monthly Invoice Template -->
     <template id="invoice_monthly_template" name="Monthly Invoice Analysis">
         <t t-call="website.layout">
             <div class="container mt-4">
@@ -81,7 +82,8 @@
                                 <h5 class="mb-0">Chọn Năm</h5>
                             </div>
                             <div class="card-body">
-                                <form action="/clinic/reports/invoice/monthly" method="GET" class="form-inline justify-content-center">
+                                <form action="/clinic/reports/invoice/monthly" method="GET"
+                                      class="form-inline justify-content-center">
                                     <div class="form-group mr-3">
                                         <label for="year" class="mr-2">Năm:</label>
                                         <select name="year" id="year" class="form-control">
@@ -104,7 +106,9 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5>Biểu Đồ Doanh Thu Năm <t t-esc="selected_year"/></h5>
+                                <h5>Biểu Đồ Doanh Thu Năm
+                                    <t t-esc="selected_year"/>
+                                </h5>
                             </div>
                             <div class="card-body">
                                 <canvas id="monthlyRevenueChart" height="300"></canvas>
@@ -118,7 +122,9 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5>Bảng Doanh Thu Theo Tháng - Năm <t t-esc="selected_year"/></h5>
+                                <h5>Bảng Doanh Thu Theo Tháng - Năm
+                                    <t t-esc="selected_year"/>
+                                </h5>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -145,32 +151,64 @@
                                             <t t-foreach="monthly_data" t-as="month">
                                                 <t t-if="month['year'] == selected_year">
                                                     <tr>
-                                                        <td><t t-esc="month['month_name']"/></td>
-                                                        <td class="text-right"><t t-esc="month['invoice_count']"/></td>
-                                                        <td class="text-right"><t t-esc="formatLang(month['service_amount'])"/></td>
-                                                        <td class="text-right"><t t-esc="formatLang(month['medicine_amount'])"/></td>
-                                                        <td class="text-right"><t t-esc="formatLang(month['total_amount'])"/></td>
-                                                        <td class="text-right"><t t-esc="formatLang(month['insurance_amount'])"/></td>
-                                                        <td class="text-right"><t t-esc="formatLang(month['patient_amount'])"/></td>
+                                                        <td>
+                                                            <t t-esc="month['month_name']"/>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <t t-esc="month['invoice_count']"/>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <t t-esc="formatLang(month['service_amount'])"/>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <t t-esc="formatLang(month['medicine_amount'])"/>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <t t-esc="formatLang(month['total_amount'])"/>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <t t-esc="formatLang(month['insurance_amount'])"/>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <t t-esc="formatLang(month['patient_amount'])"/>
+                                                        </td>
                                                     </tr>
-                                                    <t t-set="total_invoice_count" t-value="total_invoice_count + month['invoice_count']"/>
-                                                    <t t-set="total_service_amount" t-value="total_service_amount + month['service_amount']"/>
-                                                    <t t-set="total_medicine_amount" t-value="total_medicine_amount + month['medicine_amount']"/>
-                                                    <t t-set="total_amount" t-value="total_amount + month['total_amount']"/>
-                                                    <t t-set="total_insurance_amount" t-value="total_insurance_amount + month['insurance_amount']"/>
-                                                    <t t-set="total_patient_amount" t-value="total_patient_amount + month['patient_amount']"/>
+                                                    <t t-set="total_invoice_count"
+                                                       t-value="total_invoice_count + month['invoice_count']"/>
+                                                    <t t-set="total_service_amount"
+                                                       t-value="total_service_amount + month['service_amount']"/>
+                                                    <t t-set="total_medicine_amount"
+                                                       t-value="total_medicine_amount + month['medicine_amount']"/>
+                                                    <t t-set="total_amount"
+                                                       t-value="total_amount + month['total_amount']"/>
+                                                    <t t-set="total_insurance_amount"
+                                                       t-value="total_insurance_amount + month['insurance_amount']"/>
+                                                    <t t-set="total_patient_amount"
+                                                       t-value="total_patient_amount + month['patient_amount']"/>
                                                 </t>
                                             </t>
                                         </tbody>
                                         <tfoot class="thead-light">
                                             <tr>
                                                 <th>Tổng</th>
-                                                <th class="text-right"><t t-esc="total_invoice_count"/></th>
-                                                <th class="text-right"><t t-esc="formatLang(total_service_amount)"/></th>
-                                                <th class="text-right"><t t-esc="formatLang(total_medicine_amount)"/></th>
-                                                <th class="text-right"><t t-esc="formatLang(total_amount)"/></th>
-                                                <th class="text-right"><t t-esc="formatLang(total_insurance_amount)"/></th>
-                                                <th class="text-right"><t t-esc="formatLang(total_patient_amount)"/></th>
+                                                <th class="text-right">
+                                                    <t t-esc="total_invoice_count"/>
+                                                </th>
+                                                <th class="text-right">
+                                                    <t t-esc="formatLang(total_service_amount)"/>
+                                                </th>
+                                                <th class="text-right">
+                                                    <t t-esc="formatLang(total_medicine_amount)"/>
+                                                </th>
+                                                <th class="text-right">
+                                                    <t t-esc="formatLang(total_amount)"/>
+                                                </th>
+                                                <th class="text-right">
+                                                    <t t-esc="formatLang(total_insurance_amount)"/>
+                                                </th>
+                                                <th class="text-right">
+                                                    <t t-esc="formatLang(total_patient_amount)"/>
+                                                </th>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -181,70 +219,71 @@
                 </div>
             </div>
 
-            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+            <script type="text/javascript"
+                    src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    var months = <t t-raw="chart_data['months']"/>;
-                    var serviceAmounts = <t t-raw="chart_data['service_amounts']"/>;
-                    var medicineAmounts = <t t-raw="chart_data['medicine_amounts']"/>;
-                    var totalAmounts = <t t-raw="chart_data['total_amounts']"/>;
+                var months =<t t-raw="chart_data['months']"/>;
+                var serviceAmounts =<t t-raw="chart_data['service_amounts']"/>;
+                var medicineAmounts =<t t-raw="chart_data['medicine_amounts']"/>;
+                var totalAmounts =<t t-raw="chart_data['total_amounts']"/>;
 
-                    var ctx = document.getElementById('monthlyRevenueChart').getContext('2d');
-                    new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: months,
-                            datasets: [{
-                                label: 'Dịch Vụ Y Tế',
-                                data: serviceAmounts,
-                                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                                borderColor: 'rgb(54, 162, 235)',
-                                borderWidth: 1
-                            }, {
-                                label: 'Thuốc &amp; Vật Tư',
-                                data: medicineAmounts,
-                                backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                                borderColor: 'rgb(75, 192, 192)',
-                                borderWidth: 1
-                            }, {
-                                label: 'Tổng Doanh Thu',
-                                data: totalAmounts,
-                                type: 'line',
-                                fill: false,
-                                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                                borderColor: 'rgb(255, 99, 132)',
-                                borderWidth: 2,
-                                pointRadius: 5,
-                                pointHoverRadius: 7
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: {
-                                    position: 'top',
-                                },
-                                title: {
-                                    display: false
-                                }
-                            },
-                            scales: {
-                                x: {
-                                    stacked: true,
-                                },
-                                y: {
-                                    stacked: true,
-                                    beginAtZero: true
-                                }
-                            }
-                        }
-                    });
+                var ctx = document.getElementById('monthlyRevenueChart').getContext('2d');
+                new Chart(ctx, {
+                type: 'bar',
+                data: {
+                labels: months,
+                datasets: [{
+                label: 'Dịch Vụ Y Tế',
+                data: serviceAmounts,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgb(54, 162, 235)',
+                borderWidth: 1
+                }, {
+                label: 'Thuốc &amp; Vật Tư',
+                data: medicineAmounts,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgb(75, 192, 192)',
+                borderWidth: 1
+                }, {
+                label: 'Tổng Doanh Thu',
+                data: totalAmounts,
+                type: 'line',
+                fill: false,
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgb(255, 99, 132)',
+                borderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7
+                }]
+                },
+                options: {
+                responsive: true,
+                plugins: {
+                legend: {
+                position: 'top',
+                },
+                title: {
+                display: false
+                }
+                },
+                scales: {
+                x: {
+                stacked: true,
+                },
+                y: {
+                stacked: true,
+                beginAtZero: true
+                }
+                }
+                }
+                });
                 });
             </script>
         </t>
     </template>
 
-        <!-- Service Revenue Analysis Template -->
+    <!-- Service Revenue Analysis Template -->
     <template id="invoice_services_template" name="Service Revenue Analysis">
         <t t-call="website.layout">
             <div class="container mt-4">
@@ -293,13 +332,27 @@
                                         <tbody>
                                             <t t-foreach="service_data" t-as="service">
                                                 <tr>
-                                                    <td><t t-esc="service['service_name']"/></td>
-                                                    <td class="text-right"><t t-esc="service['total_quantity']"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(service['total_revenue'])"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(service['insurance_covered'])"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(service['patient_paid'])"/></td>
-                                                    <td class="text-right"><t t-esc="service['invoice_count']"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(service['avg_price'])"/></td>
+                                                    <td>
+                                                        <t t-esc="service['service_name']"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="service['total_quantity']"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="formatLang(service['total_revenue'])"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="formatLang(service['insurance_covered'])"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="formatLang(service['patient_paid'])"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="service['invoice_count']"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="formatLang(service['avg_price'])"/>
+                                                    </td>
                                                 </tr>
                                             </t>
                                         </tbody>
@@ -311,49 +364,50 @@
                 </div>
             </div>
 
-            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+            <script type="text/javascript"
+                    src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    var services = <t t-raw="chart_data['services']"/>;
-                    var revenues = <t t-raw="chart_data['revenues']"/>;
+                var services =<t t-raw="chart_data['services']"/>;
+                var revenues =<t t-raw="chart_data['revenues']"/>;
 
-                    var ctx = document.getElementById('serviceRevenueChart').getContext('2d');
-                    new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: services,
-                            datasets: [{
-                                label: 'Doanh Thu',
-                                data: revenues,
-                                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                                borderColor: 'rgb(54, 162, 235)',
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            indexAxis: 'y',
-                            plugins: {
-                                legend: {
-                                    position: 'top',
-                                },
-                                title: {
-                                    display: false
-                                }
-                            },
-                            scales: {
-                                x: {
-                                    beginAtZero: true
-                                }
-                            }
-                        }
-                    });
+                var ctx = document.getElementById('serviceRevenueChart').getContext('2d');
+                new Chart(ctx, {
+                type: 'bar',
+                data: {
+                labels: services,
+                datasets: [{
+                label: 'Doanh Thu',
+                data: revenues,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgb(54, 162, 235)',
+                borderWidth: 1
+                }]
+                },
+                options: {
+                responsive: true,
+                indexAxis: 'y',
+                plugins: {
+                legend: {
+                position: 'top',
+                },
+                title: {
+                display: false
+                }
+                },
+                scales: {
+                x: {
+                beginAtZero: true
+                }
+                }
+                }
+                });
                 });
             </script>
         </t>
     </template>
 
-        <!-- Product Revenue Analysis Template -->
+    <!-- Product Revenue Analysis Template -->
     <template id="invoice_products_template" name="Product Revenue Analysis">
         <t t-call="website.layout">
             <div class="container mt-4">
@@ -402,13 +456,27 @@
                                         <tbody>
                                             <t t-foreach="product_data" t-as="product">
                                                 <tr>
-                                                    <td><t t-esc="product['product_name']"/></td>
-                                                    <td class="text-right"><t t-esc="product['total_quantity']"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(product['total_revenue'])"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(product['insurance_covered'])"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(product['patient_paid'])"/></td>
-                                                    <td class="text-right"><t t-esc="product['invoice_count']"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(product['avg_price'])"/></td>
+                                                    <td>
+                                                        <t t-esc="product['product_name']"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="product['total_quantity']"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="formatLang(product['total_revenue'])"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="formatLang(product['insurance_covered'])"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="formatLang(product['patient_paid'])"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="product['invoice_count']"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="formatLang(product['avg_price'])"/>
+                                                    </td>
                                                 </tr>
                                             </t>
                                         </tbody>
@@ -420,43 +488,44 @@
                 </div>
             </div>
 
-            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+            <script type="text/javascript"
+                    src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    var products = <t t-raw="chart_data['products']"/>;
-                    var revenues = <t t-raw="chart_data['revenues']"/>;
+                var products =<t t-raw="chart_data['products']"/>;
+                var revenues =<t t-raw="chart_data['revenues']"/>;
 
-                    var ctx = document.getElementById('productRevenueChart').getContext('2d');
-                    new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: products,
-                            datasets: [{
-                                label: 'Doanh Thu',
-                                data: revenues,
-                                backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                                borderColor: 'rgb(75, 192, 192)',
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            indexAxis: 'y',
-                            plugins: {
-                                legend: {
-                                    position: 'top',
-                                },
-                                title: {
-                                    display: false
-                                }
-                            },
-                            scales: {
-                                x: {
-                                    beginAtZero: true
-                                }
-                            }
-                        }
-                    });
+                var ctx = document.getElementById('productRevenueChart').getContext('2d');
+                new Chart(ctx, {
+                type: 'bar',
+                data: {
+                labels: products,
+                datasets: [{
+                label: 'Doanh Thu',
+                data: revenues,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgb(75, 192, 192)',
+                borderWidth: 1
+                }]
+                },
+                options: {
+                responsive: true,
+                indexAxis: 'y',
+                plugins: {
+                legend: {
+                position: 'top',
+                },
+                title: {
+                display: false
+                }
+                },
+                scales: {
+                x: {
+                beginAtZero: true
+                }
+                }
+                }
+                });
                 });
             </script>
         </t>
@@ -498,14 +567,30 @@
                                         <tbody>
                                             <t t-foreach="patient_data" t-as="patient">
                                                 <tr>
-                                                    <td><t t-esc="patient['patient_name']"/></td>
-                                                    <td class="text-right"><t t-esc="patient['invoice_count']"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(patient['service_amount'])"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(patient['medicine_amount'])"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(patient['total_amount'])"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(patient['insurance_amount'])"/></td>
-                                                    <td class="text-right"><t t-esc="formatLang(patient['patient_amount'])"/></td>
-                                                    <td class="text-right"><t t-esc="round(patient['insurance_rate'], 2)"/>%</td>
+                                                    <td>
+                                                        <t t-esc="patient['patient_name']"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="patient['invoice_count']"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="formatLang(patient['service_amount'])"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="formatLang(patient['medicine_amount'])"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="formatLang(patient['total_amount'])"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="formatLang(patient['insurance_amount'])"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <t t-esc="formatLang(patient['patient_amount'])"/>
+                                                    </td>
+                                                    <td class="text-right"><t
+                                                            t-esc="round(patient['insurance_rate'], 2)"/>%
+                                                    </td>
                                                 </tr>
                                             </t>
                                         </tbody>
@@ -538,7 +623,8 @@
                                 <h5 class="mb-0">Chọn Năm</h5>
                             </div>
                             <div class="card-body">
-                                <form action="/clinic/reports/invoice/status" method="GET" class="form-inline justify-content-center">
+                                <form action="/clinic/reports/invoice/status" method="GET"
+                                      class="form-inline justify-content-center">
                                     <div class="form-group mr-3">
                                         <label for="year" class="mr-2">Năm:</label>
                                         <select name="year" id="year" class="form-control">
@@ -561,7 +647,9 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5>Bảng Trạng Thái Hóa Đơn - Năm <t t-esc="selected_year"/></h5>
+                                <h5>Bảng Trạng Thái Hóa Đơn - Năm
+                                    <t t-esc="selected_year"/>
+                                </h5>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -575,20 +663,28 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <t t-set="status_labels" t-value="{'draft': 'Nháp', 'confirmed': 'Đã xác nhận', 'paid': 'Đã thanh toán', 'cancelled': 'Đã hủy'}"/>
-                                            <t t-set="status_classes" t-value="{'draft': 'secondary', 'confirmed': 'primary', 'paid': 'success', 'cancelled': 'danger'}"/>
+                                            <t t-set="status_labels"
+                                               t-value="{'draft': 'Nháp', 'confirmed': 'Đã xác nhận', 'paid': 'Đã thanh toán', 'cancelled': 'Đã hủy'}"/>
+                                            <t t-set="status_classes"
+                                               t-value="{'draft': 'secondary', 'confirmed': 'primary', 'paid': 'success', 'cancelled': 'danger'}"/>
 
                                             <t t-foreach="status_data" t-as="status">
                                                 <t t-if="status['year'] == selected_year">
                                                     <tr>
-                                                        <td><t t-esc="status['month_name']"/></td>
+                                                        <td>
+                                                            <t t-esc="status['month_name']"/>
+                                                        </td>
                                                         <td>
                                                             <span t-att-class="'badge badge-' + status_classes.get(status['state'], 'secondary')">
                                                                 <t t-esc="status_labels.get(status['state'], status['state'])"/>
                                                             </span>
                                                         </td>
-                                                        <td class="text-right"><t t-esc="status['invoice_count']"/></td>
-                                                        <td class="text-right"><t t-esc="formatLang(status['total_amount'])"/></td>
+                                                        <td class="text-right">
+                                                            <t t-esc="status['invoice_count']"/>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <t t-esc="formatLang(status['total_amount'])"/>
+                                                        </td>
                                                     </tr>
                                                 </t>
                                             </t>

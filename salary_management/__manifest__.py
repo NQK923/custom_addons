@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-     'name': "Quản lý lương thưởng",
+    'name': "Quản lý lương thưởng",
 
     'summary': "Hiển thị và quản lý lương thưởng trên giao diện web",
 

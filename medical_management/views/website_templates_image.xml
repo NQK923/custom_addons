@@ -7,7 +7,8 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3>Danh sách Hình ảnh Xét nghiệm</h3>
                     <a href="/medical/image/create" class="btn btn-primary">
-                        <i class="fa fa-plus"/> Thêm hình ảnh mới
+                        <i class="fa fa-plus"/>
+                        Thêm hình ảnh mới
                     </a>
                 </div>
                 <div class="card-body">
@@ -16,12 +17,15 @@
                             <div class="col-md-4 mb-4">
                                 <div class="card h-100">
                                     <div class="card-header">
-                                        <h5 class="mb-0"><t t-esc="image.test_code"/></h5>
+                                        <h5 class="mb-0">
+                                            <t t-esc="image.test_code"/>
+                                        </h5>
                                     </div>
                                     <div class="card-body">
                                         <t t-if="image.Img">
                                             <!-- Updated image rendering with proper handling -->
-                                            <img t-att-src="image.Img and ('data:image/*;base64,%s' % (image.Img.decode('utf-8') if isinstance(image.Img, bytes) else image.Img))" class="img-fluid mb-2"/>
+                                            <img t-att-src="image.Img and ('data:image/*;base64,%s' % (image.Img.decode('utf-8') if isinstance(image.Img, bytes) else image.Img))"
+                                                 class="img-fluid mb-2"/>
                                         </t>
                                         <t t-else="">
                                             <div class="text-center p-4 bg-light">
@@ -30,14 +34,24 @@
                                             </div>
                                         </t>
                                         <div class="mt-2">
-                                            <div><strong>Loại:</strong> <t t-esc="dict(image._fields['test_type_img'].selection).get(image.test_type_img)"/></div>
-                                            <div><strong>Ngày:</strong> <t t-esc="image.img_date" t-options="{'widget': 'date'}"/></div>
-                                            <div><strong>Xét nghiệm:</strong> <t t-esc="image.MedicalTest_id.test_code"/></div>
+                                            <div>
+                                                <strong>Loại:</strong>
+                                                <t t-esc="dict(image._fields['test_type_img'].selection).get(image.test_type_img)"/>
+                                            </div>
+                                            <div>
+                                                <strong>Ngày:</strong>
+                                                <t t-esc="image.img_date" t-options="{'widget': 'date'}"/>
+                                            </div>
+                                            <div>
+                                                <strong>Xét nghiệm:</strong>
+                                                <t t-esc="image.MedicalTest_id.test_code"/>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="card-footer">
                                         <a t-attf-href="/medical/image/{{image.id}}" class="btn btn-info w-100">
-                                            <i class="fa fa-eye"/> Xem chi tiết
+                                            <i class="fa fa-eye"/>
+                                            Xem chi tiết
                                         </a>
                                     </div>
                                 </div>
@@ -57,7 +71,8 @@
                     <h3>Chi tiết Hình ảnh</h3>
                     <div>
                         <a href="/medical/images" class="btn btn-secondary">
-                            <i class="fa fa-arrow-left"/> Quay lại
+                            <i class="fa fa-arrow-left"/>
+                            Quay lại
                         </a>
                     </div>
                 </div>
@@ -67,7 +82,9 @@
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label">Mã hình ảnh:</label>
                                 <div class="col-sm-8">
-                                    <p class="form-control-plaintext"><t t-esc="image.test_code"/></p>
+                                    <p class="form-control-plaintext">
+                                        <t t-esc="image.test_code"/>
+                                    </p>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -105,7 +122,8 @@
                                 <div class="card-body text-center">
                                     <t t-if="image.Img">
                                         <!-- Fixed image display -->
-                                        <img t-att-src="image.Img and ('data:image/*;base64,%s' % (image.Img.decode('utf-8') if isinstance(image.Img, bytes) else image.Img))" class="img-fluid"/>
+                                        <img t-att-src="image.Img and ('data:image/*;base64,%s' % (image.Img.decode('utf-8') if isinstance(image.Img, bytes) else image.Img))"
+                                             class="img-fluid"/>
                                     </t>
                                     <t t-else="">
                                         <div class="text-center p-5 bg-light">
@@ -160,11 +178,13 @@
                         <div class="form-group row">
                             <label for="MedicalTest_id" class="col-sm-3 col-form-label">Xét nghiệm liên quan</label>
                             <div class="col-sm-9">
-                                <select class="form-control" name="MedicalTest_id" id="MedicalTest_id" required="required">
+                                <select class="form-control" name="MedicalTest_id" id="MedicalTest_id"
+                                        required="required">
                                     <option value="">-- Chọn xét nghiệm --</option>
                                     <t t-foreach="tests" t-as="test">
                                         <option t-att-value="test.id">
-                                            <t t-esc="test.test_code"/> -
+                                            <t t-esc="test.test_code"/>
+                                            -
                                             <t t-esc="test.patient_id.name"/>
                                         </option>
                                     </t>
@@ -175,7 +195,8 @@
                         <div class="form-group row">
                             <label for="test_type_img" class="col-sm-3 col-form-label">Loại xét nghiệm</label>
                             <div class="col-sm-9">
-                                <select class="form-control" name="test_type_img" id="test_type_img" required="required">
+                                <select class="form-control" name="test_type_img" id="test_type_img"
+                                        required="required">
                                     <option value="">-- Chọn loại --</option>
                                     <t t-foreach="test_types.items()" t-as="test_type">
                                         <option t-att-value="test_type[0]">
@@ -190,7 +211,8 @@
                             <label for="image_file" class="col-sm-3 col-form-label">Hình ảnh</label>
                             <div class="col-sm-9">
                                 <div class="custom-file">
-                                    <input type="file" class="custom-file-input" name="image_file" id="image_file" accept="image/*"/>
+                                    <input type="file" class="custom-file-input" name="image_file" id="image_file"
+                                           accept="image/*"/>
                                     <label class="custom-file-label" for="image_file">Chọn file...</label>
                                 </div>
                                 <!-- Preview section -->

@@ -5,293 +5,293 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
         <style>
             .report-header {
-                background: linear-gradient(to right, #2c3e50, #3498db);
-                color: white;
-                padding: 20px 0;
-                margin-bottom: 30px;
-                border-radius: 5px;
+            background: linear-gradient(to right, #2c3e50, #3498db);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-radius: 5px;
             }
             .report-title {
-                font-weight: 700;
-                text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            font-weight: 700;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
             }
             .report-links .btn {
-                border-radius: 30px;
-                padding: 8px 16px;
-                transition: all 0.3s;
+            border-radius: 30px;
+            padding: 8px 16px;
+            transition: all 0.3s;
             }
             .report-links .btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             }
             .card {
-                border-radius: 8px;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-                margin-bottom: 20px;
-                transition: all 0.3s;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            transition: all 0.3s;
             }
             .card:hover {
-                box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
             }
             .card-header {
-                border-top-left-radius: 8px !important;
-                border-top-right-radius: 8px !important;
-                font-weight: 600;
+            border-top-left-radius: 8px !important;
+            border-top-right-radius: 8px !important;
+            font-weight: 600;
             }
             .table th {
-                background-color: #f8f9fa;
+            background-color: #f8f9fa;
             }
             .table-hover tbody tr:hover {
-                background-color: rgba(0,123,255,0.05);
+            background-color: rgba(0,123,255,0.05);
             }
             .nav-tabs .nav-link {
-                border-top-left-radius: 8px;
-                border-top-right-radius: 8px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
             }
             .nav-tabs .nav-link.active {
-                font-weight: 600;
-                color: #007bff;
-                border-top: 3px solid #007bff;
+            font-weight: 600;
+            color: #007bff;
+            border-top: 3px solid #007bff;
             }
             pre {
-                background-color: #f8f9fa;
-                border-radius: 5px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
             }
             canvas {
-                max-height: 400px;
+            max-height: 400px;
             }
             .wizard-step {
-                position: relative;
-                padding-bottom: 20px;
+            position: relative;
+            padding-bottom: 20px;
             }
             .wizard-step:not(:last-child)::after {
-                content: '';
-                position: absolute;
-                left: 20px;
-                top: 30px;
-                height: calc(100% - 30px);
-                width: 2px;
-                background-color: #dee2e6;
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 30px;
+            height: calc(100% - 30px);
+            width: 2px;
+            background-color: #dee2e6;
             }
             .wizard-step-number {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                background-color: #f8f9fa;
-                border: 2px solid #dee2e6;
-                color: #6c757d;
-                font-weight: bold;
-                margin-right: 15px;
-                position: relative;
-                z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f8f9fa;
+            border: 2px solid #dee2e6;
+            color: #6c757d;
+            font-weight: bold;
+            margin-right: 15px;
+            position: relative;
+            z-index: 1;
             }
             .wizard-step.active .wizard-step-number {
-                background-color: #007bff;
-                border-color: #007bff;
-                color: white;
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
             }
             .wizard-step.completed .wizard-step-number {
-                background-color: #28a745;
-                border-color: #28a745;
-                color: white;
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
             }
             .wizard-step-content {
-                padding-left: 55px;
+            padding-left: 55px;
             }
             /* Custom styling for report forms */
             .report-form label {
-                font-weight: 600;
-                color: #495057;
+            font-weight: 600;
+            color: #495057;
             }
             .report-form .form-control {
-                border-radius: 4px;
-                border: 1px solid #ced4da;
-                padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            padding: 8px 12px;
             }
             .report-form .form-control:focus {
-                border-color: #80bdff;
-                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
             }
             .report-metric {
-                padding: 20px;
-                text-align: center;
-                border-radius: 8px;
-                margin-bottom: 20px;
-                color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: white;
             }
             .report-metric h3 {
-                font-size: 16px;
-                margin-bottom: 10px;
-                font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: 600;
             }
             .report-metric .value {
-                font-size: 24px;
-                font-weight: bold;
+            font-size: 24px;
+            font-weight: bold;
             }
             .metric-blue {
-                background: linear-gradient(135deg, #007bff, #0056b3);
+            background: linear-gradient(135deg, #007bff, #0056b3);
             }
             .metric-green {
-                background: linear-gradient(135deg, #28a745, #1e7e34);
+            background: linear-gradient(135deg, #28a745, #1e7e34);
             }
             .metric-orange {
-                background: linear-gradient(135deg, #fd7e14, #d56308);
+            background: linear-gradient(135deg, #fd7e14, #d56308);
             }
             .metric-red {
-                background: linear-gradient(135deg, #dc3545, #bd2130);
+            background: linear-gradient(135deg, #dc3545, #bd2130);
             }
             .metric-purple {
-                background: linear-gradient(135deg, #6f42c1, #4e2b89);
+            background: linear-gradient(135deg, #6f42c1, #4e2b89);
             }
             .metric-teal {
-                background: linear-gradient(135deg, #20c997, #17a2b8);
+            background: linear-gradient(135deg, #20c997, #17a2b8);
             }
             .print-only {
-                display: none;
+            display: none;
             }
             @media print {
-                .print-only {
-                    display: block;
-                }
-                .no-print {
-                    display: none !important;
-                }
-                .container {
-                    width: 100%;
-                    max-width: 100%;
-                }
-                .card {
-                    border: 1px solid #ddd;
-                    box-shadow: none !important;
-                }
-                .table td, .table th {
-                    background-color: white !important;
-                }
+            .print-only {
+            display: block;
+            }
+            .no-print {
+            display: none !important;
+            }
+            .container {
+            width: 100%;
+            max-width: 100%;
+            }
+            .card {
+            border: 1px solid #ddd;
+            box-shadow: none !important;
+            }
+            .table td, .table th {
+            background-color: white !important;
+            }
             }
 
             /* NEW TAB NAVIGATION STYLES */
             .nav-tabs .nav-link {
-                border-radius: 8px 8px 0 0;
-                font-weight: 600;
-                color: #495057;
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+            color: #495057;
             }
 
             .nav-tabs .nav-link.active {
-                background-color: #f8f9fa;
-                border-color: #dee2e6 #dee2e6 #f8f9fa;
-                color: #007bff;
-                border-top: 3px solid #007bff;
+            background-color: #f8f9fa;
+            border-color: #dee2e6 #dee2e6 #f8f9fa;
+            color: #007bff;
+            border-top: 3px solid #007bff;
             }
 
             .nav-tabs .nav-link:hover:not(.active) {
-                background-color: rgba(0, 123, 255, 0.05);
-                border-color: #e9ecef #e9ecef #dee2e6;
+            background-color: rgba(0, 123, 255, 0.05);
+            border-color: #e9ecef #e9ecef #dee2e6;
             }
 
             .sub-navigation {
-                transition: all 0.3s;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             }
 
             .sub-navigation .btn-outline-secondary {
-                background-color: white;
+            background-color: white;
             }
 
             .sub-navigation .btn-outline-secondary:hover {
-                background-color: #f8f9fa;
+            background-color: #f8f9fa;
             }
 
             /* CSS cho Sub Tab Menu */
             .sub-navigation {
-                padding: 10px;
-                background-color: #f8f9fa;
-                border-radius: 0 0 8px 8px;
-                margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 0 0 8px 8px;
+            margin-bottom: 20px;
             }
 
             .sub-navigation .btn {
-                margin-right: 8px;
-                margin-bottom: 5px;
-                border-radius: 20px;
-                padding: 6px 15px;
-                font-weight: 500;
-                transition: all 0.2s ease;
-                text-shadow: none;
+            margin-right: 8px;
+            margin-bottom: 5px;
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-shadow: none;
             }
 
             .sub-navigation .btn-outline-secondary {
-                background-color: white;
-                color: #495057;
+            background-color: white;
+            color: #495057;
             }
 
             .sub-navigation .btn-outline-secondary:hover {
-                background-color: #e9ecef;
-                color: #007bff;
+            background-color: #e9ecef;
+            color: #007bff;
             }
 
             .sub-navigation .btn-primary {
-                box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
-                margin 5px;
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
+            margin 5px;
             }
 
             .sub-navigation .btn-primary:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
             }
             .nav-tabs {
-                display: flex;
-                justify-content: center;
-                gap: 10px;  /* Thêm khoảng cách 10px giữa các tab */
-                border-bottom: none;
-                margin-bottom: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Thêm khoảng cách 10px giữa các tab */
+            border-bottom: none;
+            margin-bottom: 0;
             }
 
             .nav-tabs .nav-item {
-                margin: 0 5px;  /* Thêm lề trái phải 5px cho mỗi tab */
+            margin: 0 5px; /* Thêm lề trái phải 5px cho mỗi tab */
             }
 
             .nav-tabs .nav-link {
-                border: 1px solid #dee2e6;
-                background-color: #f8f9fa;
-                padding: 10px 20px;
-                border-radius: 8px 8px 0 0 !important;
-                position: relative;
-                z-index: 1;
+            border: 1px solid #dee2e6;
+            background-color: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 8px 8px 0 0 !important;
+            position: relative;
+            z-index: 1;
             }
 
             .nav-tabs .nav-link.active {
-                background-color: #ffffff;
-                border-bottom-color: #ffffff;
-                box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
-                z-index: 2;
+            background-color: #ffffff;
+            border-bottom-color: #ffffff;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+            z-index: 2;
             }
 
             /* Để kết nối tab active với sub-navigation */
             .nav-tabs .nav-link.active::after {
-                content: '';
-                position: absolute;
-                bottom: -1px;
-                left: 0;
-                right: 0;
-                height: 1px;
-                background-color: #ffffff;
-                z-index: 3;
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: #ffffff;
+            z-index: 3;
             }
 
             /* Kiểu màu sắc cho sub-navigation để phù hợp với tab */
             .sub-navigation {
-                padding: 12px;
-                background-color: #ffffff;
-                border: 1px solid #dee2e6;
-                border-top: none;
-                border-radius: 0 0 8px 8px;
-                margin-bottom: 20px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-                position: relative;
-                z-index: 1;
+            padding: 12px;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 1;
             }
         </style>
     </template>
@@ -307,7 +307,8 @@
     <template id="report_error_message" name="Report Error Message">
         <div class="alert alert-danger">
             <i class="fa fa-exclamation-circle mr-2"></i>
-            <strong>Error:</strong> <t t-esc="error_message"/>
+            <strong>Error:</strong>
+            <t t-esc="error_message"/>
         </div>
     </template>
 
@@ -315,7 +316,8 @@
     <template id="report_success_message" name="Report Success Message">
         <div class="alert alert-success">
             <i class="fa fa-check-circle mr-2"></i>
-            <strong>Success:</strong> <t t-esc="success_message"/>
+            <strong>Success:</strong>
+            <t t-esc="success_message"/>
         </div>
     </template>
 
@@ -323,7 +325,8 @@
     <template id="report_warning_message" name="Report Warning Message">
         <div class="alert alert-warning">
             <i class="fa fa-exclamation-triangle mr-2"></i>
-            <strong>Warning:</strong> <t t-esc="warning_message"/>
+            <strong>Warning:</strong>
+            <t t-esc="warning_message"/>
         </div>
     </template>
 
@@ -332,7 +335,9 @@
         <div class="alert alert-info text-center p-5 my-4">
             <i class="fa fa-info-circle fa-3x mb-3"></i>
             <h4>No Data Available</h4>
-            <p><t t-esc="no_data_message or 'There is no data available for this report at the moment.'"/></p>
+            <p>
+                <t t-esc="no_data_message or 'There is no data available for this report at the moment.'"/>
+            </p>
             <t t-if="action_url">
                 <a t-att-href="action_url" class="btn btn-primary mt-2">
                     <i t-if="action_icon" t-attf-class="fa fa-{{action_icon}} mr-2"></i>
@@ -348,7 +353,9 @@
             <div class="spinner-border text-primary" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
-            <p class="mt-3"><t t-esc="loading_message or 'Loading data, please wait...'"/></p>
+            <p class="mt-3">
+                <t t-esc="loading_message or 'Loading data, please wait...'"/>
+            </p>
         </div>
     </template>
 
@@ -402,7 +409,9 @@
                 <div class="wizard-step-number">
                     <t t-esc="step_number"/>
                 </div>
-                <h4 class="mb-0"><t t-esc="step_title"/></h4>
+                <h4 class="mb-0">
+                    <t t-esc="step_title"/>
+                </h4>
             </div>
             <div class="wizard-step-content mt-3">
                 <t t-raw="0"/>
@@ -418,9 +427,12 @@
                     <div class="card-body text-center">
                         <i class="fa fa-user-injured fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Tình hình bệnh nhân</h5>
-                        <p class="card-text">Phân tích số lượng bệnh nhân, phân bố độ tuổi, và thông tin nhân khẩu học.</p>
+                        <p class="card-text">Phân tích số lượng bệnh nhân, phân bố độ tuổi, và thông tin nhân khẩu
+                            học.
+                        </p>
                         <div class="custom-control custom-radio mt-3">
-                            <input type="radio" id="type_patient" name="report_type" value="patient" class="custom-control-input" required="required"/>
+                            <input type="radio" id="type_patient" name="report_type" value="patient"
+                                   class="custom-control-input" required="required"/>
                             <label class="custom-control-label" for="type_patient">Chọn loại báo cáo này</label>
                         </div>
                     </div>
@@ -433,7 +445,8 @@
                         <h5 class="card-title">Dịch tễ học</h5>
                         <p class="card-text">Thống kê bệnh và chẩn đoán phổ biến, xu hướng dịch tễ trong kỳ báo cáo.</p>
                         <div class="custom-control custom-radio mt-3">
-                            <input type="radio" id="type_epidemiology" name="report_type" value="epidemiology" class="custom-control-input" required="required"/>
+                            <input type="radio" id="type_epidemiology" name="report_type" value="epidemiology"
+                                   class="custom-control-input" required="required"/>
                             <label class="custom-control-label" for="type_epidemiology">Chọn loại báo cáo này</label>
                         </div>
                     </div>
@@ -444,9 +457,11 @@
                     <div class="card-body text-center">
                         <i class="fa fa-star-half-alt fa-3x text-warning mb-3"></i>
                         <h5 class="card-title">Chất lượng dịch vụ</h5>
-                        <p class="card-text">Phân tích đánh giá của bệnh nhân, mức độ hài lòng và chất lượng dịch vụ.</p>
+                        <p class="card-text">Phân tích đánh giá của bệnh nhân, mức độ hài lòng và chất lượng dịch vụ.
+                        </p>
                         <div class="custom-control custom-radio mt-3">
-                            <input type="radio" id="type_service_quality" name="report_type" value="service_quality" class="custom-control-input" required="required"/>
+                            <input type="radio" id="type_service_quality" name="report_type" value="service_quality"
+                                   class="custom-control-input" required="required"/>
                             <label class="custom-control-label" for="type_service_quality">Chọn loại báo cáo này</label>
                         </div>
                     </div>
@@ -463,11 +478,13 @@
                     <label for="date_from">Từ ngày</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                            <span class="input-group-text">
+                                <i class="fa fa-calendar"></i>
+                            </span>
                         </div>
                         <input type="date" id="date_from" name="date_from" class="form-control"
-                            t-att-value="date_from or (datetime.datetime.now() - datetime.timedelta(days=30)).strftime('%Y-%m-%d')"
-                            required="required"/>
+                               t-att-value="date_from or (datetime.datetime.now() - datetime.timedelta(days=30)).strftime('%Y-%m-%d')"
+                               required="required"/>
                     </div>
                 </div>
             </div>
@@ -476,11 +493,13 @@
                     <label for="date_to">Đến ngày</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                            <span class="input-group-text">
+                                <i class="fa fa-calendar"></i>
+                            </span>
                         </div>
                         <input type="date" id="date_to" name="date_to" class="form-control"
-                            t-att-value="date_to or datetime.datetime.now().strftime('%Y-%m-%d')"
-                            required="required"/>
+                               t-att-value="date_to or datetime.datetime.now().strftime('%Y-%m-%d')"
+                               required="required"/>
                     </div>
                 </div>
             </div>
@@ -493,7 +512,9 @@
                             <i class="fa fa-info-circle fa-2x text-primary mr-3"></i>
                             <div>
                                 <h5 class="mb-1">Lưu ý về khoảng thời gian</h5>
-                                <p class="mb-0">Khoảng thời gian sẽ ảnh hưởng đến dữ liệu được phân tích trong báo cáo. Chọn khoảng thời gian phù hợp để có kết quả chính xác nhất.</p>
+                                <p class="mb-0">Khoảng thời gian sẽ ảnh hưởng đến dữ liệu được phân tích trong báo cáo.
+                                    Chọn khoảng thời gian phù hợp để có kết quả chính xác nhất.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -509,12 +530,15 @@
             <select id="department_id" name="department_id" class="form-control">
                 <option value="">-- Tất cả khoa/phòng --</option>
                 <t t-foreach="departments" t-as="department">
-                    <option t-att-value="department.id" t-att-selected="department_id and str(department_id) == str(department.id)">
+                    <option t-att-value="department.id"
+                            t-att-selected="department_id and str(department_id) == str(department.id)">
                         <t t-esc="department.name"/>
                     </option>
                 </t>
             </select>
-            <small class="form-text text-muted">Chọn khoa/phòng cụ thể hoặc để trống để xem báo cáo cho toàn bộ bệnh viện.</small>
+            <small class="form-text text-muted">Chọn khoa/phòng cụ thể hoặc để trống để xem báo cáo cho toàn bộ bệnh
+                viện.
+            </small>
         </div>
     </template>
 
@@ -528,15 +552,18 @@
                     </div>
                     <div class="card-body">
                         <div class="custom-control custom-checkbox mb-2">
-                            <input type="checkbox" class="custom-control-input" id="option_charts" name="option_charts" value="1" checked="checked"/>
+                            <input type="checkbox" class="custom-control-input" id="option_charts" name="option_charts"
+                                   value="1" checked="checked"/>
                             <label class="custom-control-label" for="option_charts">Bao gồm biểu đồ</label>
                         </div>
                         <div class="custom-control custom-checkbox mb-2">
-                            <input type="checkbox" class="custom-control-input" id="option_tables" name="option_tables" value="1" checked="checked"/>
+                            <input type="checkbox" class="custom-control-input" id="option_tables" name="option_tables"
+                                   value="1" checked="checked"/>
                             <label class="custom-control-label" for="option_tables">Bao gồm bảng dữ liệu</label>
                         </div>
                         <div class="custom-control custom-checkbox mb-2">
-                            <input type="checkbox" class="custom-control-input" id="option_summary" name="option_summary" value="1" checked="checked"/>
+                            <input type="checkbox" class="custom-control-input" id="option_summary"
+                                   name="option_summary" value="1" checked="checked"/>
                             <label class="custom-control-label" for="option_summary">Bao gồm tóm tắt</label>
                         </div>
                     </div>
@@ -549,15 +576,20 @@
                     </div>
                     <div class="card-body">
                         <div class="custom-control custom-radio mb-2">
-                            <input type="radio" class="custom-control-input" id="format_detailed" name="report_format" value="detailed" checked="checked"/>
+                            <input type="radio" class="custom-control-input" id="format_detailed" name="report_format"
+                                   value="detailed" checked="checked"/>
                             <label class="custom-control-label" for="format_detailed">Chi tiết (đầy đủ dữ liệu)</label>
                         </div>
                         <div class="custom-control custom-radio mb-2">
-                            <input type="radio" class="custom-control-input" id="format_summary" name="report_format" value="summary"/>
-                            <label class="custom-control-label" for="format_summary">Tóm tắt (chỉ hiển thị thông tin chính)</label>
+                            <input type="radio" class="custom-control-input" id="format_summary" name="report_format"
+                                   value="summary"/>
+                            <label class="custom-control-label" for="format_summary">Tóm tắt (chỉ hiển thị thông tin
+                                chính)
+                            </label>
                         </div>
                         <div class="custom-control custom-radio mb-2">
-                            <input type="radio" class="custom-control-input" id="format_comparison" name="report_format" value="comparison"/>
+                            <input type="radio" class="custom-control-input" id="format_comparison" name="report_format"
+                                   value="comparison"/>
                             <label class="custom-control-label" for="format_comparison">So sánh (với kỳ trước)</label>
                         </div>
                     </div>
@@ -630,53 +662,53 @@
 
         <script type="text/javascript">
             document.addEventListener('DOMContentLoaded', function() {
-                // Navigate through wizard steps
-                var wizardSteps = document.querySelectorAll('.wizard-step');
-                var stepContents = document.querySelectorAll('.wizard-step-content');
+            // Navigate through wizard steps
+            var wizardSteps = document.querySelectorAll('.wizard-step');
+            var stepContents = document.querySelectorAll('.wizard-step-content');
 
-                function showStep(stepIndex) {
-                    for (var i = 0; i &lt; wizardSteps.length; i++) {
-                        if (i &lt; stepIndex) {
-                            wizardSteps[i].classList.add('completed');
-                            wizardSteps[i].classList.remove('active');
-                        } else if (i === stepIndex) {
-                            wizardSteps[i].classList.add('active');
-                            wizardSteps[i].classList.remove('completed');
-                        } else {
-                            wizardSteps[i].classList.remove('active', 'completed');
-                        }
-                    }
-                }
+            function showStep(stepIndex) {
+            for (var i = 0; i &lt; wizardSteps.length; i++) {
+            if (i &lt; stepIndex) {
+            wizardSteps[i].classList.add('completed');
+            wizardSteps[i].classList.remove('active');
+            } else if (i === stepIndex) {
+            wizardSteps[i].classList.add('active');
+            wizardSteps[i].classList.remove('completed');
+            } else {
+            wizardSteps[i].classList.remove('active', 'completed');
+            }
+            }
+            }
 
-                // Add click event to step headers
-                for (var i = 0; i &lt; wizardSteps.length; i++) {
-                    (function(index) {
-                        var stepHeader = wizardSteps[index].querySelector('h4');
-                        stepHeader.style.cursor = 'pointer';
-                        stepHeader.addEventListener('click', function() {
-                            showStep(index);
-                        });
-                    })(i);
-                }
+            // Add click event to step headers
+            for (var i = 0; i &lt; wizardSteps.length; i++) {
+            (function(index) {
+            var stepHeader = wizardSteps[index].querySelector('h4');
+            stepHeader.style.cursor = 'pointer';
+            stepHeader.addEventListener('click', function() {
+            showStep(index);
+            });
+            })(i);
+            }
 
-                // Validate dates when changed
-                var dateFrom = document.getElementById('date_from');
-                var dateTo = document.getElementById('date_to');
+            // Validate dates when changed
+            var dateFrom = document.getElementById('date_from');
+            var dateTo = document.getElementById('date_to');
 
-                function validateDates() {
-                    if (dateFrom.value &amp;&amp; dateTo.value) {
-                        if (new Date(dateFrom.value) &gt; new Date(dateTo.value)) {
-                            dateTo.setCustomValidity('Ngày kết thúc phải sau ngày bắt đầu');
-                        } else {
-                            dateTo.setCustomValidity('');
-                        }
-                    }
-                }
+            function validateDates() {
+            if (dateFrom.value &amp;&amp; dateTo.value) {
+            if (new Date(dateFrom.value) &gt; new Date(dateTo.value)) {
+            dateTo.setCustomValidity('Ngày kết thúc phải sau ngày bắt đầu');
+            } else {
+            dateTo.setCustomValidity('');
+            }
+            }
+            }
 
-                if (dateFrom &amp;&amp; dateTo) {
-                    dateFrom.addEventListener('change', validateDates);
-                    dateTo.addEventListener('change', validateDates);
-                }
+            if (dateFrom &amp;&amp; dateTo) {
+            dateFrom.addEventListener('change', validateDates);
+            dateTo.addEventListener('change', validateDates);
+            }
             });
         </script>
     </template>
@@ -689,22 +721,35 @@
                     <h4 class="mb-0">Xem trước báo cáo</h4>
                 </div>
                 <div class="card-body">
-                    <h5 class="mb-3"><t t-esc="report.name"/></h5>
+                    <h5 class="mb-3">
+                        <t t-esc="report.name"/>
+                    </h5>
 
                     <div class="row mb-4">
                         <div class="col-md-4">
-                            <p><strong>Loại báo cáo:</strong>
+                            <p>
+                                <strong>Loại báo cáo:</strong>
                                 <t t-if="report.report_type == 'patient'">Tình hình bệnh nhân</t>
                                 <t t-elif="report.report_type == 'epidemiology'">Dịch tễ học</t>
                                 <t t-elif="report.report_type == 'service_quality'">Chất lượng dịch vụ</t>
-                                <t t-else=""><t t-esc="report.report_type"/></t>
+                                <t t-else="">
+                                    <t t-esc="report.report_type"/>
+                                </t>
                             </p>
                         </div>
                         <div class="col-md-4">
-                            <p><strong>Thời gian:</strong> <t t-esc="report.date_from"/> - <t t-esc="report.date_to"/></p>
+                            <p>
+                                <strong>Thời gian:</strong>
+                                <t t-esc="report.date_from"/>
+                                -
+                                <t t-esc="report.date_to"/>
+                            </p>
                         </div>
                         <div class="col-md-4">
-                            <p><strong>Khoa/Phòng:</strong> <t t-esc="report.department_id.name if report.department_id else 'Tất cả'"/></p>
+                            <p>
+                                <strong>Khoa/Phòng:</strong>
+                                <t t-esc="report.department_id.name if report.department_id else 'Tất cả'"/>
+                            </p>
                         </div>
                     </div>
 
@@ -732,8 +777,12 @@
             <t t-foreach="metrics" t-as="metric">
                 <div t-attf-class="col-md-{{12 / len(metrics)}}">
                     <div t-attf-class="report-metric {{metric.get('class', 'metric-blue')}}">
-                        <h3><t t-esc="metric.get('label', 'Metric')"/></h3>
-                        <div class="value"><t t-esc="metric.get('value', '0')"/></div>
+                        <h3>
+                            <t t-esc="metric.get('label', 'Metric')"/>
+                        </h3>
+                        <div class="value">
+                            <t t-esc="metric.get('value', '0')"/>
+                        </div>
                         <small t-if="metric.get('change')">
                             <t t-if="metric.get('change_type') == 'positive'">
                                 <i class="fa fa-arrow-up"></i>
@@ -753,7 +802,9 @@
     <template id="report_trend_analysis" name="Report Trend Analysis">
         <div class="card mb-4">
             <div class="card-header">
-                <h5 class="mb-0"><t t-esc="title or 'Trend Analysis'"/></h5>
+                <h5 class="mb-0">
+                    <t t-esc="title or 'Trend Analysis'"/>
+                </h5>
             </div>
             <div class="card-body">
                 <canvas t-att-id="chart_id or 'trendChart'" height="300"></canvas>
@@ -761,15 +812,17 @@
             <div class="card-footer" t-if="description">
                 <div class="d-flex align-items-center">
                     <i class="fa fa-info-circle text-primary mr-2"></i>
-                    <small><t t-esc="description"/></small>
+                    <small>
+                        <t t-esc="description"/>
+                    </small>
                 </div>
             </div>
         </div>
 
         <script type="text/javascript">
             document.addEventListener('DOMContentLoaded', function() {
-                var ctx = document.getElementById('<t t-esc="chart_id or 'trendChart'"/>').getContext('2d');
-                new Chart(ctx, <t t-raw="chart_config"/>);
+            var ctx = document.getElementById('<t t-esc="chart_id or 'trendChart'"/>').getContext('2d');
+            new Chart(ctx,<t t-raw="chart_config"/>);
             });
         </script>
     </template>
@@ -783,8 +836,12 @@
             <div class="col-8 text-right">
                 <h3 t-esc="report.name" style="color: #1a73e8;"/>
                 <p>
-                    <t t-esc="report.date_from"/> - <t t-esc="report.date_to"/><br/>
-                    Ngày tạo: <t t-esc="datetime.datetime.now().strftime('%d/%m/%Y %H:%M')"/>
+                    <t t-esc="report.date_from"/>
+                    -
+                    <t t-esc="report.date_to"/>
+                    <br/>
+                    Ngày tạo:
+                    <t t-esc="datetime.datetime.now().strftime('%d/%m/%Y %H:%M')"/>
                 </p>
             </div>
             <div class="col-12">
@@ -800,10 +857,14 @@
                 <hr style="border-top: 1px solid #dee2e6;"/>
                 <div class="d-flex justify-content-between">
                     <div>
-                        <p><t t-esc="company.name"/></p>
+                        <p>
+                            <t t-esc="company.name"/>
+                        </p>
                     </div>
                     <div class="text-right">
-                        <p>Trang <span class="pageNumber"></span> / <span class="totalPages"></span></p>
+                        <p>Trang <span class="pageNumber"></span> /
+                            <span class="totalPages"></span>
+                        </p>
                     </div>
                 </div>
             </div>

@@ -104,6 +104,7 @@ class MedicalReport(models.Model):
                     'sticky': False,
                 }
             }
+
     def _create_chart_image(self, plt_figure):
         """Convert matplotlib figure to binary data for storing in Odoo"""
         if not MATPLOTLIB_ENABLED:

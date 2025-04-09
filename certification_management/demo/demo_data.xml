@@ -8,7 +8,8 @@
             <field name="certification_type">operation</field>
             <field name="authority">Sở Y tế</field>
             <field name="issue_date" eval="(DateTime.today() - relativedelta(months=6)).strftime('%Y-%m-%d')"/>
-            <field name="expiry_date" eval="(DateTime.today() + relativedelta(years=2, months=6)).strftime('%Y-%m-%d')"/>
+            <field name="expiry_date"
+                   eval="(DateTime.today() + relativedelta(years=2, months=6)).strftime('%Y-%m-%d')"/>
             <field name="description">Giấy phép hoạt động cơ sở khám chữa bệnh</field>
             <field name="state">valid</field>
         </record>

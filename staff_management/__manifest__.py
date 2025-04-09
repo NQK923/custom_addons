@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-     'name': "Quản lý nhân sự",
+    'name': "Quản lý nhân sự",
 
     'summary': "Quản lý thông tin nhân sự y tế trên giao diện web",
 

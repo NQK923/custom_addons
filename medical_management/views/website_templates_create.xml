@@ -14,7 +14,8 @@
                         <div class="form-group row">
                             <label for="test_code" class="col-sm-3 col-form-label">Mã xét nghiệm</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" name="test_code" id="test_code" required="required"/>
+                                <input type="text" class="form-control" name="test_code" id="test_code"
+                                       required="required"/>
                             </div>
                         </div>
 
@@ -92,7 +93,8 @@
                         <div class="form-group row">
                             <label for="test_code" class="col-sm-3 col-form-label">Mã xét nghiệm</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" name="test_code" id="test_code" t-att-value="test.test_code" required="required"/>
+                                <input type="text" class="form-control" name="test_code" id="test_code"
+                                       t-att-value="test.test_code" required="required"/>
                             </div>
                         </div>
 
@@ -101,7 +103,8 @@
                             <div class="col-sm-9">
                                 <select class="form-control" name="patient_id" id="patient_id" required="required">
                                     <t t-foreach="patients" t-as="patient">
-                                        <option t-att-value="patient.id" t-att-selected="patient.id == test.patient_id.id">
+                                        <option t-att-value="patient.id"
+                                                t-att-selected="patient.id == test.patient_id.id">
                                             <t t-esc="patient.name"/>
                                         </option>
                                     </t>
@@ -127,7 +130,8 @@
                             <div class="col-sm-9">
                                 <select class="form-control" name="test_type" id="test_type" required="required">
                                     <t t-foreach="test_types.items()" t-as="test_type">
-                                        <option t-att-value="test_type[0]" t-att-selected="test_type[0] == test.test_type">
+                                        <option t-att-value="test_type[0]"
+                                                t-att-selected="test_type[0] == test.test_type">
                                             <t t-esc="test_type[1]"/>
                                         </option>
                                     </t>
@@ -140,7 +144,8 @@
                             <div class="col-sm-9">
                                 <select class="form-control" name="status" id="status" required="required">
                                     <t t-foreach="status_types.items()" t-as="status_type">
-                                        <option t-att-value="status_type[0]" t-att-selected="status_type[0] == test.status">
+                                        <option t-att-value="status_type[0]"
+                                                t-att-selected="status_type[0] == test.status">
                                             <t t-esc="status_type[1]"/>
                                         </option>
                                     </t>
@@ -151,7 +156,9 @@
                         <div class="form-group row">
                             <label for="result" class="col-sm-3 col-form-label">Kết quả</label>
                             <div class="col-sm-9">
-                                <textarea class="form-control" name="result" id="result" rows="4"><t t-esc="test.result or ''"/></textarea>
+                                <textarea class="form-control" name="result" id="result" rows="4">
+                                    <t t-esc="test.result or ''"/>
+                                </textarea>
                             </div>
                         </div>
 

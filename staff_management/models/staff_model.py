@@ -3,14 +3,15 @@ from odoo.exceptions import UserError
 from datetime import datetime
 import uuid
 
+
 class StaffType(models.Model):
     _name = 'clinic.staff.type'
     _description = 'Staff Type'
-    _rec_name = 'position' # Tên hiển thị trong list view
+    _rec_name = 'position'  # Tên hiển thị trong list view
 
     name = fields.Char(string="Mã chức vụ", required=True, copy=False, readonly=True)
     position = fields.Char(string="Chức vụ", required=True,
-                          help="Nhập chức vụ y tế, ví dụ: Bác sĩ CKI, Điều dưỡng viên, v.v.")
+                           help="Nhập chức vụ y tế, ví dụ: Bác sĩ CKI, Điều dưỡng viên, v.v.")
     note = fields.Text(string="Ghi chú")
 
     @api.model_create_multi
@@ -25,6 +26,7 @@ class StaffType(models.Model):
         default.update(name='New')
         return super().copy(default)
 
+
 class Department(models.Model):
     _name = 'clinic.department'
     _description = 'Department'
@@ -32,7 +34,7 @@ class Department(models.Model):
 
     name = fields.Char(string="Mã khoa", required=True, copy=False, readonly=True)
     department_name = fields.Char(string="Tên khoa", required=True,
-                                 help="Nhập tên khoa, ví dụ: Khoa Nội, Khoa Xét nghiệm...")
+                                  help="Nhập tên khoa, ví dụ: Khoa Nội, Khoa Xét nghiệm...")
     type = fields.Selection([
         ('clinical', 'Khoa lâm sàng'),
         ('subclinical', 'Khoa cận lâm sàng'),
@@ -50,6 +52,7 @@ class Department(models.Model):
         default = dict(default or {})
         default.update(name='New')
         return super().copy(default)
+
 
 class Staff(models.Model):
     _name = 'clinic.staff'
@@ -170,6 +173,7 @@ class Staff(models.Model):
                 },
             }
 
+
 class StaffAttendance(models.Model):
     _name = 'clinic.staff.attendance'
     _description = 'Staff Attendance'
@@ -206,6 +210,7 @@ class StaffAttendance(models.Model):
     _sql_constraints = [
         ('unique_staff_date', 'unique(staff_id, date)', 'Chỉ được chấm công một lần mỗi ngày cho mỗi nhân viên!')
     ]
+
 
 class StaffPerformance(models.Model):
     _name = 'clinic.staff.performance'

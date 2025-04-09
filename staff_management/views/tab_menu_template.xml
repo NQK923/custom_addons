@@ -5,17 +5,22 @@
             <ul class="nav nav-tabs">
                 <li class="nav-item">
                     <a t-att-class="'nav-link' + (' active' if active_tab == 'staff' else '')" href="/clinic/staff">
-                        <i class="fa fa-users"/> Nhân sự
+                        <i class="fa fa-users"/>
+                        Nhân sự
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a t-att-class="'nav-link' + (' active' if active_tab == 'staff_type' else '')" href="/clinic/staff_type">
-                        <i class="fa fa-id-badge"/> Chức vụ
+                    <a t-att-class="'nav-link' + (' active' if active_tab == 'staff_type' else '')"
+                       href="/clinic/staff_type">
+                        <i class="fa fa-id-badge"/>
+                        Chức vụ
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a t-att-class="'nav-link' + (' active' if active_tab == 'department' else '')" href="/clinic/department">
-                        <i class="fa fa-hospital-o"/> Khoa
+                    <a t-att-class="'nav-link' + (' active' if active_tab == 'department' else '')"
+                       href="/clinic/department">
+                        <i class="fa fa-hospital-o"/>
+                        Khoa
                     </a>
                 </li>
             </ul>

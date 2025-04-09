@@ -18,7 +18,8 @@
     </record>
 
     <!-- Menu Root -->
-    <menuitem id="menu_prescription_root" name="Đơn thuốc" parent="menu_pharmacy_root" action="action_prescription_order" sequence="30"/>
+    <menuitem id="menu_prescription_root" name="Đơn thuốc" parent="menu_pharmacy_root"
+              action="action_prescription_order" sequence="30"/>
 
     <!-- List View -->
     <record id="view_prescription_order_list" model="ir.ui.view">
@@ -71,8 +72,7 @@
     </record>
 
 
-
-<!--    medical-->
+    <!--    medical-->
 
     <!-- Menu Pharmacy Products -->
     <record id="view_pharmacy_product_list" model="ir.ui.view">
@@ -200,6 +200,7 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <menuitem id="menu_pharmacy_products" name="Kho dược phẩm" parent="menu_pharmacy_root" action="action_pharmacy_product" sequence="10"/>
+    <menuitem id="menu_pharmacy_products" name="Kho dược phẩm" parent="menu_pharmacy_root"
+              action="action_pharmacy_product" sequence="10"/>
 
 </odoo>

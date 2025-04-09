@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Purchase Order Form Template -->
-        <!-- Purchase Order Form Template -->
+    <!-- Purchase Order Form Template -->
     <template id="purchase_form_template" name="Create Purchase Order">
         <t t-call="invoice_management.invoice_management_layout">
             <t t-set="page_title">Tạo phiếu nhập hàng</t>
@@ -9,7 +9,8 @@
             <!-- Actions -->
             <div class="im-actions">
                 <a href="/purchase/list" class="btn btn-secondary">
-                    <i class="fa fa-arrow-left"></i> Quay lại
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại
                 </a>
             </div>
 
@@ -37,7 +38,7 @@
                         <label for="supplier_name" class="col-sm-3 col-form-label">Nhà cung cấp</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="supplier_name" name="supplier_name"
-                                  placeholder="Tên nhà cung cấp" required="required"/>
+                                   placeholder="Tên nhà cung cấp" required="required"/>
                         </div>
                     </div>
 
@@ -46,7 +47,8 @@
                     <div class="product-lines-container">
                         <div class="form-row align-items-center mb-2 product-line-template">
                             <div class="col-5">
-                                <select name="product_id[]" class="form-control product-select" required="required" onchange="updateProductPrice(this)">
+                                <select name="product_id[]" class="form-control product-select" required="required"
+                                        onchange="updateProductPrice(this)">
                                     <option value="">-- Chọn dược phẩm --</option>
                                     <t t-foreach="products" t-as="product">
                                         <option t-att-value="product.id" t-att-data-price="product.unit_price or 0">
@@ -62,7 +64,8 @@
                             </div>
                             <div class="col-3 d-flex align-items-center gap-2">
                                 <strong class="mb-0">Đơn giá:</strong>
-                                <input type="number" name="price_unit[]" class="form-control product-price" placeholder="Đơn giá"
+                                <input type="number" name="price_unit[]" class="form-control product-price"
+                                       placeholder="Đơn giá"
                                        min="0" step="1000" value="0" required="required" readonly="readonly"/>
                             </div>
 
@@ -78,7 +81,8 @@
 
                         <div class="text-right mb-3">
                             <button type="button" class="btn btn-sm btn-info add-product-line">
-                                <i class="fa fa-plus"></i> Thêm sản phẩm
+                                <i class="fa fa-plus"></i>
+                                Thêm sản phẩm
                             </button>
                         </div>
                     </div>
@@ -92,7 +96,8 @@
 
                     <div class="form-group row">
                         <div class="col-sm-9 offset-sm-3">
-                            <button type="button" id="submit-purchase-btn" class="btn btn-primary">Tạo phiếu nhập</button>
+                            <button type="button" id="submit-purchase-btn" class="btn btn-primary">Tạo phiếu nhập
+                            </button>
                             <a href="/purchase/list" class="btn btn-secondary ml-2">Hủy</a>
                         </div>
                     </div>
@@ -101,128 +106,128 @@
                 <script type="text/javascript">
                     // Global function to update product price
                     function updateProductPrice(selectElement) {
-                        try {
-                            var selectedOption = selectElement.options[selectElement.selectedIndex];
-                            var price = selectedOption.getAttribute('data-price') || 0;
-                            var priceField = selectElement.closest('.form-row').querySelector('.product-price');
+                    try {
+                    var selectedOption = selectElement.options[selectElement.selectedIndex];
+                    var price = selectedOption.getAttribute('data-price') || 0;
+                    var priceField = selectElement.closest('.form-row').querySelector('.product-price');
 
-                            console.log('Selected product with price:', price);
+                    console.log('Selected product with price:', price);
 
-                            if (priceField) {
-                                priceField.value = price;
-                            }
-                        } catch (error) {
-                            console.error('Error updating price:', error);
-                        }
+                    if (priceField) {
+                    priceField.value = price;
+                    }
+                    } catch (error) {
+                    console.error('Error updating price:', error);
+                    }
                     }
 
                     document.addEventListener('DOMContentLoaded', function() {
-                        console.log('DOM loaded - initializing purchase form');
+                    console.log('DOM loaded - initializing purchase form');
 
-                        // Add first product line when the page loads
-                        addProductLine();
+                    // Add first product line when the page loads
+                    addProductLine();
 
-                        // Add product line function
-                        function addProductLine() {
-                            var template = document.querySelector('.product-line-template').cloneNode(true);
-                            template.classList.remove('product-line-template');
-                            template.classList.add('product-line');
-                            template.style.display = 'flex';
+                    // Add product line function
+                    function addProductLine() {
+                    var template = document.querySelector('.product-line-template').cloneNode(true);
+                    template.classList.remove('product-line-template');
+                    template.classList.add('product-line');
+                    template.style.display = 'flex';
 
-                            // Add event listener to remove button
-                            template.querySelector('.remove-line').addEventListener('click', function() {
-                                var lines = document.querySelectorAll('.product-line');
-                                if (lines.length > 1) {
-                                    this.closest('.product-line').remove();
-                                } else {
-                                    alert('Phải có ít nhất một sản phẩm trong phiếu nhập.');
-                                }
-                            });
+                    // Add event listener to remove button
+                    template.querySelector('.remove-line').addEventListener('click', function() {
+                    var lines = document.querySelectorAll('.product-line');
+                    if (lines.length > 1) {
+                    this.closest('.product-line').remove();
+                    } else {
+                    alert('Phải có ít nhất một sản phẩm trong phiếu nhập.');
+                    }
+                    });
 
-                            // Set up product selection event handler
-                            var select = template.querySelector('.product-select');
-                            if (select) {
-                                select.addEventListener('change', function() {
-                                    updateProductPrice(this);
-                                });
-                            }
+                    // Set up product selection event handler
+                    var select = template.querySelector('.product-select');
+                    if (select) {
+                    select.addEventListener('change', function() {
+                    updateProductPrice(this);
+                    });
+                    }
 
-                            // Add to product lines container
-                            document.getElementById('product-lines').appendChild(template);
-                        }
+                    // Add to product lines container
+                    document.getElementById('product-lines').appendChild(template);
+                    }
 
-                        // Add event listener to add button
-                        var addButton = document.querySelector('.add-product-line');
-                        if (addButton) {
-                            addButton.addEventListener('click', addProductLine);
-                            console.log('Add product line button event handler attached');
-                        } else {
-                            console.error('Add product line button not found');
-                        }
+                    // Add event listener to add button
+                    var addButton = document.querySelector('.add-product-line');
+                    if (addButton) {
+                    addButton.addEventListener('click', addProductLine);
+                    console.log('Add product line button event handler attached');
+                    } else {
+                    console.error('Add product line button not found');
+                    }
 
-                        // Hide template line
-                        document.querySelector('.product-line-template').style.display = 'none';
+                    // Hide template line
+                    document.querySelector('.product-line-template').style.display = 'none';
 
-                        // Validate form function
-                        function validatePurchaseForm() {
-                            var hasValidLine = false;
+                    // Validate form function
+                    function validatePurchaseForm() {
+                    var hasValidLine = false;
 
-                            document.querySelectorAll('.product-line').forEach(function(line) {
-                                var productId = line.querySelector('select[name="product_id[]"]').value;
-                                var quantity = line.querySelector('input[name="quantity[]"]').value;
-                                var priceUnit = line.querySelector('input[name="price_unit[]"]').value;
+                    document.querySelectorAll('.product-line').forEach(function(line) {
+                    var productId = line.querySelector('select[name="product_id[]"]').value;
+                    var quantity = line.querySelector('input[name="quantity[]"]').value;
+                    var priceUnit = line.querySelector('input[name="price_unit[]"]').value;
 
-                                console.log('Line values:', productId, quantity, priceUnit);
+                    console.log('Line values:', productId, quantity, priceUnit);
 
-                                if (productId &amp;&amp; quantity > 0) {
-                                    hasValidLine = true;
+                    if (productId &amp;&amp; quantity > 0) {
+                    hasValidLine = true;
 
-                                    // Make sure price is set if a product is selected
-                                    if (!priceUnit || priceUnit &lt;= 0) {
-                                        // Get price from the selected option
-                                        var select = line.querySelector('select[name="product_id[]"]');
-                                        var selectedOption = select.options[select.selectedIndex];
-                                        var price = selectedOption.getAttribute('data-price') || 0;
+                    // Make sure price is set if a product is selected
+                    if (!priceUnit || priceUnit &lt;= 0) {
+                    // Get price from the selected option
+                    var select = line.querySelector('select[name="product_id[]"]');
+                    var selectedOption = select.options[select.selectedIndex];
+                    var price = selectedOption.getAttribute('data-price') || 0;
 
-                                        // Update the price field
-                                        line.querySelector('input[name="price_unit[]"]').value = price;
-                                    }
-                                }
-                            });
+                    // Update the price field
+                    line.querySelector('input[name="price_unit[]"]').value = price;
+                    }
+                    }
+                    });
 
-                            if (!hasValidLine) {
-                                alert('Vui lòng thêm ít nhất một sản phẩm hợp lệ vào phiếu nhập.');
-                                return false;
-                            }
+                    if (!hasValidLine) {
+                    alert('Vui lòng thêm ít nhất một sản phẩm hợp lệ vào phiếu nhập.');
+                    return false;
+                    }
 
-                            return true;
-                        }
+                    return true;
+                    }
 
-                        // Manual form submission handler
-                        var submitButton = document.getElementById('submit-purchase-btn');
-                        if (submitButton) {
-                            submitButton.addEventListener('click', function(e) {
-                                console.log('Submit button clicked');
-                                try {
-                                    var form = document.getElementById('purchase-form');
-                                    if (form) {
-                                        if (validatePurchaseForm()) {
-                                            console.log('Form validated - submitting');
-                                            form.submit();
-                                        }
-                                    } else {
-                                        console.error('Form not found');
-                                        alert('Lỗi: Không tìm thấy form');
-                                    }
-                                } catch (error) {
-                                    console.error('Error in submit handler:', error);
-                                    alert('Đã xảy ra lỗi: ' + error.message);
-                                }
-                            });
-                            console.log('Submit button event handler attached');
-                        } else {
-                            console.error('Submit button not found');
-                        }
+                    // Manual form submission handler
+                    var submitButton = document.getElementById('submit-purchase-btn');
+                    if (submitButton) {
+                    submitButton.addEventListener('click', function(e) {
+                    console.log('Submit button clicked');
+                    try {
+                    var form = document.getElementById('purchase-form');
+                    if (form) {
+                    if (validatePurchaseForm()) {
+                    console.log('Form validated - submitting');
+                    form.submit();
+                    }
+                    } else {
+                    console.error('Form not found');
+                    alert('Lỗi: Không tìm thấy form');
+                    }
+                    } catch (error) {
+                    console.error('Error in submit handler:', error);
+                    alert('Đã xảy ra lỗi: ' + error.message);
+                    }
+                    });
+                    console.log('Submit button event handler attached');
+                    } else {
+                    console.error('Submit button not found');
+                    }
                     });
                 </script>
             </div>
@@ -237,7 +242,8 @@
             <!-- Actions -->
             <div class="im-actions text-right">
                 <a href="/purchase/create" class="btn btn-success">
-                    <i class="fa fa-plus"></i> Tạo phiếu nhập hàng mới
+                    <i class="fa fa-plus"></i>
+                    Tạo phiếu nhập hàng mới
                 </a>
             </div>
 
@@ -263,17 +269,26 @@
                             <tbody>
                                 <t t-foreach="purchase_orders" t-as="purchase">
                                     <tr>
-                                        <td><t t-esc="purchase.display_name"/></td>
-                                        <td><t t-esc="purchase.date"/></td>
-                                        <td><t t-esc="purchase.supplier_name"/></td>
-                                        <td class="im-price">
-                                            <t t-esc="'{:,.0f}'.format(purchase.amount_untaxed)"/> VND
+                                        <td>
+                                            <t t-esc="purchase.display_name"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="purchase.date"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="purchase.supplier_name"/>
                                         </td>
                                         <td class="im-price">
-                                            <t t-esc="'{:,.0f}'.format(purchase.amount_tax)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(purchase.amount_untaxed)"/>
+                                            VND
                                         </td>
                                         <td class="im-price">
-                                            <t t-esc="'{:,.0f}'.format(purchase.amount_total)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(purchase.amount_tax)"/>
+                                            VND
+                                        </td>
+                                        <td class="im-price">
+                                            <t t-esc="'{:,.0f}'.format(purchase.amount_total)"/>
+                                            VND
                                         </td>
                                         <td class="text-center">
                                             <t t-if="purchase.state == 'draft'">
@@ -287,8 +302,10 @@
                                             </t>
                                         </td>
                                         <td class="text-center">
-                                            <a t-att-href="'/purchase/view/%s' % purchase.id" class="btn btn-sm btn-info">
-                                                <i class="fa fa-eye"></i> Xem
+                                            <a t-att-href="'/purchase/view/%s' % purchase.id"
+                                               class="btn btn-sm btn-info">
+                                                <i class="fa fa-eye"></i>
+                                                Xem
                                             </a>
                                         </td>
                                     </tr>
@@ -314,17 +331,20 @@
             <!-- Actions -->
             <div class="im-actions">
                 <a href="/purchase/list" class="btn btn-secondary">
-                    <i class="fa fa-arrow-left"></i> Quay lại
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại
                 </a>
 
                 <t t-if="purchase.state == 'draft'">
                     <a t-att-href="'/purchase/action/confirm/%s' % purchase.id" class="btn btn-primary ml-2">
-                        <i class="fa fa-check"></i> Xác nhận
+                        <i class="fa fa-check"></i>
+                        Xác nhận
                     </a>
                 </t>
                 <t t-if="purchase.state == 'confirmed'">
                     <a t-att-href="'/purchase/action/pay/%s' % purchase.id" class="btn btn-success ml-2">
-                        <i class="fa fa-money"></i> Thanh toán
+                        <i class="fa fa-money"></i>
+                        Thanh toán
                     </a>
                 </t>
             </div>
@@ -335,12 +355,22 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>Số phiếu nhập:</strong> <t t-esc="purchase.display_name"/></p>
-                        <p><strong>Ngày nhập:</strong> <t t-esc="purchase.date"/></p>
-                        <p><strong>Nhà cung cấp:</strong> <t t-esc="purchase.supplier_name"/></p>
+                        <p>
+                            <strong>Số phiếu nhập:</strong>
+                            <t t-esc="purchase.display_name"/>
+                        </p>
+                        <p>
+                            <strong>Ngày nhập:</strong>
+                            <t t-esc="purchase.date"/>
+                        </p>
+                        <p>
+                            <strong>Nhà cung cấp:</strong>
+                            <t t-esc="purchase.supplier_name"/>
+                        </p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>Trạng thái:</strong>
+                        <p>
+                            <strong>Trạng thái:</strong>
                             <t t-if="purchase.state == 'draft'">
                                 <span class="im-status-draft">Nháp</span>
                             </t>
@@ -351,19 +381,25 @@
                                 <span class="im-status-paid">Đã thanh toán</span>
                             </t>
                         </p>
-                        <p><strong>Tổng tiền chưa thuế:</strong>
+                        <p>
+                            <strong>Tổng tiền chưa thuế:</strong>
                             <span class="font-weight-bold">
-                                <t t-esc="'{:,.0f}'.format(purchase.amount_untaxed)"/> VND
+                                <t t-esc="'{:,.0f}'.format(purchase.amount_untaxed)"/>
+                                VND
                             </span>
                         </p>
-                        <p><strong>Thuế (10%):</strong>
+                        <p>
+                            <strong>Thuế (10%):</strong>
                             <span class="font-weight-bold">
-                                <t t-esc="'{:,.0f}'.format(purchase.amount_tax)"/> VND
+                                <t t-esc="'{:,.0f}'.format(purchase.amount_tax)"/>
+                                VND
                             </span>
                         </p>
-                        <p><strong>Tổng tiền sau thuế:</strong>
+                        <p>
+                            <strong>Tổng tiền sau thuế:</strong>
                             <span class="font-weight-bold">
-                                <t t-esc="'{:,.0f}'.format(purchase.amount_total)"/> VND
+                                <t t-esc="'{:,.0f}'.format(purchase.amount_total)"/>
+                                VND
                             </span>
                         </p>
                     </div>
@@ -388,21 +424,32 @@
                             <tbody>
                                 <t t-foreach="purchase.line_ids" t-as="line">
                                     <tr>
-                                        <td><t t-esc="line.product_id.name"/></td>
-                                        <td class="text-center"><t t-esc="line.quantity"/></td>
-                                        <td class="text-right">
-                                            <t t-esc="'{:,.0f}'.format(line.price_unit)"/> VND
+                                        <td>
+                                            <t t-esc="line.product_id.name"/>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-esc="line.quantity"/>
                                         </td>
                                         <td class="text-right">
-                                            <t t-esc="'{:,.0f}'.format(line.subtotal)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(line.price_unit)"/>
+                                            VND
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(line.subtotal)"/>
+                                            VND
                                         </td>
                                     </tr>
                                 </t>
                                 <tr class="table-info">
-                                    <td colspan="3" class="text-right"><strong>Tổng cộng:</strong></td>
-                                    <td class="text-right"><strong>
-                                        <t t-esc="'{:,.0f}'.format(purchase.amount_untaxed)"/> VND
-                                    </strong></td>
+                                    <td colspan="3" class="text-right">
+                                        <strong>Tổng cộng:</strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong>
+                                            <t t-esc="'{:,.0f}'.format(purchase.amount_untaxed)"/>
+                                            VND
+                                        </strong>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -419,7 +466,9 @@
             <div class="im-card">
                 <h3>Ghi chú</h3>
 
-                <p t-if="purchase.note"><t t-esc="purchase.note"/></p>
+                <p t-if="purchase.note">
+                    <t t-esc="purchase.note"/>
+                </p>
                 <p t-else="" class="im-empty">Không có ghi chú.</p>
             </div>
         </t>

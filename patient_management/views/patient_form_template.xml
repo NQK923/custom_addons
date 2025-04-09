@@ -33,24 +33,30 @@
                     <div>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="/patients">Danh sách bệnh nhân</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/patients">Danh sách bệnh nhân</a>
+                                </li>
                                 <li class="breadcrumb-item active" aria-current="page">Chi tiết bệnh nhân</li>
                             </ol>
                         </nav>
                         <h1 class="mt-2 mb-0 fw-bold">
                             <t t-esc="patient.name"/>
-                            <small class="text-muted ms-2">(<t t-esc="patient.code"/>)</small>
+                            <small class="text-muted ms-2">(<t t-esc="patient.code"/>)
+                            </small>
                         </h1>
                     </div>
                     <div>
                         <a t-att-href="'/patients/%s/edit' % patient.id" class="btn btn-outline-primary me-2">
-                            <i class="fa fa-edit"/> Chỉnh sửa
+                            <i class="fa fa-edit"/>
+                            Chỉnh sửa
                         </a>
                         <button id="deletePatientBtn" class="btn btn-outline-danger me-2">
-                            <i class="fa fa-trash"/> Xóa
+                            <i class="fa fa-trash"/>
+                            Xóa
                         </button>
                         <a href="/patients" class="btn btn-outline-secondary">
-                            <i class="fa fa-arrow-left"/> Quay lại
+                            <i class="fa fa-arrow-left"/>
+                            Quay lại
                         </a>
                     </div>
                 </div>
@@ -71,10 +77,18 @@
                                         <i class="fa fa-user-circle fa-5x text-secondary"/>
                                     </t>
                                 </div>
-                                <h4 class="mb-1"><t t-esc="patient.name"/></h4>
-                                <p class="text-muted mb-2">Mã bệnh nhân: <span class="fw-medium"><t t-esc="patient.code"/></span></p>
+                                <h4 class="mb-1">
+                                    <t t-esc="patient.name"/>
+                                </h4>
+                                <p class="text-muted mb-2">Mã bệnh nhân:
+                                    <span class="fw-medium">
+                                        <t t-esc="patient.code"/>
+                                    </span>
+                                </p>
                                 <p class="mb-0">
-                                    <span t-if="patient.patient_type == 'outpatient'" class="badge badge-outpatient">Ngoại trú</span>
+                                    <span t-if="patient.patient_type == 'outpatient'" class="badge badge-outpatient">
+                                        Ngoại trú
+                                    </span>
                                     <span t-else="" class="badge badge-inpatient">Nội trú</span>
                                 </p>
                             </div>
@@ -85,16 +99,26 @@
                                         <div class="info-label">Ngày đăng ký</div>
                                         <div class="info-value">
                                             <i class="fa fa-calendar me-1"/>
-                                            <t t-esc="patient.date" t-options='{"widget": "datetime", "format": "dd/MM/yyyy HH:mm"}'/>
+                                            <t t-esc="patient.date"
+                                               t-options='{"widget": "datetime", "format": "dd/MM/yyyy HH:mm"}'/>
                                         </div>
                                     </div>
 
                                     <div class="info-item">
                                         <div class="info-label">Giới tính</div>
                                         <div class="info-value">
-                                            <t t-if="patient.gender == 'male'"><i class="fa fa-male text-primary me-1"/> Nam</t>
-                                            <t t-elif="patient.gender == 'female'"><i class="fa fa-female text-danger me-1"/> Nữ</t>
-                                            <t t-else=""><i class="fa fa-genderless text-muted me-1"/> Khác</t>
+                                            <t t-if="patient.gender == 'male'">
+                                                <i class="fa fa-male text-primary me-1"/>
+                                                Nam
+                                            </t>
+                                            <t t-elif="patient.gender == 'female'">
+                                                <i class="fa fa-female text-danger me-1"/>
+                                                Nữ
+                                            </t>
+                                            <t t-else="">
+                                                <i class="fa fa-genderless text-muted me-1"/>
+                                                Khác
+                                            </t>
                                         </div>
                                     </div>
 
@@ -112,7 +136,8 @@
                                     <div class="info-item">
                                         <div class="info-label">Tuổi</div>
                                         <div class="info-value">
-                                            <t t-esc="patient.age"/> tuổi
+                                            <t t-esc="patient.age"/>
+                                            tuổi
                                         </div>
                                     </div>
 
@@ -146,10 +171,12 @@
                                         <div class="info-label">BHYT</div>
                                         <div class="info-value">
                                             <t t-if="patient.has_insurance">
-                                                <i class="fa fa-check-circle text-success me-1"/> Có bảo hiểm
+                                                <i class="fa fa-check-circle text-success me-1"/>
+                                                Có bảo hiểm
                                             </t>
                                             <t t-else="">
-                                                <i class="fa fa-times-circle text-muted me-1"/> Không có bảo hiểm
+                                                <i class="fa fa-times-circle text-muted me-1"/>
+                                                Không có bảo hiểm
                                             </t>
                                         </div>
                                     </div>
@@ -164,20 +191,23 @@
                     <ul class="nav nav-tabs" id="patientTabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info"
-                                type="button" role="tab" aria-controls="info" aria-selected="true">
-                                <i class="fa fa-info-circle me-1"/> Thông tin chi tiết
+                                    type="button" role="tab" aria-controls="info" aria-selected="true">
+                                <i class="fa fa-info-circle me-1"/>
+                                Thông tin chi tiết
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="insurance-tab" data-bs-toggle="tab" data-bs-target="#insurance"
-                                type="button" role="tab" aria-controls="insurance" aria-selected="false">
-                                <i class="fa fa-id-card me-1"/> Bảo hiểm y tế
+                                    type="button" role="tab" aria-controls="insurance" aria-selected="false">
+                                <i class="fa fa-id-card me-1"/>
+                                Bảo hiểm y tế
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes"
-                                type="button" role="tab" aria-controls="notes" aria-selected="false">
-                                <i class="fa fa-sticky-note me-1"/> Ghi chú
+                                    type="button" role="tab" aria-controls="notes" aria-selected="false">
+                                <i class="fa fa-sticky-note me-1"/>
+                                Ghi chú
                             </button>
                         </li>
                     </ul>
@@ -195,24 +225,36 @@
                                             <table class="table table-sm table-borderless">
                                                 <tr>
                                                     <th width="35%">Mã bệnh nhân:</th>
-                                                    <td><span class="badge bg-light text-dark"><t t-esc="patient.code"/></span></td>
+                                                    <td>
+                                                        <span class="badge bg-light text-dark">
+                                                            <t t-esc="patient.code"/>
+                                                        </span>
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <th>Họ và tên:</th>
-                                                    <td><span class="fw-medium"><t t-esc="patient.name"/></span></td>
+                                                    <td>
+                                                        <span class="fw-medium">
+                                                            <t t-esc="patient.name"/>
+                                                        </span>
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <th>Ngày sinh:</th>
                                                     <td>
                                                         <t t-if="patient.date_of_birth">
-                                                            <t t-esc="patient.date_of_birth" t-options='{"widget": "date"}'/>
+                                                            <t t-esc="patient.date_of_birth"
+                                                               t-options='{"widget": "date"}'/>
                                                         </t>
                                                         <t t-else="">-</t>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <th>Tuổi:</th>
-                                                    <td><t t-esc="patient.age"/> tuổi</td>
+                                                    <td>
+                                                        <t t-esc="patient.age"/>
+                                                        tuổi
+                                                    </td>
                                                 </tr>
                                             </table>
                                         </div>
@@ -276,11 +318,17 @@
                                                     <table class="table table-sm table-borderless">
                                                         <tr>
                                                             <th width="35%">Số thẻ BHYT:</th>
-                                                            <td><span class="fw-medium"><t t-esc="patient.insurance_number"/></span></td>
+                                                            <td>
+                                                                <span class="fw-medium">
+                                                                    <t t-esc="patient.insurance_number"/>
+                                                                </span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <th>Nơi ĐKKCB:</th>
-                                                            <td><t t-esc="patient.insurance_facility"/></td>
+                                                            <td>
+                                                                <t t-esc="patient.insurance_facility"/>
+                                                            </td>
                                                         </tr>
                                                     </table>
                                                 </div>
@@ -289,7 +337,8 @@
                                                         <tr>
                                                             <th width="35%">Có giá trị đến:</th>
                                                             <td>
-                                                                <t t-esc="patient.insurance_expiry" t-options='{"widget": "date"}'/>
+                                                                <t t-esc="patient.insurance_expiry"
+                                                                   t-options='{"widget": "date"}'/>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -344,15 +393,22 @@
                 </div>
 
                 <!-- Modal xác nhận xóa -->
-                <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+                <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel"
+                     aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-danger text-white">
                                 <h5 class="modal-title" id="deleteConfirmModalLabel">Xác nhận xóa bệnh nhân</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Đóng"></button>
                             </div>
                             <div class="modal-body">
-                                <p>Bạn có chắc chắn muốn xóa bệnh nhân <strong><t t-esc="patient.name"/></strong> không?</p>
+                                <p>Bạn có chắc chắn muốn xóa bệnh nhân
+                                    <strong>
+                                        <t t-esc="patient.name"/>
+                                    </strong>
+                                    không?
+                                </p>
                                 <p class="text-danger">Lưu ý: Hành động này không thể hoàn tác.</p>
                             </div>
                             <div class="modal-footer">
@@ -370,16 +426,16 @@
             <!-- JavaScript for tab functionality and delete confirmation -->
             <script type="text/javascript">
                 $(document).ready(function() {
-                    // Toggle between tabs
-                    $('#patientTabs button').on('click', function (e) {
-                        e.preventDefault();
-                        $(this).tab('show');
-                    });
+                // Toggle between tabs
+                $('#patientTabs button').on('click', function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+                });
 
-                    // Delete confirmation modal
-                    $('#deletePatientBtn').on('click', function() {
-                        $('#deleteConfirmModal').modal('show');
-                    });
+                // Delete confirmation modal
+                $('#deletePatientBtn').on('click', function() {
+                $('#deleteConfirmModal').modal('show');
+                });
                 });
             </script>
         </t>
