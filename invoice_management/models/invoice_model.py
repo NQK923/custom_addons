@@ -154,7 +154,12 @@ class ClinicInvoice(models.Model):
                 raise ValidationError(
                     'Không thể đặt lại hóa đơn đã thanh toán về trạng thái nháp!'
                 )
-            invoice.write({'state': 'draft'})
+            invoice.service_lines.unlink()
+            invoice.product_lines.unlink()
+
+            invoice.write({
+                'state': 'draft',
+            })
 
 class ClinicInvoiceLine(models.Model):
     _name = 'clinic.invoice.line'

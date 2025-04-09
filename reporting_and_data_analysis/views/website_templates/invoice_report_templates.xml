@@ -8,7 +8,7 @@
                 <!-- Overview Tab -->
                 <li class="nav-item">
                     <a href="/clinic/reports/dashboard" class="nav-link" t-att-class="'active' if page_name == 'dashboard' else ''">
-                        <i class="fa fa-chart-line mr-2"></i>Tổng Quan
+                        <i class="fa fa-chart-line mr-2"/>Tổng Quan
                     </a>
                 </li>
 
@@ -16,7 +16,7 @@
                 <li class="nav-item">
                     <a href="/clinic/reports/invoice/monthly" class="nav-link"
                        t-att-class="'active' if page_name in ['invoice_monthly', 'invoice_services', 'invoice_products', 'invoice_patients', 'invoice_status'] else ''">
-                        <i class="fa fa-file-invoice-dollar mr-2"></i>Báo Cáo Tài Chính
+                        <i class="fa-regular fa-file-invoice-dollar mr-2"/>Báo Cáo Tài Chính
                     </a>
                 </li>
 
@@ -24,7 +24,7 @@
                 <li class="nav-item">
                     <a href="/clinic/reports/medical" class="nav-link"
                        t-att-class="'active' if page_name in ['medical_reports', 'medical_report_detail', 'create_medical_report'] else ''">
-                        <i class="fa fa-notes-medical mr-2"></i>Báo Cáo Y Khoa
+                        <i class="fa-solid fa-notes-medical mr-2"/>Báo Cáo Y Khoa
                     </a>
                 </li>
             </ul>

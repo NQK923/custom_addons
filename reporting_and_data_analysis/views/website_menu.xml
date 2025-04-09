@@ -57,20 +57,4 @@
         <field name="parent_id" ref="website.main_menu"/>
         <field name="sequence">50</field>
     </record>
-
-    <!-- Finance Reports Submenu -->
-    <record id="menu_website_finance_reports" model="website.menu">
-        <field name="name">Báo Cáo Tài Chính</field>
-        <field name="url">/clinic/reports/invoice/monthly</field>
-        <field name="parent_id" ref="menu_website_reports"/>
-        <field name="sequence">10</field>
-    </record>
-
-    <!-- Medical Reports Submenu -->
-    <record id="menu_website_medical_reports" model="website.menu">
-        <field name="name">Báo Cáo Y Khoa</field>
-        <field name="url">/clinic/reports/medical</field>
-        <field name="parent_id" ref="menu_website_reports"/>
-        <field name="sequence">20</field>
-    </record>
 </odoo>
