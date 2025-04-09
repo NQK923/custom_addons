@@ -2,7 +2,7 @@ from odoo import models, fields, api
 from datetime import datetime
 import uuid
 
-
+BASE_SALARY = 2340000  # 2.340.000 VNĐ
 # Model quản lý hệ số lương (giữ nguyên)
 class StaffSalaryQualificationLevel(models.Model):
     _name = 'clinic.staff.salary.qualification_level'
@@ -143,7 +143,7 @@ class StaffSalary(models.Model):
         ('unique_name', 'UNIQUE(name)', 'Phiếu lương cho tháng và năm này đã tồn tại!')
     ]
 
-    BASE_SALARY = 2340000  # 2.340.000 VNĐ
+
 
     sheet_name = fields.Char(string='Bảng lương', compute='_compute_sheet_name')
 
@@ -168,9 +168,9 @@ class StaffSalary(models.Model):
                     ('staff_type_id', '=', staff_type),
                     ('rank', '=', str(rank))
                 ], limit=1)
-                record.base_salary = self.BASE_SALARY * qualification_level.salary_factor if qualification_level else 0.0
+                record.base_salary = self.BASE_SALARY * qualification_level.salary_factor if qualification_level else BASE_SALARY
             else:
-                record.base_salary = 0.0
+                record.base_salary = BASE_SALARY
 
     @api.depends('allowance_ids')
     def _compute_total_allowance(self):

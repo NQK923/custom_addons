@@ -7,7 +7,8 @@
     'depends': ['base', 'website', 'staff_management'],  # Added website dependency
     'data': [
         'security/ir.model.access.csv',
-        'views/views.xml',
+        'security/security.xml',
+        # 'views/views.xml',
         'views/prescription_templates.xml',
         'views/prescription_edit_templates.xml',
         'views/prescription_update_template.xml',
