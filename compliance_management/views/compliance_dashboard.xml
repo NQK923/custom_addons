@@ -7,23 +7,31 @@
                     <div class="col-12">
                         <ul class="nav nav-pills nav-fill">
                             <li class="nav-item">
-                                <a t-att-class="'nav-link ' + ('active' if page_name == 'dashboard' else '')" href="/compliance/dashboard">
-                                    <i class="fa fa-tachometer"></i> Dashboard
+                                <a t-att-class="'nav-link ' + ('active' if page_name == 'dashboard' else '')"
+                                   href="/compliance/dashboard">
+                                    <i class="fa fa-tachometer"></i>
+                                    Dashboard
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a t-att-class="'nav-link ' + ('active' if page_name == 'assessments' else '')" href="/compliance/assessments">
-                                    <i class="fa fa-check-square-o"></i> Đánh giá Tuân thủ
+                                <a t-att-class="'nav-link ' + ('active' if page_name == 'assessments' else '')"
+                                   href="/compliance/assessments">
+                                    <i class="fa fa-check-square-o"></i>
+                                    Đánh giá Tuân thủ
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a t-att-class="'nav-link ' + ('active' if page_name == 'regulations' else '')" href="/compliance/regulations">
-                                    <i class="fa fa-book"></i> Quy định Y tế
+                                <a t-att-class="'nav-link ' + ('active' if page_name == 'regulations' else '')"
+                                   href="/compliance/regulations">
+                                    <i class="fa fa-book"></i>
+                                    Quy định Y tế
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a t-att-class="'nav-link ' + ('active' if page_name == 'authorities' else '')" href="/compliance/authorities">
-                                    <i class="fa fa-university"></i> Cơ quan Quản lý
+                                <a t-att-class="'nav-link ' + ('active' if page_name == 'authorities' else '')"
+                                   href="/compliance/authorities">
+                                    <i class="fa fa-university"></i>
+                                    Cơ quan Quản lý
                                 </a>
                             </li>
                         </ul>
@@ -60,31 +68,41 @@
                             <div class="row text-center">
                                 <div class="col">
                                     <div class="p-3 bg-success text-white rounded mb-2">
-                                        <h3><t t-esc="compliance_stats['compliant']"/></h3>
+                                        <h3>
+                                            <t t-esc="compliance_stats['compliant']"/>
+                                        </h3>
                                     </div>
                                     <p>Tuân thủ</p>
                                 </div>
                                 <div class="col">
                                     <div class="p-3 bg-danger text-white rounded mb-2">
-                                        <h3><t t-esc="compliance_stats['non_compliant']"/></h3>
+                                        <h3>
+                                            <t t-esc="compliance_stats['non_compliant']"/>
+                                        </h3>
                                     </div>
                                     <p>Không tuân thủ</p>
                                 </div>
                                 <div class="col">
                                     <div class="p-3 bg-warning text-white rounded mb-2">
-                                        <h3><t t-esc="compliance_stats['partly_compliant']"/></h3>
+                                        <h3>
+                                            <t t-esc="compliance_stats['partly_compliant']"/>
+                                        </h3>
                                     </div>
                                     <p>Tuân thủ một phần</p>
                                 </div>
                                 <div class="col">
                                     <div class="p-3 bg-info text-white rounded mb-2">
-                                        <h3><t t-esc="compliance_stats['in_progress']"/></h3>
+                                        <h3>
+                                            <t t-esc="compliance_stats['in_progress']"/>
+                                        </h3>
                                     </div>
                                     <p>Đang thực hiện</p>
                                 </div>
                                 <div class="col">
                                     <div class="p-3 bg-secondary text-white rounded mb-2">
-                                        <h3><t t-esc="compliance_stats['draft']"/></h3>
+                                        <h3>
+                                            <t t-esc="compliance_stats['draft']"/>
+                                        </h3>
                                     </div>
                                     <p>Nháp</p>
                                 </div>
@@ -102,19 +120,25 @@
                             <div class="row text-center">
                                 <div class="col">
                                     <div class="p-3 bg-primary text-white rounded mb-2">
-                                        <h3><t t-esc="regulation_stats['national']"/></h3>
+                                        <h3>
+                                            <t t-esc="regulation_stats['national']"/>
+                                        </h3>
                                     </div>
                                     <p>Quốc gia</p>
                                 </div>
                                 <div class="col">
                                     <div class="p-3 bg-primary text-white rounded mb-2">
-                                        <h3><t t-esc="regulation_stats['international']"/></h3>
+                                        <h3>
+                                            <t t-esc="regulation_stats['international']"/>
+                                        </h3>
                                     </div>
                                     <p>Quốc tế</p>
                                 </div>
                                 <div class="col">
                                     <div class="p-3 bg-primary text-white rounded mb-2">
-                                        <h3><t t-esc="regulation_stats['local']"/></h3>
+                                        <h3>
+                                            <t t-esc="regulation_stats['local']"/>
+                                        </h3>
                                     </div>
                                     <p>Địa phương</p>
                                 </div>
@@ -131,7 +155,8 @@
                         <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                             <h4 class="mb-0">Đánh giá Tuân thủ Gần đây</h4>
                             <a href="/compliance/assessment/new" class="btn btn-sm btn-outline-light">
-                                <i class="fa fa-plus"></i> Tạo mới
+                                <i class="fa fa-plus"></i>
+                                Tạo mới
                             </a>
                         </div>
                         <div class="card-body">
@@ -154,8 +179,12 @@
                                                             <t t-esc="compliance.name"/>
                                                         </a>
                                                     </td>
-                                                    <td><t t-esc="compliance.regulation_id.name"/></td>
-                                                    <td><t t-esc="compliance.date_assessment"/></td>
+                                                    <td>
+                                                        <t t-esc="compliance.regulation_id.name"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="compliance.date_assessment"/>
+                                                    </td>
                                                     <td>
                                                         <span t-att-class="'badge ' + (
                                                             'bg-success' if compliance.state == 'compliant' else
@@ -208,9 +237,15 @@
                                                             <t t-esc="assessment.name"/>
                                                         </a>
                                                     </td>
-                                                    <td><t t-esc="assessment.regulation_id.name"/></td>
-                                                    <td><t t-esc="assessment.next_assessment"/></td>
-                                                    <td><t t-esc="assessment.responsible_id.name"/></td>
+                                                    <td>
+                                                        <t t-esc="assessment.regulation_id.name"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="assessment.next_assessment"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="assessment.responsible_id.name"/>
+                                                    </td>
                                                 </tr>
                                             </t>
                                         </tbody>

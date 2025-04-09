@@ -6,57 +6,57 @@
             <style>
                 /* CSS cho Healthcare Management */
                 .healthcare-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
                 }
 
                 .healthcare-card {
-                    margin-bottom: 20px;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    transition: transform 0.3s ease;
+                margin-bottom: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease;
                 }
 
                 .healthcare-card:hover {
-                    transform: translateY(-5px);
+                transform: translateY(-5px);
                 }
 
                 .healthcare-card .card-header {
-                    border-radius: 8px 8px 0 0;
-                    font-weight: bold;
+                border-radius: 8px 8px 0 0;
+                font-weight: bold;
                 }
 
                 .healthcare-stats {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 15px;
-                    margin-bottom: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
 
                 .healthcare-icon {
-                    font-size: 2.5rem;
-                    margin-bottom: 15px;
-                    color: #ffffff;
+                font-size: 2.5rem;
+                margin-bottom: 15px;
+                color: #ffffff;
                 }
 
                 /* Responsive cho điện thoại */
                 @media (max-width: 768px) {
-                    .btn-group {
-                        flex-direction: column;
-                        width: 100%;
-                    }
+                .btn-group {
+                flex-direction: column;
+                width: 100%;
+                }
 
-                    .btn-group .btn {
-                        margin-right: 0;
-                        margin-bottom: 5px;
-                        width: 100%;
-                    }
+                .btn-group .btn {
+                margin-right: 0;
+                margin-bottom: 5px;
+                width: 100%;
+                }
 
-                    .card-header h3 {
-                        font-size: 1.25rem;
-                    }
+                .card-header h3 {
+                font-size: 1.25rem;
+                }
                 }
             </style>
 
@@ -70,38 +70,51 @@
 
                 <!-- Phần quản lý phản hồi và khiếu nại -->
                 <h2 class="mt-5 mb-4 text-primary border-bottom pb-2">
-                    <i class="fa fa-comments me-2"></i> Phản hồi &amp; Khiếu nại
+                    <i class="fa fa-comments me-2"></i>
+                    Phản hồi &amp; Khiếu nại
                 </h2>
                 <div class="row mb-5">
                     <div class="col-md-6">
                         <div class="card healthcare-card h-100">
                             <div class="card-header bg-info text-white">
-                                <h4 class="mb-0"><i class="fa fa-comments me-2"></i> Phản hồi bệnh nhân</h4>
+                                <h4 class="mb-0">
+                                    <i class="fa fa-comments me-2"></i>
+                                    Phản hồi bệnh nhân
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <div class="text-center mb-3">
                                     <i class="fa fa-comments healthcare-icon text-info"></i>
                                 </div>
-                                <p class="card-text">Quản lý phản hồi từ bệnh nhân, ghi nhận khen ngợi, góp ý, khiếu nại và hỏi đáp</p>
-                                    <a href="/healthcare/patient_feedback" class="btn btn-info d-block">
-                                        <i class="fa fa-list me-1"></i> Danh sách phản hồi
-                                    </a>
+                                <p class="card-text">Quản lý phản hồi từ bệnh nhân, ghi nhận khen ngợi, góp ý, khiếu nại
+                                    và hỏi đáp
+                                </p>
+                                <a href="/healthcare/patient_feedback" class="btn btn-info d-block">
+                                    <i class="fa fa-list me-1"></i>
+                                    Danh sách phản hồi
+                                </a>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="card healthcare-card h-100">
                             <div class="card-header bg-danger text-white">
-                                <h4 class="mb-0"><i class="fa fa-exclamation-circle me-2"></i> Khiếu nại bệnh nhân</h4>
+                                <h4 class="mb-0">
+                                    <i class="fa fa-exclamation-circle me-2"></i>
+                                    Khiếu nại bệnh nhân
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <div class="text-center mb-3">
                                     <i class="fa fa-exclamation-circle healthcare-icon text-danger"></i>
                                 </div>
-                                <p class="card-text">Quản lý khiếu nại, theo dõi trạng thái giải quyết khiếu nại của bệnh nhân</p>
-                                    <a href="/healthcare/patient_complaint" class="btn btn-danger d-block mt-4">
-                                        <i class="fa fa-list me-1"></i> Danh sách khiếu nại
-                                    </a>
+                                <p class="card-text">Quản lý khiếu nại, theo dõi trạng thái giải quyết khiếu nại của
+                                    bệnh nhân
+                                </p>
+                                <a href="/healthcare/patient_complaint" class="btn btn-danger d-block mt-4">
+                                    <i class="fa fa-list me-1"></i>
+                                    Danh sách khiếu nại
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -109,21 +122,29 @@
 
                 <!-- Phần quản lý thông báo lịch hẹn -->
                 <h2 class="mt-5 mb-4 text-primary border-bottom pb-2">
-                    <i class="fa fa-calendar-check me-2"></i> Thông báo lịch hẹn
+                    <i class="fa fa-calendar-check me-2"></i>
+                    Thông báo lịch hẹn
                 </h2>
                 <div class="row mb-5">
                     <div class="col-md-12">
                         <div class="card healthcare-card">
                             <div class="card-header bg-warning text-dark">
-                                <h4 class="mb-0"><i class="fa fa-calendar-check me-2"></i> Quản lý thông báo lịch hẹn</h4>
+                                <h4 class="mb-0">
+                                    <i class="fa fa-calendar-check me-2"></i>
+                                    Quản lý thông báo lịch hẹn
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <div class="text-center mb-3">
                                     <i class="fa fa-calendar-check healthcare-icon text-warning"></i>
                                 </div>
-                                <p class="card-text">Hệ thống quản lý và gửi thông báo tự động cho lịch hẹn khám bệnh của bệnh nhân</p>
-                                <a href="/healthcare/appointment_reminder" class="btn btn-warning d-block mt-3 text-dark w-50 mx-auto">
-                                    <i class="fa fa-bell me-1"></i> Quản lý thông báo lịch hẹn
+                                <p class="card-text">Hệ thống quản lý và gửi thông báo tự động cho lịch hẹn khám bệnh
+                                    của bệnh nhân
+                                </p>
+                                <a href="/healthcare/appointment_reminder"
+                                   class="btn btn-warning d-block mt-3 text-dark w-50 mx-auto">
+                                    <i class="fa fa-bell me-1"></i>
+                                    Quản lý thông báo lịch hẹn
                                 </a>
                             </div>
                         </div>
@@ -132,21 +153,28 @@
 
                 <!-- Phần thống kê và phân tích -->
                 <h2 class="mt-5 mb-4 text-primary border-bottom pb-2">
-                    <i class="fa fa-chart-bar me-2"></i> Thống kê &amp; Phân tích
+                    <i class="fa fa-chart-bar me-2"></i>
+                    Thống kê &amp; Phân tích
                 </h2>
                 <div class="row mb-5">
                     <div class="col-md-6 mb-4">
                         <div class="card healthcare-card h-100">
                             <div class="card-header bg-success text-white">
-                                <h4 class="mb-0"><i class="fa fa-chart-bar me-2"></i> Phân tích phản hồi</h4>
+                                <h4 class="mb-0">
+                                    <i class="fa fa-chart-bar me-2"></i>
+                                    Phân tích phản hồi
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <div class="text-center mb-3">
                                     <i class="fa fa-chart-pie healthcare-icon text-success"></i>
                                 </div>
-                                <p class="card-text">Tổng quan và phân tích phản hồi của bệnh nhân theo nhiều tiêu chí khác nhau</p>
+                                <p class="card-text">Tổng quan và phân tích phản hồi của bệnh nhân theo nhiều tiêu chí
+                                    khác nhau
+                                </p>
                                 <a href="/healthcare/feedback_dashboard" class="btn btn-success d-block mt-4">
-                                    <i class="fa fa-chart-pie me-1"></i> Xem bảng điều khiển
+                                    <i class="fa fa-chart-pie me-1"></i>
+                                    Xem bảng điều khiển
                                 </a>
                             </div>
                         </div>
@@ -154,15 +182,21 @@
                     <div class="col-md-6 mb-4">
                         <div class="card healthcare-card h-100">
                             <div class="card-header bg-primary text-white">
-                                <h4 class="mb-0"><i class="fa fa-chart-line me-2"></i> Thống kê phản hồi</h4>
+                                <h4 class="mb-0">
+                                    <i class="fa fa-chart-line me-2"></i>
+                                    Thống kê phản hồi
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <div class="text-center mb-3">
                                     <i class="fa fa-chart-line healthcare-icon text-primary"></i>
                                 </div>
-                                <p class="card-text">Báo cáo thống kê chi tiết về phản hồi của bệnh nhân theo thời gian và phòng ban</p>
+                                <p class="card-text">Báo cáo thống kê chi tiết về phản hồi của bệnh nhân theo thời gian
+                                    và phòng ban
+                                </p>
                                 <a href="/healthcare/feedback_statistics" class="btn btn-primary d-block mt-4">
-                                    <i class="fa fa-table me-1"></i> Xem thống kê
+                                    <i class="fa fa-table me-1"></i>
+                                    Xem thống kê
                                 </a>
                             </div>
                         </div>
@@ -170,15 +204,21 @@
                     <div class="col-md-6 mb-4">
                         <div class="card healthcare-card h-100">
                             <div class="card-header bg-danger text-white">
-                                <h4 class="mb-0"><i class="fa fa-chart-bar me-2"></i> Phân tích khiếu nại</h4>
+                                <h4 class="mb-0">
+                                    <i class="fa fa-chart-bar me-2"></i>
+                                    Phân tích khiếu nại
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <div class="text-center mb-3">
                                     <i class="fa fa-chart-bar healthcare-icon text-danger"></i>
                                 </div>
-                                <p class="card-text">Tổng quan và phân tích khiếu nại của bệnh nhân theo nhiều tiêu chí khác nhau</p>
+                                <p class="card-text">Tổng quan và phân tích khiếu nại của bệnh nhân theo nhiều tiêu chí
+                                    khác nhau
+                                </p>
                                 <a href="/healthcare/complaint_dashboard" class="btn btn-danger d-block mt-4">
-                                    <i class="fa fa-chart-pie me-1"></i> Xem bảng điều khiển
+                                    <i class="fa fa-chart-pie me-1"></i>
+                                    Xem bảng điều khiển
                                 </a>
                             </div>
                         </div>
@@ -186,15 +226,21 @@
                     <div class="col-md-6 mb-4">
                         <div class="card healthcare-card h-100">
                             <div class="card-header bg-secondary text-white">
-                                <h4 class="mb-0"><i class="fa fa-chart-line me-2"></i> Thống kê khiếu nại</h4>
+                                <h4 class="mb-0">
+                                    <i class="fa fa-chart-line me-2"></i>
+                                    Thống kê khiếu nại
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <div class="text-center mb-3">
                                     <i class="fa fa-chart-line healthcare-icon text-secondary"></i>
                                 </div>
-                                <p class="card-text">Báo cáo thống kê chi tiết về khiếu nại của bệnh nhân theo thời gian và phân loại</p>
+                                <p class="card-text">Báo cáo thống kê chi tiết về khiếu nại của bệnh nhân theo thời gian
+                                    và phân loại
+                                </p>
                                 <a href="/healthcare/complaint_statistics" class="btn btn-secondary d-block mt-4">
-                                    <i class="fa fa-table me-1"></i> Xem thống kê
+                                    <i class="fa fa-table me-1"></i>
+                                    Xem thống kê
                                 </a>
                             </div>
                         </div>
@@ -206,12 +252,18 @@
                     <div class="col-12">
                         <div class="card healthcare-card">
                             <div class="card-header bg-primary text-white">
-                                <h3 class="mb-0"><i class="fa fa-info-circle me-2"></i> Hướng dẫn sử dụng nhanh</h3>
+                                <h3 class="mb-0">
+                                    <i class="fa fa-info-circle me-2"></i>
+                                    Hướng dẫn sử dụng nhanh
+                                </h3>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <h5><i class="fa fa-plus-circle me-2"></i> Tạo phản hồi mới</h5>
+                                        <h5>
+                                            <i class="fa fa-plus-circle me-2"></i>
+                                            Tạo phản hồi mới
+                                        </h5>
                                         <ol>
                                             <li>Nhấn vào nút "Tạo phản hồi" ở mục Phản hồi bệnh nhân</li>
                                             <li>Điền đầy đủ thông tin bệnh nhân và nội dung phản hồi</li>
@@ -219,7 +271,10 @@
                                         </ol>
                                     </div>
                                     <div class="col-md-6">
-                                        <h5><i class="fa fa-chart-bar me-2"></i> Theo dõi thống kê</h5>
+                                        <h5>
+                                            <i class="fa fa-chart-bar me-2"></i>
+                                            Theo dõi thống kê
+                                        </h5>
                                         <ol>
                                             <li>Truy cập các mục phân tích hoặc thống kê từ dashboard</li>
                                             <li>Chọn khoảng thời gian cần xem dữ liệu</li>
@@ -236,25 +291,25 @@
             <!-- JavaScript Inline - Fixed Version -->
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Get all healthcare cards
-                    var cards = document.querySelectorAll('.healthcare-card');
+                // Get all healthcare cards
+                var cards = document.querySelectorAll('.healthcare-card');
 
-                    // Add event listeners to each card
-                    cards.forEach(function(card) {
-                        card.addEventListener('mouseenter', function() {
-                            var icon = this.querySelector('.healthcare-icon');
-                            if (icon) {
-                                icon.classList.add('fa-bounce');
-                            }
-                        });
+                // Add event listeners to each card
+                cards.forEach(function(card) {
+                card.addEventListener('mouseenter', function() {
+                var icon = this.querySelector('.healthcare-icon');
+                if (icon) {
+                icon.classList.add('fa-bounce');
+                }
+                });
 
-                        card.addEventListener('mouseleave', function() {
-                            var icon = this.querySelector('.healthcare-icon');
-                            if (icon) {
-                                icon.classList.remove('fa-bounce');
-                            }
-                        });
-                    });
+                card.addEventListener('mouseleave', function() {
+                var icon = this.querySelector('.healthcare-icon');
+                if (icon) {
+                icon.classList.remove('fa-bounce');
+                }
+                });
+                });
                 });
             </script>
         </t>

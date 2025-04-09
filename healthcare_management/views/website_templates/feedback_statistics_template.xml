@@ -5,87 +5,87 @@
             <!-- Enhanced CSS styling -->
             <style>
                 .dashboard-card {
-                    margin-bottom: 20px;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                 }
 
                 .dashboard-card .card-header {
-                    border-radius: 8px 8px 0 0;
-                    font-weight: bold;
+                border-radius: 8px 8px 0 0;
+                font-weight: bold;
                 }
 
                 .dashboard-stats {
-                    padding: 20px;
-                    border-radius: 8px;
-                    margin-bottom: 20px;
-                    color: white;
-                    transition: transform 0.3s ease;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                color: white;
+                transition: transform 0.3s ease;
                 }
 
                 .dashboard-stats:hover {
-                    transform: translateY(-5px);
+                transform: translateY(-5px);
                 }
 
                 .dashboard-stats h2 {
-                    font-size: 2.5rem;
-                    margin-bottom: 0;
+                font-size: 2.5rem;
+                margin-bottom: 0;
                 }
 
                 .dashboard-stats h5 {
-                    opacity: 0.8;
-                    margin-bottom: 0;
+                opacity: 0.8;
+                margin-bottom: 0;
                 }
 
                 .chart-container {
-                    position: relative;
-                    height: 300px;
-                    width: 100%;
+                position: relative;
+                height: 300px;
+                width: 100%;
                 }
 
                 .breadcrumb {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 12px 15px;
-                    margin-bottom: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 12px 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
 
                 .filter-section {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 15px;
-                    margin-bottom: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
 
                 .filter-section label {
-                    font-weight: 600;
-                    color: #495057;
-                    margin-right: 8px;
+                font-weight: 600;
+                color: #495057;
+                margin-right: 8px;
                 }
 
                 .filter-section .form-control {
-                    border-radius: 4px;
+                border-radius: 4px;
                 }
 
                 .filter-section .btn {
-                    border-radius: 4px;
-                    padding: 0.375rem 1.5rem;
+                border-radius: 4px;
+                padding: 0.375rem 1.5rem;
                 }
 
                 /* Loading indicator */
                 .chart-loading {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background-color: rgba(255, 255, 255, 0.7);
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    z-index: 1;
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(255, 255, 255, 0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1;
                 }
             </style>
 
@@ -94,7 +94,9 @@
                     <div class="col">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/healthcare/dashboard">Trang chủ</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/healthcare/dashboard">Trang chủ</a>
+                                </li>
                                 <li class="breadcrumb-item active" aria-current="page">Thống kê phản hồi</li>
                             </ol>
                         </nav>
@@ -117,13 +119,15 @@
                                         <div class="col-md-5">
                                             <div class="form-group mb-2">
                                                 <label for="date_from">Từ ngày:</label>
-                                                <input type="date" class="form-control" id="date_from" name="date_from" t-att-value="date_from"/>
+                                                <input type="date" class="form-control" id="date_from" name="date_from"
+                                                       t-att-value="date_from"/>
                                             </div>
                                         </div>
                                         <div class="col-md-5">
                                             <div class="form-group mb-2">
                                                 <label for="date_to">Đến ngày:</label>
-                                                <input type="date" class="form-control" id="date_to" name="date_to" t-att-value="date_to"/>
+                                                <input type="date" class="form-control" id="date_to" name="date_to"
+                                                       t-att-value="date_to"/>
                                             </div>
                                         </div>
                                         <div class="col-md-2 d-flex align-items-end">
@@ -222,300 +226,300 @@
             <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Show loading indicators
-                    document.querySelectorAll('.chart-loading').forEach(function(el) {
-                        el.classList.remove('d-none');
-                    });
+                // Show loading indicators
+                document.querySelectorAll('.chart-loading').forEach(function(el) {
+                el.classList.remove('d-none');
+                });
 
-                    // Initialize charts
-                    initializeCharts();
+                // Initialize charts
+                initializeCharts();
                 });
 
                 function initializeCharts() {
-                    if (typeof Chart === 'undefined') {
-                        console.error('Chart.js is not loaded. Charts will not be displayed.');
-                        return;
-                    }
+                if (typeof Chart === 'undefined') {
+                console.error('Chart.js is not loaded. Charts will not be displayed.');
+                return;
+                }
 
-                    try {
-                        // Safely parse JSON data with proper error handling
-                        var feedbackTypeData = [];
-                        var feedbackByTypeElement = document.getElementById('feedback_by_type');
-                        if (feedbackByTypeElement &amp;&amp; feedbackByTypeElement.textContent) {
-                            try {
-                                feedbackTypeData = JSON.parse(feedbackByTypeElement.textContent);
-                            } catch (e) {
-                                console.error("Error parsing feedback_by_type:", e);
-                            }
-                        } else {
-                            console.error("Element 'feedback_by_type' not found or empty");
-                        }
+                try {
+                // Safely parse JSON data with proper error handling
+                var feedbackTypeData = [];
+                var feedbackByTypeElement = document.getElementById('feedback_by_type');
+                if (feedbackByTypeElement &amp;&amp; feedbackByTypeElement.textContent) {
+                try {
+                feedbackTypeData = JSON.parse(feedbackByTypeElement.textContent);
+                } catch (e) {
+                console.error("Error parsing feedback_by_type:", e);
+                }
+                } else {
+                console.error("Element 'feedback_by_type' not found or empty");
+                }
 
-                        var satisfactionData = [];
-                        var feedbackByRatingElement = document.getElementById('feedback_by_rating');
-                        if (feedbackByRatingElement &amp;&amp; feedbackByRatingElement.textContent) {
-                            try {
-                                satisfactionData = JSON.parse(feedbackByRatingElement.textContent);
-                            } catch (e) {
-                                console.error("Error parsing feedback_by_rating:", e);
-                            }
-                        } else {
-                            console.error("Element 'feedback_by_rating' not found or empty");
-                        }
+                var satisfactionData = [];
+                var feedbackByRatingElement = document.getElementById('feedback_by_rating');
+                if (feedbackByRatingElement &amp;&amp; feedbackByRatingElement.textContent) {
+                try {
+                satisfactionData = JSON.parse(feedbackByRatingElement.textContent);
+                } catch (e) {
+                console.error("Error parsing feedback_by_rating:", e);
+                }
+                } else {
+                console.error("Element 'feedback_by_rating' not found or empty");
+                }
 
-                        var statisticsData = [];
-                        var statisticsDataElement = document.getElementById('statistics_data');
-                        if (statisticsDataElement &amp;&amp; statisticsDataElement.textContent) {
-                            try {
-                                statisticsData = JSON.parse(statisticsDataElement.textContent);
-                            } catch (e) {
-                                console.error("Error parsing statistics_data:", e);
-                            }
-                        } else {
-                            console.error("Element 'statistics_data' not found or empty");
-                        }
+                var statisticsData = [];
+                var statisticsDataElement = document.getElementById('statistics_data');
+                if (statisticsDataElement &amp;&amp; statisticsDataElement.textContent) {
+                try {
+                statisticsData = JSON.parse(statisticsDataElement.textContent);
+                } catch (e) {
+                console.error("Error parsing statistics_data:", e);
+                }
+                } else {
+                console.error("Element 'statistics_data' not found or empty");
+                }
 
-                        // Debugging info
-                        console.log('Type data:', feedbackTypeData);
-                        console.log('Rating data:', satisfactionData);
-                        console.log('Statistics data count:', Array.isArray(statisticsData) ? statisticsData.length : 0);
+                // Debugging info
+                console.log('Type data:', feedbackTypeData);
+                console.log('Rating data:', satisfactionData);
+                console.log('Statistics data count:', Array.isArray(statisticsData) ? statisticsData.length : 0);
 
-                        // Feedback by Type Chart
-                        if (document.getElementById('feedbackTypeChart')) {
-                            var typeLabels = [];
-                            var typeData = [];
-                            var typeColors = [
-                                'rgba(23, 162, 184, 0.8)',  // info
-                                'rgba(220, 53, 69, 0.8)',   // danger
-                                'rgba(255, 193, 7, 0.8)',   // warning
-                                'rgba(108, 117, 125, 0.8)', // secondary
-                                'rgba(73, 80, 87, 0.8)'     // dark
-                            ];
+                // Feedback by Type Chart
+                if (document.getElementById('feedbackTypeChart')) {
+                var typeLabels = [];
+                var typeData = [];
+                var typeColors = [
+                'rgba(23, 162, 184, 0.8)', // info
+                'rgba(220, 53, 69, 0.8)', // danger
+                'rgba(255, 193, 7, 0.8)', // warning
+                'rgba(108, 117, 125, 0.8)', // secondary
+                'rgba(73, 80, 87, 0.8)' // dark
+                ];
 
-                            if (Array.isArray(feedbackTypeData)) {
-                                feedbackTypeData.forEach(function(item, index) {
-                                    typeLabels.push(getFeedbackTypeName(item.feedback_type));
-                                    typeData.push(item.count);
-                                });
-                            }
+                if (Array.isArray(feedbackTypeData)) {
+                feedbackTypeData.forEach(function(item, index) {
+                typeLabels.push(getFeedbackTypeName(item.feedback_type));
+                typeData.push(item.count);
+                });
+                }
 
-                            var typeCtx = document.getElementById('feedbackTypeChart').getContext('2d');
-                            var typeChart = new Chart(typeCtx, {
-                                type: 'doughnut',  // Changed to doughnut to match dashboard style
-                                data: {
-                                    labels: typeLabels,
-                                    datasets: [{
-                                        data: typeData,
-                                        backgroundColor: typeColors,
-                                        borderColor: 'rgba(255, 255, 255, 1)',
-                                        borderWidth: 1
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            position: 'right',
-                                        },
-                                        title: {
-                                            display: true,
-                                            text: 'Phân bố phản hồi theo loại'
-                                        }
-                                    },
-                                    animation: {
-                                        animateScale: true,
-                                        animateRotate: true
-                                    }
-                                }
-                            });
-                        }
+                var typeCtx = document.getElementById('feedbackTypeChart').getContext('2d');
+                var typeChart = new Chart(typeCtx, {
+                type: 'doughnut', // Changed to doughnut to match dashboard style
+                data: {
+                labels: typeLabels,
+                datasets: [{
+                data: typeData,
+                backgroundColor: typeColors,
+                borderColor: 'rgba(255, 255, 255, 1)',
+                borderWidth: 1
+                }]
+                },
+                options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                legend: {
+                position: 'right',
+                },
+                title: {
+                display: true,
+                text: 'Phân bố phản hồi theo loại'
+                }
+                },
+                animation: {
+                animateScale: true,
+                animateRotate: true
+                }
+                }
+                });
+                }
 
-                        // Satisfaction Rating Chart
-                        if (document.getElementById('satisfactionChart')) {
-                            var ratingLabels = [];
-                            var ratingData = [];
-                            var ratingColors = [
-                                'rgba(220, 53, 69, 0.8)',
-                                'rgba(255, 193, 7, 0.8)',
-                                'rgba(108, 117, 125, 0.8)',
-                                'rgba(40, 167, 69, 0.8)',
-                                'rgba(0, 123, 255, 0.8)'
-                            ];
+                // Satisfaction Rating Chart
+                if (document.getElementById('satisfactionChart')) {
+                var ratingLabels = [];
+                var ratingData = [];
+                var ratingColors = [
+                'rgba(220, 53, 69, 0.8)',
+                'rgba(255, 193, 7, 0.8)',
+                'rgba(108, 117, 125, 0.8)',
+                'rgba(40, 167, 69, 0.8)',
+                'rgba(0, 123, 255, 0.8)'
+                ];
 
-                            if (Array.isArray(satisfactionData)) {
-                                satisfactionData.forEach(function(item, index) {
-                                    ratingLabels.push(getSatisfactionName(item.satisfaction_rating));
-                                    ratingData.push(item.count);
-                                });
-                            }
+                if (Array.isArray(satisfactionData)) {
+                satisfactionData.forEach(function(item, index) {
+                ratingLabels.push(getSatisfactionName(item.satisfaction_rating));
+                ratingData.push(item.count);
+                });
+                }
 
-                            var ratingCtx = document.getElementById('satisfactionChart').getContext('2d');
-                            var ratingChart = new Chart(ratingCtx, {
-                                type: 'bar',
-                                data: {
-                                    labels: ratingLabels,
-                                    datasets: [{
-                                        label: 'Số lượng',
-                                        data: ratingData,
-                                        backgroundColor: ratingColors,
-                                        borderColor: '#ffffff',
-                                        borderWidth: 1
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true
-                                        }
-                                    },
-                                    plugins: {
-                                        title: {
-                                            display: true,
-                                            text: 'Phân bố đánh giá mức độ hài lòng'
-                                        }
-                                    }
-                                }
-                            });
-                        }
+                var ratingCtx = document.getElementById('satisfactionChart').getContext('2d');
+                var ratingChart = new Chart(ratingCtx, {
+                type: 'bar',
+                data: {
+                labels: ratingLabels,
+                datasets: [{
+                label: 'Số lượng',
+                data: ratingData,
+                backgroundColor: ratingColors,
+                borderColor: '#ffffff',
+                borderWidth: 1
+                }]
+                },
+                options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                y: {
+                beginAtZero: true
+                }
+                },
+                plugins: {
+                title: {
+                display: true,
+                text: 'Phân bố đánh giá mức độ hài lòng'
+                }
+                }
+                }
+                });
+                }
 
-                        // State Chart
-                        if (document.getElementById('stateChart')) {
-                            var stateLabels = ['Mới', 'Đã ghi nhận', 'Đã hủy'];
-                            var stateColors = [
-                                'rgba(220, 53, 69, 0.8)',
-                                'rgba(40, 167, 69, 0.8)',
-                                'rgba(108, 117, 125, 0.8)'
-                            ];
-                            var stateData = [0, 0, 0];
+                // State Chart
+                if (document.getElementById('stateChart')) {
+                var stateLabels = ['Mới', 'Đã ghi nhận', 'Đã hủy'];
+                var stateColors = [
+                'rgba(220, 53, 69, 0.8)',
+                'rgba(40, 167, 69, 0.8)',
+                'rgba(108, 117, 125, 0.8)'
+                ];
+                var stateData = [0, 0, 0];
 
-                            // Calculate state data from parsed JSON
-                            if (Array.isArray(statisticsData)) {
-                                statisticsData.forEach(function(stat) {
-                                    if (stat.state === 'new') stateData[0]++;
-                                    else if (stat.state === 'noted') stateData[1]++;
-                                    else if (stat.state === 'cancelled') stateData[2]++;
-                                });
-                            }
+                // Calculate state data from parsed JSON
+                if (Array.isArray(statisticsData)) {
+                statisticsData.forEach(function(stat) {
+                if (stat.state === 'new') stateData[0]++;
+                else if (stat.state === 'noted') stateData[1]++;
+                else if (stat.state === 'cancelled') stateData[2]++;
+                });
+                }
 
-                            var stateCtx = document.getElementById('stateChart').getContext('2d');
-                            var stateChart = new Chart(stateCtx, {
-                                type: 'doughnut',
-                                data: {
-                                    labels: stateLabels,
-                                    datasets: [{
-                                        data: stateData,
-                                        backgroundColor: stateColors,
-                                        borderColor: '#ffffff',
-                                        borderWidth: 1
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            position: 'right'
-                                        },
-                                        title: {
-                                            display: true,
-                                            text: 'Trạng thái phản hồi'
-                                        }
-                                    },
-                                    animation: {
-                                        animateScale: true,
-                                        animateRotate: true
-                                    }
-                                }
-                            });
-                        }
+                var stateCtx = document.getElementById('stateChart').getContext('2d');
+                var stateChart = new Chart(stateCtx, {
+                type: 'doughnut',
+                data: {
+                labels: stateLabels,
+                datasets: [{
+                data: stateData,
+                backgroundColor: stateColors,
+                borderColor: '#ffffff',
+                borderWidth: 1
+                }]
+                },
+                options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                legend: {
+                position: 'right'
+                },
+                title: {
+                display: true,
+                text: 'Trạng thái phản hồi'
+                }
+                },
+                animation: {
+                animateScale: true,
+                animateRotate: true
+                }
+                }
+                });
+                }
 
-                        // Department Chart
-                        if (document.getElementById('departmentChart')) {
-                            // Group data by department
-                            var departmentData = {};
-                            if (Array.isArray(statisticsData)) {
-                                statisticsData.forEach(function(stat) {
-                                    if (stat.department_name) {
-                                        if (!departmentData[stat.department_name]) {
-                                            departmentData[stat.department_name] = 0;
-                                        }
-                                        departmentData[stat.department_name]++;
-                                    }
-                                });
-                            }
+                // Department Chart
+                if (document.getElementById('departmentChart')) {
+                // Group data by department
+                var departmentData = {};
+                if (Array.isArray(statisticsData)) {
+                statisticsData.forEach(function(stat) {
+                if (stat.department_name) {
+                if (!departmentData[stat.department_name]) {
+                departmentData[stat.department_name] = 0;
+                }
+                departmentData[stat.department_name]++;
+                }
+                });
+                }
 
-                            var deptLabels = Object.keys(departmentData);
-                            var deptCounts = deptLabels.map(function(dept) {
-                                return departmentData[dept];
-                            });
+                var deptLabels = Object.keys(departmentData);
+                var deptCounts = deptLabels.map(function(dept) {
+                return departmentData[dept];
+                });
 
-                            var deptCtx = document.getElementById('departmentChart').getContext('2d');
-                            var deptChart = new Chart(deptCtx, {
-                                type: 'bar',
-                                data: {
-                                    labels: deptLabels,
-                                    datasets: [{
-                                        label: 'Số phản hồi',
-                                        data: deptCounts,
-                                        backgroundColor: 'rgba(0, 123, 255, 0.5)',
-                                        borderColor: 'rgba(0, 123, 255, 1)',
-                                        borderWidth: 1
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true
-                                        }
-                                    },
-                                    plugins: {
-                                        title: {
-                                            display: true,
-                                            text: 'Phản hồi theo phòng ban'
-                                        }
-                                    }
-                                }
-                            });
-                        }
+                var deptCtx = document.getElementById('departmentChart').getContext('2d');
+                var deptChart = new Chart(deptCtx, {
+                type: 'bar',
+                data: {
+                labels: deptLabels,
+                datasets: [{
+                label: 'Số phản hồi',
+                data: deptCounts,
+                backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                borderColor: 'rgba(0, 123, 255, 1)',
+                borderWidth: 1
+                }]
+                },
+                options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                y: {
+                beginAtZero: true
+                }
+                },
+                plugins: {
+                title: {
+                display: true,
+                text: 'Phản hồi theo phòng ban'
+                }
+                }
+                }
+                });
+                }
 
-                        // Hide loading indicators
-                        document.querySelectorAll('.chart-loading').forEach(function(el) {
-                            el.classList.add('d-none');
-                        });
-                    } catch (error) {
-                        console.error('Error initializing charts:', error);
-                        console.log('Error details:', error.stack);
-                        document.querySelectorAll('.chart-loading').forEach(function(el) {
-                            el.classList.add('d-none');
-                        });
-                    }
+                // Hide loading indicators
+                document.querySelectorAll('.chart-loading').forEach(function(el) {
+                el.classList.add('d-none');
+                });
+                } catch (error) {
+                console.error('Error initializing charts:', error);
+                console.log('Error details:', error.stack);
+                document.querySelectorAll('.chart-loading').forEach(function(el) {
+                el.classList.add('d-none');
+                });
+                }
                 }
 
                 // Helper functions
                 function getFeedbackTypeName(type) {
-                    switch (type) {
-                        case 'compliment': return 'Khen ngợi';
-                        case 'complaint': return 'Khiếu nại';
-                        case 'suggestion': return 'Góp ý';
-                        case 'question': return 'Hỏi đáp';
-                        default: return 'Khác';
-                    }
+                switch (type) {
+                case 'compliment': return 'Khen ngợi';
+                case 'complaint': return 'Khiếu nại';
+                case 'suggestion': return 'Góp ý';
+                case 'question': return 'Hỏi đáp';
+                default: return 'Khác';
+                }
                 }
 
                 function getSatisfactionName(rating) {
-                    switch (rating) {
-                        case '1': return 'Rất không hài lòng';
-                        case '2': return 'Không hài lòng';
-                        case '3': return 'Bình thường';
-                        case '4': return 'Hài lòng';
-                        case '5': return 'Rất hài lòng';
-                        default: return 'Không đánh giá';
-                    }
+                switch (rating) {
+                case '1': return 'Rất không hài lòng';
+                case '2': return 'Không hài lòng';
+                case '3': return 'Bình thường';
+                case '4': return 'Hài lòng';
+                case '5': return 'Rất hài lòng';
+                default: return 'Không đánh giá';
+                }
                 }
             </script>
         </t>

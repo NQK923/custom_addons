@@ -5,7 +5,8 @@
         <t t-call="compliance_management.compliance_layout">
             <div class="mb-4">
                 <a href="/compliance/regulations" class="btn btn-secondary">
-                    <i class="fa fa-arrow-left"></i> Quay lại
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại
                 </a>
             </div>
 
@@ -13,7 +14,8 @@
                 <div class="card-header bg-primary text-white">
                     <h3 class="card-title mb-0">
                         <t t-if="regulation">
-                            Chi tiết Quy định: <t t-esc="regulation.name"/>
+                            Chi tiết Quy định:
+                            <t t-esc="regulation.name"/>
                         </t>
                         <t t-else="">
                             Tạo Quy định Y tế Mới
@@ -28,7 +30,8 @@
                         </div>
                     </t>
 
-                    <form method="POST" t-att-action="'/compliance/regulation/%s' % regulation.id if regulation else '/compliance/regulation/new'">
+                    <form method="POST"
+                          t-att-action="'/compliance/regulation/%s' % regulation.id if regulation else '/compliance/regulation/new'">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                         <div class="row mb-3">
@@ -50,7 +53,8 @@
                                 <select class="form-select" id="authority_id" name="authority_id">
                                     <option value="">-- Chọn cơ quan --</option>
                                     <t t-foreach="authorities" t-as="authority">
-                                        <option t-att-value="authority.id" t-att-selected="regulation and regulation.authority_id.id == authority.id">
+                                        <option t-att-value="authority.id"
+                                                t-att-selected="regulation and regulation.authority_id.id == authority.id">
                                             <t t-esc="authority.name"/>
                                         </option>
                                     </t>
@@ -59,9 +63,15 @@
                             <div class="col-md-6">
                                 <label class="form-label" for="scope">Phạm vi</label>
                                 <select class="form-select" id="scope" name="scope" required="required">
-                                    <option value="national" t-att-selected="regulation and regulation.scope == 'national'">Quốc gia</option>
-                                    <option value="international" t-att-selected="regulation and regulation.scope == 'international'">Quốc tế</option>
-                                    <option value="local" t-att-selected="regulation and regulation.scope == 'local'">Địa phương</option>
+                                    <option value="national"
+                                            t-att-selected="regulation and regulation.scope == 'national'">Quốc gia
+                                    </option>
+                                    <option value="international"
+                                            t-att-selected="regulation and regulation.scope == 'international'">Quốc tế
+                                    </option>
+                                    <option value="local" t-att-selected="regulation and regulation.scope == 'local'">
+                                        Địa phương
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -81,7 +91,9 @@
 
                         <div class="mb-3">
                             <label class="form-label" for="description">Mô tả</label>
-                            <textarea class="form-control" id="description" name="description" rows="5"><t t-esc="regulation.description if regulation else form_data.get('description', '')"/></textarea>
+                            <textarea class="form-control" id="description" name="description" rows="5">
+                                <t t-esc="regulation.description if regulation else form_data.get('description', '')"/>
+                            </textarea>
                         </div>
 
                         <div class="d-flex justify-content-between">
@@ -121,8 +133,12 @@
                                                     <t t-esc="compliance.name"/>
                                                 </a>
                                             </td>
-                                            <td><t t-esc="compliance.date_assessment"/></td>
-                                            <td><t t-esc="compliance.next_assessment"/></td>
+                                            <td>
+                                                <t t-esc="compliance.date_assessment"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="compliance.next_assessment"/>
+                                            </td>
                                             <td>
                                                 <span t-att-class="'badge ' + (
                                                     'bg-success' if compliance.state == 'compliant' else
@@ -134,7 +150,9 @@
                                                     <t t-esc="dict(compliance._fields['state'].selection).get(compliance.state)"/>
                                                 </span>
                                             </td>
-                                            <td><t t-esc="compliance.responsible_id.name"/></td>
+                                            <td>
+                                                <t t-esc="compliance.responsible_id.name"/>
+                                            </td>
                                         </tr>
                                     </t>
                                 </tbody>

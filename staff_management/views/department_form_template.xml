@@ -5,7 +5,9 @@
             <div class="container mt-4 mb-5">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/clinic/department">Danh sách khoa</a></li>
+                        <li class="breadcrumb-item">
+                            <a href="/clinic/department">Danh sách khoa</a>
+                        </li>
                         <li class="breadcrumb-item active" aria-current="page">
                             <t t-if="mode == 'create'">Thêm khoa mới</t>
                             <t t-else="">Chỉnh sửa khoa</t>
@@ -29,20 +31,31 @@
                             </t>
 
                             <div class="form-group row">
-                                <label class="col-sm-3 col-form-label" for="department_name">Tên khoa <span class="text-danger">*</span></label>
+                                <label class="col-sm-3 col-form-label" for="department_name">Tên khoa
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="department_name" name="department_name" required="required"
+                                    <input type="text" class="form-control" id="department_name" name="department_name"
+                                           required="required"
                                            t-att-value="department.department_name if department else ''"/>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-sm-3 col-form-label" for="type">Loại khoa <span class="text-danger">*</span></label>
+                                <label class="col-sm-3 col-form-label" for="type">Loại khoa
+                                    <span class="text-danger">*</span>
+                                </label>
                                 <div class="col-sm-9">
                                     <select class="form-control" id="type" name="type" required="required">
                                         <option value="">-- Chọn loại khoa --</option>
-                                        <option value="clinical" t-att-selected="department and department.type == 'clinical'">Khoa lâm sàng</option>
-                                        <option value="subclinical" t-att-selected="department and department.type == 'subclinical'">Khoa cận lâm sàng</option>
+                                        <option value="clinical"
+                                                t-att-selected="department and department.type == 'clinical'">Khoa lâm
+                                            sàng
+                                        </option>
+                                        <option value="subclinical"
+                                                t-att-selected="department and department.type == 'subclinical'">Khoa
+                                            cận lâm sàng
+                                        </option>
                                     </select>
                                 </div>
                             </div>
@@ -50,16 +63,20 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label" for="note">Ghi chú</label>
                                 <div class="col-sm-9">
-                                    <textarea class="form-control" id="note" name="note" rows="4"><t t-esc="department.note if department else ''"/></textarea>
+                                    <textarea class="form-control" id="note" name="note" rows="4">
+                                        <t t-esc="department.note if department else ''"/>
+                                    </textarea>
                                 </div>
                             </div>
 
                             <div class="form-group text-center mt-4">
                                 <button type="submit" class="btn btn-primary px-4">
-                                    <i class="fa fa-save"/> Lưu
+                                    <i class="fa fa-save"/>
+                                    Lưu
                                 </button>
                                 <a href="/clinic/department" class="btn btn-secondary ml-2">
-                                    <i class="fa fa-times"/> Hủy
+                                    <i class="fa fa-times"/>
+                                    Hủy
                                 </a>
                             </div>
                         </form>

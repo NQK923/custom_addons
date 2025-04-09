@@ -9,7 +9,9 @@
                         <h1>Danh sách kiểm tra y tế</h1>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/certification/dashboard">Trang chủ</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/certification/dashboard">Trang chủ</a>
+                                </li>
                                 <li class="breadcrumb-item active">Kiểm tra</li>
                             </ol>
                         </nav>
@@ -21,7 +23,8 @@
                     <div class="col-md-8">
                         <form class="form-inline" action="/certification/inspections" method="get">
                             <div class="input-group mb-2 mr-sm-2">
-                                <input type="text" name="search" class="form-control" placeholder="Tìm kiếm..." t-att-value="search or ''"/>
+                                <input type="text" name="search" class="form-control" placeholder="Tìm kiếm..."
+                                       t-att-value="search or ''"/>
                                 <div class="input-group-append">
                                     <button class="btn btn-primary" type="submit">
                                         <i class="fa fa-search"></i>
@@ -31,8 +34,11 @@
                             <select name="state" class="form-control mb-2 mr-sm-2">
                                 <option value="">Tất cả trạng thái</option>
                                 <option t-att-selected="filter_state == 'planned'" value="planned">Lên kế hoạch</option>
-                                <option t-att-selected="filter_state == 'in_progress'" value="in_progress">Đang thực hiện</option>
-                                <option t-att-selected="filter_state == 'completed'" value="completed">Đã hoàn thành</option>
+                                <option t-att-selected="filter_state == 'in_progress'" value="in_progress">Đang thực
+                                    hiện
+                                </option>
+                                <option t-att-selected="filter_state == 'completed'" value="completed">Đã hoàn thành
+                                </option>
                                 <option t-att-selected="filter_state == 'canceled'" value="canceled">Hủy bỏ</option>
                             </select>
                             <select name="result" class="form-control mb-2 mr-sm-2">
@@ -40,7 +46,9 @@
                                 <option t-att-selected="filter_result == 'pending'" value="pending">Đang chờ</option>
                                 <option t-att-selected="filter_result == 'passed'" value="passed">Đạt</option>
                                 <option t-att-selected="filter_result == 'failed'" value="failed">Không đạt</option>
-                                <option t-att-selected="filter_result == 'conditional'" value="conditional">Đạt có điều kiện</option>
+                                <option t-att-selected="filter_result == 'conditional'" value="conditional">Đạt có điều
+                                    kiện
+                                </option>
                             </select>
                             <button type="submit" class="btn btn-primary mb-2">Lọc</button>
                             <a href="/certification/inspections" class="btn btn-secondary mb-2 ml-2">Đặt lại</a>
@@ -48,7 +56,8 @@
                     </div>
                     <div class="col-md-4 text-right">
                         <a href="/certification/inspection/create" class="btn btn-success">
-                            <i class="fa fa-plus mr-1"></i> Tạo kiểm tra mới
+                            <i class="fa fa-plus mr-1"></i>
+                            Tạo kiểm tra mới
                         </a>
                     </div>
                 </div>
@@ -75,50 +84,78 @@
                                             <tbody>
                                                 <t t-foreach="inspections" t-as="inspection">
                                                     <tr t-attf-class="#{inspection.result == 'failed' and 'table-danger' or inspection.result == 'conditional' and 'table-warning' or ''}">
-                                                        <td><t t-esc="inspection.date or inspection.planned_date"/></td>
-                                                        <td><t t-esc="inspection.name"/></td>
                                                         <td>
-                                                            <a t-if="inspection.certification_id" t-att-href="'/certification/certificate/%s' % inspection.certification_id.id">
+                                                            <t t-esc="inspection.date or inspection.planned_date"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="inspection.name"/>
+                                                        </td>
+                                                        <td>
+                                                            <a t-if="inspection.certification_id"
+                                                               t-att-href="'/certification/certificate/%s' % inspection.certification_id.id">
                                                                 <t t-esc="inspection.certification_id.name"/>
                                                             </a>
                                                             <span t-else="">-</span>
                                                         </td>
-                                                        <td><t t-esc="inspection.inspector"/></td>
+                                                        <td>
+                                                            <t t-esc="inspection.inspector"/>
+                                                        </td>
                                                         <td>
                                                             <span t-attf-class="badge badge-#{inspection.result == 'passed' and 'success' or inspection.result == 'failed' and 'danger' or inspection.result == 'conditional' and 'warning' or 'secondary'}">
                                                                 <t t-if="inspection.result == 'passed'">Đạt</t>
                                                                 <t t-elif="inspection.result == 'failed'">Không đạt</t>
-                                                                <t t-elif="inspection.result == 'conditional'">Đạt có điều kiện</t>
+                                                                <t t-elif="inspection.result == 'conditional'">Đạt có
+                                                                    điều kiện
+                                                                </t>
                                                                 <t t-else="">Đang chờ</t>
                                                             </span>
                                                         </td>
                                                         <td>
                                                             <span t-attf-class="badge badge-#{inspection.state == 'completed' and 'success' or inspection.state == 'in_progress' and 'primary' or inspection.state == 'canceled' and 'danger' or 'secondary'}">
                                                                 <t t-if="inspection.state == 'planned'">Lên kế hoạch</t>
-                                                                <t t-elif="inspection.state == 'in_progress'">Đang thực hiện</t>
-                                                                <t t-elif="inspection.state == 'completed'">Đã hoàn thành</t>
+                                                                <t t-elif="inspection.state == 'in_progress'">Đang thực
+                                                                    hiện
+                                                                </t>
+                                                                <t t-elif="inspection.state == 'completed'">Đã hoàn
+                                                                    thành
+                                                                </t>
                                                                 <t t-elif="inspection.state == 'canceled'">Hủy bỏ</t>
                                                             </span>
                                                         </td>
                                                         <td>
                                                             <div class="btn-group">
-                                                                <a t-att-href="'/certification/inspection/%s' % inspection.id" class="btn btn-sm btn-primary">Chi tiết</a>
-                                                                <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                <a t-att-href="'/certification/inspection/%s' % inspection.id"
+                                                                   class="btn btn-sm btn-primary">Chi tiết
+                                                                </a>
+                                                                <button type="button"
+                                                                        class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split"
+                                                                        data-toggle="dropdown" aria-haspopup="true"
+                                                                        aria-expanded="false">
                                                                     <span class="sr-only">Toggle Dropdown</span>
                                                                 </button>
                                                                 <div class="dropdown-menu">
-                                                                    <a t-att-href="'/certification/inspection/%s/edit' % inspection.id" class="dropdown-item">Chỉnh sửa</a>
+                                                                    <a t-att-href="'/certification/inspection/%s/edit' % inspection.id"
+                                                                       class="dropdown-item">Chỉnh sửa
+                                                                    </a>
                                                                     <t t-if="inspection.state == 'planned'">
-                                                                        <a t-att-href="'/certification/inspection/%s/start' % inspection.id" class="dropdown-item">Bắt đầu</a>
+                                                                        <a t-att-href="'/certification/inspection/%s/start' % inspection.id"
+                                                                           class="dropdown-item">Bắt đầu
+                                                                        </a>
                                                                     </t>
                                                                     <t t-if="inspection.state == 'in_progress'">
-                                                                        <a t-att-href="'/certification/inspection/%s/complete' % inspection.id" class="dropdown-item">Hoàn thành</a>
+                                                                        <a t-att-href="'/certification/inspection/%s/complete' % inspection.id"
+                                                                           class="dropdown-item">Hoàn thành
+                                                                        </a>
                                                                     </t>
                                                                     <t t-if="inspection.state not in ['completed', 'canceled']">
-                                                                        <a t-att-href="'/certification/inspection/%s/cancel' % inspection.id" class="dropdown-item">Hủy bỏ</a>
+                                                                        <a t-att-href="'/certification/inspection/%s/cancel' % inspection.id"
+                                                                           class="dropdown-item">Hủy bỏ
+                                                                        </a>
                                                                     </t>
                                                                     <t t-if="inspection.state != 'planned'">
-                                                                        <a t-att-href="'/certification/inspection/%s/reset' % inspection.id" class="dropdown-item">Đặt lại</a>
+                                                                        <a t-att-href="'/certification/inspection/%s/reset' % inspection.id"
+                                                                           class="dropdown-item">Đặt lại
+                                                                        </a>
                                                                     </t>
                                                                 </div>
                                                             </div>
@@ -131,7 +168,9 @@
                                 </t>
                                 <t t-else="">
                                     <div class="alert alert-info">
-                                        <p class="mb-0">Không tìm thấy kiểm tra nào. <a href="/certification/inspection/create">Tạo kiểm tra mới</a>?</p>
+                                        <p class="mb-0">Không tìm thấy kiểm tra nào. <a
+                                                href="/certification/inspection/create">Tạo kiểm tra mới</a>?
+                                        </p>
                                     </div>
                                 </t>
                             </div>
@@ -148,12 +187,20 @@
             <div class="container mt-4">
                 <div class="row mb-4">
                     <div class="col-12">
-                        <h1><t t-esc="inspection.name"/></h1>
+                        <h1>
+                            <t t-esc="inspection.name"/>
+                        </h1>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/certification/dashboard">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a href="/certification/inspections">Kiểm tra</a></li>
-                                <li class="breadcrumb-item active"><t t-esc="inspection.name"/></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/certification/dashboard">Trang chủ</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="/certification/inspections">Kiểm tra</a>
+                                </li>
+                                <li class="breadcrumb-item active">
+                                    <t t-esc="inspection.name"/>
+                                </li>
                             </ol>
                         </nav>
                     </div>
@@ -181,7 +228,8 @@
                             <p class="mt-2">
                                 <strong>Chứng nhận liên quan:</strong>
                                 <a t-att-href="'/certification/certificate/%s' % inspection.certification_id.id">
-                                    <t t-esc="inspection.certification_id.name"/> (<t t-esc="inspection.certification_id.number"/>)
+                                    <t t-esc="inspection.certification_id.name"/>
+                                    (<t t-esc="inspection.certification_id.number"/>)
                                 </a>
                             </p>
                         </t>
@@ -189,23 +237,33 @@
                     <div class="col-md-4 text-right">
                         <div class="btn-group">
                             <a t-att-href="'/certification/inspection/%s/edit' % inspection.id" class="btn btn-primary">
-                                <i class="fa fa-edit mr-1"></i> Chỉnh sửa
+                                <i class="fa fa-edit mr-1"></i>
+                                Chỉnh sửa
                             </a>
-                            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <t t-if="inspection.state == 'planned'">
-                                    <a t-att-href="'/certification/inspection/%s/start' % inspection.id" class="dropdown-item">Bắt đầu</a>
+                                    <a t-att-href="'/certification/inspection/%s/start' % inspection.id"
+                                       class="dropdown-item">Bắt đầu
+                                    </a>
                                 </t>
                                 <t t-if="inspection.state == 'in_progress'">
-                                    <a t-att-href="'/certification/inspection/%s/complete' % inspection.id" class="dropdown-item">Hoàn thành</a>
+                                    <a t-att-href="'/certification/inspection/%s/complete' % inspection.id"
+                                       class="dropdown-item">Hoàn thành
+                                    </a>
                                 </t>
                                 <t t-if="inspection.state not in ['completed', 'canceled']">
-                                    <a t-att-href="'/certification/inspection/%s/cancel' % inspection.id" class="dropdown-item">Hủy bỏ</a>
+                                    <a t-att-href="'/certification/inspection/%s/cancel' % inspection.id"
+                                       class="dropdown-item">Hủy bỏ
+                                    </a>
                                 </t>
                                 <t t-if="inspection.state != 'planned'">
-                                    <a t-att-href="'/certification/inspection/%s/reset' % inspection.id" class="dropdown-item">Đặt lại</a>
+                                    <a t-att-href="'/certification/inspection/%s/reset' % inspection.id"
+                                       class="dropdown-item">Đặt lại
+                                    </a>
                                 </t>
                             </div>
                         </div>
@@ -222,13 +280,19 @@
                             <div class="card-body">
                                 <dl class="row">
                                     <dt class="col-sm-4">Người kiểm tra</dt>
-                                    <dd class="col-sm-8"><t t-esc="inspection.inspector or '-'"/></dd>
+                                    <dd class="col-sm-8">
+                                        <t t-esc="inspection.inspector or '-'"/>
+                                    </dd>
 
                                     <dt class="col-sm-4">Ngày dự kiến</dt>
-                                    <dd class="col-sm-8"><t t-esc="inspection.planned_date or '-'"/></dd>
+                                    <dd class="col-sm-8">
+                                        <t t-esc="inspection.planned_date or '-'"/>
+                                    </dd>
 
                                     <dt class="col-sm-4">Ngày thực tế</dt>
-                                    <dd class="col-sm-8"><t t-esc="inspection.date or '-'"/></dd>
+                                    <dd class="col-sm-8">
+                                        <t t-esc="inspection.date or '-'"/>
+                                    </dd>
                                 </dl>
                             </div>
                         </div>
@@ -240,7 +304,9 @@
                                 <h4>Hành động khắc phục</h4>
                             </div>
                             <div class="card-body">
-                                <p t-if="inspection.corrective_action"><t t-esc="inspection.corrective_action"/></p>
+                                <p t-if="inspection.corrective_action">
+                                    <t t-esc="inspection.corrective_action"/>
+                                </p>
                                 <p t-else="" class="text-muted">Cần khắc phục nhưng chưa có thông tin chi tiết.</p>
                             </div>
                         </div>
@@ -258,12 +324,16 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <h5>Phát hiện</h5>
-                                        <p t-if="inspection.findings"><t t-esc="inspection.findings"/></p>
+                                        <p t-if="inspection.findings">
+                                            <t t-esc="inspection.findings"/>
+                                        </p>
                                         <p t-else="" class="text-muted">Không có phát hiện nào.</p>
                                     </div>
                                     <div class="col-md-6">
                                         <h5>Khuyến nghị</h5>
-                                        <p t-if="inspection.recommendations"><t t-esc="inspection.recommendations"/></p>
+                                        <p t-if="inspection.recommendations">
+                                            <t t-esc="inspection.recommendations"/>
+                                        </p>
                                         <p t-else="" class="text-muted">Không có khuyến nghị nào.</p>
                                     </div>
                                 </div>
@@ -275,7 +345,9 @@
                                 <h4>Ghi chú</h4>
                             </div>
                             <div class="card-body">
-                                <p t-if="inspection.notes"><t t-esc="inspection.notes"/></p>
+                                <p t-if="inspection.notes">
+                                    <t t-esc="inspection.notes"/>
+                                </p>
                                 <p t-else="" class="text-muted">Không có ghi chú nào.</p>
                             </div>
                         </div>

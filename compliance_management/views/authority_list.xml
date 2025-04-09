@@ -6,7 +6,8 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1>Cơ quan Quản lý Y tế</h1>
                 <a href="/compliance/authority/new" class="btn btn-primary">
-                    <i class="fa fa-plus"></i> Tạo mới
+                    <i class="fa fa-plus"></i>
+                    Tạo mới
                 </a>
             </div>
 
@@ -19,7 +20,8 @@
                     <form method="GET" action="/compliance/authorities" class="row">
                         <div class="col-md-6 mb-2">
                             <div class="input-group">
-                                <input type="text" name="search" class="form-control" placeholder="Tìm theo tên hoặc mã..."
+                                <input type="text" name="search" class="form-control"
+                                       placeholder="Tìm theo tên hoặc mã..."
                                        t-att-value="search or ''"/>
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fa fa-search"></i>
@@ -61,8 +63,12 @@
                                                     <t t-esc="authority.name"/>
                                                 </a>
                                             </td>
-                                            <td><t t-esc="authority.code"/></td>
-                                            <td><t t-esc="authority.country_id.name or '-'"/></td>
+                                            <td>
+                                                <t t-esc="authority.code"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="authority.country_id.name or '-'"/>
+                                            </td>
                                         </tr>
                                     </t>
                                 </tbody>

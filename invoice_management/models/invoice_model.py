@@ -2,11 +2,10 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError, UserError
 import uuid  # Add this at the top
 
-
-
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError, UserError
 import uuid
+
 
 class ClinicInvoice(models.Model):
     _name = 'clinic.invoice'
@@ -18,15 +17,15 @@ class ClinicInvoice(models.Model):
     display_name = fields.Char(string='Số hóa đơn', compute='_compute_display_name', store=True)
     patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True)
     prescription_ids = fields.Many2many('prescription.order', string='Đơn thuốc',
-                                      domain="[('patient_id', '=', patient_id)]")
+                                        domain="[('patient_id', '=', patient_id)]")
     invoice_date = fields.Date(string='Ngày lập', default=fields.Date.today, required=True)
-    
-    service_lines = fields.One2many('clinic.invoice.line', 'invoice_id', 
-                                   string='Dịch vụ',
-                                   domain=[('product_id', '=', False)])
-    product_lines = fields.One2many('clinic.invoice.line', 'invoice_id', 
-                                   string='Thuốc',
-                                   domain=[('service_id', '=', False)])
+
+    service_lines = fields.One2many('clinic.invoice.line', 'invoice_id',
+                                    string='Dịch vụ',
+                                    domain=[('product_id', '=', False)])
+    product_lines = fields.One2many('clinic.invoice.line', 'invoice_id',
+                                    string='Thuốc',
+                                    domain=[('service_id', '=', False)])
 
     state = fields.Selection([
         ('draft', 'Nháp'),
@@ -45,7 +44,6 @@ class ClinicInvoice(models.Model):
     # treatment_plan_id = fields.Many2one('treatment.plan', string='Kế hoạch điều trị',
     #                                   domain="[('patient_id', '=', patient_id)]")
 
-
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -53,7 +51,7 @@ class ClinicInvoice(models.Model):
                 vals['name'] = str(uuid.uuid4())[:8]
         return super().create(vals_list)
 
-    @api.depends('service_lines.price_subtotal', 'product_lines.price_subtotal', 
+    @api.depends('service_lines.price_subtotal', 'product_lines.price_subtotal',
                  'service_lines.insurance_amount', 'product_lines.insurance_amount')
     def _compute_amounts(self):
         for invoice in self:
@@ -61,10 +59,10 @@ class ClinicInvoice(models.Model):
             invoice.service_amount = sum(line.price_subtotal for line in invoice.service_lines)
             invoice.medicine_amount = sum(line.price_subtotal for line in invoice.product_lines)
             invoice.amount_total = invoice.service_amount + invoice.medicine_amount
-            
+
             # Tổng hợp số tiền bảo hiểm và bệnh nhân chi trả từ các dòng
-            invoice.insurance_amount = (sum(line.insurance_amount for line in invoice.service_lines) + 
-                                      sum(line.insurance_amount for line in invoice.product_lines))
+            invoice.insurance_amount = (sum(line.insurance_amount for line in invoice.service_lines) +
+                                        sum(line.insurance_amount for line in invoice.product_lines))
             invoice.patient_amount = invoice.amount_total - invoice.insurance_amount
 
     @api.onchange('patient_id')
@@ -161,6 +159,7 @@ class ClinicInvoice(models.Model):
                 'state': 'draft',
             })
 
+
 class ClinicInvoiceLine(models.Model):
     _name = 'clinic.invoice.line'
     _description = 'Chi tiết hóa đơn'
@@ -202,17 +201,18 @@ class ClinicInvoiceLine(models.Model):
     def _compute_price_subtotal(self):
         for line in self:
             line.price_subtotal = line.quantity * line.price_unit
-            
+
             # Kiểm tra bảo hiểm hợp lệ và lấy tỷ lệ chi trả
-            has_valid_insurance = (line.invoice_id.patient_id and 
-                                 line.invoice_id.patient_id.has_insurance and 
-                                 line.invoice_id.patient_id.insurance_state == 'Hợp lệ')
-            coverage_rate = float(line.invoice_id.patient_id.insurance_coverage_rate or 0) / 100 if has_valid_insurance else 0
+            has_valid_insurance = (line.invoice_id.patient_id and
+                                   line.invoice_id.patient_id.has_insurance and
+                                   line.invoice_id.patient_id.insurance_state == 'Hợp lệ')
+            coverage_rate = float(
+                line.invoice_id.patient_id.insurance_coverage_rate or 0) / 100 if has_valid_insurance else 0
 
             # Kiểm tra xem dịch vụ/thuốc có được bảo hiểm chi trả không
-            is_covered = ((line.service_id and line.service_id.insurance_covered) or 
-                         (line.product_id and line.product_id.insurance_covered))
-            
+            is_covered = ((line.service_id and line.service_id.insurance_covered) or
+                          (line.product_id and line.product_id.insurance_covered))
+
             if has_valid_insurance and is_covered:
                 line.insurance_amount = line.price_subtotal * coverage_rate
                 line.patient_amount = line.price_subtotal * (1 - coverage_rate)
@@ -233,7 +233,8 @@ class ClinicInvoiceLine(models.Model):
                 raise ValidationError(
                     f"Đơn giá của {line.service_id.service_name or line.product_id.name} phải lớn hơn 0!"
                 )
-                
+
+
 class ClinicInsuranceInvoice(models.Model):
     _name = 'clinic.invoice.insurance'
     _description = 'Hóa đơn bảo hiểm'
@@ -250,12 +251,14 @@ class ClinicInsuranceInvoice(models.Model):
         ('cancelled', 'Đã hủy')
     ], string='Trạng thái', default='draft', required=True)
 
-    invoice_line_ids = fields.One2many('clinic.invoice.insurance.line', 'insurance_invoice_id', string='Chi tiết hóa đơn')
+    invoice_line_ids = fields.One2many('clinic.invoice.insurance.line', 'insurance_invoice_id',
+                                       string='Chi tiết hóa đơn')
     total_service_amount = fields.Float(string='Tổng tiền dịch vụ', compute='_compute_totals', store=True)
     total_medicine_amount = fields.Float(string='Tổng tiền thuốc', compute='_compute_totals', store=True)
     total_insurance_amount = fields.Float(string='Bảo hiểm chi trả', compute='_compute_totals', store=True)
 
-    @api.depends('invoice_line_ids.service_amount', 'invoice_line_ids.medicine_amount', 'invoice_line_ids.insurance_amount')
+    @api.depends('invoice_line_ids.service_amount', 'invoice_line_ids.medicine_amount',
+                 'invoice_line_ids.insurance_amount')
     def _compute_totals(self):
         for record in self:
             record.total_service_amount = sum(record.invoice_line_ids.mapped('service_amount'))
@@ -302,7 +305,7 @@ class ClinicInsuranceInvoice(models.Model):
         if self.date_from and self.date_to:
             if self.date_from > self.date_to:
                 raise ValidationError('Ngày bắt đầu phải nhỏ hơn ngày kết thúc')
-                
+
             # Tìm tất cả hóa đơn đã thanh toán trong khoảng thời gian
             domain = [
                 ('invoice_date', '>=', self.date_from),
@@ -311,10 +314,10 @@ class ClinicInsuranceInvoice(models.Model):
                 ('insurance_amount', '>', 0)  # Chỉ lấy hóa đơn có bảo hiểm chi trả
             ]
             invoices = self.env['clinic.invoice'].search(domain)
-            
+
             # Xóa các chi tiết hóa đơn cũ
             self.invoice_line_ids = [(5, 0, 0)]
-            
+
             # Tạo chi tiết hóa đơn mới
             lines = []
             for invoice in invoices:
@@ -327,7 +330,7 @@ class ClinicInsuranceInvoice(models.Model):
                         'medicine_amount': invoice.medicine_amount,
                         'insurance_amount': invoice.insurance_amount,
                     }))
-            
+
             if not lines:
                 return {
                     'warning': {
@@ -335,13 +338,14 @@ class ClinicInsuranceInvoice(models.Model):
                         'message': 'Không tìm thấy hóa đơn nào có bảo hiểm chi trả trong khoảng thời gian này'
                     }
                 }
-            
+
             self.invoice_line_ids = lines
+
 
 class ClinicInsuranceInvoiceLine(models.Model):
     _name = 'clinic.invoice.insurance.line'
     _description = 'Chi tiết hóa đơn bảo hiểm'
-    
+
     insurance_invoice_id = fields.Many2one('clinic.invoice.insurance', string='Hóa đơn bảo hiểm')
     invoice_id = fields.Many2one('clinic.invoice', string='Hóa đơn')
     patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân')
@@ -362,6 +366,7 @@ class ClinicInsuranceInvoiceLine(models.Model):
             'flags': {'mode': 'readonly'},  # Chỉ cho phép xem
         }
 
+
 class ClinicPurchaseOrder(models.Model):
     _name = 'clinic.purchase.order'
     _description = 'Phiếu nhập hàng'
@@ -376,10 +381,10 @@ class ClinicPurchaseOrder(models.Model):
         ('confirmed', 'Đã xác nhận'),
         ('paid', 'Đã thanh toán'),
     ], string='Trạng thái', default='draft', tracking=True)
-    
+
     line_ids = fields.One2many('clinic.purchase.order.line', 'order_id', string='Chi tiết phiếu nhập')
     note = fields.Text(string='Ghi chú')
-    
+
     amount_untaxed = fields.Float(string='Tổng tiền chưa thuế', compute='_compute_amounts', store=True)
     amount_tax = fields.Float(string='Thuế (10%)', compute='_compute_amounts', store=True)
     amount_total = fields.Float(string='Tổng tiền sau thuế', compute='_compute_amounts', store=True)
@@ -437,6 +442,7 @@ class ClinicPurchaseOrder(models.Model):
             order.amount_untaxed = amount_untaxed
             order.amount_tax = amount_untaxed * 0.1
             order.amount_total = order.amount_untaxed + order.amount_tax
+
 
 class PurchaseOrderLine(models.Model):
     _name = 'clinic.purchase.order.line'

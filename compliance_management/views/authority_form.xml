@@ -5,7 +5,8 @@
         <t t-call="compliance_management.compliance_layout">
             <div class="mb-4">
                 <a href="/compliance/authorities" class="btn btn-secondary">
-                    <i class="fa fa-arrow-left"></i> Quay lại
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại
                 </a>
             </div>
 
@@ -13,7 +14,8 @@
                 <div class="card-header bg-primary text-white">
                     <h3 class="card-title mb-0">
                         <t t-if="authority">
-                            Chi tiết Cơ quan: <t t-esc="authority.name"/>
+                            Chi tiết Cơ quan:
+                            <t t-esc="authority.name"/>
                         </t>
                         <t t-else="">
                             Tạo Cơ quan Quản lý Mới
@@ -28,7 +30,8 @@
                         </div>
                     </t>
 
-                    <form method="POST" t-att-action="'/compliance/authority/%s' % authority.id if authority else '/compliance/authority/new'">
+                    <form method="POST"
+                          t-att-action="'/compliance/authority/%s' % authority.id if authority else '/compliance/authority/new'">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                         <div class="row mb-3">
@@ -50,7 +53,8 @@
                                 <select class="form-select" id="country_id" name="country_id">
                                     <option value="">-- Chọn quốc gia --</option>
                                     <t t-foreach="countries" t-as="country">
-                                        <option t-att-value="country.id" t-att-selected="authority and authority.country_id.id == country.id">
+                                        <option t-att-value="country.id"
+                                                t-att-selected="authority and authority.country_id.id == country.id">
                                             <t t-esc="country.name"/>
                                         </option>
                                     </t>
@@ -60,7 +64,9 @@
 
                         <div class="mb-3">
                             <label class="form-label" for="description">Mô tả</label>
-                            <textarea class="form-control" id="description" name="description" rows="5"><t t-esc="authority.description if authority else form_data.get('description', '')"/></textarea>
+                            <textarea class="form-control" id="description" name="description" rows="5">
+                                <t t-esc="authority.description if authority else form_data.get('description', '')"/>
+                            </textarea>
                         </div>
 
                         <div class="d-flex justify-content-between">
@@ -100,7 +106,9 @@
                                                     <t t-esc="regulation.name"/>
                                                 </a>
                                             </td>
-                                            <td><t t-esc="regulation.code"/></td>
+                                            <td>
+                                                <t t-esc="regulation.code"/>
+                                            </td>
                                             <td>
                                                 <span t-att-class="'badge ' + (
                                                     'bg-primary' if regulation.scope == 'national' else
@@ -110,8 +118,12 @@
                                                     <t t-esc="dict(regulation._fields['scope'].selection).get(regulation.scope)"/>
                                                 </span>
                                             </td>
-                                            <td><t t-esc="regulation.issue_date"/></td>
-                                            <td><t t-esc="regulation.effective_date"/></td>
+                                            <td>
+                                                <t t-esc="regulation.issue_date"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="regulation.effective_date"/>
+                                            </td>
                                         </tr>
                                     </t>
                                 </tbody>

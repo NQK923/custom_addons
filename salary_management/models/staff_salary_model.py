@@ -186,7 +186,7 @@ class StaffSalary(models.Model):
     def _compute_total_salary(self):
         for record in self:
             record.total_salary = (
-                        record.base_salary + record.total_allowance + record.total_bonus) if record.base_salary is not None else 0.0
+                    record.base_salary + record.total_allowance + record.total_bonus) if record.base_salary is not None else 0.0
 
     @api.depends('late_days')
     def _compute_late_penalty(self):
@@ -223,7 +223,7 @@ class StaffSalary(models.Model):
             threshold = 11000000  # 11 triệu
             tax_rate = 0.1  # 10%
             record.tax = max(0, (
-                        record.total_salary_after_deduction - threshold) * tax_rate) if record.total_salary_after_deduction else 0.0
+                    record.total_salary_after_deduction - threshold) * tax_rate) if record.total_salary_after_deduction else 0.0
 
     @api.depends('total_salary_after_deduction', 'tax')
     def _compute_net_salary(self):

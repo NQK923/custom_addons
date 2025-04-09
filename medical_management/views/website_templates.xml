@@ -43,7 +43,8 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3>Danh sách Xét nghiệm và Chẩn đoán</h3>
                     <a href="/medical/test/create" class="btn btn-primary">
-                        <i class="fa fa-plus"/> Tạo mới
+                        <i class="fa fa-plus"/>
+                        Tạo mới
                     </a>
                 </div>
                 <div class="card-body">
@@ -85,10 +86,13 @@
                                         </td>
                                         <td>
                                             <a t-attf-href="/medical/test/{{test.id}}" class="btn btn-sm btn-info">
-                                                <i class="fa fa-eye"/> Xem
+                                                <i class="fa fa-eye"/>
+                                                Xem
                                             </a>
-                                            <a t-attf-href="/medical/test/edit/{{test.id}}" class="btn btn-sm btn-primary ms-1">
-                                                <i class="fa fa-edit"/> Sửa
+                                            <a t-attf-href="/medical/test/edit/{{test.id}}"
+                                               class="btn btn-sm btn-primary ms-1">
+                                                <i class="fa fa-edit"/>
+                                                Sửa
                                             </a>
                                         </td>
                                     </tr>
@@ -109,10 +113,12 @@
                     <h3>Chi tiết Xét nghiệm</h3>
                     <div>
                         <a t-attf-href="/medical/test/edit/{{test.id}}" class="btn btn-primary">
-                            <i class="fa fa-edit"/> Sửa
+                            <i class="fa fa-edit"/>
+                            Sửa
                         </a>
                         <a href="/medical/tests" class="btn btn-secondary ms-2">
-                            <i class="fa fa-arrow-left"/> Quay lại
+                            <i class="fa fa-arrow-left"/>
+                            Quay lại
                         </a>
                     </div>
                 </div>
@@ -122,7 +128,9 @@
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label">Mã xét nghiệm:</label>
                                 <div class="col-sm-8">
-                                    <p class="form-control-plaintext"><t t-esc="test.test_code"/></p>
+                                    <p class="form-control-plaintext">
+                                        <t t-esc="test.test_code"/>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -130,7 +138,9 @@
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label">Bệnh nhân:</label>
                                 <div class="col-sm-8">
-                                    <p class="form-control-plaintext"><t t-esc="test.patient_id.name"/></p>
+                                    <p class="form-control-plaintext">
+                                        <t t-esc="test.patient_id.name"/>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -140,7 +150,9 @@
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label">Người thực hiện:</label>
                                 <div class="col-sm-8">
-                                    <p class="form-control-plaintext"><t t-esc="test.doctor_id.name"/></p>
+                                    <p class="form-control-plaintext">
+                                        <t t-esc="test.doctor_id.name"/>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -206,10 +218,15 @@
                                             <div class="card-body">
                                                 <t t-if="image.Img">
                                                     <!-- Correct image rendering with proper image format specification -->
-                                                    <img t-att-src="image.Img and ('data:image/*;base64,%s' % (image.Img.decode('utf-8') if isinstance(image.Img, bytes) else image.Img))" class="img-fluid"/>
+                                                    <img t-att-src="image.Img and ('data:image/*;base64,%s' % (image.Img.decode('utf-8') if isinstance(image.Img, bytes) else image.Img))"
+                                                         class="img-fluid"/>
                                                 </t>
-                                                <p class="mt-2"><t t-esc="image.test_code"/></p>
-                                                <a t-attf-href="/medical/image/{{image.id}}" class="btn btn-sm btn-info">Xem chi tiết</a>
+                                                <p class="mt-2">
+                                                    <t t-esc="image.test_code"/>
+                                                </p>
+                                                <a t-attf-href="/medical/image/{{image.id}}"
+                                                   class="btn btn-sm btn-info">Xem chi tiết
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -219,7 +236,8 @@
                         <t t-else="">
                             <div class="alert alert-info">Không có hình ảnh liên quan</div>
                             <a t-attf-href="/medical/image/create?test_id={{test.id}}" class="btn btn-primary">
-                                <i class="fa fa-plus"/> Thêm hình ảnh
+                                <i class="fa fa-plus"/>
+                                Thêm hình ảnh
                             </a>
                         </t>
                     </div>

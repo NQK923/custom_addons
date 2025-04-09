@@ -8,7 +8,8 @@
             <!-- Actions -->
             <div class="im-actions">
                 <a href="/insurance/list" class="btn btn-secondary">
-                    <i class="fa fa-arrow-left"></i> Quay lại
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại
                 </a>
             </div>
 
@@ -54,7 +55,8 @@
             <!-- Actions -->
             <div class="im-actions text-right">
                 <a href="/insurance/create" class="btn btn-success">
-                    <i class="fa fa-plus"></i> Tạo hóa đơn bảo hiểm mới
+                    <i class="fa fa-plus"></i>
+                    Tạo hóa đơn bảo hiểm mới
                 </a>
             </div>
 
@@ -80,17 +82,26 @@
                             <tbody>
                                 <t t-foreach="insurance_invoices" t-as="insurance">
                                     <tr>
-                                        <td><t t-esc="insurance.name"/></td>
-                                        <td><t t-esc="insurance.date_from"/></td>
-                                        <td><t t-esc="insurance.date_to"/></td>
-                                        <td class="im-price">
-                                            <t t-esc="'{:,.0f}'.format(insurance.total_service_amount)"/> VND
+                                        <td>
+                                            <t t-esc="insurance.name"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="insurance.date_from"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="insurance.date_to"/>
                                         </td>
                                         <td class="im-price">
-                                            <t t-esc="'{:,.0f}'.format(insurance.total_medicine_amount)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(insurance.total_service_amount)"/>
+                                            VND
                                         </td>
                                         <td class="im-price">
-                                            <t t-esc="'{:,.0f}'.format(insurance.total_insurance_amount)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(insurance.total_medicine_amount)"/>
+                                            VND
+                                        </td>
+                                        <td class="im-price">
+                                            <t t-esc="'{:,.0f}'.format(insurance.total_insurance_amount)"/>
+                                            VND
                                         </td>
                                         <td class="text-center">
                                             <t t-if="insurance.state == 'draft'">
@@ -107,8 +118,10 @@
                                             </t>
                                         </td>
                                         <td class="text-center">
-                                            <a t-att-href="'/insurance/view/%s' % insurance.id" class="btn btn-sm btn-info">
-                                                <i class="fa fa-eye"></i> Xem
+                                            <a t-att-href="'/insurance/view/%s' % insurance.id"
+                                               class="btn btn-sm btn-info">
+                                                <i class="fa fa-eye"></i>
+                                                Xem
                                             </a>
                                         </td>
                                     </tr>
@@ -134,30 +147,36 @@
             <!-- Actions -->
             <div class="im-actions">
                 <a href="/insurance/list" class="btn btn-secondary">
-                    <i class="fa fa-arrow-left"></i> Quay lại
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại
                 </a>
 
                 <t t-if="insurance.state == 'draft'">
                     <a t-att-href="'/insurance/action/confirm/%s' % insurance.id" class="btn btn-primary ml-2">
-                        <i class="fa fa-check"></i> Xác nhận
+                        <i class="fa fa-check"></i>
+                        Xác nhận
                     </a>
                     <a t-att-href="'/insurance/action/cancel/%s' % insurance.id" class="btn btn-danger ml-2"
                        onclick="return confirm('Bạn có chắc chắn muốn hủy hóa đơn này?')">
-                        <i class="fa fa-times"></i> Hủy
+                        <i class="fa fa-times"></i>
+                        Hủy
                     </a>
                 </t>
                 <t t-if="insurance.state == 'confirmed'">
                     <a t-att-href="'/insurance/action/pay/%s' % insurance.id" class="btn btn-success ml-2">
-                        <i class="fa fa-money"></i> Thanh toán
+                        <i class="fa fa-money"></i>
+                        Thanh toán
                     </a>
                     <a t-att-href="'/insurance/action/cancel/%s' % insurance.id" class="btn btn-danger ml-2"
                        onclick="return confirm('Bạn có chắc chắn muốn hủy hóa đơn này?')">
-                        <i class="fa fa-times"></i> Hủy
+                        <i class="fa fa-times"></i>
+                        Hủy
                     </a>
                 </t>
                 <t t-if="insurance.state == 'cancelled'">
                     <a t-att-href="'/insurance/action/draft/%s' % insurance.id" class="btn btn-warning ml-2">
-                        <i class="fa fa-refresh"></i> Đặt về nháp
+                        <i class="fa fa-refresh"></i>
+                        Đặt về nháp
                     </a>
                 </t>
             </div>
@@ -168,12 +187,22 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>Mã hóa đơn:</strong> <t t-esc="insurance.name"/></p>
-                        <p><strong>Từ ngày:</strong> <t t-esc="insurance.date_from"/></p>
-                        <p><strong>Đến ngày:</strong> <t t-esc="insurance.date_to"/></p>
+                        <p>
+                            <strong>Mã hóa đơn:</strong>
+                            <t t-esc="insurance.name"/>
+                        </p>
+                        <p>
+                            <strong>Từ ngày:</strong>
+                            <t t-esc="insurance.date_from"/>
+                        </p>
+                        <p>
+                            <strong>Đến ngày:</strong>
+                            <t t-esc="insurance.date_to"/>
+                        </p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>Trạng thái:</strong>
+                        <p>
+                            <strong>Trạng thái:</strong>
                             <t t-if="insurance.state == 'draft'">
                                 <span class="im-status-draft">Nháp</span>
                             </t>
@@ -187,9 +216,11 @@
                                 <span class="im-status-cancelled">Đã hủy</span>
                             </t>
                         </p>
-                        <p><strong>Tổng tiền bảo hiểm chi trả:</strong>
+                        <p>
+                            <strong>Tổng tiền bảo hiểm chi trả:</strong>
                             <span class="font-weight-bold" style="color: green;">
-                                <t t-esc="'{:,.0f}'.format(insurance.total_insurance_amount)"/> VND
+                                <t t-esc="'{:,.0f}'.format(insurance.total_insurance_amount)"/>
+                                VND
                             </span>
                         </p>
                     </div>
@@ -217,36 +248,58 @@
                             <tbody>
                                 <t t-foreach="insurance.invoice_line_ids" t-as="line">
                                     <tr>
-                                        <td><t t-esc="line.invoice_id.name"/></td>
-                                        <td><t t-esc="line.patient_id.name"/></td>
-                                        <td><t t-esc="line.invoice_date"/></td>
-                                        <td class="text-right">
-                                            <t t-esc="'{:,.0f}'.format(line.service_amount)"/> VND
+                                        <td>
+                                            <t t-esc="line.invoice_id.name"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line.patient_id.name"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line.invoice_date"/>
                                         </td>
                                         <td class="text-right">
-                                            <t t-esc="'{:,.0f}'.format(line.medicine_amount)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(line.service_amount)"/>
+                                            VND
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(line.medicine_amount)"/>
+                                            VND
                                         </td>
                                         <td class="text-right" style="color: green;">
-                                            <t t-esc="'{:,.0f}'.format(line.insurance_amount)"/> VND
+                                            <t t-esc="'{:,.0f}'.format(line.insurance_amount)"/>
+                                            VND
                                         </td>
                                         <td class="text-center">
-                                            <a t-att-href="'/invoice/view/%s' % line.invoice_id.id" class="btn btn-sm btn-info">
-                                                <i class="fa fa-eye"></i> Xem hóa đơn
+                                            <a t-att-href="'/invoice/view/%s' % line.invoice_id.id"
+                                               class="btn btn-sm btn-info">
+                                                <i class="fa fa-eye"></i>
+                                                Xem hóa đơn
                                             </a>
                                         </td>
                                     </tr>
                                 </t>
                                 <tr class="table-info">
-                                    <td colspan="3" class="text-right"><strong>Tổng cộng:</strong></td>
-                                    <td class="text-right"><strong>
-                                        <t t-esc="'{:,.0f}'.format(insurance.total_service_amount)"/> VND
-                                    </strong></td>
-                                    <td class="text-right"><strong>
-                                        <t t-esc="'{:,.0f}'.format(insurance.total_medicine_amount)"/> VND
-                                    </strong></td>
-                                    <td class="text-right" style="color: green;"><strong>
-                                        <t t-esc="'{:,.0f}'.format(insurance.total_insurance_amount)"/> VND
-                                    </strong></td>
+                                    <td colspan="3" class="text-right">
+                                        <strong>Tổng cộng:</strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong>
+                                            <t t-esc="'{:,.0f}'.format(insurance.total_service_amount)"/>
+                                            VND
+                                        </strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong>
+                                            <t t-esc="'{:,.0f}'.format(insurance.total_medicine_amount)"/>
+                                            VND
+                                        </strong>
+                                    </td>
+                                    <td class="text-right" style="color: green;">
+                                        <strong>
+                                            <t t-esc="'{:,.0f}'.format(insurance.total_insurance_amount)"/>
+                                            VND
+                                        </strong>
+                                    </td>
                                     <td></td>
                                 </tr>
                             </tbody>

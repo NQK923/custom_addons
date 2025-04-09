@@ -14,7 +14,8 @@
                         </div>
                         <div class="col-md-4 text-right">
                             <a href="/pharmacy/prescriptions" class="btn btn-primary">
-                                <i class="fa fa-search"></i> Tìm kiếm đơn thuốc
+                                <i class="fa fa-search"></i>
+                                Tìm kiếm đơn thuốc
                             </a>
                         </div>
                     </div>
@@ -36,7 +37,9 @@
                                 </div>
                                 <a href="/pharmacy/products" class="text-white">
                                     <div class="card-footer bg-primary-dark text-center">
-                                        <span>Chi tiết <i class="fa fa-arrow-right"></i></span>
+                                        <span>Chi tiết
+                                            <i class="fa fa-arrow-right"></i>
+                                        </span>
                                     </div>
                                 </a>
                             </div>
@@ -56,7 +59,9 @@
                                 </div>
                                 <a href="/pharmacy/prescriptions" class="text-white">
                                     <div class="card-footer bg-success-dark text-center">
-                                        <span>Chi tiết <i class="fa fa-arrow-right"></i></span>
+                                        <span>Chi tiết
+                                            <i class="fa fa-arrow-right"></i>
+                                        </span>
                                     </div>
                                 </a>
                             </div>
@@ -76,7 +81,9 @@
                                 </div>
                                 <a href="/pharmacy/services" class="text-white">
                                     <div class="card-footer bg-info-dark text-center">
-                                        <span>Chi tiết <i class="fa fa-arrow-right"></i></span>
+                                        <span>Chi tiết
+                                            <i class="fa fa-arrow-right"></i>
+                                        </span>
                                     </div>
                                 </a>
                             </div>
@@ -96,7 +103,9 @@
                                 </div>
                                 <a href="/pharmacy/products?filter=low_stock" class="text-white">
                                     <div class="card-footer bg-warning-dark text-center">
-                                        <span>Chi tiết <i class="fa fa-arrow-right"></i></span>
+                                        <span>Chi tiết
+                                            <i class="fa fa-arrow-right"></i>
+                                        </span>
                                     </div>
                                 </a>
                             </div>
@@ -114,7 +123,8 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-3 mb-3">
-                                        <a href="/pharmacy/new_prescription" class="btn btn-outline-primary btn-block py-3">
+                                        <a href="/pharmacy/new_prescription"
+                                           class="btn btn-outline-primary btn-block py-3">
                                             <i class="fa fa-file-medical fa-2x d-block mb-2"></i>
                                             Tạo đơn thuốc mới
                                         </a>
@@ -154,15 +164,21 @@
                                 <div class="list-group list-group-flush">
                                     <t t-if="latest_prescriptions">
                                         <t t-foreach="latest_prescriptions" t-as="prescription">
-                                            <a t-att-href="'/pharmacy/prescription/%s' % prescription.id" class="list-group-item list-group-item-action">
+                                            <a t-att-href="'/pharmacy/prescription/%s' % prescription.id"
+                                               class="list-group-item list-group-item-action">
                                                 <div class="d-flex w-100 justify-content-between">
                                                     <h6 class="mb-1" t-esc="prescription.name"/>
                                                     <small t-esc="prescription.date.strftime('%d/%m/%Y %H:%M')"/>
                                                 </div>
-                                                <p class="mb-1">Bệnh nhân: <t t-esc="prescription.patient_id.name"/></p>
+                                                <p class="mb-1">Bệnh nhân:
+                                                    <t t-esc="prescription.patient_id.name"/>
+                                                </p>
                                                 <small>
-                                                    <span class="badge badge-info" t-esc="len(prescription.prescription_line_ids)"/> thuốc |
-                                                    <span class="badge badge-primary" t-esc="prescription.numdate"/> ngày
+                                                    <span class="badge badge-info"
+                                                          t-esc="len(prescription.prescription_line_ids)"/>
+                                                    thuốc |
+                                                    <span class="badge badge-primary" t-esc="prescription.numdate"/>
+                                                    ngày
                                                 </small>
                                             </a>
                                         </t>
@@ -190,14 +206,21 @@
                                 <div class="list-group list-group-flush">
                                     <t t-if="low_stock_products">
                                         <t t-foreach="low_stock_products" t-as="product">
-                                            <a t-att-href="'/pharmacy/product/%s' % product.id" class="list-group-item list-group-item-action">
+                                            <a t-att-href="'/pharmacy/product/%s' % product.id"
+                                               class="list-group-item list-group-item-action">
                                                 <div class="d-flex w-100 justify-content-between">
                                                     <h6 class="mb-1" t-esc="product.name"/>
                                                     <span class="badge badge-danger" t-esc="product.quantity"/>
                                                 </div>
-                                                <p class="mb-1">Mã: <t t-esc="product.code"/> | Loại: <t t-esc="product.category or 'N/A'"/></p>
+                                                <p class="mb-1">Mã:
+                                                    <t t-esc="product.code"/>
+                                                    | Loại:
+                                                    <t t-esc="product.category or 'N/A'"/>
+                                                </p>
                                                 <small>
-                                                    Giá: <t t-esc="'{:,.0f}'.format(product.unit_price)"/> VNĐ |
+                                                    Giá:
+                                                    <t t-esc="'{:,.0f}'.format(product.unit_price)"/>
+                                                    VNĐ |
                                                     <t t-esc="product.uom_id"/>
                                                 </small>
                                             </a>
@@ -211,7 +234,9 @@
                                 </div>
                             </div>
                             <div class="card-footer">
-                                <a href="/pharmacy/products?filter=low_stock" class="btn btn-sm btn-outline-warning">Xem tất cả</a>
+                                <a href="/pharmacy/products?filter=low_stock" class="btn btn-sm btn-outline-warning">Xem
+                                    tất cả
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -220,22 +245,22 @@
 
             <style>
                 .bg-primary-dark {
-                    background-color: rgba(0, 123, 255, 0.8);
+                background-color: rgba(0, 123, 255, 0.8);
                 }
                 .bg-success-dark {
-                    background-color: rgba(40, 167, 69, 0.8);
+                background-color: rgba(40, 167, 69, 0.8);
                 }
                 .bg-info-dark {
-                    background-color: rgba(23, 162, 184, 0.8);
+                background-color: rgba(23, 162, 184, 0.8);
                 }
                 .bg-warning-dark {
-                    background-color: rgba(255, 193, 7, 0.8);
+                background-color: rgba(255, 193, 7, 0.8);
                 }
                 .card-footer {
-                    transition: all 0.3s;
+                transition: all 0.3s;
                 }
                 a:hover .card-footer {
-                    padding-left: 30px;
+                padding-left: 30px;
                 }
             </style>
         </t>

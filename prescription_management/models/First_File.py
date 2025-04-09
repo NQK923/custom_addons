@@ -7,6 +7,7 @@ import uuid
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
+
 class ClinicService(models.Model):
     _name = 'clinic.service'
     _description = 'Dịch vụ phòng khám'
@@ -25,6 +26,8 @@ class ClinicService(models.Model):
             if vals.get('name', 'New') == 'New':
                 vals['name'] = str(uuid.uuid4())[:8]
         return super().create(vals_list)
+
+
 class PharmacyProduct(models.Model):
     _name = 'pharmacy.product'
     _description = 'Dược phẩm'
@@ -53,7 +56,6 @@ class PharmacyProduct(models.Model):
     active = fields.Boolean(default=True)
     insurance_covered = fields.Boolean(string='Được bảo hiểm chi trả', default=False)  # Thêm trường này
 
-
     @api.depends('quantity')
     def _compute_is_quantity(self):
         for record in self:
@@ -62,7 +64,6 @@ class PharmacyProduct(models.Model):
     def _compute_display_name(self):
         for record in self:
             record.display_name = f"{record.code} - {record.name}"
-        
 
     @api.constrains('purchase_price', 'unit_price')
     def _check_prices(self):
@@ -90,11 +91,11 @@ class PharmacyProduct(models.Model):
         elif 1000 < purchase_price <= 5000:
             return 10.0  # 10%
         elif 5000 < purchase_price <= 100000:
-            return 7.0   # 7%
+            return 7.0  # 7%
         elif 100000 < purchase_price <= 1000000:
-            return 5.0   # 5%
+            return 5.0  # 5%
         else:
-            return 2.0   # 2%
+            return 2.0  # 2%
 
     @api.depends('purchase_price', 'unit_price')
     def _compute_profit_margin(self):
@@ -110,6 +111,7 @@ class PharmacyProduct(models.Model):
         if self.purchase_price:
             max_profit_margin = self._get_max_profit_margin(self.purchase_price)
             self.unit_price = self.purchase_price * (1 + max_profit_margin / 100)
+
 
 class PrescriptionOrder(models.Model):
     _name = 'prescription.order'
@@ -128,6 +130,7 @@ class PrescriptionOrder(models.Model):
         if vals.get('name', 'New') == 'New':
             vals['name'] = self.env['ir.sequence'].next_by_code('prescription.order') or 'New'
         return super(PrescriptionOrder, self).create(vals)
+
 
 class PrescriptionLine(models.Model):
     _name = 'prescription.line'
@@ -152,4 +155,3 @@ class PrescriptionLine(models.Model):
                     raise models.ValidationError(
                         f"Thuốc {product.name} đã tồn tại trong đơn thuốc!"
                     )
-

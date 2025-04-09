@@ -1,4 +1,3 @@
-
 <odoo>
     <!-- Root Menu -->
     <menuitem id="menu_hospital_management" name="Xét nghiệm và chẩn đoán" sequence="10"/>

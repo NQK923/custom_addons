@@ -13,8 +13,10 @@
                 <field name="qualification" string="Trình độ chuyên môn"/>
                 <field name="labor_type" string="Loại lao động"/>
                 <field name="status" string="Trạng thái"/>
-                <button name="action_list_check_in_out" type="object" string="Chấm công" icon="fa-clock-o" class="btn-primary"/>
-                <button name="action_list_open_performance_form" type="object" string="Đánh giá" icon="fa-star" class="btn-success"/>
+                <button name="action_list_check_in_out" type="object" string="Chấm công" icon="fa-clock-o"
+                        class="btn-primary"/>
+                <button name="action_list_open_performance_form" type="object" string="Đánh giá" icon="fa-star"
+                        class="btn-success"/>
             </list>
         </field>
     </record>
@@ -39,8 +41,10 @@
             <form string="Nhân sự y tế">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_manual_check_in_out" type="object" string="Chấm công" class="oe_stat_button" icon="fa-clock-o"/>
-                        <button name="action_open_performance_form" type="object" string="Đánh giá hiệu suất" class="oe_stat_button" icon="fa-star"/>
+                        <button name="action_manual_check_in_out" type="object" string="Chấm công"
+                                class="oe_stat_button" icon="fa-clock-o"/>
+                        <button name="action_open_performance_form" type="object" string="Đánh giá hiệu suất"
+                                class="oe_stat_button" icon="fa-star"/>
                     </div>
                     <notebook>
                         <page string="Thông tin chi tiết">

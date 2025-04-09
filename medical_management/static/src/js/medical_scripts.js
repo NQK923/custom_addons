@@ -1,10 +1,10 @@
 /* File JS đơn giản cho website medical management */
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Xử lý hiển thị tên file khi chọn file
     const fileInputs = document.querySelectorAll('.custom-file-input');
     if (fileInputs) {
         fileInputs.forEach(input => {
-            input.addEventListener('change', function() {
+            input.addEventListener('change', function () {
                 const fileName = this.value.split('\\').pop();
                 const label = this.nextElementSibling;
                 if (label) {
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const previewElement = document.querySelector('.image-preview');
 
                     if (previewElement) {
-                        reader.onload = function(e) {
+                        reader.onload = function (e) {
                             previewElement.innerHTML = `
                                 <div class="card p-2 border">
                                     <p class="mb-1"><strong>Xem trước:</strong></p>
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (searchQueryEl) {
         let debounceTimeout;
-        searchQueryEl.addEventListener('keyup', function() {
+        searchQueryEl.addEventListener('keyup', function () {
             clearTimeout(debounceTimeout);
             debounceTimeout = setTimeout(filterTable, 300);
         });

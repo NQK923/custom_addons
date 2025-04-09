@@ -8,7 +8,7 @@
             <list>
                 <field name="code" optional="show"/>
                 <field name="date" optional="show"/>
-                <field name="name" />
+                <field name="name"/>
                 <field name="gender"/>
                 <field name="email" optional="show"/>
                 <field name="phone" optional="show"/>

@@ -13,12 +13,14 @@
                 <!-- Notification messages -->
                 <t t-if="error">
                     <div class="alert alert-danger" role="alert">
-                        <i class="fa fa-exclamation-triangle"/> <t t-esc="error"/>
+                        <i class="fa fa-exclamation-triangle"/>
+                        <t t-esc="error"/>
                     </div>
                 </t>
                 <t t-if="success">
                     <div class="alert alert-success" role="alert">
-                        <i class="fa fa-check-circle"/> <t t-esc="success"/>
+                        <i class="fa fa-check-circle"/>
+                        <t t-esc="success"/>
                     </div>
                 </t>
 
@@ -28,9 +30,12 @@
                         <h4 class="mb-0">Danh sách chức vụ</h4>
                         <div>
                             <a href="/clinic/staff_type/create" class="btn btn-light">
-                                <i class="fa fa-plus-circle"/> Thêm chức vụ mới
+                                <i class="fa fa-plus-circle"/>
+                                Thêm chức vụ mới
                             </a>
-                            <span class="badge badge-light ml-2">Tổng số: <t t-esc="len(staff_types)"/></span>
+                            <span class="badge badge-light ml-2">Tổng số:
+                                <t t-esc="len(staff_types)"/>
+                            </span>
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -59,13 +64,18 @@
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="btn-group">
-                                                        <a t-att-href="'/clinic/staff_type/%s/edit' % staff_type.id" class="btn btn-sm btn-info"
+                                                        <a t-att-href="'/clinic/staff_type/%s/edit' % staff_type.id"
+                                                           class="btn btn-sm btn-info"
                                                            title="Chỉnh sửa">
-                                                            <i class="fa fa-edit"/> Sửa
+                                                            <i class="fa fa-edit"/>
+                                                            Sửa
                                                         </a>
-                                                        <a t-att-href="'/clinic/staff_type/%s/delete' % staff_type.id" class="btn btn-sm btn-danger ml-1"
-                                                           title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa chức vụ này?');">
-                                                            <i class="fa fa-trash"/> Xóa
+                                                        <a t-att-href="'/clinic/staff_type/%s/delete' % staff_type.id"
+                                                           class="btn btn-sm btn-danger ml-1"
+                                                           title="Xóa"
+                                                           onclick="return confirm('Bạn có chắc chắn muốn xóa chức vụ này?');">
+                                                            <i class="fa fa-trash"/>
+                                                            Xóa
                                                         </a>
                                                     </div>
                                                 </td>
@@ -76,9 +86,12 @@
                                         <tr>
                                             <td colspan="4" class="text-center py-4">
                                                 <div class="alert alert-info mb-0">
-                                                    <i class="fa fa-info-circle"/> Chưa có chức vụ nào được tạo.
-                                                    <a href="/clinic/staff_type/create" class="btn btn-primary btn-sm ml-3">
-                                                        <i class="fa fa-plus-circle"/> Tạo chức vụ mới
+                                                    <i class="fa fa-info-circle"/>
+                                                    Chưa có chức vụ nào được tạo.
+                                                    <a href="/clinic/staff_type/create"
+                                                       class="btn btn-primary btn-sm ml-3">
+                                                        <i class="fa fa-plus-circle"/>
+                                                        Tạo chức vụ mới
                                                     </a>
                                                 </div>
                                             </td>

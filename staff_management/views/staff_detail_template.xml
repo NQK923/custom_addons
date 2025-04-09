@@ -5,7 +5,9 @@
             <div class="container mt-4 mb-5">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/clinic/staff">Quản lý nhân sự</a></li>
+                        <li class="breadcrumb-item">
+                            <a href="/clinic/staff">Quản lý nhân sự</a>
+                        </li>
                         <li class="breadcrumb-item active" aria-current="page">Chi tiết nhân viên</li>
                     </ol>
                 </nav>
@@ -24,35 +26,51 @@
                                             <t t-esc="staff.staff_name and staff.staff_name[0] or '?'"/>
                                         </span>
                                     </div>
-                                    <h3 class="mb-1"><t t-esc="staff.staff_name"/></h3>
+                                    <h3 class="mb-1">
+                                        <t t-esc="staff.staff_name"/>
+                                    </h3>
                                     <p class="text-muted">
                                         <t t-if="staff.staff_type">
                                             <t t-esc="staff.staff_type.position"/>
                                         </t>
                                     </p>
                                     <div class="mb-2">
-                                        <span t-if="staff.status == 'active'" class="badge badge-success">Đang làm việc</span>
-                                        <span t-elif="staff.status == 'inactive'" class="badge badge-warning">Nghỉ phép</span>
-                                        <span t-elif="staff.status == 'retired'" class="badge badge-secondary">Đã nghỉ hưu</span>
+                                        <span t-if="staff.status == 'active'" class="badge badge-success">Đang làm
+                                            việc
+                                        </span>
+                                        <span t-elif="staff.status == 'inactive'" class="badge badge-warning">Nghỉ
+                                            phép
+                                        </span>
+                                        <span t-elif="staff.status == 'retired'" class="badge badge-secondary">Đã nghỉ
+                                            hưu
+                                        </span>
                                     </div>
                                 </div>
 
                                 <div class="staff-info">
                                     <p>
                                         <strong>Mã nhân sự:</strong>
-                                        <span class="float-right"><t t-esc="staff.name"/></span>
+                                        <span class="float-right">
+                                            <t t-esc="staff.name"/>
+                                        </span>
                                     </p>
                                     <p>
                                         <strong>Số CCCD/CMND:</strong>
-                                        <span class="float-right"><t t-esc="staff.id_card"/></span>
+                                        <span class="float-right">
+                                            <t t-esc="staff.id_card"/>
+                                        </span>
                                     </p>
                                     <p>
                                         <strong>Số điện thoại:</strong>
-                                        <span class="float-right"><t t-esc="staff.phone"/></span>
+                                        <span class="float-right">
+                                            <t t-esc="staff.phone"/>
+                                        </span>
                                     </p>
                                     <p>
                                         <strong>Email:</strong>
-                                        <span class="float-right"><t t-esc="staff.email"/></span>
+                                        <span class="float-right">
+                                            <t t-esc="staff.email"/>
+                                        </span>
                                     </p>
                                     <p>
                                         <strong>Giới tính:</strong>
@@ -78,24 +96,35 @@
                                     </p>
                                     <p>
                                         <strong>Trình độ:</strong>
-                                        <span class="float-right"><t t-esc="staff.qualification"/></span>
+                                        <span class="float-right">
+                                            <t t-esc="staff.qualification"/>
+                                        </span>
                                     </p>
                                     <p>
                                         <strong>Số năm kinh nghiệm:</strong>
-                                        <span class="float-right"><t t-esc="staff.experience_year"/> năm</span>
+                                        <span class="float-right">
+                                            <t t-esc="staff.experience_year"/>
+                                            năm
+                                        </span>
                                     </p>
                                     <p>
                                         <strong>Số giấy phép:</strong>
-                                        <span class="float-right"><t t-esc="staff.license_number"/></span>
+                                        <span class="float-right">
+                                            <t t-esc="staff.license_number"/>
+                                        </span>
                                     </p>
                                 </div>
 
                                 <div class="mt-4">
-                                    <a t-att-href="'/clinic/staff/attendance/%s' % staff.id" class="btn btn-block btn-primary">
-                                        <i class="fa fa-clock-o"/> Chấm công
+                                    <a t-att-href="'/clinic/staff/attendance/%s' % staff.id"
+                                       class="btn btn-block btn-primary">
+                                        <i class="fa fa-clock-o"/>
+                                        Chấm công
                                     </a>
-                                    <a t-att-href="'/clinic/staff/performance/%s' % staff.id" class="btn btn-block btn-success mt-2">
-                                        <i class="fa fa-star"/> Đánh giá hiệu suất
+                                    <a t-att-href="'/clinic/staff/performance/%s' % staff.id"
+                                       class="btn btn-block btn-success mt-2">
+                                        <i class="fa fa-star"/>
+                                        Đánh giá hiệu suất
                                     </a>
                                 </div>
                             </div>
@@ -109,7 +138,8 @@
                             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                                 <h4 class="mb-0">Chấm công gần đây</h4>
                                 <a t-att-href="'/clinic/staff/attendance/%s' % staff.id" class="text-white">
-                                    <i class="fa fa-external-link"/> Xem tất cả
+                                    <i class="fa fa-external-link"/>
+                                    Xem tất cả
                                 </a>
                             </div>
                             <div class="card-body p-0">
@@ -127,14 +157,28 @@
                                         <t t-if="attendances">
                                             <t t-foreach="attendances" t-as="attendance">
                                                 <tr>
-                                                    <td><t t-esc="attendance.date"/></td>
-                                                    <td><t t-esc="attendance.check_in"/></td>
-                                                    <td><t t-esc="attendance.check_out or '--'"/></td>
-                                                    <td><t t-esc="attendance.work_hours"/></td>
                                                     <td>
-                                                        <span t-if="attendance.status == 'present'" class="badge badge-success">Có mặt</span>
-                                                        <span t-elif="attendance.status == 'absent'" class="badge badge-danger">Vắng mặt</span>
-                                                        <span t-elif="attendance.status == 'late'" class="badge badge-warning">Đi muộn</span>
+                                                        <t t-esc="attendance.date"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="attendance.check_in"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="attendance.check_out or '--'"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="attendance.work_hours"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-if="attendance.status == 'present'"
+                                                              class="badge badge-success">Có mặt
+                                                        </span>
+                                                        <span t-elif="attendance.status == 'absent'"
+                                                              class="badge badge-danger">Vắng mặt
+                                                        </span>
+                                                        <span t-elif="attendance.status == 'late'"
+                                                              class="badge badge-warning">Đi muộn
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             </t>
@@ -158,7 +202,8 @@
                             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                                 <h4 class="mb-0">Đánh giá hiệu suất gần đây</h4>
                                 <a t-att-href="'/clinic/staff/performance/%s' % staff.id" class="text-white">
-                                    <i class="fa fa-external-link"/> Xem tất cả
+                                    <i class="fa fa-external-link"/>
+                                    Xem tất cả
                                 </a>
                             </div>
                             <div class="card-body p-0">
@@ -177,15 +222,28 @@
                                             <t t-foreach="performances" t-as="performance">
                                                 <tr>
                                                     <td>
-                                                        <t t-esc="performance.month"/>/<t t-esc="performance.year"/>
+                                                        <t t-esc="performance.month"/>/
+                                                        <t t-esc="performance.year"/>
                                                     </td>
-                                                    <td><t t-esc="performance.score"/></td>
-                                                    <td><t t-esc="performance.attendance_score"/></td>
-                                                    <td><t t-esc="performance.work_hours"/></td>
                                                     <td>
-                                                        <span t-if="performance.state == 'draft'" class="badge badge-secondary">Nháp</span>
-                                                        <span t-elif="performance.state == 'confirmed'" class="badge badge-primary">Xác nhận</span>
-                                                        <span t-elif="performance.state == 'approved'" class="badge badge-success">Đã duyệt</span>
+                                                        <t t-esc="performance.score"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="performance.attendance_score"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="performance.work_hours"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-if="performance.state == 'draft'"
+                                                              class="badge badge-secondary">Nháp
+                                                        </span>
+                                                        <span t-elif="performance.state == 'confirmed'"
+                                                              class="badge badge-primary">Xác nhận
+                                                        </span>
+                                                        <span t-elif="performance.state == 'approved'"
+                                                              class="badge badge-success">Đã duyệt
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             </t>
@@ -209,25 +267,25 @@
 
             <style>
                 .avatar-circle {
-                    width: 100px;
-                    height: 100px;
-                    background-color: #3498db;
-                    border-radius: 50%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
+                width: 100px;
+                height: 100px;
+                background-color: #3498db;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 }
 
                 .initials {
-                    font-size: 50px;
-                    color: white;
-                    text-transform: uppercase;
+                font-size: 50px;
+                color: white;
+                text-transform: uppercase;
                 }
 
                 .staff-info p {
-                    padding: 8px 0;
-                    border-bottom: 1px solid #eee;
-                    margin-bottom: 0;
+                padding: 8px 0;
+                border-bottom: 1px solid #eee;
+                margin-bottom: 0;
                 }
             </style>
         </t>

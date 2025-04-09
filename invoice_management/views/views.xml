@@ -34,13 +34,13 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_confirm" string="Xác nhận" type="object" 
+                    <button name="action_confirm" string="Xác nhận" type="object"
                             class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="action_mark_as_paid" string="Đánh dấu đã thanh toán" 
+                    <button name="action_mark_as_paid" string="Đánh dấu đã thanh toán"
                             type="object" class="oe_highlight" invisible="state != 'confirmed'"/>
-                    <button name="action_cancel" string="Hủy" type="object" 
+                    <button name="action_cancel" string="Hủy" type="object"
                             invisible="state not in ('draft', 'confirmed')"/>
-                    <button name="action_reset_to_draft" string="Đặt về nháp" type="object" 
+                    <button name="action_reset_to_draft" string="Đặt về nháp" type="object"
                             invisible="state != 'cancelled'"/>
                     <field name="state" widget="statusbar"/>
                 </header>
@@ -130,10 +130,10 @@
     </record>
 
     <!-- Menu for Clinic Invoice -->
-    <menuitem id="menu_clinic_invoice" 
-              name="Hóa đơn" 
-              parent="menu_invoice_root" 
-              action="action_clinic_invoice" 
+    <menuitem id="menu_clinic_invoice"
+              name="Hóa đơn"
+              parent="menu_invoice_root"
+              action="action_clinic_invoice"
               sequence="1"/>
 
 
@@ -170,28 +170,28 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_confirm" 
-                            string="Xác nhận" 
-                            type="object" 
+                    <button name="action_confirm"
+                            string="Xác nhận"
+                            type="object"
                             class="oe_highlight"
                             invisible="state != 'draft'"/>
-                    
-                    <button name="action_pay" 
-                            string="Thanh toán" 
-                            type="object" 
+
+                    <button name="action_pay"
+                            string="Thanh toán"
+                            type="object"
                             class="oe_highlight"
                             invisible="state != 'confirmed'"/>
-                    
-                    <button name="action_cancel" 
-                            string="Hủy" 
+
+                    <button name="action_cancel"
+                            string="Hủy"
                             type="object"
                             invisible="state not in ('draft', 'confirmed')"/>
-                    
-                    <button name="action_draft" 
-                            string="Đặt về nháp" 
+
+                    <button name="action_draft"
+                            string="Đặt về nháp"
                             type="object"
                             invisible="state != 'cancelled'"/>
-                    
+
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,confirmed,paid"/>
                 </header>
@@ -255,7 +255,8 @@
         <field name="name">clinic.purchase.order.list</field>
         <field name="model">clinic.purchase.order</field>
         <field name="arch" type="xml">
-            <list decoration-info="state == 'draft'" decoration-success="state == 'paid'" decoration-danger="state == 'cancelled'">
+            <list decoration-info="state == 'draft'" decoration-success="state == 'paid'"
+                  decoration-danger="state == 'cancelled'">
                 <field name="display_name"/>
                 <field name="date"/>
                 <field name="supplier_name"/>
@@ -274,15 +275,15 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_confirm" 
-                            string="Xác nhận" 
-                            type="object" 
+                    <button name="action_confirm"
+                            string="Xác nhận"
+                            type="object"
                             class="oe_highlight"
                             invisible="state != 'draft'"
                             confirm="Bạn có chắc chắn muốn xác nhận phiếu nhập này?"/>
-                    <button name="action_pay" 
-                            string="Thanh toán" 
-                            type="object" 
+                    <button name="action_pay"
+                            string="Thanh toán"
+                            type="object"
                             class="oe_highlight"
                             invisible="state != 'confirmed'"
                             confirm="Bạn có chắc chắn muốn thanh toán phiếu nhập này? Số lượng sẽ được cập nhật vào kho."/>

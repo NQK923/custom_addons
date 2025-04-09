@@ -76,7 +76,8 @@
                 <field name="appointment_date"/>
                 <field name="staff_id"/>
                 <field name="room_id"/>
-                <field name="state" widget="badge" decoration-success="state == 'confirmed'" decoration-info="state == 'draft'" decoration-danger="state == 'cancelled'"/>
+                <field name="state" widget="badge" decoration-success="state == 'confirmed'"
+                       decoration-info="state == 'draft'" decoration-danger="state == 'cancelled'"/>
             </list>
         </field>
     </record>

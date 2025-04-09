@@ -5,72 +5,72 @@
         <t t-call="website.layout">
             <style>
                 .prescription-container {
-                    background-color: #f8f9fa;
-                    padding: 30px;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    max-width: 1200px;
-                    margin: 0 auto;
+                background-color: #f8f9fa;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                max-width: 1200px;
+                margin: 0 auto;
                 }
                 .patient-info, .prescription-list {
-                    background-color: #fff;
-                    padding: 20px;
-                    border-radius: 8px;
-                    margin-bottom: 25px;
-                    border: 1px solid #dee2e6;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 25px;
+                border: 1px solid #dee2e6;
                 }
                 .patient-info h3, .prescription-list h3 {
-                    color: #007bff;
-                    border-bottom: 2px solid #007bff;
-                    padding-bottom: 8px;
-                    margin-bottom: 20px;
-                    font-size: 1.5rem;
+                color: #007bff;
+                border-bottom: 2px solid #007bff;
+                padding-bottom: 8px;
+                margin-bottom: 20px;
+                font-size: 1.5rem;
                 }
                 .search-form {
-                    max-width: 500px;
-                    margin: 0 auto 30px auto;
+                max-width: 500px;
+                margin: 0 auto 30px auto;
                 }
                 .search-form .form-group {
-                    margin-bottom: 15px;
+                margin-bottom: 15px;
                 }
                 .search-form label {
-                    font-weight: 600;
-                    color: #495057;
+                font-weight: 600;
+                color: #495057;
                 }
                 .search-form .btn-primary {
-                    width: 100%;
-                    padding: 10px;
-                    font-size: 1rem;
+                width: 100%;
+                padding: 10px;
+                font-size: 1rem;
                 }
                 .prescription-card {
-                    margin-bottom: 15px;
-                    transition: all 0.3s ease;
+                margin-bottom: 15px;
+                transition: all 0.3s ease;
                 }
                 .prescription-card:hover {
-                    transform: translateY(-3px);
-                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
                 }
                 .prescription-card .card-header {
-                    background-color: #f0f5ff;
-                    font-weight: bold;
+                background-color: #f0f5ff;
+                font-weight: bold;
                 }
                 .prescription-card .card-footer {
-                    background-color: #f8f9fa;
+                background-color: #f8f9fa;
                 }
                 .no-data {
-                    color: #6c757d;
-                    font-style: italic;
-                    font-size: 1rem;
-                    text-align: center;
-                    padding: 20px;
+                color: #6c757d;
+                font-style: italic;
+                font-size: 1rem;
+                text-align: center;
+                padding: 20px;
                 }
                 .badge-custom {
-                    font-size: 0.9rem;
-                    padding: 5px 10px;
+                font-size: 0.9rem;
+                padding: 5px 10px;
                 }
                 .all-prescriptions-table th {
-                    background-color: #007bff;
-                    color: white;
+                background-color: #007bff;
+                color: white;
                 }
             </style>
             <div class="container mt-5 prescription-container">
@@ -78,7 +78,9 @@
                     <div class="col-12">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/pharmacy">Dashboard</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="/pharmacy">Dashboard</a>
+                                </li>
                                 <li class="breadcrumb-item active">Đơn thuốc</li>
                             </ol>
                         </nav>
@@ -87,7 +89,8 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1 class="mb-0">Đơn thuốc</h1>
                     <a href="/pharmacy/new_prescription" class="btn btn-success">
-                        <i class="fa fa-plus"></i> Tạo đơn thuốc mới
+                        <i class="fa fa-plus"></i>
+                        Tạo đơn thuốc mới
                     </a>
                 </div>
 
@@ -101,7 +104,8 @@
                                    t-att-value="search_value or ''" placeholder="Ví dụ: 4437480b hoặc Nguyễn Văn A"/>
                             <div class="input-group-append">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-search"></i> Tìm kiếm
+                                    <i class="fa fa-search"></i>
+                                    Tìm kiếm
                                 </button>
                             </div>
                         </div>
@@ -109,7 +113,8 @@
                     <t t-if="search_value">
                         <div class="text-center mt-2">
                             <a href="/pharmacy/prescriptions" class="btn btn-outline-secondary">
-                                <i class="fa fa-list"></i> Hiển thị tất cả đơn thuốc
+                                <i class="fa fa-list"></i>
+                                Hiển thị tất cả đơn thuốc
                             </a>
                         </div>
                     </t>
@@ -121,20 +126,47 @@
                         <h3>Thông tin bệnh nhân</h3>
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>Mã:</strong> <t t-esc="patient.code"/></p>
-                                <p><strong>Họ tên:</strong> <t t-esc="patient.name"/></p>
-                                <p><strong>Giới tính:</strong> <t t-esc="patient.gender"/></p>
-                                <p><strong>Tuổi:</strong> <t t-esc="patient.age"/></p>
+                                <p>
+                                    <strong>Mã:</strong>
+                                    <t t-esc="patient.code"/>
+                                </p>
+                                <p>
+                                    <strong>Họ tên:</strong>
+                                    <t t-esc="patient.name"/>
+                                </p>
+                                <p>
+                                    <strong>Giới tính:</strong>
+                                    <t t-esc="patient.gender"/>
+                                </p>
+                                <p>
+                                    <strong>Tuổi:</strong>
+                                    <t t-esc="patient.age"/>
+                                </p>
                             </div>
                             <div class="col-md-6">
                                 <t t-if="patient.has_insurance">
-                                    <p><strong>Số thẻ BHYT:</strong> <t t-esc="patient.insurance_number"/></p>
-                                    <p><strong>Nơi ĐKKCB:</strong> <t t-esc="patient.insurance_facility"/></p>
-                                    <p><strong>Có giá trị đến:</strong> <t t-esc="patient.insurance_expiry"/></p>
-                                    <p><strong>Trạng thái:</strong> <t t-esc="patient.insurance_state"/></p>
+                                    <p>
+                                        <strong>Số thẻ BHYT:</strong>
+                                        <t t-esc="patient.insurance_number"/>
+                                    </p>
+                                    <p>
+                                        <strong>Nơi ĐKKCB:</strong>
+                                        <t t-esc="patient.insurance_facility"/>
+                                    </p>
+                                    <p>
+                                        <strong>Có giá trị đến:</strong>
+                                        <t t-esc="patient.insurance_expiry"/>
+                                    </p>
+                                    <p>
+                                        <strong>Trạng thái:</strong>
+                                        <t t-esc="patient.insurance_state"/>
+                                    </p>
                                 </t>
                                 <t t-else="">
-                                    <p><strong>Bảo hiểm:</strong> <span class="no-data">Không có bảo hiểm</span></p>
+                                    <p>
+                                        <strong>Bảo hiểm:</strong>
+                                        <span class="no-data">Không có bảo hiểm</span>
+                                    </p>
                                 </t>
                             </div>
                         </div>
@@ -149,18 +181,31 @@
                                     <div class="col-lg-6">
                                         <div class="card mb-3 prescription-card">
                                             <div class="card-header d-flex justify-content-between align-items-center">
-                                                <span><t t-esc="prescription.name"/></span>
+                                                <span>
+                                                    <t t-esc="prescription.name"/>
+                                                </span>
                                                 <span class="badge badge-info badge-custom">
                                                     <t t-esc="prescription.date.strftime('%d/%m/%Y %H:%M')"/>
                                                 </span>
                                             </div>
                                             <div class="card-body">
-                                                <p><strong>Bác sĩ:</strong> <t t-esc="prescription.staff_id.staff_name or 'N/A'"/></p>
-                                                <p><strong>Số ngày uống:</strong> <t t-esc="prescription.numdate"/> ngày</p>
-                                                <p><strong>Số loại thuốc:</strong> <t t-esc="len(prescription.prescription_line_ids)"/></p>
+                                                <p>
+                                                    <strong>Bác sĩ:</strong>
+                                                    <t t-esc="prescription.staff_id.staff_name or 'N/A'"/>
+                                                </p>
+                                                <p>
+                                                    <strong>Số ngày uống:</strong>
+                                                    <t t-esc="prescription.numdate"/>
+                                                    ngày
+                                                </p>
+                                                <p>
+                                                    <strong>Số loại thuốc:</strong>
+                                                    <t t-esc="len(prescription.prescription_line_ids)"/>
+                                                </p>
                                             </div>
                                             <div class="card-footer">
-                                                <a t-att-href="'/pharmacy/prescription/%s' % prescription.id" class="btn btn-primary btn-sm">
+                                                <a t-att-href="'/pharmacy/prescription/%s' % prescription.id"
+                                                   class="btn btn-primary btn-sm">
                                                     Xem chi tiết
                                                 </a>
                                             </div>
@@ -176,7 +221,8 @@
                 </t>
                 <t t-elif="search_value and not patient">
                     <div class="alert alert-warning text-center mt-4">
-                        <h5>Không tìm thấy bệnh nhân nào phù hợp với từ khóa "<t t-esc="search_value"/>"</h5>
+                        <h5>Không tìm thấy bệnh nhân nào phù hợp với từ khóa "<t t-esc="search_value"/>"
+                        </h5>
                     </div>
                 </t>
 
@@ -202,13 +248,27 @@
                                     <tbody>
                                         <t t-foreach="prescriptions" t-as="prescription">
                                             <tr>
-                                                <td><t t-esc="prescription_index + 1"/></td>
-                                                <td><t t-esc="prescription.name"/></td>
-                                                <td><t t-esc="prescription.date.strftime('%d/%m/%Y %H:%M')"/></td>
-                                                <td><t t-esc="prescription.patient_id.name"/></td>
-                                                <td><t t-esc="prescription.staff_id.staff_name or 'N/A'"/></td>
-                                                <td><t t-esc="prescription.numdate"/></td>
-                                                <td><t t-esc="len(prescription.prescription_line_ids)"/></td>
+                                                <td>
+                                                    <t t-esc="prescription_index + 1"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="prescription.name"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="prescription.date.strftime('%d/%m/%Y %H:%M')"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="prescription.patient_id.name"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="prescription.staff_id.staff_name or 'N/A'"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="prescription.numdate"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="len(prescription.prescription_line_ids)"/>
+                                                </td>
                                                 <td>
                                                     <div class="btn-group">
                                                         <a t-att-href="'/pharmacy/prescription/%s' % prescription.id"
@@ -252,141 +312,157 @@
         <t t-call="website.layout">
             <style>
                 .prescription-container {
-                    background-color: #f8f9fa;
-                    padding: 30px;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    max-width: 1200px;
-                    margin: 0 auto;
+                background-color: #f8f9fa;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                max-width: 1200px;
+                margin: 0 auto;
                 }
                 .prescription-header, .prescription-body {
-                    background-color: #fff;
-                    padding: 20px;
-                    border-radius: 8px;
-                    margin-bottom: 25px;
-                    border: 1px solid #dee2e6;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 25px;
+                border: 1px solid #dee2e6;
                 }
                 .prescription-header h3, .prescription-body h3 {
-                    color: #007bff;
-                    border-bottom: 2px solid #007bff;
-                    padding-bottom: 8px;
-                    margin-bottom: 20px;
-                    font-size: 1.5rem;
+                color: #007bff;
+                border-bottom: 2px solid #007bff;
+                padding-bottom: 8px;
+                margin-bottom: 20px;
+                font-size: 1.5rem;
                 }
                 .info-row {
-                    margin-bottom: 15px;
+                margin-bottom: 15px;
                 }
                 .info-row strong {
-                    color: #495057;
-                    min-width: 150px;
-                    display: inline-block;
+                color: #495057;
+                min-width: 150px;
+                display: inline-block;
                 }
                 .table {
-                    margin-bottom: 25px;
-                    font-size: 0.95rem;
+                margin-bottom: 25px;
+                font-size: 0.95rem;
                 }
                 .table th {
-                    background-color: #007bff;
-                    color: #fff;
-                    padding: 12px;
-                    text-align: center;
+                background-color: #007bff;
+                color: #fff;
+                padding: 12px;
+                text-align: center;
                 }
                 .table td {
-                    vertical-align: middle;
-                    padding: 10px;
+                vertical-align: middle;
+                padding: 10px;
                 }
                 .dosage-cell {
-                    background-color: #f0f8ff;
+                background-color: #f0f8ff;
                 }
                 .instructions-cell {
-                    background-color: #f5f5f5;
+                background-color: #f5f5f5;
                 }
                 .back-button {
-                    background-color: #6c757d;
-                    color: white;
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 4px;
-                    transition: background-color 0.3s;
-                    text-decoration: none;
-                    display: inline-block;
-                    margin-bottom: 20px;
+                background-color: #6c757d;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                transition: background-color 0.3s;
+                text-decoration: none;
+                display: inline-block;
+                margin-bottom: 20px;
                 }
                 .back-button:hover {
-                    background-color: #5a6268;
-                    color: white;
-                    text-decoration: none;
+                background-color: #5a6268;
+                color: white;
+                text-decoration: none;
                 }
                 .notes-box {
-                    background-color: #f8f9fa;
-                    padding: 15px;
-                    border-radius: 5px;
-                    border-left: 4px solid #007bff;
-                    margin-top: 20px;
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 5px;
+                border-left: 4px solid #007bff;
+                margin-top: 20px;
                 }
                 @media print {
-                    .back-button {
-                        display: none;
-                    }
-                    .prescription-container {
-                        box-shadow: none;
-                        padding: 0;
-                    }
-                    body {
-                        font-size: 12pt;
-                    }
-                    .print-button {
-                        display: none;
-                    }
+                .back-button {
+                display: none;
+                }
+                .prescription-container {
+                box-shadow: none;
+                padding: 0;
+                }
+                body {
+                font-size: 12pt;
+                }
+                .print-button {
+                display: none;
+                }
                 }
             </style>
             <div class="container mt-5 prescription-container">
                 <button onclick="window.print()" class="btn btn-info float-right print-button">
-                    <i class="fa fa-print"></i> In đơn thuốc
+                    <i class="fa fa-print"></i>
+                    In đơn thuốc
                 </button>
                 <div class="btn-group float-right mr-2">
-                    <a t-att-href="'/pharmacy/prescription/%s/update' % prescription.id" class="btn btn-primary print-button">
-                        <i class="fa fa-edit"></i> Cập nhật
+                    <a t-att-href="'/pharmacy/prescription/%s/update' % prescription.id"
+                       class="btn btn-primary print-button">
+                        <i class="fa fa-edit"></i>
+                        Cập nhật
                     </a>
-                    <a t-att-href="'/pharmacy/prescription/%s/edit' % prescription.id" class="btn btn btn-success print-button">
-                        <i class="fa fa-edit"></i> Thêm thuốc
+                    <a t-att-href="'/pharmacy/prescription/%s/edit' % prescription.id"
+                       class="btn btn btn-success print-button">
+                        <i class="fa fa-edit"></i>
+                        Thêm thuốc
                     </a>
                     <a t-att-href="'/pharmacy/prescription/%s/delete' % prescription.id"
                        class="btn btn-danger print-button"
                        onclick="return confirm('Bạn có chắc chắn muốn xóa đơn thuốc này không?');">
-                        <i class="fa fa-trash"></i> Xóa
+                        <i class="fa fa-trash"></i>
+                        Xóa
                     </a>
                     <a href="/pharmacy/prescriptions" class="back-button">
-                        <i class="fa fa-arrow-left"></i> Quay lại danh sách
+                        <i class="fa fa-arrow-left"></i>
+                        Quay lại danh sách
                     </a>
                 </div>
 
                 <div class="clearfix"></div>
 
                 <div class="prescription-header">
-                    <h3>Đơn thuốc: <t t-esc="prescription.name"/></h3>
+                    <h3>Đơn thuốc:
+                        <t t-esc="prescription.name"/>
+                    </h3>
 
                     <div class="row">
                         <div class="col-md-6">
                             <div class="info-row">
-                                <strong>Bệnh nhân:</strong> <t t-esc="prescription.patient_id.name"/>
+                                <strong>Bệnh nhân:</strong>
+                                <t t-esc="prescription.patient_id.name"/>
                             </div>
                             <div class="info-row">
-                                <strong>Mã bệnh nhân:</strong> <t t-esc="prescription.patient_id.code"/>
+                                <strong>Mã bệnh nhân:</strong>
+                                <t t-esc="prescription.patient_id.code"/>
                             </div>
                             <div class="info-row">
-                                <strong>Tuổi:</strong> <t t-esc="prescription.patient_id.age"/>
+                                <strong>Tuổi:</strong>
+                                <t t-esc="prescription.patient_id.age"/>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="info-row">
-                                <strong>Bác sĩ:</strong> <t t-esc="prescription.staff_id.staff_name or 'N/A'"/>
+                                <strong>Bác sĩ:</strong>
+                                <t t-esc="prescription.staff_id.staff_name or 'N/A'"/>
                             </div>
                             <div class="info-row">
-                                <strong>Ngày kê đơn:</strong> <t t-esc="prescription.date.strftime('%d/%m/%Y %H:%M')"/>
+                                <strong>Ngày kê đơn:</strong>
+                                <t t-esc="prescription.date.strftime('%d/%m/%Y %H:%M')"/>
                             </div>
                             <div class="info-row">
-                                <strong>Số ngày uống:</strong> <t t-esc="prescription.numdate"/> ngày
+                                <strong>Số ngày uống:</strong>
+                                <t t-esc="prescription.numdate"/>
+                                ngày
                             </div>
                         </div>
                     </div>
@@ -408,18 +484,30 @@
                         <tbody>
                             <t t-foreach="prescription_lines" t-as="line">
                                 <tr>
-                                    <td class="text-center"><t t-esc="line_index + 1"/></td>
+                                    <td class="text-center">
+                                        <t t-esc="line_index + 1"/>
+                                    </td>
                                     <td>
-                                        <strong><t t-esc="line.product_id.name"/></strong><br/>
-                                        <small class="text-muted"><t t-esc="line.product_id.code"/></small>
+                                        <strong>
+                                            <t t-esc="line.product_id.name"/>
+                                        </strong>
+                                        <br/>
+                                        <small class="text-muted">
+                                            <t t-esc="line.product_id.code"/>
+                                        </small>
                                     </td>
                                     <td class="text-center">
                                         <span class="badge badge-pill badge-primary">
-                                            <t t-esc="line.quantity"/> <t t-esc="line.product_id.uom_id"/>
+                                            <t t-esc="line.quantity"/>
+                                            <t t-esc="line.product_id.uom_id"/>
                                         </span>
                                     </td>
-                                    <td class="dosage-cell"><t t-esc="line.dosage"/></td>
-                                    <td class="instructions-cell"><t t-esc="line.instructions or '-'"/></td>
+                                    <td class="dosage-cell">
+                                        <t t-esc="line.dosage"/>
+                                    </td>
+                                    <td class="instructions-cell">
+                                        <t t-esc="line.instructions or '-'"/>
+                                    </td>
                                 </tr>
                             </t>
                         </tbody>
@@ -427,8 +515,13 @@
 
                     <t t-if="prescription.notes">
                         <div class="notes-box">
-                            <h5><i class="fa fa-sticky-note"></i> Ghi chú:</h5>
-                            <p><t t-esc="prescription.notes"/></p>
+                            <h5>
+                                <i class="fa fa-sticky-note"></i>
+                                Ghi chú:
+                            </h5>
+                            <p>
+                                <t t-esc="prescription.notes"/>
+                            </p>
                         </div>
                     </t>
                 </div>

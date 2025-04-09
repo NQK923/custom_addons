@@ -12,12 +12,12 @@
 
                 /* Card styles */
                 .appointment-card {
-                    transition: all 0.3s ease;
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
                 }
                 .appointment-card:hover {
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                    transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                transform: translateY(-2px);
                 }
 
                 /* Calendar styles */
@@ -28,20 +28,20 @@
 
                 /* Tab buttons */
                 .view-toggle .btn {
-                    width: 120px;
+                width: 120px;
                 }
 
                 /* Form elements */
                 .form-container {
-                    background-color: #f8f9fa;
-                    border-radius: 10px;
-                    padding: 20px;
-                    margin-bottom: 20px;
+                background-color: #f8f9fa;
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 20px;
                 }
 
                 /* Action buttons */
                 .btn-action {
-                    min-width: 120px;
+                min-width: 120px;
                 }
             </style>
             <div class="container mt-4 mb-5">

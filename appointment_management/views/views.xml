@@ -7,17 +7,17 @@
         <field name="arch" type="xml">
             <form string="Lịch hẹn khám">
                 <header>
-                    <button name="action_confirm" string="Xác nhận" type="object" 
-                            class="oe_highlight" 
+                    <button name="action_confirm" string="Xác nhận" type="object"
+                            class="oe_highlight"
                             invisible="state != 'draft'"/>
-                    <button name="action_done" string="Hoàn thành" type="object" 
+                    <button name="action_done" string="Hoàn thành" type="object"
                             class="oe_highlight"
                             invisible="state != 'confirmed'"/>
-                    <button name="action_cancel" string="Hủy" type="object" 
+                    <button name="action_cancel" string="Hủy" type="object"
                             invisible="state not in ('draft', 'confirmed')"/>
-                    <button name="action_draft" string="Đặt về nháp" type="object" 
+                    <button name="action_draft" string="Đặt về nháp" type="object"
                             invisible="state != 'cancelled'"/>
-                    <field name="state" widget="statusbar" 
+                    <field name="state" widget="statusbar"
                            statusbar_visible="draft,confirmed,done"/>
                 </header>
                 <sheet>
@@ -30,7 +30,8 @@
                         <group>
                             <field name="patient_id" options="{'no_create': True}"/>
                             <field name="patient_name"/>
-                            <field name="staff_id" options="{'no_create': True}" domain="[('staff_type', '=', 'Bác sĩ')]"/>
+                            <field name="staff_id" options="{'no_create': True}"
+                                   domain="[('staff_type', '=', 'Bác sĩ')]"/>
                             <field name="appointment_date" help="Chỉ có thể đặt lịch từ 8:00 sáng đến 21:00 tối"/>
                             <field name="room_id" options="{'no_create': True}" domain="[('room_type', '=', 'exam')]"/>
                         </group>
@@ -71,8 +72,8 @@
         <field name="model">clinic.appointment</field>
         <field name="arch" type="xml">
             <calendar string="Lịch hẹn"
-                     date_start="appointment_date"
-                     color="staff_id">
+                      date_start="appointment_date"
+                      color="staff_id">
                 <field name="patient_id"/>
                 <field name="staff_id"/>
                 <field name="room_id"/>

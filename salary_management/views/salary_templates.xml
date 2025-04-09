@@ -4,105 +4,105 @@
     <template id="salary_management_styles" name="Salary Management Styles">
         <style>
             .salary-management-container {
-                background-color: #f8f9fa;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                max-width: 1200px;
-                margin: 0 auto;
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 0 auto;
             }
             .card {
-                margin-bottom: 25px;
-                border-radius: 8px;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             }
             .card-header {
-                background-color: #007bff;
-                color: white;
-                border-radius: 8px 8px 0 0 !important;
-                padding: 15px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px 8px 0 0 !important;
+            padding: 15px 20px;
             }
             .card-body {
-                padding: 20px;
+            padding: 20px;
             }
             .table {
-                margin-bottom: 0;
+            margin-bottom: 0;
             }
             .table thead th {
-                background-color: #f1f8ff;
-                border-bottom: 2px solid #007bff;
-                color: #495057;
+            background-color: #f1f8ff;
+            border-bottom: 2px solid #007bff;
+            color: #495057;
             }
             .table td, .table th {
-                vertical-align: middle;
-                padding: 12px 15px;
+            vertical-align: middle;
+            padding: 12px 15px;
             }
             .btn-primary {
-                background-color: #007bff;
-                border-color: #007bff;
+            background-color: #007bff;
+            border-color: #007bff;
             }
             .btn-success {
-                background-color: #28a745;
-                border-color: #28a745;
+            background-color: #28a745;
+            border-color: #28a745;
             }
             .btn-warning {
-                background-color: #ffc107;
-                border-color: #ffc107;
-                color: #212529;
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #212529;
             }
             .btn-danger {
-                background-color: #dc3545;
-                border-color: #dc3545;
+            background-color: #dc3545;
+            border-color: #dc3545;
             }
             .action-buttons .btn {
-                margin-right: 5px;
-                margin-bottom: 5px;
+            margin-right: 5px;
+            margin-bottom: 5px;
             }
             .status-badge {
-                padding: 5px 10px;
-                border-radius: 20px;
-                font-size: 0.85rem;
-                display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: inline-block;
             }
             .status-draft {
-                background-color: #ffc107;
-                color: #212529;
+            background-color: #ffc107;
+            color: #212529;
             }
             .status-confirmed {
-                background-color: #17a2b8;
-                color: white;
+            background-color: #17a2b8;
+            color: white;
             }
             .status-paid {
-                background-color: #28a745;
-                color: white;
+            background-color: #28a745;
+            color: white;
             }
             .page-title {
-                color: #007bff;
-                margin-bottom: 30px;
-                text-align: center;
-                font-size: 2rem;
+            color: #007bff;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2rem;
             }
             .form-group {
-                margin-bottom: 20px;
+            margin-bottom: 20px;
             }
             .form-group label {
-                font-weight: 600;
-                color: #495057;
+            font-weight: 600;
+            color: #495057;
             }
             .form-control {
-                border-radius: 5px;
-                border: 1px solid #ced4da;
-                padding: 10px 15px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            padding: 10px 15px;
             }
             .currency-vnd:after {
-                content: " VNĐ";
+            content: " VNĐ";
             }
             .back-link {
-                margin-bottom: 25px;
-                display: inline-block;
+            margin-bottom: 25px;
+            display: inline-block;
             }
             .back-link i {
-                margin-right: 5px;
+            margin-right: 5px;
             }
         </style>
     </template>
@@ -185,7 +185,8 @@
             <t t-call="salary_management.salary_management_styles"/>
             <div class="container mt-5 salary-management-container">
                 <a href="/salary/dashboard" class="back-link">
-                    <i class="fa fa-arrow-left"></i> Quay lại dashboard
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại dashboard
                 </a>
                 <h1 class="page-title">Quản lý phụ cấp</h1>
 
@@ -193,7 +194,8 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h3 class="card-title mb-0">Danh sách phụ cấp</h3>
                         <a href="/salary/allowance/new" class="btn btn-success">
-                            <i class="fa fa-plus"></i> Thêm mới
+                            <i class="fa fa-plus"></i>
+                            Thêm mới
                         </a>
                     </div>
                     <div class="card-body">
@@ -211,12 +213,22 @@
                                     <t t-if="allowances">
                                         <t t-foreach="allowances" t-as="allowance">
                                             <tr>
-                                                <td><t t-esc="allowance.allowance_name"/></td>
-                                                <td><span class="currency-vnd"><t t-esc="'{:,.0f}'.format(allowance.amount)"/></span></td>
-                                                <td><t t-esc="allowance.note"/></td>
+                                                <td>
+                                                    <t t-esc="allowance.allowance_name"/>
+                                                </td>
+                                                <td>
+                                                    <span class="currency-vnd">
+                                                        <t t-esc="'{:,.0f}'.format(allowance.amount)"/>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="allowance.note"/>
+                                                </td>
                                                 <td class="action-buttons">
-                                                    <a t-att-href="'/salary/allowance/%s/edit' % allowance.id" class="btn btn-sm btn-primary">
-                                                        <i class="fa fa-edit"></i> Sửa
+                                                    <a t-att-href="'/salary/allowance/%s/edit' % allowance.id"
+                                                       class="btn btn-sm btn-primary">
+                                                        <i class="fa fa-edit"></i>
+                                                        Sửa
                                                     </a>
                                                 </td>
                                             </tr>
@@ -241,7 +253,8 @@
             <t t-call="salary_management.salary_management_styles"/>
             <div class="container mt-5 salary-management-container">
                 <a href="/salary/allowances" class="back-link">
-                    <i class="fa fa-arrow-left"></i> Quay lại danh sách
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại danh sách
                 </a>
                 <h1 class="page-title">
                     <t t-if="allowance">Chỉnh sửa phụ cấp</t>
@@ -258,19 +271,23 @@
 
                             <div class="form-group">
                                 <label for="allowance_name">Tên phụ cấp</label>
-                                <input type="text" class="form-control" id="allowance_name" name="allowance_name" required="required"
+                                <input type="text" class="form-control" id="allowance_name" name="allowance_name"
+                                       required="required"
                                        t-att-value="allowance.allowance_name if allowance else ''"/>
                             </div>
 
                             <div class="form-group">
                                 <label for="amount">Số tiền (VNĐ)</label>
-                                <input type="number" class="form-control" id="amount" name="amount" required="required" min="0"
+                                <input type="number" class="form-control" id="amount" name="amount" required="required"
+                                       min="0"
                                        t-att-value="allowance.amount if allowance else 0"/>
                             </div>
 
                             <div class="form-group">
                                 <label for="note">Ghi chú</label>
-                                <textarea class="form-control" id="note" name="note" rows="3"><t t-if="allowance" t-esc="allowance.note"/></textarea>
+                                <textarea class="form-control" id="note" name="note" rows="3">
+                                    <t t-if="allowance" t-esc="allowance.note"/>
+                                </textarea>
                             </div>
 
                             <div class="form-group">
@@ -293,7 +310,8 @@
             <t t-call="salary_management.salary_management_styles"/>
             <div class="container mt-5 salary-management-container">
                 <a href="/salary/dashboard" class="back-link">
-                    <i class="fa fa-arrow-left"></i> Quay lại dashboard
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại dashboard
                 </a>
                 <h1 class="page-title">Quản lý thưởng</h1>
 
@@ -301,7 +319,8 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h3 class="card-title mb-0">Danh sách thưởng</h3>
                         <a href="/salary/bonus/new" class="btn btn-success">
-                            <i class="fa fa-plus"></i> Thêm mới
+                            <i class="fa fa-plus"></i>
+                            Thêm mới
                         </a>
                     </div>
                     <div class="card-body">
@@ -319,12 +338,22 @@
                                     <t t-if="bonuses">
                                         <t t-foreach="bonuses" t-as="bonus">
                                             <tr>
-                                                <td><t t-esc="bonus.bonus_name"/></td>
-                                                <td><span class="currency-vnd"><t t-esc="'{:,.0f}'.format(bonus.amount)"/></span></td>
-                                                <td><t t-esc="bonus.reason"/></td>
+                                                <td>
+                                                    <t t-esc="bonus.bonus_name"/>
+                                                </td>
+                                                <td>
+                                                    <span class="currency-vnd">
+                                                        <t t-esc="'{:,.0f}'.format(bonus.amount)"/>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="bonus.reason"/>
+                                                </td>
                                                 <td class="action-buttons">
-                                                    <a t-att-href="'/salary/bonus/%s/edit' % bonus.id" class="btn btn-sm btn-primary">
-                                                        <i class="fa fa-edit"></i> Sửa
+                                                    <a t-att-href="'/salary/bonus/%s/edit' % bonus.id"
+                                                       class="btn btn-sm btn-primary">
+                                                        <i class="fa fa-edit"></i>
+                                                        Sửa
                                                     </a>
                                                 </td>
                                             </tr>
@@ -349,7 +378,8 @@
             <t t-call="salary_management.salary_management_styles"/>
             <div class="container mt-5 salary-management-container">
                 <a href="/salary/bonuses" class="back-link">
-                    <i class="fa fa-arrow-left"></i> Quay lại danh sách
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại danh sách
                 </a>
                 <h1 class="page-title">
                     <t t-if="bonus">Chỉnh sửa thưởng</t>
@@ -366,19 +396,23 @@
 
                             <div class="form-group">
                                 <label for="bonus_name">Tên thưởng</label>
-                                <input type="text" class="form-control" id="bonus_name" name="bonus_name" required="required"
+                                <input type="text" class="form-control" id="bonus_name" name="bonus_name"
+                                       required="required"
                                        t-att-value="bonus.bonus_name if bonus else ''"/>
                             </div>
 
                             <div class="form-group">
                                 <label for="amount">Số tiền (VNĐ)</label>
-                                <input type="number" class="form-control" id="amount" name="amount" required="required" min="0"
+                                <input type="number" class="form-control" id="amount" name="amount" required="required"
+                                       min="0"
                                        t-att-value="bonus.amount if bonus else 0"/>
                             </div>
 
                             <div class="form-group">
                                 <label for="reason">Lý do</label>
-                                <textarea class="form-control" id="reason" name="reason" rows="3"><t t-if="bonus" t-esc="bonus.reason"/></textarea>
+                                <textarea class="form-control" id="reason" name="reason" rows="3">
+                                    <t t-if="bonus" t-esc="bonus.reason"/>
+                                </textarea>
                             </div>
 
                             <div class="form-group">
@@ -401,7 +435,8 @@
             <t t-call="salary_management.salary_management_styles"/>
             <div class="container mt-5 salary-management-container">
                 <a href="/salary/dashboard" class="back-link">
-                    <i class="fa fa-arrow-left"></i> Quay lại dashboard
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại dashboard
                 </a>
                 <h1 class="page-title">Quản lý khấu trừ</h1>
 
@@ -409,7 +444,8 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h3 class="card-title mb-0">Danh sách khấu trừ</h3>
                         <a href="/salary/deduction/new" class="btn btn-success">
-                            <i class="fa fa-plus"></i> Thêm mới
+                            <i class="fa fa-plus"></i>
+                            Thêm mới
                         </a>
                     </div>
                     <div class="card-body">
@@ -428,16 +464,23 @@
                                     <t t-if="deductions">
                                         <t t-foreach="deductions" t-as="deduction">
                                             <tr>
-                                                <td><t t-esc="deduction.deduction_name"/></td>
-                                                <td><t t-esc="deduction.rate"/>%</td>
+                                                <td>
+                                                    <t t-esc="deduction.deduction_name"/>
+                                                </td>
+                                                <td><t t-esc="deduction.rate"/>%
+                                                </td>
                                                 <td>
                                                     <t t-if="deduction.salary_type == 'base_salary'">Lương cơ bản</t>
                                                     <t t-else="">Tổng lương</t>
                                                 </td>
-                                                <td><t t-esc="deduction.reason"/></td>
+                                                <td>
+                                                    <t t-esc="deduction.reason"/>
+                                                </td>
                                                 <td class="action-buttons">
-                                                    <a t-att-href="'/salary/deduction/%s/edit' % deduction.id" class="btn btn-sm btn-primary">
-                                                        <i class="fa fa-edit"></i> Sửa
+                                                    <a t-att-href="'/salary/deduction/%s/edit' % deduction.id"
+                                                       class="btn btn-sm btn-primary">
+                                                        <i class="fa fa-edit"></i>
+                                                        Sửa
                                                     </a>
                                                 </td>
                                             </tr>
@@ -462,7 +505,8 @@
             <t t-call="salary_management.salary_management_styles"/>
             <div class="container mt-5 salary-management-container">
                 <a href="/salary/deductions" class="back-link">
-                    <i class="fa fa-arrow-left"></i> Quay lại danh sách
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại danh sách
                 </a>
                 <h1 class="page-title">
                     <t t-if="deduction">Chỉnh sửa khấu trừ</t>
@@ -479,23 +523,27 @@
 
                             <div class="form-group">
                                 <label for="deduction_name">Tên khấu trừ</label>
-                                <input type="text" class="form-control" id="deduction_name" name="deduction_name" required="required"
+                                <input type="text" class="form-control" id="deduction_name" name="deduction_name"
+                                       required="required"
                                        t-att-value="deduction.deduction_name if deduction else ''"/>
                             </div>
 
                             <div class="form-group">
                                 <label for="rate">Tỷ lệ (%)</label>
-                                <input type="number" class="form-control" id="rate" name="rate" required="required" min="0" max="100" step="0.1"
+                                <input type="number" class="form-control" id="rate" name="rate" required="required"
+                                       min="0" max="100" step="0.1"
                                        t-att-value="deduction.rate if deduction else 0"/>
                             </div>
 
                             <div class="form-group">
                                 <label for="salary_type">Loại lương áp dụng</label>
                                 <select class="form-control" id="salary_type" name="salary_type" required="required">
-                                    <option value="base_salary" t-att-selected="deduction and deduction.salary_type == 'base_salary'">
+                                    <option value="base_salary"
+                                            t-att-selected="deduction and deduction.salary_type == 'base_salary'">
                                         Lương cơ bản
                                     </option>
-                                    <option value="total_salary" t-att-selected="deduction and deduction.salary_type == 'total_salary'">
+                                    <option value="total_salary"
+                                            t-att-selected="deduction and deduction.salary_type == 'total_salary'">
                                         Tổng lương
                                     </option>
                                 </select>
@@ -503,7 +551,9 @@
 
                             <div class="form-group">
                                 <label for="reason">Lý do</label>
-                                <textarea class="form-control" id="reason" name="reason" rows="3"><t t-if="deduction" t-esc="deduction.reason"/></textarea>
+                                <textarea class="form-control" id="reason" name="reason" rows="3">
+                                    <t t-if="deduction" t-esc="deduction.reason"/>
+                                </textarea>
                             </div>
 
                             <div class="form-group">
@@ -526,7 +576,8 @@
             <t t-call="salary_management.salary_management_styles"/>
             <div class="container mt-5 salary-management-container">
                 <a href="/salary/dashboard" class="back-link">
-                    <i class="fa fa-arrow-left"></i> Quay lại dashboard
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại dashboard
                 </a>
                 <h1 class="page-title">Quản lý hệ số lương</h1>
 
@@ -534,7 +585,8 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h3 class="card-title mb-0">Danh sách hệ số lương</h3>
                         <a href="/salary/qualification_level/new" class="btn btn-success">
-                            <i class="fa fa-plus"></i> Thêm mới
+                            <i class="fa fa-plus"></i>
+                            Thêm mới
                         </a>
                     </div>
                     <div class="card-body">
@@ -552,12 +604,20 @@
                                     <t t-if="levels">
                                         <t t-foreach="levels" t-as="level">
                                             <tr>
-                                                <td><t t-esc="level.staff_type_id.name"/></td>
-                                                <td><t t-esc="level.rank"/></td>
-                                                <td><t t-esc="level.salary_factor"/></td>
+                                                <td>
+                                                    <t t-esc="level.staff_type_id.name"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="level.rank"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="level.salary_factor"/>
+                                                </td>
                                                 <td class="action-buttons">
-                                                    <a t-att-href="'/salary/qualification_level/%s/edit' % level.id" class="btn btn-sm btn-primary">
-                                                        <i class="fa fa-edit"></i> Sửa
+                                                    <a t-att-href="'/salary/qualification_level/%s/edit' % level.id"
+                                                       class="btn btn-sm btn-primary">
+                                                        <i class="fa fa-edit"></i>
+                                                        Sửa
                                                     </a>
                                                 </td>
                                             </tr>
@@ -582,7 +642,8 @@
             <t t-call="salary_management.salary_management_styles"/>
             <div class="container mt-5 salary-management-container">
                 <a href="/salary/qualification_levels" class="back-link">
-                    <i class="fa fa-arrow-left"></i> Quay lại danh sách
+                    <i class="fa fa-arrow-left"></i>
+                    Quay lại danh sách
                 </a>
                 <h1 class="page-title">
                     <t t-if="level">Chỉnh sửa hệ số lương</t>
@@ -599,9 +660,11 @@
 
                             <div class="form-group">
                                 <label for="staff_type_id">Chức vụ</label>
-                                <select class="form-control" id="staff_type_id" name="staff_type_id" required="required">
+                                <select class="form-control" id="staff_type_id" name="staff_type_id"
+                                        required="required">
                                     <t t-foreach="staff_types" t-as="staff_type">
-                                        <option t-att-value="staff_type.id" t-att-selected="level and level.staff_type_id.id == staff_type.id">
+                                        <option t-att-value="staff_type.id"
+                                                t-att-selected="level and level.staff_type_id.id == staff_type.id">
                                             <t t-esc="staff_type.name"/>
                                         </option>
                                     </t>
@@ -621,7 +684,8 @@
 
                             <div class="form-group">
                                 <label for="salary_factor">Hệ số lương</label>
-                                <input type="number" class="form-control" id="salary_factor" name="salary_factor" required="required" min="0" step="0.01"
+                                <input type="number" class="form-control" id="salary_factor" name="salary_factor"
+                                       required="required" min="0" step="0.01"
                                        t-att-value="level.salary_factor if level else 1.0"/>
                             </div>
 
@@ -646,7 +710,9 @@
             <div class="container mt-5 salary-management-container">
                 <div class="alert alert-danger" role="alert">
                     <h4 class="alert-heading">Lỗi!</h4>
-                    <p><t t-esc="error"/></p>
+                    <p>
+                        <t t-esc="error"/>
+                    </p>
                     <hr/>
                     <p class="mb-0">
                         <a t-att-href="back_url" class="btn btn-primary">Quay lại</a>

@@ -8,6 +8,7 @@ import uuid
 
 _logger = logging.getLogger(__name__)
 
+
 # Model ClinicInsurancePolicy (Updated to match insurance_management module)
 class ClinicInsurancePolicy(models.Model):
     _name = 'clinic.insurance.policy'
@@ -36,6 +37,7 @@ class ClinicInsurancePolicy(models.Model):
                 record.state = 'valid' if record.expiry_date >= today else 'expired'
             else:
                 record.state = 'valid'
+
 
 # Model ClinicPatient
 class ClinicPatient(models.Model):
@@ -100,7 +102,7 @@ class ClinicPatient(models.Model):
             today = date.today()
             if record.date_of_birth:
                 record.age = today.year - record.date_of_birth.year - (
-                    (today.month, today.day) < (record.date_of_birth.month, record.date_of_birth.day))
+                        (today.month, today.day) < (record.date_of_birth.month, record.date_of_birth.day))
             else:
                 record.age = 0
 
@@ -110,6 +112,7 @@ class ClinicPatient(models.Model):
             if vals.get('code', 'New') == 'New':
                 vals['code'] = str(uuid.uuid4())[:8]
         return super().create(vals_list)
+
 
 # Model TreatmentPlan
 class TreatmentPlan(models.Model):
@@ -127,6 +130,7 @@ class TreatmentPlan(models.Model):
         if vals.get('code', 'New') == 'New':
             vals['code'] = self.env['ir.sequence'].next_by_code('treatment.plan') or 'TP001'
         return super().create(vals)
+
 
 # Model TreatmentProcess
 class TreatmentProcess(models.Model):
@@ -157,6 +161,7 @@ class TreatmentProcess(models.Model):
             raise ValidationError("Người thực hiện không được để trống.")
         return super().write(vals)
 
+
 # Model MedicalTest
 class MedicalTest(models.Model):
     _name = 'medical.test'
@@ -165,7 +170,8 @@ class MedicalTest(models.Model):
     test_code = fields.Char(string='Mã xét nghiệm và chuẩn đoán', required=True, copy=False, default="New")
     patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True)
     test_type = fields.Selection(
-        [('test', 'Chuẩn đoán'), ('blood', 'Máu'), ('urine', 'Nước tiểu'), ('xray', 'X-Quang'), ('ecg', 'ECG'), ('other', 'Khác')],
+        [('test', 'Chuẩn đoán'), ('blood', 'Máu'), ('urine', 'Nước tiểu'), ('xray', 'X-Quang'), ('ecg', 'ECG'),
+         ('other', 'Khác')],
         string='Loại xét nghiệm hoặc chuẩn đoán', required=True
     )
     test_date = fields.Datetime(string='Ngày thực hiện', required=True, default=fields.Datetime.now)
@@ -182,6 +188,7 @@ class MedicalTest(models.Model):
             vals['test_code'] = self.env['ir.sequence'].next_by_code('medical.test') or 'MT001'
         return super().create(vals)
 
+
 # Model MedicalImages
 class MedicalImages(models.Model):
     _name = 'medical.images'
@@ -190,7 +197,8 @@ class MedicalImages(models.Model):
     test_code = fields.Char(string='Mã hình ảnh xét nghiệm', required=True, copy=False, default="New")
     MedicalTest_id = fields.Many2one('medical.test', string='Mã xét nghiệm', required=True, ondelete='cascade')
     test_type_img = fields.Selection(
-        [('test', 'Chuẩn đoán'), ('blood', 'Máu'), ('urine', 'Nước tiểu'), ('xray', 'X-Quang'), ('ecg', 'ECG'), ('other', 'Khác')],
+        [('test', 'Chuẩn đoán'), ('blood', 'Máu'), ('urine', 'Nước tiểu'), ('xray', 'X-Quang'), ('ecg', 'ECG'),
+         ('other', 'Khác')],
         string='Loại xét nghiệm hoặc chuẩn đoán', required=True
     )
     img_date = fields.Datetime(string='Ngày thực hiện', required=True, default=fields.Datetime.now)
@@ -203,6 +211,7 @@ class MedicalImages(models.Model):
             vals['test_code'] = self.env['ir.sequence'].next_by_code('medical.images') or 'MI001'
         return super().create(vals)
 
+
 # Model PatientMedicalHistory
 class PatientMedicalHistory(models.Model):
     _name = 'patient.medical.history'
@@ -211,9 +220,11 @@ class PatientMedicalHistory(models.Model):
     patient_id = fields.Many2one('clinic.patient', string='Mã bệnh nhân', required=True, ondelete='cascade')
     history_date = fields.Datetime(string='Ngày ghi nhận', default=fields.Datetime.now)
     medical_tests = fields.One2many('medical.test', 'patient_id', string='Xét nghiệm', readonly=True)
-    medical_images = fields.One2many('medical.images', 'MedicalTest_id', string='Hình ảnh y tế', compute='_compute_medical_images', readonly=True)
+    medical_images = fields.One2many('medical.images', 'MedicalTest_id', string='Hình ảnh y tế',
+                                     compute='_compute_medical_images', readonly=True)
     treatment_plans = fields.One2many('treatment.plan', 'patient_id', string='Kế hoạch điều trị', readonly=True)
-    treatment_processes = fields.One2many('treatment.process', compute='_compute_treatment_processes', string='Quá trình điều trị', readonly=True)
+    treatment_processes = fields.One2many('treatment.process', compute='_compute_treatment_processes',
+                                          string='Quá trình điều trị', readonly=True)
 
     @api.depends('medical_tests')
     def _compute_medical_images(self):

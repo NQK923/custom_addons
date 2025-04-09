@@ -25,23 +25,28 @@
 
                         <div class="row mt32 mb32">
                             <div class="col-6">
-                                <strong>Từ ngày:</strong> <span t-field="doc.date_from"/>
+                                <strong>Từ ngày:</strong>
+                                <span t-field="doc.date_from"/>
                             </div>
                             <div class="col-6">
-                                <strong>Đến ngày:</strong> <span t-field="doc.date_to"/>
+                                <strong>Đến ngày:</strong>
+                                <span t-field="doc.date_to"/>
                             </div>
                         </div>
 
                         <h3>Tổng quan</h3>
                         <div class="row">
                             <div class="col-4">
-                                <strong>Tổng số hóa đơn:</strong> <span t-field="doc.total_invoices"/>
+                                <strong>Tổng số hóa đơn:</strong>
+                                <span t-field="doc.total_invoices"/>
                             </div>
                             <div class="col-4">
-                                <strong>Đã thanh toán:</strong> <span t-field="doc.paid_invoices"/>
+                                <strong>Đã thanh toán:</strong>
+                                <span t-field="doc.paid_invoices"/>
                             </div>
                             <div class="col-4">
-                                <strong>Đã hủy:</strong> <span t-field="doc.cancelled_invoices"/>
+                                <strong>Đã hủy:</strong>
+                                <span t-field="doc.cancelled_invoices"/>
                             </div>
                         </div>
 
@@ -93,7 +98,9 @@
                                 <strong>Dịch vụ được sử dụng nhiều nhất:</strong>
                                 <p t-if="doc.most_used_service_id">
                                     <span t-field="doc.most_used_service_id.service_name"/>
-                                    (<span t-field="doc.most_used_service_count"/> lượt)
+                                    (
+                                    <span t-field="doc.most_used_service_count"/>
+                                    lượt)
                                 </p>
                                 <p t-else="">Không có dữ liệu</p>
                             </div>
@@ -101,7 +108,9 @@
                                 <strong>Thuốc bán chạy nhất:</strong>
                                 <p t-if="doc.most_sold_product_id">
                                     <span t-field="doc.most_sold_product_id.name"/>
-                                    (<span t-field="doc.most_sold_product_count"/> lượt)
+                                    (
+                                    <span t-field="doc.most_sold_product_count"/>
+                                    lượt)
                                 </p>
                                 <p t-else="">Không có dữ liệu</p>
                             </div>
@@ -120,20 +129,48 @@
                             </thead>
                             <tbody>
                                 <tr t-foreach="doc.daily_stats_ids" t-as="day">
-                                    <td><span t-field="day.date"/></td>
-                                    <td class="text-right"><span t-field="day.invoice_count"/></td>
-                                    <td class="text-right"><span t-esc="'{:,.0f}'.format(day.total_revenue)"/></td>
-                                    <td class="text-right"><span t-esc="'{:,.0f}'.format(day.service_revenue)"/></td>
-                                    <td class="text-right"><span t-esc="'{:,.0f}'.format(day.medicine_revenue)"/></td>
+                                    <td>
+                                        <span t-field="day.date"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-field="day.invoice_count"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="'{:,.0f}'.format(day.total_revenue)"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="'{:,.0f}'.format(day.service_revenue)"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="'{:,.0f}'.format(day.medicine_revenue)"/>
+                                    </td>
                                 </tr>
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td><strong>Tổng</strong></td>
-                                    <td class="text-right"><strong><t t-esc="sum(doc.daily_stats_ids.mapped('invoice_count'))"/></strong></td>
-                                    <td class="text-right"><strong><t t-esc="'{:,.0f}'.format(sum(doc.daily_stats_ids.mapped('total_revenue')))"/></strong></td>
-                                    <td class="text-right"><strong><t t-esc="'{:,.0f}'.format(sum(doc.daily_stats_ids.mapped('service_revenue')))"/></strong></td>
-                                    <td class="text-right"><strong><t t-esc="'{:,.0f}'.format(sum(doc.daily_stats_ids.mapped('medicine_revenue')))"/></strong></td>
+                                    <td>
+                                        <strong>Tổng</strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong>
+                                            <t t-esc="sum(doc.daily_stats_ids.mapped('invoice_count'))"/>
+                                        </strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong>
+                                            <t t-esc="'{:,.0f}'.format(sum(doc.daily_stats_ids.mapped('total_revenue')))"/>
+                                        </strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong>
+                                            <t t-esc="'{:,.0f}'.format(sum(doc.daily_stats_ids.mapped('service_revenue')))"/>
+                                        </strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong>
+                                            <t t-esc="'{:,.0f}'.format(sum(doc.daily_stats_ids.mapped('medicine_revenue')))"/>
+                                        </strong>
+                                    </td>
                                 </tr>
                             </tfoot>
                         </table>

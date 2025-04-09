@@ -8,7 +8,8 @@
     'category': 'Healthcare',
     'author': 'Your Company',
     'website': 'https://www.yourcompany.com',
-    'depends': ['base', 'web', 'website', 'patient_management', 'room_management', 'staff_management', 'appointment_management', 'patient_medical_history', 'mail'],
+    'depends': ['base', 'web', 'website', 'patient_management', 'room_management', 'staff_management',
+                'appointment_management', 'patient_medical_history', 'mail'],
     'data': [
         'security/ir.model.access.csv',
         'views/appointment_booking_views.xml',

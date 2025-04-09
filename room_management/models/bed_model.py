@@ -49,7 +49,6 @@ class ClinicBed(models.Model):
                 if patient_record:
                     raise ValidationError("Bệnh nhân đã có giường")
 
-
     # Nút xuất viện
     def action_out(self):
         self.ensure_one()

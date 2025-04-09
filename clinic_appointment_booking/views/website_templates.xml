@@ -31,54 +31,82 @@
                                     <!-- Progress Stepper -->
                                     <div class="d-flex justify-content-between mb-4">
                                         <div class="text-center">
-                                            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">1</div>
-                                            <div class="mt-1"><small>Thông tin</small></div>
+                                            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center"
+                                                 style="width: 30px; height: 30px;">1
+                                            </div>
+                                            <div class="mt-1">
+                                                <small>Thông tin</small>
+                                            </div>
                                         </div>
                                         <div class="progress mt-3" style="height: 2px; width: 25%;">
                                             <div class="progress-bar bg-primary" style="width: 100%;"></div>
                                         </div>
                                         <div class="text-center">
-                                            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">2</div>
-                                            <div class="mt-1"><small>Lịch hẹn</small></div>
+                                            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center"
+                                                 style="width: 30px; height: 30px;">2
+                                            </div>
+                                            <div class="mt-1">
+                                                <small>Lịch hẹn</small>
+                                            </div>
                                         </div>
                                         <div class="progress mt-3" style="height: 2px; width: 25%;">
                                             <div class="progress-bar bg-primary" style="width: 100%;"></div>
                                         </div>
                                         <div class="text-center">
-                                            <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">3</div>
-                                            <div class="mt-1"><small>Hoàn tất</small></div>
+                                            <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center"
+                                                 style="width: 30px; height: 30px;">3
+                                            </div>
+                                            <div class="mt-1">
+                                                <small>Hoàn tất</small>
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="row">
                                         <!-- Patient Information -->
                                         <div class="col-md-6">
-                                            <h5 class="mb-3 border-bottom pb-2"><i class="fa fa-user-circle mr-2"></i>Thông tin cá nhân</h5>
+                                            <h5 class="mb-3 border-bottom pb-2"><i class="fa fa-user-circle mr-2"></i>
+                                                Thông tin cá nhân
+                                            </h5>
                                             <div class="form-group mb-3">
-                                                <label for="patient_name" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                                <label for="patient_name" class="form-label">Họ và tên
+                                                    <span class="text-danger">*</span>
+                                                </label>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
-                                                        <span class="input-group-text"><i class="fa fa-user"></i></span>
+                                                        <span class="input-group-text">
+                                                            <i class="fa fa-user"></i>
+                                                        </span>
                                                     </div>
-                                                    <input type="text" name="patient_name" id="patient_name" class="form-control" required="1" placeholder="Nguyễn Văn A"/>
+                                                    <input type="text" name="patient_name" id="patient_name"
+                                                           class="form-control" required="1"
+                                                           placeholder="Nguyễn Văn A"/>
                                                 </div>
                                             </div>
                                             <div class="form-group mb-3">
-                                                <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                                <label for="phone" class="form-label">Số điện thoại
+                                                    <span class="text-danger">*</span>
+                                                </label>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
-                                                        <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                                                        <span class="input-group-text">
+                                                            <i class="fa fa-phone"></i>
+                                                        </span>
                                                     </div>
-                                                    <input type="tel" name="phone" id="phone" class="form-control" required="1" placeholder="0912345678"/>
+                                                    <input type="tel" name="phone" id="phone" class="form-control"
+                                                           required="1" placeholder="0912345678"/>
                                                 </div>
                                             </div>
                                             <div class="form-group mb-3">
                                                 <label for="email" class="form-label">Email</label>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
-                                                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                                                        <span class="input-group-text">
+                                                            <i class="fa fa-envelope"></i>
+                                                        </span>
                                                     </div>
-                                                    <input type="email" name="email" id="email" class="form-control" placeholder="example@email.com"/>
+                                                    <input type="email" name="email" id="email" class="form-control"
+                                                           placeholder="example@email.com"/>
                                                 </div>
                                                 <small class="text-muted">Nhận thông báo xác nhận qua email</small>
                                             </div>
@@ -86,37 +114,58 @@
 
                                         <!-- Appointment Details -->
                                         <div class="col-md-6">
-                                            <h5 class="mb-3 border-bottom pb-2"><i class="fa fa-calendar mr-2"></i>Thông tin lịch hẹn</h5>
+                                            <h5 class="mb-3 border-bottom pb-2"><i class="fa fa-calendar mr-2"></i>Thông
+                                                tin lịch hẹn
+                                            </h5>
                                             <div class="form-group mb-3">
-                                                <label for="appointment_date" class="form-label">Ngày hẹn <span class="text-danger">*</span></label>
+                                                <label for="appointment_date" class="form-label">Ngày hẹn
+                                                    <span class="text-danger">*</span>
+                                                </label>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
-                                                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                                        <span class="input-group-text">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </span>
                                                     </div>
-                                                    <input type="date" name="appointment_date" id="appointment_date" class="form-control" required="1" t-att-min="datetime.date.today().strftime('%Y-%m-%d')"/>
+                                                    <input type="date" name="appointment_date" id="appointment_date"
+                                                           class="form-control" required="1"
+                                                           t-att-min="datetime.date.today().strftime('%Y-%m-%d')"/>
                                                 </div>
                                             </div>
                                             <div class="form-group mb-3">
-                                                <label for="appointment_time" class="form-label">Giờ hẹn <span class="text-danger">*</span></label>
+                                                <label for="appointment_time" class="form-label">Giờ hẹn
+                                                    <span class="text-danger">*</span>
+                                                </label>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
-                                                        <span class="input-group-text"><i class="fa fa-clock-o"></i></span>
+                                                        <span class="input-group-text">
+                                                            <i class="fa fa-clock-o"></i>
+                                                        </span>
                                                     </div>
-                                                    <input type="time" name="appointment_time" id="appointment_time" class="form-control"
-                                                       required="1" min="08:00" max="21:00"/>
+                                                    <input type="time" name="appointment_time" id="appointment_time"
+                                                           class="form-control"
+                                                           required="1" min="08:00" max="21:00"/>
                                                 </div>
-                                                <small class="text-muted">Thời gian hẹn từ 8:00 sáng đến 21:00 tối</small>
+                                                <small class="text-muted">Thời gian hẹn từ 8:00 sáng đến 21:00 tối
+                                                </small>
                                             </div>
                                             <div class="form-group mb-3">
-                                                <label for="doctor_id" class="form-label">Bác sĩ <span class="text-danger">*</span></label>
+                                                <label for="doctor_id" class="form-label">Bác sĩ
+                                                    <span class="text-danger">*</span>
+                                                </label>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
-                                                        <span class="input-group-text"><i class="fa fa-user-md"></i></span>
+                                                        <span class="input-group-text">
+                                                            <i class="fa fa-user-md"></i>
+                                                        </span>
                                                     </div>
-                                                    <select name="doctor_id" id="doctor_id" class="form-control" required="1">
+                                                    <select name="doctor_id" id="doctor_id" class="form-control"
+                                                            required="1">
                                                         <option value="">Chọn bác sĩ</option>
                                                         <t t-foreach="doctors" t-as="doctor">
-                                                            <option t-att-value="doctor.id"><t t-esc="doctor.staff_name"/></option>
+                                                            <option t-att-value="doctor.id">
+                                                                <t t-esc="doctor.staff_name"/>
+                                                            </option>
                                                         </t>
                                                     </select>
                                                 </div>
@@ -125,22 +174,30 @@
                                                 <label for="room_id" class="form-label">Phòng khám</label>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
-                                                        <span class="input-group-text"><i class="fa fa-hospital-o"></i></span>
+                                                        <span class="input-group-text">
+                                                            <i class="fa fa-hospital-o"></i>
+                                                        </span>
                                                     </div>
                                                     <select name="room_id" id="room_id" class="form-control">
                                                         <option value="">-- Chọn phòng khám --</option>
                                                         <t t-foreach="exam_rooms" t-as="room">
-                                                            <option t-att-value="room.id"><t t-esc="room.name"/></option>
+                                                            <option t-att-value="room.id">
+                                                                <t t-esc="room.name"/>
+                                                            </option>
                                                         </t>
                                                     </select>
                                                 </div>
-                                                <small class="text-muted">Bạn có thể chọn phòng khám hoặc để trống</small>
+                                                <small class="text-muted">Bạn có thể chọn phòng khám hoặc để trống
+                                                </small>
                                             </div>
 
                                             <!-- Availability check -->
-                                            <div id="availability_check_container" class="mt-3 mb-3" style="display: none;">
-                                                <button type="button" id="check_availability_btn" class="btn btn-outline-primary btn-sm">
-                                                    <i class="fa fa-calendar-check-o mr-1"></i> Kiểm tra trạng thái
+                                            <div id="availability_check_container" class="mt-3 mb-3"
+                                                 style="display: none;">
+                                                <button type="button" id="check_availability_btn"
+                                                        class="btn btn-outline-primary btn-sm">
+                                                    <i class="fa fa-calendar-check-o mr-1"></i>
+                                                    Kiểm tra trạng thái
                                                 </button>
                                                 <div id="availability_result" class="mt-2"></div>
                                             </div>
@@ -149,11 +206,13 @@
 
                                     <div class="form-group mt-3">
                                         <label for="note" class="form-label">Triệu chứng / Ghi chú</label>
-                                        <textarea name="note" id="note" class="form-control" rows="3" placeholder="Mô tả triệu chứng hoặc lý do khám..."></textarea>
+                                        <textarea name="note" id="note" class="form-control" rows="3"
+                                                  placeholder="Mô tả triệu chứng hoặc lý do khám..."></textarea>
                                     </div>
 
                                     <div class="alert alert-info mt-4">
-                                        <i class="fa fa-info-circle mr-2"></i> Lưu ý: Vui lòng đến trước giờ hẹn 15 phút để làm thủ tục
+                                        <i class="fa fa-info-circle mr-2"></i>
+                                        Lưu ý: Vui lòng đến trước giờ hẹn 15 phút để làm thủ tục
                                     </div>
 
                                     <div class="text-center mt-4">
@@ -171,149 +230,150 @@
             <!-- CSS tùy chỉnh -->
             <style>
                 .btn-primary {
-                    background-color: #3498db;
-                    border-color: #3498db;
+                background-color: #3498db;
+                border-color: #3498db;
                 }
                 .btn-primary:hover {
-                    background-color: #2980b9;
-                    border-color: #2980b9;
+                background-color: #2980b9;
+                border-color: #2980b9;
                 }
                 .bg-primary {
-                    background-color: #3498db !important;
+                background-color: #3498db !important;
                 }
                 .text-primary {
-                    color: #3498db !important;
+                color: #3498db !important;
                 }
                 .card {
-                    border-radius: 10px;
-                    overflow: hidden;
+                border-radius: 10px;
+                overflow: hidden;
                 }
                 .form-control {
-                    border-radius: 4px;
+                border-radius: 4px;
                 }
                 .form-control:focus {
-                    border-color: #3498db;
-                    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+                border-color: #3498db;
+                box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
                 }
                 .card-header {
-                    border-bottom: none;
+                border-bottom: none;
                 }
                 /* Responsive adjustments */
                 @media (max-width: 768px) {
-                    .container {
-                        padding-left: 20px;
-                        padding-right: 20px;
-                    }
+                .container {
+                padding-left: 20px;
+                padding-right: 20px;
+                }
                 }
             </style>
 
             <!-- JavaScript Validation -->
             <script type="text/javascript">
                 $(document).ready(function() {
-                    // Form validation
-                    $("#appointment_form").on('submit', function(e) {
-                        // Prevent form submission by default until validation passes
-                        e.preventDefault();
+                // Form validation
+                $("#appointment_form").on('submit', function(e) {
+                // Prevent form submission by default until validation passes
+                e.preventDefault();
 
-                        var isValid = true;
+                var isValid = true;
 
-                        // Reset validation
-                        $(this).find('.is-invalid').removeClass('is-invalid');
+                // Reset validation
+                $(this).find('.is-invalid').removeClass('is-invalid');
 
-                        // Validate required fields
-                        $(this).find('[required]').each(function() {
-                            if (!$(this).val()) {
-                                $(this).addClass('is-invalid');
-                                isValid = false;
-                            }
-                        });
+                // Validate required fields
+                $(this).find('[required]').each(function() {
+                if (!$(this).val()) {
+                $(this).addClass('is-invalid');
+                isValid = false;
+                }
+                });
 
-                        // Phone validation (simple)
-                        var phone = $('#phone').val();
-                        if (phone &amp;&amp; !phone.match(/^[0-9]{10,11}$/)) {
-                            $('#phone').addClass('is-invalid');
-                            isValid = false;
-                        }
+                // Phone validation (simple)
+                var phone = $('#phone').val();
+                if (phone &amp;&amp; !phone.match(/^[0-9]{10,11}$/)) {
+                $('#phone').addClass('is-invalid');
+                isValid = false;
+                }
 
-                        // Validate email if provided
-                        var email = $('#email').val();
-                        if (email &amp;&amp; !email.match(/^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$/)) {
-                            $('#email').addClass('is-invalid');
-                            isValid = false;
-                        }
+                // Validate email if provided
+                var email = $('#email').val();
+                if (email &amp;&amp; !email.match(/^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$/)) {
+                $('#email').addClass('is-invalid');
+                isValid = false;
+                }
 
-                        if (!isValid) {
-                            // Scroll to first invalid field
-                            $('html, body').animate({
-                                scrollTop: $('.is-invalid').first().offset().top - 100
-                            }, 500);
-                            return false;
-                        } else {
-                            // Only submit the form if validation passes
-                            this.submit();
-                        }
-                    });
+                if (!isValid) {
+                // Scroll to first invalid field
+                $('html, body').animate({
+                scrollTop: $('.is-invalid').first().offset().top - 100
+                }, 500);
+                return false;
+                } else {
+                // Only submit the form if validation passes
+                this.submit();
+                }
+                });
 
-                    // Show availability check when doctor, date and time are selected
-                    function updateAvailabilityCheckVisibility() {
-                        var doctor = $('#doctor_id').val();
-                        var date = $('#appointment_date').val();
-                        var time = $('#appointment_time').val();
+                // Show availability check when doctor, date and time are selected
+                function updateAvailabilityCheckVisibility() {
+                var doctor = $('#doctor_id').val();
+                var date = $('#appointment_date').val();
+                var time = $('#appointment_time').val();
 
-                        if (doctor &amp;&amp; date &amp;&amp; time) {
-                            $('#availability_check_container').show();
-                        } else {
-                            $('#availability_check_container').hide();
-                            $('#availability_result').html('');
-                        }
-                    }
+                if (doctor &amp;&amp; date &amp;&amp; time) {
+                $('#availability_check_container').show();
+                } else {
+                $('#availability_check_container').hide();
+                $('#availability_result').html('');
+                }
+                }
 
-                    $('#doctor_id, #appointment_date, #appointment_time, #room_id').on('change', function() {
-                        updateAvailabilityCheckVisibility();
-                    });
+                $('#doctor_id, #appointment_date, #appointment_time, #room_id').on('change', function() {
+                updateAvailabilityCheckVisibility();
+                });
 
-                    // Availability check button
-                    $('#check_availability_btn').on('click', function() {
-                        var doctor_id = $('#doctor_id').val();
-                        var appointment_date = $('#appointment_date').val();
-                        var appointment_time = $('#appointment_time').val();
-                        var room_id = $('#room_id').val();
+                // Availability check button
+                $('#check_availability_btn').on('click', function() {
+                var doctor_id = $('#doctor_id').val();
+                var appointment_date = $('#appointment_date').val();
+                var appointment_time = $('#appointment_time').val();
+                var room_id = $('#room_id').val();
 
-                        $('#availability_result').html('&lt;div class="text-center"&gt;&lt;i class="fa fa-spinner fa-spin"&gt;&lt;/i&gt; Đang kiểm tra...&lt;/div&gt;');
+                $('#availability_result').html('&lt;div class="text-center"&gt;&lt;i class="fa fa-spinner fa-spin"&gt;&lt;/i&gt;
+                Đang kiểm tra...&lt;/div&gt;');
 
-                        $.ajax({
-                            url: '/appointment/check_availability',
-                            type: 'POST',
-                            dataType: 'json',
-                            contentType: 'application/json',
-                            data: JSON.stringify({
-                                'jsonrpc': '2.0',
-                                'method': 'call',
-                                'params': {
-                                    'doctor_id': doctor_id,
-                                    'appointment_date': appointment_date,
-                                    'appointment_time': appointment_time,
-                                    'room_id': room_id
-                                }
-                            }),
-                            success: function(data) {
-                                if (data.result) {
-                                    var result = data.result;
-                                    if (result.status === 'success') {
-                                        $('#availability_result').html('&lt;div class="alert alert-success"&gt;' +
-                                            '&lt;i class="fa fa-check-circle mr-2"&gt;&lt;/i&gt;' + result.message + '&lt;/div&gt;');
-                                    } else {
-                                        $('#availability_result').html('&lt;div class="alert alert-danger"&gt;' +
-                                            '&lt;i class="fa fa-exclamation-circle mr-2"&gt;&lt;/i&gt;' + result.message + '&lt;/div&gt;');
-                                    }
-                                }
-                            },
-                            error: function() {
-                                $('#availability_result').html('&lt;div class="alert alert-danger"&gt;' +
-                                    '&lt;i class="fa fa-exclamation-circle mr-2"&gt;&lt;/i&gt;Đã xảy ra lỗi khi kiểm tra. Vui lòng thử lại.&lt;/div&gt;');
-                            }
-                        });
-                    });
+                $.ajax({
+                url: '/appointment/check_availability',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                'jsonrpc': '2.0',
+                'method': 'call',
+                'params': {
+                'doctor_id': doctor_id,
+                'appointment_date': appointment_date,
+                'appointment_time': appointment_time,
+                'room_id': room_id
+                }
+                }),
+                success: function(data) {
+                if (data.result) {
+                var result = data.result;
+                if (result.status === 'success') {
+                $('#availability_result').html('&lt;div class="alert alert-success"&gt;' +
+                '&lt;i class="fa fa-check-circle mr-2"&gt;&lt;/i&gt;' + result.message + '&lt;/div&gt;');
+                } else {
+                $('#availability_result').html('&lt;div class="alert alert-danger"&gt;' +
+                '&lt;i class="fa fa-exclamation-circle mr-2"&gt;&lt;/i&gt;' + result.message + '&lt;/div&gt;');
+                }
+                }
+                },
+                error: function() {
+                $('#availability_result').html('&lt;div class="alert alert-danger"&gt;' +
+                '&lt;i class="fa fa-exclamation-circle mr-2"&gt;&lt;/i&gt;Đã xảy ra lỗi khi kiểm tra. Vui lòng thử lại.&lt;/div&gt;');
+                }
+                });
+                });
                 });
             </script>
         </t>
@@ -339,34 +399,43 @@
                                                 <i class="fa fa-id-card-o mr-2 text-primary"></i>
                                                 <strong>Mã lịch hẹn:</strong>
                                             </div>
-                                            <div class="mt-1"><t t-esc="appointment_name"/></div>
+                                            <div class="mt-1">
+                                                <t t-esc="appointment_name"/>
+                                            </div>
                                         </div>
                                         <div class="col-md-3 mb-2">
                                             <div class="d-flex align-items-center justify-content-center">
                                                 <i class="fa fa-calendar mr-2 text-primary"></i>
                                                 <strong>Thời gian:</strong>
                                             </div>
-                                            <div class="mt-1"><t t-esc="appointment_date"/></div>
+                                            <div class="mt-1">
+                                                <t t-esc="appointment_date"/>
+                                            </div>
                                         </div>
                                         <div class="col-md-3 mb-2">
                                             <div class="d-flex align-items-center justify-content-center">
                                                 <i class="fa fa-user-md mr-2 text-primary"></i>
                                                 <strong>Bác sĩ:</strong>
                                             </div>
-                                            <div class="mt-1"><t t-esc="doctor_name"/></div>
+                                            <div class="mt-1">
+                                                <t t-esc="doctor_name"/>
+                                            </div>
                                         </div>
                                         <div class="col-md-3 mb-2">
                                             <div class="d-flex align-items-center justify-content-center">
                                                 <i class="fa fa-hospital-o mr-2 text-primary"></i>
                                                 <strong>Phòng khám:</strong>
                                             </div>
-                                            <div class="mt-1"><t t-esc="room_name"/></div>
+                                            <div class="mt-1">
+                                                <t t-esc="room_name"/>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="alert alert-light border py-3 mb-4">
-                                    <h5 class="mb-3"><i class="fa fa-info-circle mr-2"></i>Hướng dẫn</h5>
+                                    <h5 class="mb-3"><i class="fa fa-info-circle mr-2"></i>Hướng dẫn
+                                    </h5>
                                     <ul class="text-left">
                                         <li>Vui lòng đến trước giờ hẹn 15 phút để làm thủ tục</li>
                                         <li>Mang theo CMND/CCCD và thẻ BHYT (nếu có)</li>
@@ -392,28 +461,28 @@
             <!-- CSS tùy chỉnh -->
             <style>
                 .btn-primary {
-                    background-color: #3498db;
-                    border-color: #3498db;
+                background-color: #3498db;
+                border-color: #3498db;
                 }
                 .btn-primary:hover {
-                    background-color: #2980b9;
-                    border-color: #2980b9;
+                background-color: #2980b9;
+                border-color: #2980b9;
                 }
                 .text-primary {
-                    color: #3498db !important;
+                color: #3498db !important;
                 }
                 .text-success {
-                    color: #2ecc71 !important;
+                color: #2ecc71 !important;
                 }
                 .card {
-                    border-radius: 10px;
-                    overflow: hidden;
+                border-radius: 10px;
+                overflow: hidden;
                 }
             </style>
         </t>
     </template>
 
-        <!-- Template for appointment check form -->
+    <!-- Template for appointment check form -->
     <template id="appointment_check_form" name="Kiểm tra lịch hẹn">
         <t t-call="website.layout">
             <div class="container py-5">
@@ -427,7 +496,8 @@
                                 <!-- System error message -->
                                 <t t-if="error">
                                     <div class="alert alert-danger text-center">
-                                        <i class="fa fa-exclamation-triangle mr-2"></i> <t t-esc="error"/>
+                                        <i class="fa fa-exclamation-triangle mr-2"></i>
+                                        <t t-esc="error"/>
                                     </div>
                                 </t>
 
@@ -442,12 +512,18 @@
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                                         <div class="form-group mb-4">
-                                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                            <label for="email" class="form-label">Email
+                                                <span class="text-danger">*</span>
+                                            </label>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
-                                                    <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                                                    <span class="input-group-text">
+                                                        <i class="fa fa-envelope"></i>
+                                                    </span>
                                                 </div>
-                                                <input type="email" name="email" id="email" class="form-control" required="1" t-att-value="email or ''" placeholder="example@example.com"/>
+                                                <input type="email" name="email" id="email" class="form-control"
+                                                       required="1" t-att-value="email or ''"
+                                                       placeholder="example@example.com"/>
                                             </div>
                                         </div>
 
@@ -461,7 +537,9 @@
                                     <!-- Hiển thị thông báo lỗi khi email không tồn tại -->
                                     <t t-if="email_not_found">
                                         <div class="alert alert-danger mt-3">
-                                            <i class="fa fa-exclamation-circle mr-2"></i> Không tìm thấy bệnh nhân với email này. Vui lòng kiểm tra lại hoặc liên hệ với quản trị viên.
+                                            <i class="fa fa-exclamation-circle mr-2"></i>
+                                            Không tìm thấy bệnh nhân với email này. Vui lòng kiểm tra lại hoặc liên hệ
+                                            với quản trị viên.
                                         </div>
                                     </t>
 
@@ -478,11 +556,15 @@
                                     <div class="text-center mb-4">
                                         <i class="fa fa-key fa-3x text-primary mb-3"></i>
                                         <h4 class="text-center mb-3">Xác minh OTP</h4>
-                                        <p class="text-center">Chúng tôi đã gửi mã OTP đến email <strong t-esc="email"/>. Vui lòng kiểm tra hộp thư và nhập mã để xem lịch hẹn của bạn.</p>
+                                        <p class="text-center">Chúng tôi đã gửi mã OTP đến email<strong t-esc="email"/>.
+                                            Vui lòng kiểm tra hộp thư và nhập mã để xem lịch hẹn của bạn.
+                                        </p>
                                     </div>
 
                                     <div class="alert alert-info">
-                                        <strong>Lưu ý:</strong> Nếu bạn không nhận được email, vui lòng kiểm tra thư mục thư rác (spam) hoặc liên hệ với quản trị viên.
+                                        <strong>Lưu ý:</strong>
+                                        Nếu bạn không nhận được email, vui lòng kiểm tra thư mục thư rác (spam) hoặc
+                                        liên hệ với quản trị viên.
                                     </div>
 
                                     <t t-if="otp_error">
@@ -496,9 +578,14 @@
                                         <input type="hidden" name="email" t-att-value="email"/>
                                         <div class="form-group">
                                             <label for="otp_code">Nhập mã OTP:</label>
-                                            <input type="text" class="form-control otp-input" id="otp_code" name="otp_code" maxlength="6" placeholder="------" required="required"/>
+                                            <input type="text" class="form-control otp-input" id="otp_code"
+                                                   name="otp_code" maxlength="6" placeholder="------"
+                                                   required="required"/>
                                         </div>
-                                        <button type="submit" class="btn btn-primary btn-block mt-3 justify-content-center" id="verify-btn">Xác nhận</button>
+                                        <button type="submit"
+                                                class="btn btn-primary btn-block mt-3 justify-content-center"
+                                                id="verify-btn">Xác nhận
+                                        </button>
                                     </form>
 
                                     <div class="text-center mt-3">
@@ -506,7 +593,9 @@
                                         <form method="POST" action="/appointment/check" id="resend-form">
                                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                             <input type="hidden" name="email" t-att-value="email"/>
-                                            <button type="submit" class="btn btn-outline-secondary" id="resend-btn">Gửi lại mã OTP</button>
+                                            <button type="submit" class="btn btn-outline-secondary" id="resend-btn">Gửi
+                                                lại mã OTP
+                                            </button>
                                         </form>
                                         <p class="mt-3">
                                             <a href="/appointment/check">Quay lại</a>
@@ -522,73 +611,73 @@
             <!-- CSS tùy chỉnh -->
             <style>
                 .btn-primary {
-                    background-color: #3498db;
-                    border-color: #3498db;
+                background-color: #3498db;
+                border-color: #3498db;
                 }
                 .btn-primary:hover {
-                    background-color: #2980b9;
-                    border-color: #2980b9;
+                background-color: #2980b9;
+                border-color: #2980b9;
                 }
                 .bg-primary {
-                    background-color: #3498db !important;
+                background-color: #3498db !important;
                 }
                 .text-primary {
-                    color: #3498db !important;
+                color: #3498db !important;
                 }
                 .card {
-                    border-radius: 10px;
-                    overflow: hidden;
+                border-radius: 10px;
+                overflow: hidden;
                 }
                 .form-control {
-                    border-radius: 4px;
+                border-radius: 4px;
                 }
                 .form-control:focus {
-                    border-color: #3498db;
-                    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+                border-color: #3498db;
+                box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
                 }
                 .otp-input {
-                    letter-spacing: 10px;
-                    font-size: 1.5rem;
-                    text-align: center;
+                letter-spacing: 10px;
+                font-size: 1.5rem;
+                text-align: center;
                 }
             </style>
 
             <!-- JavaScript Validation -->
             <script type="text/javascript">
                 $(document).ready(function() {
-                    // Form validation for email form
-                    $("#email-form").on('submit', function(e) {
-                        var email = $('#email').val();
-                        if (!email || !email.match(/^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$/)) {
-                            $('#email').addClass('is-invalid');
-                            e.preventDefault();
-                            return false;
-                        } else {
-                            $('#email').removeClass('is-invalid');
+                // Form validation for email form
+                $("#email-form").on('submit', function(e) {
+                var email = $('#email').val();
+                if (!email || !email.match(/^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$/)) {
+                $('#email').addClass('is-invalid');
+                e.preventDefault();
+                return false;
+                } else {
+                $('#email').removeClass('is-invalid');
 
-                            // Ngay lập tức thay đổi nút và vô hiệu hóa
-                            $("#submit-btn").prop('disabled', true);
-                            $("#submit-btn").addClass('disabled');
-                            $("#submit-btn").html('<i class="fa fa-spinner fa-spin mr-2"></i> Đang gửi...');
+                // Ngay lập tức thay đổi nút và vô hiệu hóa
+                $("#submit-btn").prop('disabled', true);
+                $("#submit-btn").addClass('disabled');
+                $("#submit-btn").html('<i class="fa fa-spinner fa-spin mr-2"></i> Đang gửi...');
 
-                            // Cho phép form tiếp tục submit
-                            return true;
-                        }
-                    });
+                // Cho phép form tiếp tục submit
+                return true;
+                }
+                });
 
-                    // OTP form validation and button state
-                    $("#otp-form").on('submit', function() {
-                        $("#verify-btn").prop('disabled', true);
-                        $("#verify-btn").addClass('disabled');
-                        $("#verify-btn").html('<i class="fa fa-spinner fa-spin mr-2"></i> Đang xác thực...');
-                    });
+                // OTP form validation and button state
+                $("#otp-form").on('submit', function() {
+                $("#verify-btn").prop('disabled', true);
+                $("#verify-btn").addClass('disabled');
+                $("#verify-btn").html('<i class="fa fa-spinner fa-spin mr-2"></i> Đang xác thực...');
+                });
 
-                    // Resend OTP button state
-                    $("#resend-form").on('submit', function() {
-                        $("#resend-btn").prop('disabled', true);
-                        $("#resend-btn").addClass('disabled');
-                        $("#resend-btn").html('<i class="fa fa-spinner fa-spin mr-2"></i> Đang gửi...');
-                    });
+                // Resend OTP button state
+                $("#resend-form").on('submit', function() {
+                $("#resend-btn").prop('disabled', true);
+                $("#resend-btn").addClass('disabled');
+                $("#resend-btn").html('<i class="fa fa-spinner fa-spin mr-2"></i> Đang gửi...');
+                });
                 });
             </script>
         </t>
@@ -609,7 +698,9 @@
                                 <t t-if="error">
                                     <div class="text-center py-5">
                                         <i class="fa fa-exclamation-circle fa-4x text-warning mb-3"></i>
-                                        <h4 class="text-warning mb-3"><t t-esc="error"/></h4>
+                                        <h4 class="text-warning mb-3">
+                                            <t t-esc="error"/>
+                                        </h4>
                                         <div class="mt-4">
                                             <a href="/appointment" class="btn btn-primary">
                                                 <i class="fa fa-calendar-plus-o mr-2"></i>Đặt lịch hẹn mới
@@ -631,10 +722,18 @@
                                             </h5>
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <p><i class="fa fa-user mr-2 text-muted"></i><strong>Họ tên:</strong> <t t-esc="patient.name"/></p>
+                                                    <p>
+                                                        <i class="fa fa-user mr-2 text-muted"></i>
+                                                        <strong>Họ tên:</strong>
+                                                        <t t-esc="patient.name"/>
+                                                    </p>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <p><i class="fa fa-phone mr-2 text-muted"></i><strong>Số điện thoại:</strong> <t t-esc="patient.phone"/></p>
+                                                    <p>
+                                                        <i class="fa fa-phone mr-2 text-muted"></i>
+                                                        <strong>Số điện thoại:</strong>
+                                                        <t t-esc="patient.phone"/>
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
@@ -648,20 +747,35 @@
                                         <table class="table table-hover">
                                             <thead class="thead-light">
                                                 <tr>
-                                                    <th><i class="fa fa-id-card-o mr-1"></i>Mã lịch hẹn</th>
-                                                    <th><i class="fa fa-calendar mr-1"></i>Ngày giờ</th>
-                                                    <th><i class="fa fa-user-md mr-1"></i>Bác sĩ</th>
-                                                    <th><i class="fa fa-hospital-o mr-1"></i>Phòng khám</th>
-                                                    <th><i class="fa fa-info-circle mr-1"></i>Trạng thái</th>
+                                                    <th><i class="fa fa-id-card-o mr-1"></i>Mã lịch hẹn
+                                                    </th>
+                                                    <th><i class="fa fa-calendar mr-1"></i>Ngày giờ
+                                                    </th>
+                                                    <th><i class="fa fa-user-md mr-1"></i>Bác sĩ
+                                                    </th>
+                                                    <th><i class="fa fa-hospital-o mr-1"></i>Phòng khám
+                                                    </th>
+                                                    <th><i class="fa fa-info-circle mr-1"></i>Trạng thái
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <t t-foreach="appointments" t-as="appointment">
                                                     <tr>
-                                                        <td><strong><t t-esc="appointment.name"/></strong></td>
-                                                        <td><t t-esc="appointment.appointment_date"/></td>
-                                                        <td><t t-esc="appointment.staff_id.staff_name"/></td>
-                                                        <td><t t-esc="appointment.room_id.name if appointment.room_id else 'Chưa phân phòng'"/></td>
+                                                        <td>
+                                                            <strong>
+                                                                <t t-esc="appointment.name"/>
+                                                            </strong>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="appointment.appointment_date"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="appointment.staff_id.staff_name"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="appointment.room_id.name if appointment.room_id else 'Chưa phân phòng'"/>
+                                                        </td>
                                                         <td>
                                                             <span t-att-class="'badge ' + ('badge-success' if appointment.state == 'confirmed' else 'badge-warning' if appointment.state == 'draft' else 'badge-danger')">
                                                                 <t t-esc="dict(appointment._fields['state'].selection).get(appointment.state)"/>
@@ -674,7 +788,8 @@
                                     </div>
 
                                     <div class="alert alert-info mt-4">
-                                        <i class="fa fa-info-circle mr-2"></i> Vui lòng đến đúng giờ và mang theo giấy tờ tùy thân khi đi khám.
+                                        <i class="fa fa-info-circle mr-2"></i>
+                                        Vui lòng đến đúng giờ và mang theo giấy tờ tùy thân khi đi khám.
                                     </div>
 
                                     <div class="text-center mt-4">
@@ -695,35 +810,35 @@
             <!-- CSS tùy chỉnh -->
             <style>
                 .btn-primary {
-                    background-color: #3498db;
-                    border-color: #3498db;
+                background-color: #3498db;
+                border-color: #3498db;
                 }
                 .btn-primary:hover {
-                    background-color: #2980b9;
-                    border-color: #2980b9;
+                background-color: #2980b9;
+                border-color: #2980b9;
                 }
                 .bg-primary {
-                    background-color: #3498db !important;
+                background-color: #3498db !important;
                 }
                 .text-primary {
-                    color: #3498db !important;
+                color: #3498db !important;
                 }
                 .badge-success {
-                    background-color: #2ecc71;
+                background-color: #2ecc71;
                 }
                 .badge-warning {
-                    background-color: #f39c12;
-                    color: white;
+                background-color: #f39c12;
+                color: white;
                 }
                 .badge-danger {
-                    background-color: #e74c3c;
+                background-color: #e74c3c;
                 }
                 .card {
-                    border-radius: 10px;
-                    overflow: hidden;
+                border-radius: 10px;
+                overflow: hidden;
                 }
                 .table th {
-                    font-weight: 600;
+                font-weight: 600;
                 }
             </style>
         </t>

@@ -6,7 +6,8 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1>Quy định Y tế</h1>
                 <a href="/compliance/regulation/new" class="btn btn-primary">
-                    <i class="fa fa-plus"></i> Tạo mới
+                    <i class="fa fa-plus"></i>
+                    Tạo mới
                 </a>
             </div>
 
@@ -19,7 +20,8 @@
                     <form method="GET" action="/compliance/regulations" class="row">
                         <div class="col-md-5 mb-2">
                             <div class="input-group">
-                                <input type="text" name="search" class="form-control" placeholder="Tìm theo tên, mã hoặc cơ quan..."
+                                <input type="text" name="search" class="form-control"
+                                       placeholder="Tìm theo tên, mã hoặc cơ quan..."
                                        t-att-value="search or ''"/>
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fa fa-search"></i>
@@ -30,7 +32,8 @@
                             <select name="scope" class="form-select">
                                 <option value="">-- Tất cả phạm vi --</option>
                                 <option t-att-selected="filter_scope == 'national'" value="national">Quốc gia</option>
-                                <option t-att-selected="filter_scope == 'international'" value="international">Quốc tế</option>
+                                <option t-att-selected="filter_scope == 'international'" value="international">Quốc tế
+                                </option>
                                 <option t-att-selected="filter_scope == 'local'" value="local">Địa phương</option>
                             </select>
                         </div>
@@ -71,8 +74,12 @@
                                                     <t t-esc="regulation.name"/>
                                                 </a>
                                             </td>
-                                            <td><t t-esc="regulation.code"/></td>
-                                            <td><t t-esc="regulation.authority_id.name or '-'"/></td>
+                                            <td>
+                                                <t t-esc="regulation.code"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="regulation.authority_id.name or '-'"/>
+                                            </td>
                                             <td>
                                                 <span t-att-class="'badge ' + (
                                                     'bg-primary' if regulation.scope == 'national' else
@@ -82,7 +89,9 @@
                                                     <t t-esc="dict(regulation._fields['scope'].selection).get(regulation.scope)"/>
                                                 </span>
                                             </td>
-                                            <td><t t-esc="regulation.effective_date"/></td>
+                                            <td>
+                                                <t t-esc="regulation.effective_date"/>
+                                            </td>
                                         </tr>
                                     </t>
                                 </tbody>

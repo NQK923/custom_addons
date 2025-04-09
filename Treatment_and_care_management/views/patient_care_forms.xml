@@ -5,86 +5,86 @@
         <t t-call="website.layout">
             <style>
                 .form-container {
-                    background-color: #f8f9fa;
-                    padding: 30px;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    max-width: 800px;
-                    margin: 0 auto;
+                background-color: #f8f9fa;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                max-width: 800px;
+                margin: 0 auto;
                 }
                 .form-card {
-                    background-color: #fff;
-                    padding: 20px;
-                    border-radius: 8px;
-                    margin-bottom: 25px;
-                    border: 1px solid #dee2e6;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 25px;
+                border: 1px solid #dee2e6;
                 }
                 .section-heading {
-                    color: #007bff;
-                    border-bottom: 2px solid #007bff;
-                    padding-bottom: 8px;
-                    margin-bottom: 20px;
-                    font-size: 1.5rem;
+                color: #007bff;
+                border-bottom: 2px solid #007bff;
+                padding-bottom: 8px;
+                margin-bottom: 20px;
+                font-size: 1.5rem;
                 }
                 .section-subheading {
-                    color: #495057;
-                    font-size: 1.1rem;
-                    margin-top: 15px;
-                    margin-bottom: 10px;
-                    padding-bottom: 5px;
-                    border-bottom: 1px solid #e9ecef;
+                color: #495057;
+                font-size: 1.1rem;
+                margin-top: 15px;
+                margin-bottom: 10px;
+                padding-bottom: 5px;
+                border-bottom: 1px solid #e9ecef;
                 }
                 .patient-info p {
-                    margin: 8px 0;
-                    font-size: 1rem;
-                    color: #343a40;
+                margin: 8px 0;
+                font-size: 1rem;
+                color: #343a40;
                 }
                 .patient-info strong {
-                    color: #495057;
-                    min-width: 150px;
-                    display: inline-block;
+                color: #495057;
+                min-width: 150px;
+                display: inline-block;
                 }
                 .form-group {
-                    margin-bottom: 15px;
+                margin-bottom: 15px;
                 }
                 .form-group label {
-                    font-weight: 600;
-                    color: #495057;
-                    margin-bottom: 6px;
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 6px;
                 }
                 .form-control:focus {
-                    border-color: #80bdff;
-                    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                border-color: #80bdff;
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
                 }
                 .btn-primary {
-                    background-color: #007bff;
-                    border-color: #007bff;
+                background-color: #007bff;
+                border-color: #007bff;
                 }
                 .btn-primary:hover {
-                    background-color: #0069d9;
-                    border-color: #0062cc;
+                background-color: #0069d9;
+                border-color: #0062cc;
                 }
                 .btn-secondary {
-                    background-color: #6c757d;
-                    border-color: #6c757d;
+                background-color: #6c757d;
+                border-color: #6c757d;
                 }
                 .btn-secondary:hover {
-                    background-color: #5a6268;
-                    border-color: #545b62;
+                background-color: #5a6268;
+                border-color: #545b62;
                 }
                 .required-field::after {
-                    content: " *";
-                    color: red;
+                content: " *";
+                color: red;
                 }
                 .checkbox-container {
-                    display: block;
-                    padding: 10px 15px;
-                    background-color: #f8f9fa;
-                    border-radius: 5px;
-                    margin-top: 5px;
+                display: block;
+                padding: 10px 15px;
+                background-color: #f8f9fa;
+                border-radius: 5px;
+                margin-top: 5px;
                 }
                 textarea {
-                    min-height: 100px;
+                min-height: 100px;
                 }
             </style>
 
@@ -96,16 +96,26 @@
                     <h3 class="section-heading">Thông tin bệnh nhân</h3>
                     <div class="row patient-info">
                         <div class="col-md-6">
-                            <p><strong>Mã bệnh nhân:</strong> <t t-esc="patient.code"/></p>
-                            <p><strong>Họ và tên:</strong> <t t-esc="patient.name"/></p>
+                            <p>
+                                <strong>Mã bệnh nhân:</strong>
+                                <t t-esc="patient.code"/>
+                            </p>
+                            <p>
+                                <strong>Họ và tên:</strong>
+                                <t t-esc="patient.name"/>
+                            </p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Giới tính:</strong>
+                            <p>
+                                <strong>Giới tính:</strong>
                                 <t t-if="patient.gender == 'male'">Nam</t>
                                 <t t-elif="patient.gender == 'female'">Nữ</t>
                                 <t t-else="">Khác</t>
                             </p>
-                            <p><strong>Tuổi:</strong> <t t-esc="patient.age"/></p>
+                            <p>
+                                <strong>Tuổi:</strong>
+                                <t t-esc="patient.age"/>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -185,7 +195,8 @@
                         <div class="form-group">
                             <label for="special_care_description">Mô tả chăm sóc đặc biệt</label>
                             <textarea class="form-control" id="special_care_description"
-                                      name="special_care_description" placeholder="Mô tả chi tiết chăm sóc đặc biệt..."></textarea>
+                                      name="special_care_description"
+                                      placeholder="Mô tả chi tiết chăm sóc đặc biệt..."></textarea>
                         </div>
                         <div class="form-group">
                             <label for="medical_equipment_used">Thiết bị y tế sử dụng</label>
@@ -204,12 +215,14 @@
                         <div class="form-group">
                             <label for="daily_nursing_notes">Ghi chú chăm sóc hằng ngày</label>
                             <textarea class="form-control" id="daily_nursing_notes"
-                                      name="daily_nursing_notes" placeholder="Ghi chú về chăm sóc hàng ngày..."></textarea>
+                                      name="daily_nursing_notes"
+                                      placeholder="Ghi chú về chăm sóc hàng ngày..."></textarea>
                         </div>
                         <div class="form-group">
                             <label for="abnormal_event">Sự kiện bất thường</label>
                             <textarea class="form-control" id="abnormal_event"
-                                      name="abnormal_event" placeholder="Mô tả các sự kiện bất thường nếu có..."></textarea>
+                                      name="abnormal_event"
+                                      placeholder="Mô tả các sự kiện bất thường nếu có..."></textarea>
                         </div>
                         <div class="form-group">
                             <div class="checkbox-container">
@@ -246,12 +259,14 @@
                         <div class="row mt-4">
                             <div class="col-md-6">
                                 <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fa fa-save"></i> Lưu thông tin
+                                    <i class="fa fa-save"></i>
+                                    Lưu thông tin
                                 </button>
                             </div>
                             <div class="col-md-6">
                                 <a href="/clinic/patient_care" class="btn btn-secondary w-100">
-                                    <i class="fa fa-times"></i> Hủy
+                                    <i class="fa fa-times"></i>
+                                    Hủy
                                 </a>
                             </div>
                         </div>
@@ -266,86 +281,86 @@
         <t t-call="website.layout">
             <style>
                 .form-container {
-                    background-color: #f8f9fa;
-                    padding: 30px;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    max-width: 800px;
-                    margin: 0 auto;
+                background-color: #f8f9fa;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                max-width: 800px;
+                margin: 0 auto;
                 }
                 .form-card {
-                    background-color: #fff;
-                    padding: 20px;
-                    border-radius: 8px;
-                    margin-bottom: 25px;
-                    border: 1px solid #dee2e6;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 25px;
+                border: 1px solid #dee2e6;
                 }
                 .section-heading {
-                    color: #007bff;
-                    border-bottom: 2px solid #007bff;
-                    padding-bottom: 8px;
-                    margin-bottom: 20px;
-                    font-size: 1.5rem;
+                color: #007bff;
+                border-bottom: 2px solid #007bff;
+                padding-bottom: 8px;
+                margin-bottom: 20px;
+                font-size: 1.5rem;
                 }
                 .section-subheading {
-                    color: #495057;
-                    font-size: 1.1rem;
-                    margin-top: 15px;
-                    margin-bottom: 10px;
-                    padding-bottom: 5px;
-                    border-bottom: 1px solid #e9ecef;
+                color: #495057;
+                font-size: 1.1rem;
+                margin-top: 15px;
+                margin-bottom: 10px;
+                padding-bottom: 5px;
+                border-bottom: 1px solid #e9ecef;
                 }
                 .patient-info p {
-                    margin: 8px 0;
-                    font-size: 1rem;
-                    color: #343a40;
+                margin: 8px 0;
+                font-size: 1rem;
+                color: #343a40;
                 }
                 .patient-info strong {
-                    color: #495057;
-                    min-width: 150px;
-                    display: inline-block;
+                color: #495057;
+                min-width: 150px;
+                display: inline-block;
                 }
                 .form-group {
-                    margin-bottom: 15px;
+                margin-bottom: 15px;
                 }
                 .form-group label {
-                    font-weight: 600;
-                    color: #495057;
-                    margin-bottom: 6px;
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 6px;
                 }
                 .form-control:focus {
-                    border-color: #80bdff;
-                    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                border-color: #80bdff;
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
                 }
                 .btn-primary {
-                    background-color: #007bff;
-                    border-color: #007bff;
+                background-color: #007bff;
+                border-color: #007bff;
                 }
                 .btn-primary:hover {
-                    background-color: #0069d9;
-                    border-color: #0062cc;
+                background-color: #0069d9;
+                border-color: #0062cc;
                 }
                 .btn-secondary {
-                    background-color: #6c757d;
-                    border-color: #6c757d;
+                background-color: #6c757d;
+                border-color: #6c757d;
                 }
                 .btn-secondary:hover {
-                    background-color: #5a6268;
-                    border-color: #545b62;
+                background-color: #5a6268;
+                border-color: #545b62;
                 }
                 .required-field::after {
-                    content: " *";
-                    color: red;
+                content: " *";
+                color: red;
                 }
                 .checkbox-container {
-                    display: block;
-                    padding: 10px 15px;
-                    background-color: #f8f9fa;
-                    border-radius: 5px;
-                    margin-top: 5px;
+                display: block;
+                padding: 10px 15px;
+                background-color: #f8f9fa;
+                border-radius: 5px;
+                margin-top: 5px;
                 }
                 textarea {
-                    min-height: 100px;
+                min-height: 100px;
                 }
             </style>
 
@@ -357,16 +372,26 @@
                     <h3 class="section-heading">Thông tin bệnh nhân</h3>
                     <div class="row patient-info">
                         <div class="col-md-6">
-                            <p><strong>Mã bệnh nhân:</strong> <t t-esc="patient.code"/></p>
-                            <p><strong>Họ và tên:</strong> <t t-esc="patient.name"/></p>
+                            <p>
+                                <strong>Mã bệnh nhân:</strong>
+                                <t t-esc="patient.code"/>
+                            </p>
+                            <p>
+                                <strong>Họ và tên:</strong>
+                                <t t-esc="patient.name"/>
+                            </p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Giới tính:</strong>
+                            <p>
+                                <strong>Giới tính:</strong>
                                 <t t-if="patient.gender == 'male'">Nam</t>
                                 <t t-elif="patient.gender == 'female'">Nữ</t>
                                 <t t-else="">Khác</t>
                             </p>
-                            <p><strong>Tuổi:</strong> <t t-esc="patient.age"/></p>
+                            <p>
+                                <strong>Tuổi:</strong>
+                                <t t-esc="patient.age"/>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -390,9 +415,15 @@
                                 <div class="form-group">
                                     <label for="statenew" class="required-field">Trạng thái</label>
                                     <select class="form-control" id="statenew" name="statenew" required="required">
-                                        <option value="pending" t-att-selected="care.statenew == 'pending'">Chưa thực hiện</option>
-                                        <option value="in_progress" t-att-selected="care.statenew == 'in_progress'">Đang thực hiện</option>
-                                        <option value="completed" t-att-selected="care.statenew == 'completed'">Hoàn thành</option>
+                                        <option value="pending" t-att-selected="care.statenew == 'pending'">Chưa thực
+                                            hiện
+                                        </option>
+                                        <option value="in_progress" t-att-selected="care.statenew == 'in_progress'">Đang
+                                            thực hiện
+                                        </option>
+                                        <option value="completed" t-att-selected="care.statenew == 'completed'">Hoàn
+                                            thành
+                                        </option>
                                     </select>
                                 </div>
                             </div>
@@ -445,7 +476,9 @@
                         <div class="form-group">
                             <label for="special_care_description">Mô tả chăm sóc đặc biệt</label>
                             <textarea class="form-control" id="special_care_description"
-                                      name="special_care_description"><t t-esc="care.special_care_description"/></textarea>
+                                      name="special_care_description">
+                                <t t-esc="care.special_care_description"/>
+                            </textarea>
                         </div>
                         <div class="form-group">
                             <label for="medical_equipment_used">Thiết bị y tế sử dụng</label>
@@ -454,7 +487,8 @@
                         </div>
                         <div class="form-group">
                             <div class="checkbox-container">
-                                <input type="checkbox" id="is_emergency" name="is_emergency" t-att-checked="care.is_emergency"/>
+                                <input type="checkbox" id="is_emergency" name="is_emergency"
+                                       t-att-checked="care.is_emergency"/>
                                 <label for="is_emergency" class="ms-2">Đánh dấu là trường hợp khẩn cấp</label>
                             </div>
                         </div>
@@ -464,16 +498,21 @@
                         <div class="form-group">
                             <label for="daily_nursing_notes">Ghi chú chăm sóc hằng ngày</label>
                             <textarea class="form-control" id="daily_nursing_notes"
-                                      name="daily_nursing_notes"><t t-esc="care.daily_nursing_notes"/></textarea>
+                                      name="daily_nursing_notes">
+                                <t t-esc="care.daily_nursing_notes"/>
+                            </textarea>
                         </div>
                         <div class="form-group">
                             <label for="abnormal_event">Sự kiện bất thường</label>
                             <textarea class="form-control" id="abnormal_event"
-                                      name="abnormal_event"><t t-esc="care.abnormal_event"/></textarea>
+                                      name="abnormal_event">
+                                <t t-esc="care.abnormal_event"/>
+                            </textarea>
                         </div>
                         <div class="form-group">
                             <div class="checkbox-container">
-                                <input type="checkbox" id="is_alert_triggered" name="is_alert_triggered" t-att-checked="care.is_alert_triggered"/>
+                                <input type="checkbox" id="is_alert_triggered" name="is_alert_triggered"
+                                       t-att-checked="care.is_alert_triggered"/>
                                 <label for="is_alert_triggered" class="ms-2">Kích hoạt cảnh báo</label>
                             </div>
                         </div>
@@ -487,7 +526,8 @@
                                     <select class="form-control" id="doctor_id" name="doctor_id">
                                         <option value="">-- Chọn nhân viên --</option>
                                         <t t-foreach="staff" t-as="person">
-                                            <option t-att-value="person.id" t-att-selected="person.id == care.doctor_id.id">
+                                            <option t-att-value="person.id"
+                                                    t-att-selected="person.id == care.doctor_id.id">
                                                 <t t-esc="person.name"/>
                                             </option>
                                         </t>
@@ -506,12 +546,15 @@
                         <div class="row mt-4">
                             <div class="col-md-6">
                                 <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fa fa-save"></i> Lưu thay đổi
+                                    <i class="fa fa-save"></i>
+                                    Lưu thay đổi
                                 </button>
                             </div>
                             <div class="col-md-6">
-                                <a t-att-href="'/clinic/patient_care_details/%s' % care.id" class="btn btn-secondary w-100">
-                                    <i class="fa fa-times"></i> Hủy
+                                <a t-att-href="'/clinic/patient_care_details/%s' % care.id"
+                                   class="btn btn-secondary w-100">
+                                    <i class="fa fa-times"></i>
+                                    Hủy
                                 </a>
                             </div>
                         </div>
