@@ -154,6 +154,10 @@
                                                         <a t-att-href="'/patients/%s/edit' % patient.id" class="btn btn-sm btn-outline-secondary">
                                                             <i class="fa fa-edit"/> Sửa
                                                         </a>
+                                                        <button t-att-data-patient-id="patient.id" t-att-data-patient-name="patient.name"
+                                                                class="btn btn-sm btn-outline-danger delete-patient-btn">
+                                                            <i class="fa fa-trash"/> Xóa
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -197,7 +201,48 @@
                         </ul>
                     </div>
                 </t>
+
+                <!-- Modal xác nhận xóa -->
+                <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" id="deleteConfirmModalLabel">Xác nhận xóa bệnh nhân</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Bạn có chắc chắn muốn xóa bệnh nhân <strong id="patientNameToDelete"></strong> không?</p>
+                                <p class="text-danger">Lưu ý: Hành động này không thể hoàn tác.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <form id="deletePatientForm" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <!-- JavaScript for delete confirmation -->
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    // Delete confirmation modal
+                    $('.delete-patient-btn').on('click', function() {
+                        var patientId = $(this).data('patient-id');
+                        var patientName = $(this).data('patient-name');
+
+                        // Cập nhật nội dung modal
+                        $('#patientNameToDelete').text(patientName);
+                        $('#deletePatientForm').attr('action', '/patients/' + patientId + '/delete');
+
+                        // Hiển thị modal
+                        $('#deleteConfirmModal').modal('show');
+                    });
+                });
+            </script>
         </t>
     </template>
 </odoo>

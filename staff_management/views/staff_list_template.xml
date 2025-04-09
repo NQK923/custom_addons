@@ -76,8 +76,9 @@
                                     <tr>
                                         <th>Họ và tên</th>
                                         <th>Chức vụ</th>
+                                        <th>Số điện thoại</th>
+                                        <th>Email</th>
                                         <th>Khoa</th>
-                                        <th>Liên hệ</th>
                                         <th>Trạng thái</th>
                                         <th class="text-center">Thao tác</th>
                                     </tr>
@@ -96,12 +97,13 @@
                                                         <t t-esc="staff.staff_type.position"/>
                                                     </t>
                                                 </td>
+                                                <td><t t-esc="staff.phone"/></td>
+                                                <td><t t-esc="staff.email"/></td>
                                                 <td>
                                                     <t t-if="staff.department_id">
                                                         <t t-esc="staff.department_id.department_name"/>
                                                     </t>
                                                 </td>
-                                                <td><t t-esc="staff.contact_info"/></td>
                                                 <td>
                                                     <span t-if="staff.status == 'active'" class="badge badge-success">Đang làm việc</span>
                                                     <span t-elif="staff.status == 'inactive'" class="badge badge-warning">Nghỉ phép</span>
@@ -144,7 +146,7 @@
                                     </t>
                                     <t t-else="">
                                         <tr>
-                                            <td colspan="6" class="text-center py-4">
+                                            <td colspan="7" class="text-center py-4">
                                                 <div class="alert alert-info mb-0">
                                                     <i class="fa fa-info-circle"/> Không tìm thấy nhân viên nào phù hợp với điều kiện tìm kiếm.
                                                     <a href="/clinic/staff/create" class="btn btn-primary btn-sm ml-3">

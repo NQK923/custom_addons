@@ -46,6 +46,9 @@
                         <a t-att-href="'/patients/%s/edit' % patient.id" class="btn btn-outline-primary me-2">
                             <i class="fa fa-edit"/> Chỉnh sửa
                         </a>
+                        <button id="deletePatientBtn" class="btn btn-outline-danger me-2">
+                            <i class="fa fa-trash"/> Xóa
+                        </button>
                         <a href="/patients" class="btn btn-outline-secondary">
                             <i class="fa fa-arrow-left"/> Quay lại
                         </a>
@@ -339,15 +342,43 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Modal xác nhận xóa -->
+                <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title" id="deleteConfirmModalLabel">Xác nhận xóa bệnh nhân</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Bạn có chắc chắn muốn xóa bệnh nhân <strong><t t-esc="patient.name"/></strong> không?</p>
+                                <p class="text-danger">Lưu ý: Hành động này không thể hoàn tác.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <form t-att-action="'/patients/%s/delete' % patient.id" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- JavaScript for tab functionality -->
+            <!-- JavaScript for tab functionality and delete confirmation -->
             <script type="text/javascript">
                 $(document).ready(function() {
                     // Toggle between tabs
                     $('#patientTabs button').on('click', function (e) {
                         e.preventDefault();
                         $(this).tab('show');
+                    });
+
+                    // Delete confirmation modal
+                    $('#deletePatientBtn').on('click', function() {
+                        $('#deleteConfirmModal').modal('show');
                     });
                 });
             </script>

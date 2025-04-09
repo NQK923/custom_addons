@@ -59,7 +59,9 @@ class Staff(models.Model):
     name = fields.Char(string="Mã nhân sự", required=True, copy=False, readonly=True, default="New")
     staff_name = fields.Char(string='Họ và Tên', required=True)
     staff_type = fields.Many2one('clinic.staff.type', string='Chức vụ')
-    contact_info = fields.Char(string='Thông tin liên lạc')
+    phone = fields.Char(string='Số điện thoại', required=True)
+    email = fields.Char(string='Địa chỉ email', required=True)
+    id_card = fields.Char(string='Số CCCD/CMND', required=True)
     date_of_birth = fields.Date(string='Ngày sinh')
     address = fields.Text(string='Địa chỉ')
     gender = fields.Selection([
@@ -79,13 +81,12 @@ class Staff(models.Model):
     ], string='Trạng thái', default='active')
     attendance_ids = fields.One2many('clinic.staff.attendance', 'staff_id', string='Lịch sử chấm công')
     performance_ids = fields.One2many('clinic.staff.performance', 'staff_id', string='Đánh giá hiệu suất')
-    labor_type = fields.Selection([
-        ('full_time', 'Toàn thời gian'),
-        ('part_time', 'Bán thời gian')
-    ], string='Loại Lao động', required=True, default='full_time')
 
     _sql_constraints = [
-        ('unique_license_number', 'unique(license_number)', 'Số giấy phép hành nghề phải là duy nhất!')
+        ('unique_license_number', 'unique(license_number)', 'Số giấy phép hành nghề phải là duy nhất!'),
+        ('unique_phone', 'unique(phone)', 'Số điện thoại phải là duy nhất!'),
+        ('unique_email', 'unique(email)', 'Địa chỉ email phải là duy nhất!'),
+        ('unique_id_card', 'unique(id_card)', 'Số CCCD/CMND phải là duy nhất!')
     ]
 
     @api.model_create_multi

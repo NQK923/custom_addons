@@ -258,7 +258,9 @@ class StaffManagementController(http.Controller):
         values = {
             'staff_name': kwargs.get('staff_name', '').strip(),
             'staff_type': int(kwargs.get('staff_type')) if kwargs.get('staff_type') else False,
-            'contact_info': kwargs.get('contact_info', '').strip(),
+            'phone': kwargs.get('phone', '').strip(),
+            'email': kwargs.get('email', '').strip(),
+            'id_card': kwargs.get('id_card', '').strip(),
             'date_of_birth': kwargs.get('date_of_birth') or False,
             'address': kwargs.get('address', '').strip(),
             'gender': kwargs.get('gender'),
@@ -267,7 +269,6 @@ class StaffManagementController(http.Controller):
             'qualification': kwargs.get('qualification', '').strip(),
             'experience_year': int(kwargs.get('experience_year', '0')),
             'status': kwargs.get('status', 'active'),
-            'labor_type': kwargs.get('labor_type', 'full_time'),
         }
 
         # Validate required fields
@@ -276,6 +277,15 @@ class StaffManagementController(http.Controller):
 
         if not values['gender']:
             return request.redirect('/clinic/staff?error=Vui lòng chọn giới tính')
+
+        if not values['phone']:
+            return request.redirect('/clinic/staff?error=Vui lòng nhập số điện thoại')
+
+        if not values['email']:
+            return request.redirect('/clinic/staff?error=Vui lòng nhập địa chỉ email')
+
+        if not values['id_card']:
+            return request.redirect('/clinic/staff?error=Vui lòng nhập số CCCD/CMND')
 
         try:
             if mode == 'create':

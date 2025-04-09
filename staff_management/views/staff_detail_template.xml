@@ -43,6 +43,18 @@
                                         <span class="float-right"><t t-esc="staff.name"/></span>
                                     </p>
                                     <p>
+                                        <strong>Số CCCD/CMND:</strong>
+                                        <span class="float-right"><t t-esc="staff.id_card"/></span>
+                                    </p>
+                                    <p>
+                                        <strong>Số điện thoại:</strong>
+                                        <span class="float-right"><t t-esc="staff.phone"/></span>
+                                    </p>
+                                    <p>
+                                        <strong>Email:</strong>
+                                        <span class="float-right"><t t-esc="staff.email"/></span>
+                                    </p>
+                                    <p>
                                         <strong>Giới tính:</strong>
                                         <span class="float-right">
                                             <t t-if="staff.gender == 'male'">Nam</t>
@@ -55,10 +67,6 @@
                                         <span class="float-right">
                                             <t t-esc="staff.date_of_birth"/>
                                         </span>
-                                    </p>
-                                    <p>
-                                        <strong>Liên hệ:</strong>
-                                        <span class="float-right"><t t-esc="staff.contact_info"/></span>
                                     </p>
                                     <p>
                                         <strong>Khoa:</strong>
@@ -79,13 +87,6 @@
                                     <p>
                                         <strong>Số giấy phép:</strong>
                                         <span class="float-right"><t t-esc="staff.license_number"/></span>
-                                    </p>
-                                    <p>
-                                        <strong>Loại lao động:</strong>
-                                        <span class="float-right">
-                                            <t t-if="staff.labor_type == 'full_time'">Toàn thời gian</t>
-                                            <t t-elif="staff.labor_type == 'part_time'">Bán thời gian</t>
-                                        </span>
                                     </p>
                                 </div>
 

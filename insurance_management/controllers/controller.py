@@ -48,7 +48,13 @@ class InsuranceController(http.Controller):
             if not coverage_rate:
                 error['coverage_rate'] = 'Vui lòng chọn mức chi trả'
 
-            # Nếu dữ liệu hợp lệ, tạo bản ghi mới
+            if patient_id and not error.get('patient_id'):
+                existing_insurance = request.env['clinic.insurance.policy'].sudo().search([
+                    ('patient_id', '=', patient_id)
+                ], limit=1)
+
+                if existing_insurance:
+                    error['patient_id'] = 'Bệnh nhân này đã có bảo hiểm y tế!'
             if not error:
                 try:
                     insurance = request.env['clinic.insurance.policy'].sudo().create({
@@ -97,6 +103,15 @@ class InsuranceController(http.Controller):
                 error['expiry_date'] = 'Vui lòng nhập ngày hết hạn'
             if not coverage_rate:
                 error['coverage_rate'] = 'Vui lòng chọn mức chi trả'
+
+            if patient_id and patient_id != insurance.patient_id.id and not error.get('patient_id'):
+                existing_insurance = request.env['clinic.insurance.policy'].sudo().search([
+                    ('patient_id', '=', patient_id),
+                    ('id', '!=', insurance.id)
+                ], limit=1)
+
+                if existing_insurance:
+                    error['patient_id'] = 'Bệnh nhân này đã có bảo hiểm y tế!'
 
             # Nếu dữ liệu hợp lệ, cập nhật bản ghi
             if not error:

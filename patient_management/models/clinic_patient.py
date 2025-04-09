@@ -79,6 +79,29 @@ class ClinicPatient(models.Model):
         for record in self:
             record.display_name = f"{record.code} - {record.name}"
 
+    @api.constrains('email')
+    def _check_email_unique(self):
+        for record in self:
+            if record.email:  # Chỉ kiểm tra nếu email không trống
+                same_email = self.env['clinic.patient'].search([
+                    ('email', '=', record.email),
+                    ('id', '!=', record.id)
+                ])
+                if same_email:
+                    raise ValidationError(f"Email '{record.email}' đã được sử dụng cho bệnh nhân {same_email[0].name}!")
+
+    @api.constrains('phone')
+    def _check_phone_unique(self):
+        for record in self:
+            if record.phone:  # Chỉ kiểm tra nếu số điện thoại không trống
+                same_phone = self.env['clinic.patient'].search([
+                    ('phone', '=', record.phone),
+                    ('id', '!=', record.id)
+                ])
+                if same_phone:
+                    raise ValidationError(
+                        f"Số điện thoại '{record.phone}' đã được sử dụng cho bệnh nhân {same_phone[0].name}!")
+
     def _compute_insurance_info(self):
         # InsuranceModel = self.env.get('clinic.insurance.policy', False)
         for patient in self:
@@ -86,7 +109,7 @@ class ClinicPatient(models.Model):
             #     # Nếu module bảo hiểm không tồn tại, xóa các trường bảo hiểm
             #     print(f"No module insurance")
             #     patient._clear_insurance_fields()
-            #     continue            
+            #     continue
             # Tìm bản ghi bảo hiểm liên quan đến bệnh nhân
             # insurance = InsuranceModel.search([
             #     ('patient_id', '=', patient.id)
@@ -94,7 +117,7 @@ class ClinicPatient(models.Model):
             insurance = self.env['clinic.insurance.policy'].search([
                 ('patient_id', '=', patient.id)
             ], limit=1)
-            
+
             if insurance:
                 # Nếu có bảo hiểm, cập nhật thông tin
                 patient.has_insurance = True
@@ -137,5 +160,3 @@ class ClinicPatient(models.Model):
                 # Generate a short UUID
                 vals['code'] = str(uuid.uuid4())[:8]
         return super().create(vals_list)
-
-
