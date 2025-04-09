@@ -127,6 +127,7 @@ class InvoiceWebsiteController(http.Controller):
 
     def extract_invoice_values(self, kw):
         """Extract invoice values from form submission and validate"""
+        # Get form object for better array handling
         form = request.httprequest.form
 
         values = {
@@ -134,11 +135,45 @@ class InvoiceWebsiteController(http.Controller):
             'invoice_date': form.get('invoice_date'),
             'note': form.get('note', ''),
         }
+
+        # Process prescription if selected
+        prescription_id = form.get('prescription_id')
+        if prescription_id and prescription_id.isdigit():
+            prescription_id = int(prescription_id)
+            prescription = request.env['prescription.order'].browse(prescription_id)
+            if prescription.exists() and prescription.patient_id.id == values['patient_id']:
+                values['prescription_ids'] = [(4, prescription_id)]
+
+                # If we're adding a prescription, process its products automatically
+                product_lines = []
+                for line in prescription.prescription_line_ids:
+                    product = line.product_id
+                    if not product:
+                        continue
+
+                    # Check stock quantity
+                    if line.quantity > product.quantity:
+                        return {}, f'Không đủ số lượng thuốc {product.name} trong kho! (Còn {product.quantity}, cần {line.quantity})'
+
+                    product_line = {
+                        'product_id': product.id,
+                        'quantity': line.quantity,
+                        'price_unit': product.unit_price or 0,
+                    }
+                    product_lines.append((0, 0, product_line))
+
+                # Only include if there are product lines
+                if product_lines:
+                    values['product_lines'] = product_lines
+
+        # Process service lines
         service_lines = []
+        # Get arrays from form data
         service_ids = form.getlist('service_id[]')
         service_qtys = form.getlist('service_qty[]')
         service_prices = form.getlist('service_price_unit[]')
 
+        # Process each service line
         for i in range(len(service_ids)):
             if i < len(service_qtys) and service_ids[i]:
                 try:
@@ -146,9 +181,12 @@ class InvoiceWebsiteController(http.Controller):
                     quantity = float(service_qtys[i])
 
                     if service_id > 0 and quantity > 0:
+                        # Get the price from the form or fetch from service
                         price_unit = 0
                         if i < len(service_prices) and service_prices[i]:
                             price_unit = float(service_prices[i])
+
+                        # If price is still 0, get it from the service record
                         if price_unit <= 0:
                             service = request.env['clinic.service'].browse(service_id)
                             if service.exists():
@@ -158,6 +196,8 @@ class InvoiceWebsiteController(http.Controller):
                             'service_id': service_id,
                             'quantity': quantity,
                         }
+
+                        # Only set price_unit if it's greater than 0
                         if price_unit > 0:
                             service_line['price_unit'] = price_unit
 
@@ -165,11 +205,14 @@ class InvoiceWebsiteController(http.Controller):
                 except (ValueError, TypeError) as e:
                     continue
 
-        product_lines = []
+        # Process product lines (from form, not from prescription)
+        product_lines = values.get('product_lines', [])
+        # Get arrays from form data
         product_ids = form.getlist('product_id[]')
         product_qtys = form.getlist('product_qty[]')
         product_prices = form.getlist('product_price_unit[]')
 
+        # Process each product line
         for i in range(len(product_ids)):
             if i < len(product_qtys) and product_ids[i]:
                 try:
@@ -177,6 +220,7 @@ class InvoiceWebsiteController(http.Controller):
                     quantity = float(product_qtys[i])
 
                     if product_id > 0 and quantity > 0:
+                        # Kiểm tra số lượng tồn kho
                         product = request.env['pharmacy.product'].browse(product_id)
                         if product.exists():
                             if quantity > product.quantity:
@@ -204,12 +248,13 @@ class InvoiceWebsiteController(http.Controller):
                 except (ValueError, TypeError) as e:
                     continue
 
+        # Only include non-empty line arrays
         if service_lines:
             values['service_lines'] = service_lines
         if product_lines:
             values['product_lines'] = product_lines
 
-        return values, None
+        return values, None  # Return values and no error message
 
     @http.route('/invoice/action/<string:action>/<int:invoice_id>', type='http', auth='user', website=True)
     def invoice_action(self, action, invoice_id, **kw):
@@ -229,6 +274,77 @@ class InvoiceWebsiteController(http.Controller):
             invoice.action_reset_to_draft()
 
         return request.redirect(f'/invoice/view/{invoice_id}')
+
+    # API endpoints cho đơn thuốc
+    @http.route('/api/prescriptions', type='http', auth='user')
+    def get_patient_prescriptions(self, **kw):
+        """API endpoint to get prescriptions for a patient"""
+        patient_id = kw.get('patient_id')
+        if not patient_id:
+            return request.make_response(
+                json.dumps({'error': 'Patient ID is required'}),
+                headers=[('Content-Type', 'application/json')]
+            )
+
+        try:
+            patient_id = int(patient_id)
+            # Get prescriptions for patient
+            prescriptions = request.env['prescription.order'].search([
+                ('patient_id', '=', patient_id),
+                ('state', '=', 'confirmed')  # Only confirmed prescriptions
+            ])
+
+            result = {
+                'prescriptions': [{
+                    'id': prescription.id,
+                    'name': prescription.name,
+                    'date': prescription.prescription_date.strftime(
+                        '%d/%m/%Y') if prescription.prescription_date else '',
+                } for prescription in prescriptions]
+            }
+
+            return request.make_response(
+                json.dumps(result),
+                headers=[('Content-Type', 'application/json')]
+            )
+        except Exception as e:
+            return request.make_response(
+                json.dumps({'error': str(e)}),
+                headers=[('Content-Type', 'application/json')]
+            )
+
+    @http.route('/api/prescription/<int:prescription_id>', type='http', auth='user')
+    def get_prescription_details(self, prescription_id, **kw):
+        """API endpoint to get detailed prescription information"""
+        try:
+            # Get prescription
+            prescription = request.env['prescription.order'].browse(prescription_id)
+
+            if not prescription.exists():
+                return request.make_response(
+                    json.dumps({'error': 'Prescription not found'}),
+                    headers=[('Content-Type', 'application/json')]
+                )
+
+            # Get products from prescription
+            result = {
+                'products': [{
+                    'id': line.product_id.id,
+                    'name': line.product_id.name,
+                    'quantity': line.quantity,
+                    'price': line.product_id.unit_price,
+                } for line in prescription.prescription_line_ids if line.product_id]
+            }
+
+            return request.make_response(
+                json.dumps(result),
+                headers=[('Content-Type', 'application/json')]
+            )
+        except Exception as e:
+            return request.make_response(
+                json.dumps({'error': str(e)}),
+                headers=[('Content-Type', 'application/json')]
+            )
 
     # Insurance invoice routes
     @http.route('/insurance/list', type='http', auth='user', website=True)

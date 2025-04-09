@@ -6,7 +6,7 @@
     'description': """
         Module quản lý lịch hẹn khám bệnh
     """,
-    'depends': ['base', 'hr', 'patient_management', 'room_management', 'staff_management', 'website'],
+    'depends': ['base', 'patient_management', 'room_management', 'staff_management', 'website'],
     'data': [
         'security/ir.model.access.csv',
         'security/security.xml',
