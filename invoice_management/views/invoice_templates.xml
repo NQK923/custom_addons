@@ -44,6 +44,17 @@
                         </div>
                     </div>
 
+                    <!-- Thêm trường chọn đơn thuốc -->
+                    <div class="form-group row" id="prescription-container" style="display: none;">
+                        <label for="prescription_id" class="col-sm-3 col-form-label">Đơn thuốc</label>
+                        <div class="col-sm-9">
+                            <select name="prescription_id" id="prescription_id" class="form-control">
+                                <option value="">-- Chọn đơn thuốc --</option>
+                                <!-- Options will be loaded dynamically -->
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-group row">
                         <label for="invoice_date" class="col-sm-3 col-form-label">Ngày lập</label>
                         <div class="col-sm-9">
@@ -286,11 +297,28 @@
                         }
 
                         // Add product line function
-                        function addProductLine() {
+                        function addProductLine(productId, quantity, price) {
                             var template = document.querySelector('.product-line-template').cloneNode(true);
                             template.classList.remove('product-line-template');
                             template.classList.add('product-line');
                             template.style.display = 'flex';
+
+                            // Set product ID if provided
+                            if (productId) {
+                                var productSelect = template.querySelector('.product-select');
+                                if (productSelect) {
+                                    productSelect.value = productId;
+                                    updateProductPrice(productSelect);
+                                }
+                            }
+
+                            // Set quantity if provided
+                            if (quantity) {
+                                var quantityInput = template.querySelector('input[name="product_qty[]"]');
+                                if (quantityInput) {
+                                    quantityInput.value = quantity;
+                                }
+                            }
 
                             // Add event listener to remove button
                             template.querySelector('.remove-line').addEventListener('click', function() {
@@ -310,6 +338,8 @@
 
                             // Add to product lines container
                             document.getElementById('product-lines').appendChild(template);
+
+                            return template;
                         }
 
                         // Add event listeners to add buttons
@@ -321,7 +351,9 @@
 
                         var addProductButton = document.querySelector('.add-product-line');
                         if (addProductButton) {
-                            addProductButton.addEventListener('click', addProductLine);
+                            addProductButton.addEventListener('click', function() {
+                                addProductLine();
+                            });
                             console.log('Add product line button event handler attached');
                         }
 
@@ -356,6 +388,71 @@
                         // Hide template lines
                         document.querySelector('.service-line-template').style.display = 'none';
                         document.querySelector('.product-line-template').style.display = 'none';
+
+                        // Add patient selection handler
+                        var patientSelect = document.getElementById('patient_id');
+                        var prescriptionContainer = document.getElementById('prescription-container');
+                        var prescriptionSelect = document.getElementById('prescription_id');
+
+                        if (patientSelect) {
+                            patientSelect.addEventListener('change', function() {
+                                var patientId = this.value;
+
+                                // Clear current prescription options
+                                prescriptionSelect.innerHTML = '<option value="">-- Chọn đơn thuốc --</option>';
+
+                                if (patientId) {
+                                    // Show prescription selection
+                                    prescriptionContainer.style.display = 'flex';
+
+                                    // Fetch prescriptions for selected patient
+                                    fetch('/api/prescriptions?patient_id=' + patientId)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.prescriptions &amp;&amp; data.prescriptions.length > 0) {
+                                                data.prescriptions.forEach(function(prescription) {
+                                                    var option = document.createElement('option');
+                                                    option.value = prescription.id;
+                                                    option.textContent = prescription.name + ' (' + prescription.date + ')';
+                                                    prescriptionSelect.appendChild(option);
+                                                });
+                                            }
+                                        })
+                                        .catch(error => console.error('Error fetching prescriptions:', error));
+                                } else {
+                                    // Hide prescription selection if no patient selected
+                                    prescriptionContainer.style.display = 'none';
+                                }
+                            });
+                        }
+
+                        // Add prescription selection handler
+                        if (prescriptionSelect) {
+                            prescriptionSelect.addEventListener('change', function() {
+                                var prescriptionId = this.value;
+
+                                if (prescriptionId) {
+                                    // Fetch prescription details and add products to invoice
+                                    fetch('/api/prescription/' + prescriptionId)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.products &amp;&amp; data.products.length > 0) {
+                                                // Clear existing product lines
+                                                var productLines = document.querySelectorAll('.product-line');
+                                                productLines.forEach(function(line) {
+                                                    line.remove();
+                                                });
+
+                                                // Add product lines from prescription
+                                                data.products.forEach(function(product) {
+                                                    addProductLine(product.id, product.quantity, product.price);
+                                                });
+                                            }
+                                        })
+                                        .catch(error => console.error('Error fetching prescription details:', error));
+                                }
+                            });
+                        }
 
                         // Add validation and submission handler
                         var submitButton = document.getElementById('submit-invoice-btn');

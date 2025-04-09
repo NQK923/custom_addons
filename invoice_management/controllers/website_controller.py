@@ -63,22 +63,54 @@ class InvoiceWebsiteController(http.Controller):
     @http.route(['/invoice/create', '/invoice/edit/<int:invoice_id>'], type='http', auth='user', website=True)
     def invoice_form(self, invoice_id=None, **kw):
         invoice = request.env['clinic.invoice'].browse(invoice_id) if invoice_id else False
+
+        # Redirect nếu hóa đơn đã bị hủy - không cho phép chỉnh sửa
+        if invoice and invoice.state == 'cancelled':
+            return request.redirect(f'/invoice/view/{invoice.id}')
+
         patients = request.env['clinic.patient'].search([])
         services = request.env['clinic.service'].search([])
         products = request.env['pharmacy.product'].search([('quantity', '>', 0)])
 
         # Handle POST request (form submission)
         if request.httprequest.method == 'POST':
-            values = self.extract_invoice_values(kw)
+            try:
+                # Extract invoice values and validate
+                values, error_message = self.extract_invoice_values(kw)
 
-            if invoice:
-                # Update existing invoice
-                invoice.write(values)
-            else:
-                # Create new invoice
-                invoice = request.env['clinic.invoice'].create(values)
+                if error_message:
+                    # If there's an error, re-render the form with the error message
+                    return request.render('invoice_management.invoice_form_template', {
+                        'invoice': invoice,
+                        'patients': patients,
+                        'services': services,
+                        'products': products,
+                        'page_name': 'invoice_form',
+                        'edit_mode': bool(invoice_id),
+                        'today': datetime.today().strftime('%Y-%m-%d'),
+                        'error_message': error_message,
+                    })
 
-            return request.redirect(f'/invoice/view/{invoice.id}')
+                if invoice:
+                    # Update existing invoice
+                    invoice.write(values)
+                else:
+                    # Create new invoice
+                    invoice = request.env['clinic.invoice'].create(values)
+
+                return request.redirect(f'/invoice/view/{invoice.id}')
+            except Exception as e:
+                # Xử lý bất kỳ ngoại lệ nào khác
+                return request.render('invoice_management.invoice_form_template', {
+                    'invoice': invoice,
+                    'patients': patients,
+                    'services': services,
+                    'products': products,
+                    'page_name': 'invoice_form',
+                    'edit_mode': bool(invoice_id),
+                    'today': datetime.today().strftime('%Y-%m-%d'),
+                    'error_message': str(e),
+                })
 
         # Handle GET request (form display)
         values = {
@@ -94,8 +126,7 @@ class InvoiceWebsiteController(http.Controller):
         return request.render('invoice_management.invoice_form_template', values)
 
     def extract_invoice_values(self, kw):
-        """Extract invoice values from form submission"""
-        # Get form object for better array handling
+        """Extract invoice values from form submission and validate"""
         form = request.httprequest.form
 
         values = {
@@ -103,15 +134,11 @@ class InvoiceWebsiteController(http.Controller):
             'invoice_date': form.get('invoice_date'),
             'note': form.get('note', ''),
         }
-
-        # Process service lines
         service_lines = []
-        # Get arrays from form data
         service_ids = form.getlist('service_id[]')
         service_qtys = form.getlist('service_qty[]')
         service_prices = form.getlist('service_price_unit[]')
 
-        # Process each service line
         for i in range(len(service_ids)):
             if i < len(service_qtys) and service_ids[i]:
                 try:
@@ -119,12 +146,9 @@ class InvoiceWebsiteController(http.Controller):
                     quantity = float(service_qtys[i])
 
                     if service_id > 0 and quantity > 0:
-                        # Get the price from the form or fetch from service
                         price_unit = 0
                         if i < len(service_prices) and service_prices[i]:
                             price_unit = float(service_prices[i])
-
-                        # If price is still 0, get it from the service record
                         if price_unit <= 0:
                             service = request.env['clinic.service'].browse(service_id)
                             if service.exists():
@@ -134,8 +158,6 @@ class InvoiceWebsiteController(http.Controller):
                             'service_id': service_id,
                             'quantity': quantity,
                         }
-
-                        # Only set price_unit if it's greater than 0
                         if price_unit > 0:
                             service_line['price_unit'] = price_unit
 
@@ -143,14 +165,11 @@ class InvoiceWebsiteController(http.Controller):
                 except (ValueError, TypeError) as e:
                     continue
 
-        # Process product lines
         product_lines = []
-        # Get arrays from form data
         product_ids = form.getlist('product_id[]')
         product_qtys = form.getlist('product_qty[]')
         product_prices = form.getlist('product_price_unit[]')
 
-        # Process each product line
         for i in range(len(product_ids)):
             if i < len(product_qtys) and product_ids[i]:
                 try:
@@ -158,37 +177,39 @@ class InvoiceWebsiteController(http.Controller):
                     quantity = float(product_qtys[i])
 
                     if product_id > 0 and quantity > 0:
-                        # Get the price from the form or fetch from product
-                        price_unit = 0
-                        if i < len(product_prices) and product_prices[i]:
-                            price_unit = float(product_prices[i])
+                        product = request.env['pharmacy.product'].browse(product_id)
+                        if product.exists():
+                            if quantity > product.quantity:
+                                return {}, f'Không đủ số lượng thuốc {product.name} trong kho! (Còn {product.quantity}, cần {quantity})'
 
-                        # If price is still 0, get it from the product record
-                        if price_unit <= 0:
-                            product = request.env['pharmacy.product'].browse(product_id)
-                            if product.exists():
+                            # Get the price from the form or fetch from product
+                            price_unit = 0
+                            if i < len(product_prices) and product_prices[i]:
+                                price_unit = float(product_prices[i])
+
+                            # If price is still 0, get it from the product record
+                            if price_unit <= 0:
                                 price_unit = product.unit_price
 
-                        product_line = {
-                            'product_id': product_id,
-                            'quantity': quantity,
-                        }
+                            product_line = {
+                                'product_id': product_id,
+                                'quantity': quantity,
+                            }
 
-                        # Only set price_unit if it's greater than 0
-                        if price_unit > 0:
-                            product_line['price_unit'] = price_unit
+                            # Only set price_unit if it's greater than 0
+                            if price_unit > 0:
+                                product_line['price_unit'] = price_unit
 
-                        product_lines.append((0, 0, product_line))
+                            product_lines.append((0, 0, product_line))
                 except (ValueError, TypeError) as e:
                     continue
 
-        # Only include non-empty line arrays
         if service_lines:
             values['service_lines'] = service_lines
         if product_lines:
             values['product_lines'] = product_lines
 
-        return values
+        return values, None
 
     @http.route('/invoice/action/<string:action>/<int:invoice_id>', type='http', auth='user', website=True)
     def invoice_action(self, action, invoice_id, **kw):
