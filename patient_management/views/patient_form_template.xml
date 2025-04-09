@@ -50,7 +50,7 @@
                             <i class="fa fa-edit"/>
                             Chỉnh sửa
                         </a>
-                        <button id="deletePatientBtn" class="btn btn-outline-danger me-2">
+                        <button type="button" id="deletePatientBtn" class="btn btn-outline-danger me-2">
                             <i class="fa fa-trash"/>
                             Xóa
                         </button>
@@ -425,17 +425,41 @@
 
             <!-- JavaScript for tab functionality and delete confirmation -->
             <script type="text/javascript">
-                $(document).ready(function() {
+                document.addEventListener('DOMContentLoaded', function() {
                 // Toggle between tabs
-                $('#patientTabs button').on('click', function (e) {
+                var tabButtons = document.querySelectorAll('#patientTabs button');
+                tabButtons.forEach(function(button) {
+                button.addEventListener('click', function(e) {
                 e.preventDefault();
-                $(this).tab('show');
+                var tabID = this.getAttribute('data-bs-target').substring(1);
+
+                // Hide all tab panes
+                document.querySelectorAll('.tab-pane').forEach(function(pane) {
+                pane.classList.remove('show', 'active');
+                });
+
+                // Show the selected tab pane
+                document.getElementById(tabID).classList.add('show', 'active');
+
+                // Update active state on tab buttons
+                tabButtons.forEach(function(btn) {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+                });
+
+                this.classList.add('active');
+                this.setAttribute('aria-selected', 'true');
+                });
                 });
 
                 // Delete confirmation modal
-                $('#deletePatientBtn').on('click', function() {
-                $('#deleteConfirmModal').modal('show');
+                var deleteBtn = document.getElementById('deletePatientBtn');
+                if (deleteBtn) {
+                deleteBtn.addEventListener('click', function() {
+                var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+                deleteModal.show();
                 });
+                }
                 });
             </script>
         </t>
