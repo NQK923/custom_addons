@@ -79,7 +79,7 @@
                     <h4 class="mb-0">Tạo lịch hẹn mới</h4>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="/clinic/appointment/create" class="appointment-form">
+                    <form method="POST" action="/clinic/appointment/create" class="appointment-form" id="create-appointment-form">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <div class="row">
                             <div class="col-md-4 form-group">
@@ -128,7 +128,8 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="date" class="form-control" id="appointment_date" name="appointment_date"
-                                       required="required"/>
+                                       required="required" t-att-min="min_date"/>
+                                <small class="text-muted">Lịch hẹn chỉ có thể được đặt từ ngày mai trở đi</small>
                             </div>
                             <div class="col-md-6 form-group">
                                 <label for="appointment_time">Giờ hẹn
@@ -237,25 +238,47 @@
             <!-- Form validation script -->
             <script type="text/javascript">
                 $(document).ready(function() {
-                // Form validation
-                $('.appointment-form').on('submit', function(e) {
-                var isValid = true;
+                    // Set min date for appointment date
+                    const today = new Date();
+                    const tomorrow = new Date(today);
+                    tomorrow.setDate(tomorrow.getDate() + 1);
 
-                // Check required fields
-                $(this).find('[required]').each(function() {
-                if (!$(this).val()) {
-                isValid = false;
-                $(this).addClass('is-invalid');
-                } else {
-                $(this).removeClass('is-invalid');
-                }
-                });
+                    const minDateStr = tomorrow.toISOString().split('T')[0];
+                    $('#appointment_date').attr('min', minDateStr);
 
-                if (!isValid) {
-                e.preventDefault();
-                alert('Vui lòng điền đầy đủ thông tin bắt buộc');
-                }
-                });
+                    // Form validation
+                    $('.appointment-form').on('submit', function(e) {
+                        var isValid = true;
+
+                        // Check required fields
+                        $(this).find('[required]').each(function() {
+                            if (!$(this).val()) {
+                                isValid = false;
+                                $(this).addClass('is-invalid');
+                            } else {
+                                $(this).removeClass('is-invalid');
+                            }
+                        });
+
+                        // Check appointment date is at least tomorrow
+                        const appointmentDate = new Date($('#appointment_date').val());
+                        const tomorrow = new Date();
+                        tomorrow.setDate(tomorrow.getDate() + 1);
+                        tomorrow.setHours(0, 0, 0, 0);
+
+                        if (appointmentDate &lt; tomorrow) {
+                            isValid = false;
+                            $('#appointment_date').addClass('is-invalid');
+                            alert('Lịch hẹn chỉ có thể được đặt từ ngày mai trở đi.');
+                        }
+
+                        if (!isValid) {
+                            e.preventDefault();
+                            if (!$('#appointment_date').hasClass('is-invalid')) {
+                                alert('Vui lòng điền đầy đủ thông tin bắt buộc');
+                            }
+                        }
+                    });
                 });
             </script>
         </t>

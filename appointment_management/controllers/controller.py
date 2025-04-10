@@ -3,6 +3,7 @@ from odoo.http import request
 from datetime import datetime, timedelta
 import json
 import pytz
+from odoo.exceptions import ValidationError
 
 
 class AppointmentController(http.Controller):
@@ -52,6 +53,9 @@ class AppointmentController(http.Controller):
                     'className': f"appointment-state-{app.state}"
                 })
 
+        # Calculate minimum date for appointment (tomorrow)
+        min_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+
         values = {
             'appointments': appointments,
             'patients': patients,
@@ -63,7 +67,8 @@ class AppointmentController(http.Controller):
             'datetime': datetime,
             'search_term': search_term,
             'date_from': date_from,
-            'date_to': date_to
+            'date_to': date_to,
+            'min_date': min_date
         }
         return request.render('appointment_management.appointment_list_template', values)
 
@@ -84,6 +89,14 @@ class AppointmentController(http.Controller):
                 appointment_datetime_str = f"{appointment_date_str} {appointment_time_str}"
                 appointment_datetime = datetime.strptime(appointment_datetime_str, "%Y-%m-%d %H:%M")
 
+                # Kiểm tra ngày hẹn phải từ ngày mai trở đi
+                tomorrow = datetime.now() + timedelta(days=1)
+                tomorrow = tomorrow.replace(hour=0, minute=0, second=0, microsecond=0)
+
+                if appointment_datetime < tomorrow:
+                    raise ValidationError(
+                        "Không thể đặt lịch hẹn trong quá khứ hoặc hôm nay. Vui lòng chọn ngày mai hoặc sau đó!")
+
                 # Tạo lịch hẹn mới
                 vals = {
                     'patient_id': int(post.get('patient_id')),
@@ -97,12 +110,46 @@ class AppointmentController(http.Controller):
                 if post.get('room_id'):
                     vals['room_id'] = int(post.get('room_id'))
 
+                # Kiểm tra xem bác sĩ đã có lịch hẹn vào thời điểm này chưa
+                staff_id = int(post.get('staff_id'))
+                one_hour_before = appointment_datetime - timedelta(hours=1)
+                one_hour_after = appointment_datetime + timedelta(hours=1)
+
+                doctor_conflict = request.env['clinic.appointment'].sudo().search([
+                    ('staff_id', '=', staff_id),
+                    ('appointment_date', '>=', one_hour_before),
+                    ('appointment_date', '<=', one_hour_after),
+                    ('state', 'not in', ['cancelled'])
+                ])
+
+                if doctor_conflict:
+                    doctor = request.env['clinic.staff'].sudo().browse(staff_id)
+                    raise ValidationError(
+                        f"Bác sĩ {doctor.name} đã có lịch hẹn khác trong vòng 1 tiếng của thời điểm này!")
+
+                # Kiểm tra xem phòng đã được đặt vào thời điểm này chưa
+                if post.get('room_id'):
+                    room_id = int(post.get('room_id'))
+                    room_conflict = request.env['clinic.appointment'].sudo().search([
+                        ('room_id', '=', room_id),
+                        ('appointment_date', '>=', one_hour_before),
+                        ('appointment_date', '<=', one_hour_after),
+                        ('state', 'not in', ['cancelled'])
+                    ])
+
+                    if room_conflict:
+                        room = request.env['clinic.room'].sudo().browse(room_id)
+                        raise ValidationError(f"Phòng {room.name} đã được đặt trong vòng 1 tiếng của thời điểm này!")
+
                 # Tạo lịch hẹn
                 request.env['clinic.appointment'].sudo().create(vals)
 
                 return request.redirect('/clinic/appointments?success=1')
             else:
-                return request.redirect('/clinic/appointments?error=1')
+                return request.redirect(
+                    '/clinic/appointments?error=1&message=Vui lòng điền đầy đủ thông tin ngày giờ hẹn')
+        except ValidationError as e:
+            return request.redirect(f'/clinic/appointments?error=1&message={e}')
         except Exception as e:
             return request.redirect(f'/clinic/appointments?error=1&message={e}')
 
@@ -118,11 +165,15 @@ class AppointmentController(http.Controller):
         doctors = request.env['clinic.staff'].sudo().search([('staff_type', '=', 'Bác sĩ')])
         rooms = request.env['clinic.room'].sudo().search([('room_type', '=', 'exam')])
 
+        # Calculate minimum date for appointment (tomorrow)
+        min_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+
         values = {
             'appointment': appointment,
             'doctors': doctors,
             'rooms': rooms,
-            'datetime': datetime
+            'datetime': datetime,
+            'min_date': min_date
         }
 
         return request.render('appointment_management.appointment_detail_template', values)
@@ -153,6 +204,15 @@ class AppointmentController(http.Controller):
             if post.get('appointment_date') and post.get('appointment_time'):
                 appointment_datetime_str = f"{post.get('appointment_date')} {post.get('appointment_time')}"
                 new_datetime = datetime.strptime(appointment_datetime_str, "%Y-%m-%d %H:%M")
+
+                # Kiểm tra ngày hẹn phải từ ngày mai trở đi
+                tomorrow = datetime.now() + timedelta(days=1)
+                tomorrow = tomorrow.replace(hour=0, minute=0, second=0, microsecond=0)
+
+                if new_datetime < tomorrow:
+                    raise ValidationError(
+                        "Không thể cập nhật lịch hẹn vào quá khứ hoặc hôm nay. Vui lòng chọn ngày mai hoặc sau đó!")
+
                 if new_datetime != appointment.appointment_date:
                     vals['appointment_date'] = new_datetime
 
@@ -160,11 +220,55 @@ class AppointmentController(http.Controller):
             if post.get('note') != appointment.note:
                 vals['note'] = post.get('note', '')
 
+            # Kiểm tra xung đột lịch nếu thay đổi bác sĩ hoặc thời gian
+            if ('staff_id' in vals or 'appointment_date' in vals):
+                staff_id = vals.get('staff_id', appointment.staff_id.id)
+                appointment_date = vals.get('appointment_date', appointment.appointment_date)
+
+                one_hour_before = appointment_date - timedelta(hours=1)
+                one_hour_after = appointment_date + timedelta(hours=1)
+
+                doctor_conflict = request.env['clinic.appointment'].sudo().search([
+                    ('staff_id', '=', staff_id),
+                    ('appointment_date', '>=', one_hour_before),
+                    ('appointment_date', '<=', one_hour_after),
+                    ('state', 'not in', ['cancelled']),
+                    ('id', '!=', appointment_id)
+                ])
+
+                if doctor_conflict:
+                    doctor = request.env['clinic.staff'].sudo().browse(staff_id)
+                    raise ValidationError(
+                        f"Bác sĩ {doctor.name} đã có lịch hẹn khác trong vòng 1 tiếng của thời điểm này!")
+
+            # Kiểm tra xung đột phòng nếu thay đổi phòng hoặc thời gian
+            if ('room_id' in vals or 'appointment_date' in vals) and (appointment.room_id or 'room_id' in vals):
+                room_id = vals.get('room_id', appointment.room_id.id if appointment.room_id else False)
+                if room_id:
+                    appointment_date = vals.get('appointment_date', appointment.appointment_date)
+
+                    one_hour_before = appointment_date - timedelta(hours=1)
+                    one_hour_after = appointment_date + timedelta(hours=1)
+
+                    room_conflict = request.env['clinic.appointment'].sudo().search([
+                        ('room_id', '=', room_id),
+                        ('appointment_date', '>=', one_hour_before),
+                        ('appointment_date', '<=', one_hour_after),
+                        ('state', 'not in', ['cancelled']),
+                        ('id', '!=', appointment_id)
+                    ])
+
+                    if room_conflict:
+                        room = request.env['clinic.room'].sudo().browse(room_id)
+                        raise ValidationError(f"Phòng {room.name} đã được đặt trong vòng 1 tiếng của thời điểm này!")
+
             # Lưu thay đổi nếu có
             if vals:
                 appointment.write(vals)
 
             return request.redirect(f'/clinic/appointment/{appointment_id}?updated=1')
+        except ValidationError as e:
+            return request.redirect(f'/clinic/appointment/{appointment_id}?error=1&message={e}')
         except Exception as e:
             return request.redirect(f'/clinic/appointment/{appointment_id}?error=1&message={e}')
 

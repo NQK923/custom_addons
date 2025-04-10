@@ -31,7 +31,111 @@ class ClinicAppointment(models.Model):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
                 vals['name'] = self.env['ir.sequence'].next_by_code('clinic.appointment') or 'New'
+
+            # Validate appointment date before creation
+            if 'appointment_date' in vals:
+                appointment_date = fields.Datetime.from_string(vals['appointment_date'])
+                tomorrow = datetime.now() + timedelta(days=1)
+                tomorrow = tomorrow.replace(hour=0, minute=0, second=0, microsecond=0)
+
+                if appointment_date < tomorrow:
+                    raise ValidationError(
+                        "Không thể đặt lịch hẹn trong quá khứ hoặc hôm nay. Vui lòng chọn ngày mai hoặc sau đó!")
+
+            # Validate doctor availability before creation
+            if 'staff_id' in vals and 'appointment_date' in vals:
+                staff_id = vals['staff_id']
+                appointment_date = fields.Datetime.from_string(vals['appointment_date'])
+                one_hour_before = appointment_date - timedelta(hours=1)
+                one_hour_after = appointment_date + timedelta(hours=1)
+
+                domain = [
+                    ('staff_id', '=', staff_id),
+                    ('appointment_date', '>=', one_hour_before),
+                    ('appointment_date', '<=', one_hour_after),
+                    ('state', 'not in', ['cancelled']),
+                ]
+
+                if self.search_count(domain) > 0:
+                    staff = self.env['clinic.staff'].browse(staff_id)
+                    raise ValidationError(
+                        f"Bác sĩ {staff.name} đã có lịch hẹn khác trong vòng 1 tiếng của thời điểm này!")
+
+            # Validate room availability before creation
+            if 'room_id' in vals and vals['room_id'] and 'appointment_date' in vals:
+                room_id = vals['room_id']
+                appointment_date = fields.Datetime.from_string(vals['appointment_date'])
+                one_hour_before = appointment_date - timedelta(hours=1)
+                one_hour_after = appointment_date + timedelta(hours=1)
+
+                domain = [
+                    ('room_id', '=', room_id),
+                    ('appointment_date', '>=', one_hour_before),
+                    ('appointment_date', '<=', one_hour_after),
+                    ('state', 'not in', ['cancelled']),
+                ]
+
+                if self.search_count(domain) > 0:
+                    room = self.env['clinic.room'].browse(room_id)
+                    raise ValidationError(f"Phòng {room.name} đã được đặt trong vòng 1 tiếng của thời điểm này!")
+
         return super().create(vals_list)
+
+    def write(self, vals):
+        # Validate appointment date before update
+        if 'appointment_date' in vals:
+            appointment_date = fields.Datetime.from_string(vals['appointment_date'])
+            tomorrow = datetime.now() + timedelta(days=1)
+            tomorrow = tomorrow.replace(hour=0, minute=0, second=0, microsecond=0)
+
+            if appointment_date < tomorrow:
+                raise ValidationError(
+                    "Không thể cập nhật lịch hẹn vào quá khứ hoặc hôm nay. Vui lòng chọn ngày mai hoặc sau đó!")
+
+        # Validate doctor availability before update
+        if ('staff_id' in vals or 'appointment_date' in vals) and (self.staff_id or 'staff_id' in vals):
+            staff_id = vals.get('staff_id', self.staff_id.id)
+            appointment_date = fields.Datetime.from_string(
+                vals['appointment_date']) if 'appointment_date' in vals else self.appointment_date
+            one_hour_before = appointment_date - timedelta(hours=1)
+            one_hour_after = appointment_date + timedelta(hours=1)
+
+            domain = [
+                ('staff_id', '=', staff_id),
+                ('appointment_date', '>=', one_hour_before),
+                ('appointment_date', '<=', one_hour_after),
+                ('state', 'not in', ['cancelled']),
+                ('id', '!=', self.id)
+            ]
+
+            if self.search_count(domain) > 0:
+                staff_name = self.env['clinic.staff'].browse(staff_id).name if isinstance(staff_id,
+                                                                                          int) else self.staff_id.name
+                raise ValidationError(f"Bác sĩ {staff_name} đã có lịch hẹn khác trong vòng 1 tiếng của thời điểm này!")
+
+        # Validate room availability before update
+        if ('room_id' in vals or 'appointment_date' in vals) and (self.room_id or 'room_id' in vals):
+            room_id = vals.get('room_id', self.room_id.id if self.room_id else False)
+            if room_id:
+                appointment_date = fields.Datetime.from_string(
+                    vals['appointment_date']) if 'appointment_date' in vals else self.appointment_date
+                one_hour_before = appointment_date - timedelta(hours=1)
+                one_hour_after = appointment_date + timedelta(hours=1)
+
+                domain = [
+                    ('room_id', '=', room_id),
+                    ('appointment_date', '>=', one_hour_before),
+                    ('appointment_date', '<=', one_hour_after),
+                    ('state', 'not in', ['cancelled']),
+                    ('id', '!=', self.id)
+                ]
+
+                if self.search_count(domain) > 0:
+                    room_name = self.env['clinic.room'].browse(room_id).name if isinstance(room_id,
+                                                                                           int) else self.room_id.name
+                    raise ValidationError(f"Phòng {room_name} đã được đặt trong vòng 1 tiếng của thời điểm này!")
+
+        return super().write(vals)
 
     def action_confirm(self):
         self.write({'state': 'confirmed'})
@@ -48,8 +152,14 @@ class ClinicAppointment(models.Model):
     @api.constrains('appointment_date')
     def _check_appointment_date(self):
         for record in self:
-            if record.appointment_date and record.appointment_date < fields.Datetime.now():
-                raise ValidationError("Không thể đặt lịch hẹn trong quá khứ!")
+            if record.appointment_date:
+                # Require appointments to be at least for tomorrow
+                tomorrow = datetime.now() + timedelta(days=1)
+                tomorrow = tomorrow.replace(hour=0, minute=0, second=0, microsecond=0)
+
+                if record.appointment_date < tomorrow:
+                    raise ValidationError(
+                        "Không thể đặt lịch hẹn trong quá khứ hoặc hôm nay. Vui lòng chọn ngày mai hoặc sau đó!")
 
     @api.constrains('staff_id', 'appointment_date')
     def _check_doctor_availability(self):
