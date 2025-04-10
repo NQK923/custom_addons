@@ -10,7 +10,6 @@
     <record id="group_room_manager" model="res.groups">
         <field name="name">Quản lý</field>
         <field name="category_id" ref="module_category_room_management"/>
-        <field name="implied_ids" eval="[(4, ref('group_room_user'))]"/>
         <field name="users" eval="[(4, ref('base.user_admin'))]"/>
     </record>
 </odoo>

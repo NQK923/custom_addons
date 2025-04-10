@@ -14,7 +14,7 @@
     'category': 'Healthcare',
     'author': 'Your Company',
     'website': 'https://www.yourcompany.com',
-    'depends': ['base', 'mail', 'appointment_management', 'staff_management', 'website'],
+    'depends': ['base', 'mail', 'appointment_management', 'staff_management', 'website', 'room_management'],
     'data': [
         # Security
         'security/ir.model.access.csv',

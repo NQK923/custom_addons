@@ -2,6 +2,8 @@ from odoo import http
 from odoo.http import request
 import werkzeug
 from datetime import date
+import re
+from odoo.exceptions import ValidationError
 
 
 class PatientController(http.Controller):
@@ -116,16 +118,66 @@ class PatientController(http.Controller):
             'message_type': message_type,
         })
 
+    def _check_unique_email(self, email, patient_id=None):
+        """Kiểm tra tính duy nhất của email"""
+        if not email:
+            return True
+
+        # Chuẩn hóa email
+        email_normalized = email.strip().lower()
+
+        # Tìm kiếm các bệnh nhân có email trùng lặp
+        domain = [('email_normalized', '=', email_normalized)]
+        if patient_id:
+            domain.append(('id', '!=', patient_id))
+
+        existing_patient = request.env['clinic.patient'].search(domain, limit=1)
+        return not existing_patient
+
+    def _check_unique_phone(self, phone, patient_id=None):
+        """Kiểm tra tính duy nhất của số điện thoại"""
+        if not phone:
+            return True
+
+        # Chuẩn hóa số điện thoại (loại bỏ các ký tự không phải số)
+        phone_normalized = re.sub(r'\D', '', phone)
+
+        # Tìm kiếm các bệnh nhân có số điện thoại trùng lặp
+        domain = [('phone_normalized', '=', phone_normalized)]
+        if patient_id:
+            domain.append(('id', '!=', patient_id))
+
+        existing_patient = request.env['clinic.patient'].search(domain, limit=1)
+        return not existing_patient
+
     @http.route('/patients/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def patient_create(self, **kw):
         # Xử lý tạo mới bệnh nhân
         if request.httprequest.method == 'POST':
             try:
+                # Kiểm tra tính duy nhất của email và số điện thoại
+                email = kw.get('email')
+                phone = kw.get('phone')
+
+                # Kiểm tra email
+                if email and not self._check_unique_email(email):
+                    existing = request.env['clinic.patient'].search([('email_normalized', '=', email.strip().lower())],
+                                                                    limit=1)
+                    error_msg = f"Email '{email}' đã được sử dụng cho bệnh nhân {existing.name}!"
+                    raise ValidationError(error_msg)
+
+                # Kiểm tra số điện thoại
+                if phone and not self._check_unique_phone(phone):
+                    existing = request.env['clinic.patient'].search(
+                        [('phone_normalized', '=', re.sub(r'\D', '', phone))], limit=1)
+                    error_msg = f"Số điện thoại '{phone}' đã được sử dụng cho bệnh nhân {existing.name}!"
+                    raise ValidationError(error_msg)
+
                 # Xử lý dữ liệu form
                 vals = {
                     'name': kw.get('name'),
-                    'email': kw.get('email'),
-                    'phone': kw.get('phone'),
+                    'email': email,
+                    'phone': phone,
                     'gender': kw.get('gender'),
                     'date_of_birth': kw.get('date_of_birth') or False,  # False nếu là chuỗi rỗng
                     'patient_type': kw.get('patient_type', 'outpatient'),
@@ -159,11 +211,33 @@ class PatientController(http.Controller):
         # Xử lý cập nhật thông tin bệnh nhân
         if request.httprequest.method == 'POST':
             try:
+                # Kiểm tra tính duy nhất của email và số điện thoại
+                email = kw.get('email')
+                phone = kw.get('phone')
+
+                # Kiểm tra email
+                if email and not self._check_unique_email(email, patient.id):
+                    existing = request.env['clinic.patient'].search([
+                        ('email_normalized', '=', email.strip().lower()),
+                        ('id', '!=', patient.id)
+                    ], limit=1)
+                    error_msg = f"Email '{email}' đã được sử dụng cho bệnh nhân {existing.name}!"
+                    raise ValidationError(error_msg)
+
+                # Kiểm tra số điện thoại
+                if phone and not self._check_unique_phone(phone, patient.id):
+                    existing = request.env['clinic.patient'].search([
+                        ('phone_normalized', '=', re.sub(r'\D', '', phone)),
+                        ('id', '!=', patient.id)
+                    ], limit=1)
+                    error_msg = f"Số điện thoại '{phone}' đã được sử dụng cho bệnh nhân {existing.name}!"
+                    raise ValidationError(error_msg)
+
                 # Xử lý dữ liệu form
                 vals = {
                     'name': kw.get('name'),
-                    'email': kw.get('email'),
-                    'phone': kw.get('phone'),
+                    'email': email,
+                    'phone': phone,
                     'gender': kw.get('gender'),
                     'date_of_birth': kw.get('date_of_birth') or False,  # False nếu là chuỗi rỗng
                     'note': kw.get('note'),
