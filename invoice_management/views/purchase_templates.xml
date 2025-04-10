@@ -51,7 +51,7 @@
                                         onchange="updateProductPrice(this)">
                                     <option value="">-- Chọn dược phẩm --</option>
                                     <t t-foreach="products" t-as="product">
-                                        <option t-att-value="product.id" t-att-data-price="product.unit_price or 0">
+                                        <option t-att-value="product.id" t-att-data-price="product.purchase_price or 0">
                                             <t t-esc="product.name"/>
                                         </option>
                                     </t>

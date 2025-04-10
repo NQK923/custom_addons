@@ -514,9 +514,9 @@ class InvoiceWebsiteController(http.Controller):
                                     price_unit = float(price_units[i])
                                     if price_unit <= 0:
                                         # Fallback to product price
-                                        price_unit = product.unit_price or 0
+                                        price_unit = product.purchase_price or 0
                                 except (ValueError, TypeError):
-                                    price_unit = product.unit_price or 0
+                                    price_unit = product.purchase_price or 0
 
                                 _logger.info(
                                     f"Adding line: product_id={product_id}, quantity={quantity}, price_unit={price_unit}")
