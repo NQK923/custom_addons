@@ -417,36 +417,79 @@
                     var prescriptionContainer = document.getElementById('prescription-container');
                     var prescriptionSelect = document.getElementById('prescription_id');
 
-                    if (patientSelect) {
+                    if (patientSelect &amp;&amp; prescriptionContainer &amp;&amp; prescriptionSelect) {
+                    console.log('Found all prescription-related elements in the DOM');
+
                     patientSelect.addEventListener('change', function() {
                     var patientId = this.value;
+                    console.log('Patient selection changed. Selected patient ID:', patientId);
 
                     // Clear current prescription options
                     prescriptionSelect.innerHTML = '<option value="">-- Chọn đơn thuốc --</option>';
 
                     if (patientId) {
+                    console.log('Showing prescription container');
                     // Show prescription selection
                     prescriptionContainer.style.display = 'flex';
 
                     // Fetch prescriptions for selected patient
+                    console.log('Fetching prescriptions from API for patient ID:', patientId);
                     fetch('/api/prescriptions?patient_id=' + patientId)
-                    .then(response => response.json())
+                    .then(response => {
+                    if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                    }
+                    return response.json();
+                    })
                     .then(data => {
+                    console.log('Prescription data received:', data);
                     if (data.prescriptions &amp;&amp; data.prescriptions.length > 0) {
+                    console.log('Found', data.prescriptions.length, 'prescriptions');
                     data.prescriptions.forEach(function(prescription) {
                     var option = document.createElement('option');
                     option.value = prescription.id;
-                    option.textContent = prescription.name + ' (' + prescription.date + ')';
+                    var displayText = prescription.name;
+                    if (prescription.date) {
+                    displayText += ' (' + prescription.date + ')';
+                    }
+                    option.textContent = displayText;
                     prescriptionSelect.appendChild(option);
                     });
+                    console.log('Added', data.prescriptions.length, 'prescription options to select');
+                    } else {
+                    // Add a disabled option indicating no prescriptions found
+                    var option = document.createElement('option');
+                    option.disabled = true;
+                    option.textContent = 'Không tìm thấy đơn thuốc cho bệnh nhân này';
+                    prescriptionSelect.appendChild(option);
+                    console.log('No prescriptions found for this patient');
                     }
                     })
-                    .catch(error => console.error('Error fetching prescriptions:', error));
+                    .catch(error => {
+                    console.error('Error fetching prescriptions:', error);
+                    // Show error in the select
+                    var option = document.createElement('option');
+                    option.disabled = true;
+                    option.textContent = 'Lỗi: Không thể tải đơn thuốc';
+                    prescriptionSelect.appendChild(option);
+                    });
                     } else {
                     // Hide prescription selection if no patient selected
+                    console.log('No patient selected, hiding prescription container');
                     prescriptionContainer.style.display = 'none';
                     }
                     });
+
+                    // If patient is already selected on page load, trigger the change event
+                    if (patientSelect.value) {
+                    console.log('Patient already selected on page load, triggering change event');
+                    patientSelect.dispatchEvent(new Event('change'));
+                    }
+                    } else {
+                    console.error('Could not find one or more prescription-related elements in the DOM');
+                    if (!patientSelect) console.error('Missing: patient_id select');
+                    if (!prescriptionContainer) console.error('Missing: prescription-container div');
+                    if (!prescriptionSelect) console.error('Missing: prescription_id select');
                     }
 
                     // Add prescription selection handler

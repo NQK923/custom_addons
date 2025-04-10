@@ -146,10 +146,18 @@ class InvoiceWebsiteController(http.Controller):
 
                 # If we're adding a prescription, process its products automatically
                 product_lines = []
+                unique_product_ids = set()  # Track unique product IDs
+
                 for line in prescription.prescription_line_ids:
                     product = line.product_id
                     if not product:
                         continue
+
+                    # Check for duplicate product
+                    if product.id in unique_product_ids:
+                        return {}, f'Thuốc {product.name} đã tồn tại trong đơn thuốc. Không thể thêm cùng một thuốc nhiều lần.'
+
+                    unique_product_ids.add(product.id)
 
                     # Check stock quantity
                     if line.quantity > product.quantity:
@@ -212,6 +220,11 @@ class InvoiceWebsiteController(http.Controller):
         product_qtys = form.getlist('product_qty[]')
         product_prices = form.getlist('product_price_unit[]')
 
+        # Track unique product IDs (including any from prescription)
+        unique_product_ids = set()
+        for line in product_lines:
+            unique_product_ids.add(line[2]['product_id'])
+
         # Process each product line
         for i in range(len(product_ids)):
             if i < len(product_qtys) and product_ids[i]:
@@ -220,6 +233,13 @@ class InvoiceWebsiteController(http.Controller):
                     quantity = float(product_qtys[i])
 
                     if product_id > 0 and quantity > 0:
+                        # Check for duplicate product
+                        if product_id in unique_product_ids:
+                            product = request.env['pharmacy.product'].browse(product_id)
+                            return {}, f'Thuốc {product.name} đã được thêm vào hóa đơn. Không thể thêm cùng một thuốc nhiều lần.'
+
+                        unique_product_ids.add(product_id)
+
                         # Kiểm tra số lượng tồn kho
                         product = request.env['pharmacy.product'].browse(product_id)
                         if product.exists():
@@ -255,7 +275,6 @@ class InvoiceWebsiteController(http.Controller):
             values['product_lines'] = product_lines
 
         return values, None  # Return values and no error message
-
     @http.route('/invoice/action/<string:action>/<int:invoice_id>', type='http', auth='user', website=True)
     def invoice_action(self, action, invoice_id, **kw):
         invoice = request.env['clinic.invoice'].browse(invoice_id)
@@ -288,31 +307,44 @@ class InvoiceWebsiteController(http.Controller):
 
         try:
             patient_id = int(patient_id)
-            # Get prescriptions for patient
+            _logger.info(f"Fetching prescriptions for patient ID: {patient_id}")
+
             prescriptions = request.env['prescription.order'].search([
-                ('patient_id', '=', patient_id),
-                ('state', '=', 'confirmed')  # Only confirmed prescriptions
+                ('patient_id', '=', patient_id)
             ])
 
+            _logger.info(f"Found {len(prescriptions)} prescriptions for patient")
+
             result = {
-                'prescriptions': [{
-                    'id': prescription.id,
-                    'name': prescription.name,
-                    'date': prescription.prescription_date.strftime(
-                        '%d/%m/%Y') if prescription.prescription_date else '',
-                } for prescription in prescriptions]
+                'prescriptions': []
             }
+
+            for prescription in prescriptions:
+                try:
+                    prescription_date_str = ''
+                    if hasattr(prescription, 'prescription_date') and prescription.prescription_date:
+                        prescription_date_str = prescription.prescription_date.strftime('%d/%m/%Y')
+
+                    result['prescriptions'].append({
+                        'id': prescription.id,
+                        'name': getattr(prescription, 'name', f"Đơn thuốc #{prescription.id}"),
+                        'date': prescription_date_str
+                    })
+                except Exception as e:
+                    _logger.error(f"Error processing prescription {prescription.id}: {str(e)}")
+
+            _logger.info(f"Returning {len(result['prescriptions'])} prescriptions")
 
             return request.make_response(
                 json.dumps(result),
                 headers=[('Content-Type', 'application/json')]
             )
         except Exception as e:
+            _logger.error(f"Error in get_patient_prescriptions: {str(e)}", exc_info=True)
             return request.make_response(
                 json.dumps({'error': str(e)}),
                 headers=[('Content-Type', 'application/json')]
             )
-
     @http.route('/api/prescription/<int:prescription_id>', type='http', auth='user')
     def get_prescription_details(self, prescription_id, **kw):
         """API endpoint to get detailed prescription information"""

@@ -226,13 +226,20 @@ class ClinicInvoiceLine(models.Model):
                                    patient.insurance_state == 'Hợp lệ')
             _logger.info(f"Has valid insurance: {has_valid_insurance}")
 
-            # Safely get coverage rate with proper error handling
+            # Get coverage rate directly from insurance policy
             coverage_rate = 0
             try:
-                if has_valid_insurance and patient.insurance_coverage_rate:
-                    _logger.info(f"Raw insurance coverage rate: {patient.insurance_coverage_rate}")
-                    coverage_rate = float(patient.insurance_coverage_rate) / 100
-                    _logger.info(f"Processed coverage rate: {coverage_rate}")
+                if has_valid_insurance:
+                    # Query the insurance policy directly
+                    insurance = self.env['clinic.insurance.policy'].search([
+                        ('patient_id', '=', patient.id),
+                        ('state', '=', 'valid')
+                    ], limit=1)
+
+                    if insurance and insurance.coverage_rate:
+                        _logger.info(f"Raw insurance coverage rate: {insurance.coverage_rate}")
+                        coverage_rate = float(insurance.coverage_rate) / 100
+                        _logger.info(f"Processed coverage rate: {coverage_rate}")
             except (ValueError, TypeError, AttributeError) as e:
                 _logger.error(f"Error calculating coverage rate: {e}")
                 coverage_rate = 0
