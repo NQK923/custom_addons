@@ -14,7 +14,7 @@ class AppointmentController(http.Controller):
         """
         # Lấy thông tin bệnh nhân và bác sĩ cho form tạo mới
         patients = request.env['clinic.patient'].sudo().search([])
-        doctors = request.env['clinic.staff'].sudo().search([('staff_type', '=', 'Bác sĩ')])
+        doctors = request.env['clinic.staff'].sudo().search([('staff_type', '=', 'Bác sĩ')], order='staff_name asc')
         rooms = request.env['clinic.room'].sudo().search([('room_type', '=', 'exam')])
 
         # Xử lý filter trạng thái
@@ -25,7 +25,7 @@ class AppointmentController(http.Controller):
         search_term = kwargs.get('search', '')
         if search_term:
             domain += ['|', '|', '|',
-                       ('name', 'ilike', search_term),
+                       ('id', 'ilike', search_term),
                        ('patient_id.name', 'ilike', search_term),
                        ('patient_id.code', 'ilike', search_term),
                        ('staff_id.name', 'ilike', search_term)
@@ -46,7 +46,7 @@ class AppointmentController(http.Controller):
             for app in appointments:
                 calendar_data.append({
                     'id': app.id,
-                    'title': f"{app.patient_id.name} - {app.staff_id.name}",
+                    'title': f"{app.patient_id.name} - {app.staff_code} {app.staff_name}",
                     'start': app.appointment_date.strftime('%Y-%m-%dT%H:%M:%S'),
                     'end': (app.appointment_date + timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%S'),
                     'url': f'/clinic/appointment/{app.id}',
@@ -292,5 +292,27 @@ class AppointmentController(http.Controller):
                 appointment.action_draft()
 
             return request.redirect(f'/clinic/appointment/{appointment_id}?action_success=1')
+        except ValidationError as e:
+            return request.redirect(f'/clinic/appointment/{appointment_id}?error=1&message={e}')
         except Exception as e:
             return request.redirect(f'/clinic/appointment/{appointment_id}?error=1&message={e}')
+
+    @http.route('/clinic/appointment/<int:appointment_id>/delete', type='http', auth='user', website=True)
+    def appointment_delete(self, appointment_id, **kwargs):
+        """
+        Xoá lịch hẹn
+        """
+        appointment = request.env['clinic.appointment'].sudo().browse(appointment_id)
+        if not appointment.exists():
+            return request.redirect('/clinic/appointments')
+
+        try:
+            # Lưu một số thông tin trước khi xoá để hiển thị thông báo
+            appointment_id = appointment.id
+
+            # Xoá lịch hẹn
+            appointment.unlink()
+
+            return request.redirect(f'/clinic/appointments?deleted=1&appointment_name={appointment_id}')
+        except Exception as e:
+            return request.redirect(f'/clinic/appointment/{appointment_id}?error=1&message=Không thể xoá lịch hẹn: {e}')

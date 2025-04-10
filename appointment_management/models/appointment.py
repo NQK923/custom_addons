@@ -25,6 +25,17 @@ class ClinicAppointment(models.Model):
     patient_name = fields.Char(
         related="patient_id.name"
     )
+    staff_code = fields.Char(related="staff_id.name", string="Mã bác sĩ")
+    staff_name = fields.Char(related="staff_id.staff_name", string="Tên bác sĩ")
+    staff_display = fields.Char(string="Bác sĩ (Mã - Tên)", compute="_compute_staff_display", store=True)
+
+    @api.depends('staff_id', 'staff_code', 'staff_name')
+    def _compute_staff_display(self):
+        for record in self:
+            if record.staff_id:
+                record.staff_display = f"{record.staff_code} - {record.staff_name}"
+            else:
+                record.staff_display = ""
 
     @api.model_create_multi
     def create(self, vals_list):
