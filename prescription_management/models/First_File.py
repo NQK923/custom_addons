@@ -155,3 +155,11 @@ class PrescriptionLine(models.Model):
                     raise models.ValidationError(
                         f"Thuốc {product.name} đã tồn tại trong đơn thuốc!"
                     )
+
+    @api.constrains('quantity', 'product_id')
+    def _check_inventory(self):
+        for record in self:
+            if record.quantity > record.product_id.quantity:
+                raise ValidationError(
+                    f"Số lượng thuốc {record.product_id.name} vượt quá tồn kho! "
+                )

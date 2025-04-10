@@ -183,12 +183,12 @@
 
                             <div class="form-group text-right">
                                 <a href="/pharmacy/products" class="btn btn-secondary mr-2">
-                                    <i class="fa fa-times"></i>
+                                    <i class="fa fa-times"/>
                                     Hủy
                                 </a>
                                 <button type="submit" class="btn btn-primary">
-                                    <i t-if="edit" class="fa fa-save"></i>
-                                    <i t-else="" class="fa fa-plus"></i>
+                                    <i t-if="edit" class="fa fa-save"/>
+                                    <i t-else="" class="fa fa-plus"/>
                                     <t t-if="edit">Cập nhật dược phẩm</t>
                                     <t t-else="">Thêm dược phẩm</t>
                                 </button>

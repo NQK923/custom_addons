@@ -4,7 +4,7 @@
     'description': "Module cho phép tìm kiếm bệnh nhân theo email, xác thực OTP và hiển thị lịch sử khám.",
     'author': "Your Name",
     'version': '1.0',
-    'depends': ['base', 'website', 'mail', 'patient_management', 'insurance_management', 'Treatment_and_care_management'],  # Added 'mail' dependency
+    'depends': ['base', 'website', 'mail', 'patient_management', 'insurance_management', 'Treatment_and_care_management', 'medical_management'],  # Added 'mail' dependency
     'data': [
         'security/ir.model.access.csv',
         'data/mail_template.xml',

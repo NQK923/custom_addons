@@ -143,10 +143,12 @@
                             <t t-esc="prescription.patient_id.name"/>
                             (<t t-esc="prescription.patient_id.code"/>)
                             <t t-if="prescription.staff_id">
-                                | <strong>Bác sĩ:</strong>
+                                |
+                                <strong>Bác sĩ:</strong>
                                 <t t-esc="prescription.staff_id.staff_name"/>
                             </t>
-                            | <strong>Số ngày uống:</strong>
+                            |
+                            <strong>Số ngày uống:</strong>
                             <t t-esc="prescription.numdate"/>
                             ngày
                         </div>
@@ -194,7 +196,12 @@
                                                         </td>
                                                         <td>
                                                             <span t-esc="line.quantity"/>
-                                                            <small t-esc="line.product_id.uom_id"/>
+                                                            <t t-if="line.product_id.uom_id == 'pill'">Viên</t>
+                                                            <t t-elif="line.product_id.uom_id == 'bottle'">Chai</t>
+                                                            <t t-elif="line.product_id.uom_id == 'box'">Hộp</t>
+                                                            <t t-elif="line.product_id.uom_id == 'pack'">Gói</t>
+                                                            <t t-elif="line.product_id.uom_id == 'tube'">Ống</t>
+                                                            <t t-else="" t-esc="line.product_id.uom_id"/>
                                                         </td>
                                                         <td t-esc="line.dosage"/>
                                                         <td t-esc="line.instructions or '-'"/>
@@ -228,7 +235,8 @@
                                 <h5 class="mb-0">Thêm thuốc vào đơn</h5>
                             </div>
                             <div class="card-body">
-                                <form t-att-action="'/pharmacy/prescription/%s/edit' % prescription.id" method="POST">
+                                <form t-att-action="'/pharmacy/prescription/%s/edit' % prescription.id" method="POST"
+                                      id="add-medicine-form">
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                                     <div class="form-group row">
@@ -240,16 +248,26 @@
                                                     required="required">
                                                 <option value="">-- Chọn thuốc --</option>
                                                 <t t-foreach="products" t-as="product">
-                                                    <option t-att-value="product.id">
+                                                    <option t-att-value="product.id"
+                                                            t-att-data-quantity="product.quantity"
+                                                            t-att-data-name="product.name"
+                                                            t-att-data-uom="product.uom_id"
+                                                            t-att-data-exists="any(line.product_id.id == product.id for line in prescription_lines if prescription_lines)">
                                                         <t t-esc="product.code"/>
                                                         -
                                                         <t t-esc="product.name"/>
                                                         (
                                                         <t t-esc="product.quantity"/>
-                                                        <t t-esc="product.uom_id"/>)
+                                                        <t t-if="product.uom_id == 'pill'">Viên</t>
+                                                        <t t-elif="product.uom_id == 'bottle'">Chai</t>
+                                                        <t t-elif="product.uom_id == 'box'">Hộp</t>
+                                                        <t t-elif="product.uom_id == 'pack'">Gói</t>
+                                                        <t t-elif="product.uom_id == 'tube'">Ống</t>
+                                                        <t t-else="" t-esc="product.uom_id"/>)
                                                     </option>
                                                 </t>
                                             </select>
+                                            <div class="invalid-feedback" id="product-feedback"></div>
                                         </div>
                                     </div>
 
@@ -260,6 +278,8 @@
                                         <div class="col-sm-4">
                                             <input type="number" id="quantity" name="quantity" class="form-control"
                                                    required="required" min="0.5" step="0.5"/>
+                                            <small class="form-text text-muted" id="quantity-help"></small>
+                                            <div class="invalid-feedback" id="quantity-feedback"></div>
                                         </div>
 
                                         <label for="dosage" class="col-sm-2 col-form-label">Liều lượng
@@ -281,7 +301,7 @@
 
                                     <div class="form-group row">
                                         <div class="col-sm-10 offset-sm-2">
-                                            <button type="submit" class="btn btn-success">
+                                            <button type="submit" class="btn btn-success" id="add-medicine-btn">
                                                 <i class="fa fa-plus"></i>
                                                 Thêm thuốc
                                             </button>
@@ -298,6 +318,136 @@
                     </div>
                 </div>
             </div>
+
+            <script type="text/javascript">
+                $(document).ready(function() {
+                // Function to display existing medicine error
+                function showExistingMedicineError(name) {
+                $('#product-feedback').text('Thuốc ' + name + ' đã tồn tại trong đơn thuốc!');
+                $('#product_id').addClass('is-invalid');
+                return false;
+                }
+
+                // Function to validate quantity
+                function validateQuantity(inputQty, maxQty, name) {
+                if (inputQty > maxQty) {
+                $('#quantity-feedback').text('Số lượng vượt quá tồn kho! Hiện có ' + maxQty + ' trong
+                kho.');
+                $('#quantity').addClass('is-invalid');
+                return false;
+                }
+                return true;
+                }
+
+                // Get UOM display text
+                function getUomDisplay(uomValue) {
+                switch(uomValue) {
+                case 'pill': return 'Viên';
+                case 'bottle': return 'Chai';
+                case 'box': return 'Hộp';
+                case 'pack': return 'Gói';
+                case 'tube': return 'Ống';
+                default: return uomValue;
+                }
+                }
+
+                // Handle product selection change
+                $('#product_id').on('change', function() {
+                // Reset validations
+                $('#product_id, #quantity').removeClass('is-invalid');
+                $('#product-feedback, #quantity-feedback').text('');
+
+                var selectedOption = $(this).find('option:selected');
+                if (selectedOption.val() === '') {
+                $('#quantity-help').text('');
+                $('#quantity').val('').attr('max', '').attr('placeholder', '');
+                $('#add-medicine-btn').prop('disabled', false);
+                return;
+                }
+
+                var maxQuantity = parseFloat(selectedOption.data('quantity'));
+                var productName = selectedOption.data('name');
+                var uomValue = selectedOption.data('uom');
+                var exists = selectedOption.data('exists');
+                var uomDisplay = getUomDisplay(uomValue);
+
+                // Check if product already exists in prescription
+                if (exists) {
+                showExistingMedicineError(productName);
+                $('#add-medicine-btn').prop('disabled', true);
+                } else {
+                $('#add-medicine-btn').prop('disabled', false);
+                }
+
+                // Update quantity field with max value
+                $('#quantity').attr('max', maxQuantity);
+                $('#quantity').attr('placeholder', 'Tối đa: ' + maxQuantity);
+                $('#quantity-help').text('Số lượng tối đa là ' + maxQuantity + ' ' + uomDisplay);
+                });
+
+                // Validate quantity on input
+                $('#quantity').on('input', function() {
+                $(this).removeClass('is-invalid');
+                $('#quantity-feedback').text('');
+
+                var selectedOption = $('#product_id').find('option:selected');
+                if (selectedOption.val() === '') return;
+
+                var maxQuantity = parseFloat(selectedOption.data('quantity'));
+                var inputQuantity = parseFloat($(this).val()) || 0;
+                var productName = selectedOption.data('name');
+                var uomValue = selectedOption.data('uom');
+                var uomDisplay = getUomDisplay(uomValue);
+
+                if (inputQuantity > maxQuantity) {
+                validateQuantity(inputQuantity, maxQuantity, productName, uomDisplay);
+                $('#add-medicine-btn').prop('disabled', true);
+                } else {
+                $('#add-medicine-btn').prop('disabled', false);
+                }
+                });
+
+                // Form submission validation
+                $('#add-medicine-form').on('submit', function(e) {
+                // Reset validation
+                $('#product_id, #quantity').removeClass('is-invalid');
+                $('#product-feedback, #quantity-feedback').text('');
+
+                var selectedOption = $('#product_id').find('option:selected');
+                if (selectedOption.val() === '') return true;
+
+                var maxQuantity = parseFloat(selectedOption.data('quantity'));
+                var inputQuantity = parseFloat($('#quantity').val()) || 0;
+                var productName = selectedOption.data('name');
+                var exists = selectedOption.data('exists');
+                var uomValue = selectedOption.data('uom');
+                var uomDisplay = getUomDisplay(uomValue);
+
+                var isValid = true;
+
+                // Check if product already exists
+                if (exists) {
+                isValid = false;
+                showExistingMedicineError(productName);
+                }
+
+                // Validate quantity
+                if (inputQuantity > maxQuantity) {
+                isValid = false;
+                validateQuantity(inputQuantity, maxQuantity, productName, uomDisplay);
+                }
+
+                // Prevent form submission if validation fails
+                if (!isValid) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+                }
+
+                return true;
+                });
+                });
+            </script>
         </t>
     </template>
 </odoo>

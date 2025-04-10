@@ -104,12 +104,12 @@
                             <div class="form-group row">
                                 <div class="col-sm-10 offset-sm-2">
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="fa fa-save"></i>
+                                        <i class="fa fa-save"/>
                                         Cập nhật đơn thuốc
                                     </button>
                                     <a t-att-href="'/pharmacy/prescription/%s' % prescription.id"
                                        class="btn btn-secondary ml-2">
-                                        <i class="fa fa-times"></i>
+                                        <i class="fa fa-times"/>
                                         Hủy
                                     </a>
                                 </div>

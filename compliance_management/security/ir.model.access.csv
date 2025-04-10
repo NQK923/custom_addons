@@ -1,9 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_health_regulation_user,health.regulation.user,model_health_regulation,group_health_compliance_user,1,0,0,0
 access_health_regulation_manager,health.regulation.manager,model_health_regulation,group_health_compliance_manager,1,1,1,1
-access_health_authority_user,health.authority.user,model_health_authority,group_health_compliance_user,1,0,0,0
 access_health_authority_manager,health.authority.manager,model_health_authority,group_health_compliance_manager,1,1,1,1
-access_health_compliance_user,health.compliance.user,model_health_compliance,group_health_compliance_user,1,1,1,0
 access_health_compliance_manager,health.compliance.manager,model_health_compliance,group_health_compliance_manager,1,1,1,1
-access_health_compliance_action_user,health.compliance.action.user,model_health_compliance_action,group_health_compliance_user,1,1,1,0
 access_health_compliance_action_manager,health.compliance.action.manager,model_health_compliance_action,group_health_compliance_manager,1,1,1,1

@@ -123,16 +123,18 @@ class PatientController(http.Controller):
         if not email:
             return True
 
-        # Chuẩn hóa email
         email_normalized = email.strip().lower()
 
-        # Tìm kiếm các bệnh nhân có email trùng lặp
-        domain = [('email_normalized', '=', email_normalized)]
+        domain = [('email', '!=', False)]
         if patient_id:
             domain.append(('id', '!=', patient_id))
 
-        existing_patient = request.env['clinic.patient'].search(domain, limit=1)
-        return not existing_patient
+        patients = request.env['clinic.patient'].search(domain)
+        for patient in patients:
+            if patient.email and patient.email.strip().lower() == email_normalized:
+                return False
+
+        return True
 
     def _check_unique_phone(self, phone, patient_id=None):
         """Kiểm tra tính duy nhất của số điện thoại"""
@@ -142,13 +144,20 @@ class PatientController(http.Controller):
         # Chuẩn hóa số điện thoại (loại bỏ các ký tự không phải số)
         phone_normalized = re.sub(r'\D', '', phone)
 
-        # Tìm kiếm các bệnh nhân có số điện thoại trùng lặp
-        domain = [('phone_normalized', '=', phone_normalized)]
+        # Thay vì tìm kiếm theo phone_normalized, lấy tất cả bệnh nhân có số điện thoại
+        domain = [('phone', '!=', False)]
         if patient_id:
             domain.append(('id', '!=', patient_id))
 
-        existing_patient = request.env['clinic.patient'].search(domain, limit=1)
-        return not existing_patient
+        patients = request.env['clinic.patient'].search(domain)
+
+        for patient in patients:
+            if patient.phone:
+                current_phone_normalized = re.sub(r'\D', '', patient.phone)
+                if current_phone_normalized == phone_normalized:
+                    return False
+
+        return True
 
     @http.route('/patients/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def patient_create(self, **kw):
@@ -161,16 +170,12 @@ class PatientController(http.Controller):
 
                 # Kiểm tra email
                 if email and not self._check_unique_email(email):
-                    existing = request.env['clinic.patient'].search([('email_normalized', '=', email.strip().lower())],
-                                                                    limit=1)
-                    error_msg = f"Email '{email}' đã được sử dụng cho bệnh nhân {existing.name}!"
+                    error_msg = f"Email '{email}' đã được sử dụng!"
                     raise ValidationError(error_msg)
 
                 # Kiểm tra số điện thoại
                 if phone and not self._check_unique_phone(phone):
-                    existing = request.env['clinic.patient'].search(
-                        [('phone_normalized', '=', re.sub(r'\D', '', phone))], limit=1)
-                    error_msg = f"Số điện thoại '{phone}' đã được sử dụng cho bệnh nhân {existing.name}!"
+                    error_msg = f"Số điện thoại '{phone}' đã được sử dụng!"
                     raise ValidationError(error_msg)
 
                 # Xử lý dữ liệu form
@@ -217,20 +222,12 @@ class PatientController(http.Controller):
 
                 # Kiểm tra email
                 if email and not self._check_unique_email(email, patient.id):
-                    existing = request.env['clinic.patient'].search([
-                        ('email_normalized', '=', email.strip().lower()),
-                        ('id', '!=', patient.id)
-                    ], limit=1)
-                    error_msg = f"Email '{email}' đã được sử dụng cho bệnh nhân {existing.name}!"
+                    error_msg = f"Email '{email}' đã được sử dụng!"
                     raise ValidationError(error_msg)
 
                 # Kiểm tra số điện thoại
                 if phone and not self._check_unique_phone(phone, patient.id):
-                    existing = request.env['clinic.patient'].search([
-                        ('phone_normalized', '=', re.sub(r'\D', '', phone)),
-                        ('id', '!=', patient.id)
-                    ], limit=1)
-                    error_msg = f"Số điện thoại '{phone}' đã được sử dụng cho bệnh nhân {existing.name}!"
+                    error_msg = f"Số điện thoại '{phone}' đã được sử dụng!"
                     raise ValidationError(error_msg)
 
                 # Xử lý dữ liệu form

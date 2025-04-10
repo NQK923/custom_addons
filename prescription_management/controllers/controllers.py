@@ -412,12 +412,36 @@ class PrescriptionManagementController(http.Controller):
                 values = {
                     'prescription': prescription_id,
                     'prescription_lines': prescription_id.prescription_line_ids,
-                    'error_message': _('Please fill in all required fields'),
+                    'error_message': _('Vui lòng điền đầy đủ các trường bắt buộc'),
                     'products': request.env['pharmacy.product'].sudo().search([], order='name'),
                 }
                 return request.render('prescription_management.edit_prescription_template', values)
 
             try:
+                product = request.env['pharmacy.product'].sudo().browse(product_id)
+                if quantity > product.quantity:
+                    values = {
+                        'prescription': prescription_id,
+                        'prescription_lines': prescription_id.prescription_line_ids,
+                        'error_message': f"Số lượng thuốc {product.name} vượt quá tồn kho! Hiện có {product.quantity} {product.uom_id} trong kho.",
+                        'products': request.env['pharmacy.product'].sudo().search([], order='name'),
+                    }
+                    return request.render('prescription_management.edit_prescription_template', values)
+
+                existing_line = request.env['prescription.line'].sudo().search([
+                    ('order_id', '=', prescription_id.id),
+                    ('product_id', '=', product_id)
+                ], limit=1)
+
+                if existing_line:
+                    values = {
+                        'prescription': prescription_id,
+                        'prescription_lines': prescription_id.prescription_line_ids,
+                        'error_message': f"Thuốc {product.name} đã tồn tại trong đơn thuốc!",
+                        'products': request.env['pharmacy.product'].sudo().search([], order='name'),
+                    }
+                    return request.render('prescription_management.edit_prescription_template', values)
+
                 request.env['prescription.line'].sudo().create({
                     'order_id': prescription_id.id,
                     'product_id': product_id,
@@ -434,6 +458,13 @@ class PrescriptionManagementController(http.Controller):
                     'products': request.env['pharmacy.product'].sudo().search([], order='name'),
                 }
                 return request.render('prescription_management.edit_prescription_template', values)
+
+        values = {
+            'prescription': prescription_id,
+            'prescription_lines': prescription_id.prescription_line_ids,
+            'products': request.env['pharmacy.product'].sudo().search([], order='name'),
+        }
+        return request.render('prescription_management.edit_prescription_template', values)
 
         values = {
             'prescription': prescription_id,
