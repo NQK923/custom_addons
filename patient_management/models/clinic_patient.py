@@ -187,7 +187,6 @@ class ClinicPatient(models.Model):
                 patient.insurance_coverage_rate = insurance.coverage_rate
                 patient.insurance_state = 'Hợp lệ' if insurance.state == 'valid' else 'Hết hạn'
             else:
-                # Nếu không có bảo hiểm, xóa các trường
                 patient._clear_insurance_fields()
 
     def _clear_insurance_fields(self):

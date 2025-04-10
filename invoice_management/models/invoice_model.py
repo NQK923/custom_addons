@@ -5,6 +5,9 @@ import uuid  # Add this at the top
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError, UserError
 import uuid
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class ClinicInvoice(models.Model):
@@ -202,26 +205,52 @@ class ClinicInvoiceLine(models.Model):
         for line in self:
             line.price_subtotal = line.quantity * line.price_unit
 
-            has_valid_insurance = (line.invoice_id.patient_id and
-                                   line.invoice_id.patient_id.has_insurance and
-                                   line.invoice_id.patient_id.insurance_state == 'Hợp lệ')
+            # Debug logs
+            patient = line.invoice_id.patient_id
+            _logger.info(f"Patient {patient.name} - has_insurance: {patient.has_insurance}")
+            _logger.info(f"Patient insurance state: {patient.insurance_state}")
 
+            # For service
+            if line.service_id:
+                _logger.info(
+                    f"Service {line.service_id.service_name} - insurance_covered: {getattr(line.service_id, 'insurance_covered', False)}")
+
+            # For product
+            if line.product_id:
+                _logger.info(
+                    f"Product {line.product_id.name} - insurance_covered: {getattr(line.product_id, 'insurance_covered', False)}")
+
+            # Kiểm tra bảo hiểm hợp lệ và lấy tỷ lệ chi trả
+            has_valid_insurance = (patient and
+                                   patient.has_insurance and
+                                   patient.insurance_state == 'Hợp lệ')
+            _logger.info(f"Has valid insurance: {has_valid_insurance}")
+
+            # Safely get coverage rate with proper error handling
+            coverage_rate = 0
             try:
-                coverage_rate = 0
-                if has_valid_insurance and line.invoice_id.patient_id.insurance_coverage_rate:
-                    coverage_rate = float(line.invoice_id.patient_id.insurance_coverage_rate) / 100
-            except (ValueError, TypeError, AttributeError):
+                if has_valid_insurance and patient.insurance_coverage_rate:
+                    _logger.info(f"Raw insurance coverage rate: {patient.insurance_coverage_rate}")
+                    coverage_rate = float(patient.insurance_coverage_rate) / 100
+                    _logger.info(f"Processed coverage rate: {coverage_rate}")
+            except (ValueError, TypeError, AttributeError) as e:
+                _logger.error(f"Error calculating coverage rate: {e}")
                 coverage_rate = 0
 
-            is_covered = ((line.service_id and line.service_id.insurance_covered) or
-                          (line.product_id and line.product_id.insurance_covered))
+            # Kiểm tra xem dịch vụ/thuốc có được bảo hiểm chi trả không
+            is_service_covered = line.service_id and getattr(line.service_id, 'insurance_covered', False)
+            is_product_covered = line.product_id and getattr(line.product_id, 'insurance_covered', False)
+            is_covered = is_service_covered or is_product_covered
+            _logger.info(f"Is item covered by insurance: {is_covered}")
 
             if has_valid_insurance and is_covered and coverage_rate > 0:
                 line.insurance_amount = line.price_subtotal * coverage_rate
                 line.patient_amount = line.price_subtotal * (1 - coverage_rate)
+                _logger.info(f"Insurance applies: {line.insurance_amount} VND")
             else:
                 line.insurance_amount = 0
                 line.patient_amount = line.price_subtotal
+                _logger.info("No insurance discount applied")
 
     @api.constrains('quantity')
     def _check_quantity(self):
