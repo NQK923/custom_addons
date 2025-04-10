@@ -15,16 +15,14 @@
             <div t-if="request.params.get('success')" class="alert alert-success alert-dismissible fade show"
                  role="alert">
                 Đã tạo lịch hẹn mới thành công!
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&amp;times;</span>
-                </button>
+            </div>
+            <div t-if="request.params.get('deleted')" class="alert alert-success alert-dismissible fade show"
+                 role="alert">
+                Đã xoá lịch hẹn #<strong t-esc="request.params.get('appointment_name', '')"/> thành công!
             </div>
             <div t-if="request.params.get('error')" class="alert alert-danger alert-dismissible fade show" role="alert">
                 Có lỗi xảy ra:
                 <t t-esc="request.params.get('message', 'Vui lòng kiểm tra lại thông tin')"/>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&amp;times;</span>
-                </button>
             </div>
 
             <!-- Form tìm kiếm lịch hẹn -->
@@ -105,7 +103,7 @@
                                     <option value="">-- Chọn bác sĩ --</option>
                                     <t t-foreach="doctors" t-as="doctor">
                                         <option t-att-value="doctor.id">
-                                            <t t-esc="doctor.name"/>
+                                            <t t-esc="doctor.name"/> - <t t-esc="doctor.staff_name"/>
                                         </option>
                                     </t>
                                 </select>
@@ -189,7 +187,7 @@
                                 <div class="card appointment-card h-100">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <span class="font-weight-bold">
-                                            <t t-esc="appointment.name"/>
+                                            Lịch hẹn #<t t-esc="appointment.id"/>
                                         </span>
                                         <span t-attf-class="badge badge-{{ appointment.state }}">
                                             <t t-if="appointment.state == 'draft'">Nháp</t>
@@ -205,7 +203,7 @@
                                         </p>
                                         <p>
                                             <strong>Bác sĩ:</strong>
-                                            <t t-esc="appointment.staff_id.name"/>
+                                            <t t-esc="appointment.staff_code"/> - <t t-esc="appointment.staff_name"/>
                                         </p>
                                         <p>
                                             <strong>Thời gian:</strong>

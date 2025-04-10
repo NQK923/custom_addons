@@ -3,6 +3,16 @@
     <!-- Template chi tiết lịch hẹn -->
     <template id="appointment_detail_template" name="Appointment Detail">
         <t t-call="appointment_management.appointment_layout">
+            <style>
+                /* Action buttons */
+                .btn-action {
+                min-width: 130px;
+                margin-right: 8px;
+                margin-bottom: 5px;
+                white-space: nowrap;
+                display: inline-block;
+                }
+            </style>
             <!-- Breadcrumb và nút quay lại -->
             <div class="row mb-3">
                 <div class="col-12">
@@ -23,30 +33,22 @@
             <div t-if="request.params.get('updated')" class="alert alert-success alert-dismissible fade show"
                  role="alert">
                 Đã cập nhật lịch hẹn thành công!
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&amp;times;</span>
-                </button>
             </div>
             <div t-if="request.params.get('action_success')" class="alert alert-success alert-dismissible fade show"
                  role="alert">
                 Đã thực hiện thao tác thành công!
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&amp;times;</span>
-                </button>
             </div>
             <div t-if="request.params.get('error')" class="alert alert-danger alert-dismissible fade show" role="alert">
                 Có lỗi xảy ra:
                 <t t-esc="request.params.get('message', 'Vui lòng kiểm tra lại thông tin')"/>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&amp;times;</span>
-                </button>
             </div>
 
             <!-- Thông tin lịch hẹn -->
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">
-                        <t t-esc="appointment.name"/>
+                        Lịch hẹn #
+                        <t t-esc="appointment.id"/>
                         - Chi tiết lịch hẹn
                     </h4>
                     <span t-attf-class="badge badge-pill badge-{{ appointment.state == 'draft' and 'info' or
@@ -90,7 +92,9 @@
                             <h5 class="border-bottom pb-2 mb-3">Thông tin lịch hẹn</h5>
                             <p>
                                 <strong>Bác sĩ:</strong>
-                                <t t-esc="appointment.staff_id.name"/>
+                                <t t-esc="appointment.staff_code"/>
+                                -
+                                <t t-esc="appointment.staff_name"/>
                             </p>
                             <p>
                                 <strong>Ngày giờ hẹn:</strong>
@@ -112,40 +116,47 @@
                     <div class="text-center">
                         <t t-if="appointment.state == 'draft'">
                             <a t-att-href="'/clinic/appointment/%s/action?action=confirm' % appointment.id"
-                               class="btn btn-success btn-action mr-2">
-                                <i class="fa fa-check-circle"></i>
+                               class="btn btn-success btn-action">
+                                <i class="fa fa-check-circle"/>&amp;nbsp;
                                 Xác nhận
                             </a>
                             <a t-att-href="'/clinic/appointment/%s/action?action=cancel' % appointment.id"
-                               class="btn btn-danger btn-action mr-2"
+                               class="btn btn-danger btn-action"
                                onclick="return confirm('Bạn có chắc chắn muốn hủy lịch hẹn này?')">
-                                <i class="fa fa-times-circle"></i>
+                                <i class="fa fa-times-circle"/>&amp;nbsp;
                                 Hủy
                             </a>
                         </t>
                         <t t-if="appointment.state == 'confirmed'">
                             <a t-att-href="'/clinic/appointment/%s/action?action=done' % appointment.id"
-                               class="btn btn-secondary btn-action mr-2">
-                                <i class="fa fa-check-square"></i>
+                               class="btn btn-secondary btn-action">
+                                <i class="fa fa-check-square"/>&amp;nbsp;
                                 Hoàn thành
                             </a>
                             <a t-att-href="'/clinic/appointment/%s/action?action=cancel' % appointment.id"
-                               class="btn btn-danger btn-action mr-2"
+                               class="btn btn-danger btn-action"
                                onclick="return confirm('Bạn có chắc chắn muốn hủy lịch hẹn này?')">
-                                <i class="fa fa-times-circle"></i>
+                                <i class="fa fa-times-circle"/>&amp;nbsp;
                                 Hủy
                             </a>
                         </t>
                         <t t-if="appointment.state == 'cancelled'">
                             <a t-att-href="'/clinic/appointment/%s/action?action=draft' % appointment.id"
-                               class="btn btn-info btn-action mr-2">
-                                <i class="fa fa-undo"></i>
+                               class="btn btn-info btn-action">
+                                <i class="fa fa-undo"/>&amp;nbsp;
                                 Đặt về nháp
                             </a>
                         </t>
+                        <!-- Nút Xoá lịch hẹn cho tất cả các trạng thái -->
+                        <a t-att-href="'/clinic/appointment/%s/delete' % appointment.id"
+                           class="btn btn-danger btn-action"
+                           onclick="return confirm('Bạn có chắc chắn muốn xoá hoàn toàn lịch hẹn này? Hành động này không thể hoàn tác!')">
+                            <i class="fa fa-trash"/>&amp;nbsp;
+                            Xoá
+                        </a>
                         <a href="/clinic/appointments" class="btn btn-primary btn-action">
-                            <i class="fa fa-list"></i>
-                            Quay lại danh sách
+                            <i class="fa fa-list"/>&amp;nbsp;
+                            Danh sách
                         </a>
                     </div>
                 </div>
@@ -169,6 +180,8 @@
                                             <option t-att-value="doctor.id"
                                                     t-att-selected="doctor.id == appointment.staff_id.id">
                                                 <t t-esc="doctor.name"/>
+                                                -
+                                                <t t-esc="doctor.staff_name"/>
                                             </option>
                                         </t>
                                     </select>
@@ -221,47 +234,47 @@
             <!-- Form validation script -->
             <script type="text/javascript">
                 $(document).ready(function() {
-                    // Set min date for appointment date
-                    const today = new Date();
-                    const tomorrow = new Date(today);
-                    tomorrow.setDate(tomorrow.getDate() + 1);
+                // Set min date for appointment date
+                const today = new Date();
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
 
-                    const minDateStr = tomorrow.toISOString().split('T')[0];
-                    $('#appointment_date').attr('min', minDateStr);
+                const minDateStr = tomorrow.toISOString().split('T')[0];
+                $('#appointment_date').attr('min', minDateStr);
 
-                    // Form validation
-                    $('.appointment-form').on('submit', function(e) {
-                        var isValid = true;
+                // Form validation
+                $('.appointment-form').on('submit', function(e) {
+                var isValid = true;
 
-                        // Check required fields
-                        $(this).find('[required]').each(function() {
-                            if (!$(this).val()) {
-                                isValid = false;
-                                $(this).addClass('is-invalid');
-                            } else {
-                                $(this).removeClass('is-invalid');
-                            }
-                        });
+                // Check required fields
+                $(this).find('[required]').each(function() {
+                if (!$(this).val()) {
+                isValid = false;
+                $(this).addClass('is-invalid');
+                } else {
+                $(this).removeClass('is-invalid');
+                }
+                });
 
-                        // Check appointment date is at least tomorrow
-                        const appointmentDate = new Date($('#appointment_date').val());
-                        const tomorrow = new Date();
-                        tomorrow.setDate(tomorrow.getDate() + 1);
-                        tomorrow.setHours(0, 0, 0, 0);
+                // Check appointment date is at least tomorrow
+                const appointmentDate = new Date($('#appointment_date').val());
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
 
-                        if (appointmentDate &lt; tomorrow) {
-                            isValid = false;
-                            $('#appointment_date').addClass('is-invalid');
-                            alert('Lịch hẹn chỉ có thể được đặt từ ngày mai trở đi.');
-                        }
+                if (appointmentDate &lt; tomorrow) {
+                isValid = false;
+                $('#appointment_date').addClass('is-invalid');
+                alert('Lịch hẹn chỉ có thể được đặt từ ngày mai trở đi.');
+                }
 
-                        if (!isValid) {
-                            e.preventDefault();
-                            if (!$('#appointment_date').hasClass('is-invalid')) {
-                                alert('Vui lòng điền đầy đủ thông tin bắt buộc');
-                            }
-                        }
-                    });
+                if (!isValid) {
+                e.preventDefault();
+                if (!$('#appointment_date').hasClass('is-invalid')) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc');
+                }
+                }
+                });
                 });
             </script>
         </t>
