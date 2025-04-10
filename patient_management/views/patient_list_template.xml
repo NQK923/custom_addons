@@ -154,8 +154,7 @@
                                                         <a t-att-href="'/patients/%s/edit' % patient.id" class="btn btn-sm btn-outline-secondary">
                                                             <i class="fa fa-edit"/> Sửa
                                                         </a>
-                                                        <button type="button" t-att-data-patient-id="patient.id" t-att-data-patient-name="patient.name"
-                                                                class="btn btn-sm btn-outline-danger delete-patient-btn">
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" t-att-onclick="'showDeleteConfirmation(' + str(patient.id) + ', `' + patient.name + '`)'">
                                                             <i class="fa fa-trash"/> Xóa
                                                         </button>
                                                     </div>
@@ -211,7 +210,10 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                             </div>
                             <div class="modal-body">
-                                <p>Bạn có chắc chắn muốn xóa bệnh nhân <strong id="patientNameToDelete"></strong> không?</p>
+                                <p>Bạn có chắc chắn muốn xóa bệnh nhân
+                                    <strong id="patientNameToDelete"></strong>
+                                    không?
+                                </p>
                                 <p class="text-danger">Lưu ý: Hành động này không thể hoàn tác.</p>
                             </div>
                             <div class="modal-footer">
@@ -226,28 +228,59 @@
                 </div>
             </div>
 
-            <!-- JavaScript for delete confirmation -->
+            <!-- JavaScript for delete confirmation - Using vanilla JS -->
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Sử dụng document.querySelectorAll để lấy tất cả các nút xóa
-                    var deleteButtons = document.querySelectorAll('.delete-patient-btn');
-
-                    // Thêm sự kiện click cho mỗi nút
-                    deleteButtons.forEach(function(button) {
+                    // Setup modal close buttons
+                    var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
+                    closeButtons.forEach(function(button) {
                         button.addEventListener('click', function() {
-                            var patientId = this.getAttribute('data-patient-id');
-                            var patientName = this.getAttribute('data-patient-name');
-
-                            // Cập nhật nội dung modal
-                            document.getElementById('patientNameToDelete').textContent = patientName;
-                            document.getElementById('deletePatientForm').action = '/patients/' + patientId + '/delete';
-
-                            // Hiển thị modal bằng Bootstrap 5
-                            var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
-                            deleteModal.show();
+                            closeModal();
                         });
                     });
+
+                    // Thêm sự kiện đóng modal khi nhấn nút Hủy
+                    var cancelButton = document.querySelector('#deleteConfirmModal .btn-secondary');
+                    if (cancelButton) {
+                        cancelButton.addEventListener('click', function() {
+                            closeModal();
+                        });
+                    }
                 });
+
+                function showDeleteConfirmation(patientId, patientName) {
+                    console.log("Showing delete confirmation for patient:", patientId, patientName);
+
+                    // Cập nhật nội dung modal
+                    document.getElementById('patientNameToDelete').textContent = patientName;
+                    document.getElementById('deletePatientForm').action = '/patients/' + patientId + '/delete';
+
+                    // Hiển thị modal
+                    var modal = document.getElementById('deleteConfirmModal');
+                    modal.style.display = 'block';
+                    modal.classList.add('show');
+                    modal.setAttribute('aria-hidden', 'false');
+                    document.body.classList.add('modal-open');
+
+                    // Tạo backdrop nếu chưa có
+                    var backdrop = document.createElement('div');
+                    backdrop.className = 'modal-backdrop fade show';
+                    document.body.appendChild(backdrop);
+                }
+
+                function closeModal() {
+                    var modal = document.getElementById('deleteConfirmModal');
+                    modal.style.display = 'none';
+                    modal.classList.remove('show');
+                    modal.setAttribute('aria-hidden', 'true');
+                    document.body.classList.remove('modal-open');
+
+                    // Xóa backdrop
+                    var backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) {
+                        backdrop.parentNode.removeChild(backdrop);
+                    }
+                }
             </script>
         </t>
     </template>

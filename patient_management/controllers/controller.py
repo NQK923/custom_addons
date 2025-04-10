@@ -4,6 +4,7 @@ import werkzeug
 from datetime import date
 import re
 from odoo.exceptions import ValidationError
+import psycopg2
 
 
 class PatientController(http.Controller):
@@ -274,6 +275,20 @@ class PatientController(http.Controller):
             return werkzeug.utils.redirect(
                 f'/patients?message=Đã xóa bệnh nhân {patient_name} thành công&message_type=success')
         except Exception as e:
-            # Chuyển hướng đến chi tiết bệnh nhân với thông báo lỗi
+            error_message = str(e)
+            redirect_url = f'/patients/{patient.id}'
+
+            # Kiểm tra nếu là lỗi ràng buộc khóa ngoại
+            if "violates foreign key constraint" in error_message:
+                # Xác định loại ràng buộc từ thông báo lỗi
+                if "clinic_insurance_policy" in error_message:
+                    friendly_message = f"Không thể xóa bệnh nhân '{patient.name}' vì bệnh nhân đang có thông tin bảo hiểm y tế. Vui lòng xóa thông tin bảo hiểm trước khi xóa bệnh nhân."
+                else:
+                    friendly_message = f"Không thể xóa bệnh nhân '{patient.name}' vì bệnh nhân đang có thông tin liên quan trong hệ thống. Vui lòng xóa các thông tin liên quan trước khi xóa bệnh nhân."
+
+                return werkzeug.utils.redirect(
+                    f'{redirect_url}?message={friendly_message}&message_type=error')
+
+            # Các lỗi khác
             return werkzeug.utils.redirect(
-                f'/patients/{patient.id}?message=Lỗi khi xóa bệnh nhân: {str(e)}&message_type=error')
+                f'{redirect_url}?message=Lỗi khi xóa bệnh nhân: {error_message}&message_type=error')
