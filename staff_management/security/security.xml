@@ -10,7 +10,6 @@
     <record id="group_staff_manager" model="res.groups">
         <field name="name">Quản lý</field>
         <field name="category_id" ref="module_category_staff_management"/>
-        <field name="implied_ids" eval="[(4, ref('group_staff_user'))]"/>
         <field name="users" eval="[(4, ref('base.user_admin'))]"/>
     </record>
 </odoo>

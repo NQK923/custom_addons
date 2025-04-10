@@ -10,7 +10,6 @@
     <record id="group_healthcare_manager" model="res.groups">
         <field name="name">Quản lý</field>
         <field name="category_id" ref="module_category_healthcare_management"/>
-        <field name="implied_ids" eval="[(4, ref('group_healthcare_user'))]"/>
         <field name="users" eval="[(4, ref('base.user_admin'))]"/>
     </record>
 </odoo>

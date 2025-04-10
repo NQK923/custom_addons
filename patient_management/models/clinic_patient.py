@@ -2,6 +2,7 @@ from odoo import models, fields, api
 from datetime import datetime, date
 from odoo.exceptions import ValidationError
 import uuid
+import re
 
 
 class ClinicPatient(models.Model):
@@ -27,6 +28,12 @@ class ClinicPatient(models.Model):
     email = fields.Char(
         string="Email"
     )
+    email_normalized = fields.Char(
+        string="Email chuẩn hóa",
+        compute="_compute_normalized_values",
+        store=True,
+        index=True,
+    )
     gender = fields.Selection(
         string="Giới tính",
         selection=[
@@ -46,6 +53,12 @@ class ClinicPatient(models.Model):
     )
     phone = fields.Char(
         string="Số điện thoại",
+    )
+    phone_normalized = fields.Char(
+        string="SĐT chuẩn hóa",
+        compute="_compute_normalized_values",
+        store=True,
+        index=True,
     )
     date = fields.Datetime(
         string="Ngày đăng ký",
@@ -74,46 +87,93 @@ class ClinicPatient(models.Model):
     insurance_state = fields.Char(string='Trạng thái', compute='_compute_insurance_info')
     has_insurance = fields.Boolean(string='Có bảo hiểm', compute='_compute_insurance_info')
 
+    # Thêm ràng buộc SQL cấp cơ sở dữ liệu
+    _sql_constraints = [
+        ('email_normalized_unique', 'unique(email_normalized)',
+         'Email này đã được sử dụng cho bệnh nhân khác!'),
+        ('phone_normalized_unique', 'unique(phone_normalized)',
+         'Số điện thoại này đã được sử dụng cho bệnh nhân khác!'),
+    ]
+
     @api.depends('name')
     def _compute_display_name(self):
         for record in self:
             record.display_name = f"{record.code} - {record.name}"
 
-    @api.constrains('email')
+    @api.depends('email', 'phone')
+    def _compute_normalized_values(self):
+        """Chuẩn hóa email và SĐT để đảm bảo tính duy nhất"""
+        for record in self:
+            # Chuẩn hóa email
+            if record.email:
+                email = record.email.strip().lower()
+                record.email_normalized = email
+            else:
+                record.email_normalized = False
+
+            # Chuẩn hóa số điện thoại (loại bỏ khoảng trắng và ký tự đặc biệt)
+            if record.phone:
+                # Loại bỏ tất cả các ký tự không phải số
+                phone = re.sub(r'\D', '', record.phone)
+                record.phone_normalized = phone
+            else:
+                record.phone_normalized = False
+
+    @api.constrains('email', 'email_normalized')
     def _check_email_unique(self):
         for record in self:
-            if record.email:  # Chỉ kiểm tra nếu email không trống
+            if record.email_normalized:
                 same_email = self.env['clinic.patient'].search([
-                    ('email', '=', record.email),
+                    ('email_normalized', '=', record.email_normalized),
                     ('id', '!=', record.id)
-                ])
+                ], limit=1)
                 if same_email:
-                    raise ValidationError(f"Email '{record.email}' đã được sử dụng cho bệnh nhân {same_email[0].name}!")
+                    raise ValidationError(f"Email '{record.email}' đã được sử dụng cho bệnh nhân {same_email.name}!")
 
-    @api.constrains('phone')
+    @api.constrains('phone', 'phone_normalized')
     def _check_phone_unique(self):
         for record in self:
-            if record.phone:  # Chỉ kiểm tra nếu số điện thoại không trống
+            if record.phone_normalized:
                 same_phone = self.env['clinic.patient'].search([
-                    ('phone', '=', record.phone),
+                    ('phone_normalized', '=', record.phone_normalized),
                     ('id', '!=', record.id)
-                ])
+                ], limit=1)
                 if same_phone:
                     raise ValidationError(
-                        f"Số điện thoại '{record.phone}' đã được sử dụng cho bệnh nhân {same_phone[0].name}!")
+                        f"Số điện thoại '{record.phone}' đã được sử dụng cho bệnh nhân {same_phone.name}!")
+
+    @api.onchange('email')
+    def _onchange_email(self):
+        """Kiểm tra email khi người dùng thay đổi giá trị"""
+        if self.email:
+            email = self.email.strip().lower()
+            same_email = self.env['clinic.patient'].search([
+                ('email_normalized', '=', email),
+                ('id', '!=', self.id)
+            ], limit=1)
+            if same_email:
+                return {'warning': {
+                    'title': 'Email trùng lặp',
+                    'message': f"Email '{self.email}' đã được sử dụng cho bệnh nhân {same_email.name}!",
+                }}
+
+    @api.onchange('phone')
+    def _onchange_phone(self):
+        """Kiểm tra SĐT khi người dùng thay đổi giá trị"""
+        if self.phone:
+            phone = re.sub(r'\D', '', self.phone)
+            same_phone = self.env['clinic.patient'].search([
+                ('phone_normalized', '=', phone),
+                ('id', '!=', self.id)
+            ], limit=1)
+            if same_phone:
+                return {'warning': {
+                    'title': 'Số điện thoại trùng lặp',
+                    'message': f"Số điện thoại '{self.phone}' đã được sử dụng cho bệnh nhân {same_phone.name}!",
+                }}
 
     def _compute_insurance_info(self):
-        # InsuranceModel = self.env.get('clinic.insurance.policy', False)
         for patient in self:
-            # if not InsuranceModel:
-            #     # Nếu module bảo hiểm không tồn tại, xóa các trường bảo hiểm
-            #     print(f"No module insurance")
-            #     patient._clear_insurance_fields()
-            #     continue
-            # Tìm bản ghi bảo hiểm liên quan đến bệnh nhân
-            # insurance = InsuranceModel.search([
-            #     ('patient_id', '=', patient.id)
-            # ], limit=1)
             insurance = self.env['clinic.insurance.policy'].search([
                 ('patient_id', '=', patient.id)
             ], limit=1)
@@ -128,7 +188,6 @@ class ClinicPatient(models.Model):
                 patient.insurance_state = 'Hợp lệ' if insurance.state == 'valid' else 'Hết hạn'
             else:
                 # Nếu không có bảo hiểm, xóa các trường
-                print(f"No insurance information found for {patient.name}")
                 patient._clear_insurance_fields()
 
     def _clear_insurance_fields(self):
