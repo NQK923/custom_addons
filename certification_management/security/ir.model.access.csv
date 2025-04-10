@@ -1,9 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_hospital_certification_user,hospital.certification.user,model_hospital_certification,group_certification_user,1,1,1,0
 access_hospital_certification_manager,hospital.certification.manager,model_hospital_certification,group_certification_manager,1,1,1,1
-access_hospital_inspection_user,hospital.inspection.user,model_hospital_inspection,group_certification_user,1,1,1,0
 access_hospital_inspection_manager,hospital.inspection.manager,model_hospital_inspection,group_certification_manager,1,1,1,1
-access_hospital_certification_renew_wizard,access.hospital.certification.renew.wizard,model_hospital_certification_renew_wizard,group_certification_user,1,1,1,0
 access_hospital_certification_portal,hospital.certification.portal,model_hospital_certification,base.group_portal,1,0,0,0
 access_hospital_inspection_portal,hospital.inspection.portal,model_hospital_inspection,base.group_portal,1,0,0,0
 access_hospital_certification_public,hospital.certification.public,model_hospital_certification,base.group_public,1,0,0,0

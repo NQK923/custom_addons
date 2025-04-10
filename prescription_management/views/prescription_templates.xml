@@ -72,6 +72,12 @@
                 background-color: #007bff;
                 color: white;
                 }
+                .table th {
+                background-color: #007bff;
+                color: #fff;
+                padding: 12px;
+                text-align: center;
+                }
             </style>
             <div class="container mt-5 prescription-container">
                 <div class="row mb-3">
@@ -401,31 +407,33 @@
                 }
             </style>
             <div class="container mt-5 prescription-container">
-                <button onclick="window.print()" class="btn btn-info float-right print-button">
-                    <i class="fa fa-print"></i>
-                    In đơn thuốc
-                </button>
-                <div class="btn-group float-right mr-2">
-                    <a t-att-href="'/pharmacy/prescription/%s/update' % prescription.id"
-                       class="btn btn-primary print-button">
-                        <i class="fa fa-edit"></i>
-                        Cập nhật
-                    </a>
-                    <a t-att-href="'/pharmacy/prescription/%s/edit' % prescription.id"
-                       class="btn btn btn-success print-button">
-                        <i class="fa fa-edit"></i>
-                        Thêm thuốc
-                    </a>
-                    <a t-att-href="'/pharmacy/prescription/%s/delete' % prescription.id"
-                       class="btn btn-danger print-button"
-                       onclick="return confirm('Bạn có chắc chắn muốn xóa đơn thuốc này không?');">
-                        <i class="fa fa-trash"></i>
-                        Xóa
-                    </a>
-                    <a href="/pharmacy/prescriptions" class="back-button">
+                <div class="d-flex justify-content-end mb-3 print-button">
+                    <a href="/pharmacy/prescriptions" class="btn btn-secondary mr-2">
                         <i class="fa fa-arrow-left"></i>
                         Quay lại danh sách
                     </a>
+                    <div class="btn-group mr-2">
+                        <a t-att-href="'/pharmacy/prescription/%s/update' % prescription.id"
+                           class="btn btn-primary">
+                            <i class="fa fa-edit"></i>
+                            Cập nhật
+                        </a>
+                        <a t-att-href="'/pharmacy/prescription/%s/edit' % prescription.id"
+                           class="btn btn-success">
+                            <i class="fa fa-plus-circle"></i>
+                            Thêm thuốc
+                        </a>
+                        <a t-att-href="'/pharmacy/prescription/%s/delete' % prescription.id"
+                           class="btn btn-danger"
+                           onclick="return confirm('Bạn có chắc chắn muốn xóa đơn thuốc này không?');">
+                            <i class="fa fa-trash"></i>
+                            Xóa
+                        </a>
+                    </div>
+                    <button onclick="window.print()" class="btn btn-info">
+                        <i class="fa fa-print"></i>
+                        In đơn thuốc
+                    </button>
                 </div>
 
                 <div class="clearfix"></div>
@@ -499,7 +507,6 @@
                                     <td class="text-center">
                                         <span class="badge badge-pill badge-primary">
                                             <t t-esc="line.quantity"/>
-                                            <t t-esc="line.product_id.uom_id"/>
                                         </span>
                                     </td>
                                     <td class="dosage-cell">

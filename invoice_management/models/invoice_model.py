@@ -202,18 +202,21 @@ class ClinicInvoiceLine(models.Model):
         for line in self:
             line.price_subtotal = line.quantity * line.price_unit
 
-            # Kiểm tra bảo hiểm hợp lệ và lấy tỷ lệ chi trả
             has_valid_insurance = (line.invoice_id.patient_id and
                                    line.invoice_id.patient_id.has_insurance and
                                    line.invoice_id.patient_id.insurance_state == 'Hợp lệ')
-            coverage_rate = float(
-                line.invoice_id.patient_id.insurance_coverage_rate or 0) / 100 if has_valid_insurance else 0
 
-            # Kiểm tra xem dịch vụ/thuốc có được bảo hiểm chi trả không
+            try:
+                coverage_rate = 0
+                if has_valid_insurance and line.invoice_id.patient_id.insurance_coverage_rate:
+                    coverage_rate = float(line.invoice_id.patient_id.insurance_coverage_rate) / 100
+            except (ValueError, TypeError, AttributeError):
+                coverage_rate = 0
+
             is_covered = ((line.service_id and line.service_id.insurance_covered) or
                           (line.product_id and line.product_id.insurance_covered))
 
-            if has_valid_insurance and is_covered:
+            if has_valid_insurance and is_covered and coverage_rate > 0:
                 line.insurance_amount = line.price_subtotal * coverage_rate
                 line.patient_amount = line.price_subtotal * (1 - coverage_rate)
             else:

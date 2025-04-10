@@ -3,6 +3,14 @@
     <!-- Template for listing pharmacy products -->
     <template id="pharmacy_products_template" name="Pharmacy Products">
         <t t-call="website.layout">
+            <style>
+                .table th {
+                background-color: #007bff;
+                color: #fff;
+                padding: 12px;
+                text-align: center;
+                }
+            </style>
             <div class="container mt-4">
                 <div class="row mb-3">
                     <div class="col-12">
@@ -80,7 +88,14 @@
                                                 <small class="d-block text-muted" t-esc="product.category"/>
                                             </t>
                                         </td>
-                                        <td t-esc="product.uom_id"/>
+                                        <td>
+                                            <t t-if="product.uom_id == 'pill'">Viên</t>
+                                            <t t-elif="product.uom_id == 'bottle'">Chai</t>
+                                            <t t-elif="product.uom_id == 'box'">Hộp</t>
+                                            <t t-elif="product.uom_id == 'pack'">Gói</t>
+                                            <t t-elif="product.uom_id == 'tube'">Ống</t>
+                                            <t t-else="" t-esc="product.uom_id"/>
+                                        </td>
                                         <td>
                                             <span t-att-class="'text-danger font-weight-bold' if product.is_quantity else ''"
                                                   t-esc="product.quantity"/>
