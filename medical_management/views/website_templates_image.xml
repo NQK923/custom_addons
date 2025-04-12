@@ -1,134 +1,210 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Danh sách hình ảnh - Updated for image display -->
+    <!-- Danh sách hình ảnh - improved UI and delete functionality -->
     <template id="medical_images_list" name="Medical Images List">
         <t t-call="medical_management.medical_layout">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3>Danh sách Hình ảnh Xét nghiệm</h3>
-                    <a href="/medical/image/create" class="btn btn-primary">
-                        <i class="fa fa-plus"/>
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Danh sách Hình ảnh Xét nghiệm</h3>
+                    <a href="/medical/image/create" class="btn btn-medical">
+                        <i class="fa fa-plus mr-1"></i>
                         Thêm hình ảnh mới
                     </a>
                 </div>
+
+                <!-- Search and filter section -->
+                <div class="card-body pb-0 border-bottom">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="filter_test_type">Lọc theo loại:</label>
+                            <select id="filter_test_type" class="form-control">
+                                <option value="">Tất cả</option>
+                                <option value="test">Chuẩn đoán</option>
+                                <option value="blood">Máu</option>
+                                <option value="urine">Nước tiểu</option>
+                                <option value="xray">X-Quang</option>
+                                <option value="ecg">ECG</option>
+                                <option value="other">Khác</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <label for="search_query">Tìm kiếm:</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-search"></i>
+                                    </span>
+                                </div>
+                                <input type="text" id="search_query" class="form-control" placeholder="Nhập từ khóa..."/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card-body">
                     <div class="row">
                         <t t-foreach="images" t-as="image">
-                            <div class="col-md-4 mb-4">
-                                <div class="card h-100">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">
-                                            <t t-esc="image.test_code"/>
-                                        </h5>
+                            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-4">
+                                <div class="card h-100 medical-card">
+                                    <div class="card-header bg-light py-2">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0"><t t-esc="image.test_code"/></h6>
+                                            <span class="badge badge-info">
+                                                <t t-esc="dict(image._fields['test_type_img'].selection).get(image.test_type_img)"/>
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body p-2 text-center">
                                         <t t-if="image.Img">
-                                            <!-- Updated image rendering with proper handling -->
-                                            <img t-att-src="image.Img and ('data:image/*;base64,%s' % (image.Img.decode('utf-8') if isinstance(image.Img, bytes) else image.Img))"
-                                                 class="img-fluid mb-2"/>
+                                            <div class="image-frame">
+                                                <img t-att-src="image.Img and ('data:image/*;base64,%s' % (image.Img.decode('utf-8') if isinstance(image.Img, bytes) else image.Img))"
+                                                     class="img-fluid mb-2" style="max-height: 150px;"/>
+                                            </div>
                                         </t>
                                         <t t-else="">
-                                            <div class="text-center p-4 bg-light">
-                                                <i class="fa fa-image fa-3x text-muted"></i>
-                                                <p class="mt-2">Không có hình ảnh</p>
+                                            <div class="image-frame d-flex align-items-center justify-content-center" style="height: 150px;">
+                                                <div class="text-center text-muted">
+                                                    <i class="fa fa-image fa-3x mb-2"></i>
+                                                    <p class="small mb-0">Không có hình ảnh</p>
+                                                </div>
                                             </div>
                                         </t>
-                                        <div class="mt-2">
-                                            <div>
-                                                <strong>Loại:</strong>
-                                                <t t-esc="dict(image._fields['test_type_img'].selection).get(image.test_type_img)"/>
-                                            </div>
-                                            <div>
-                                                <strong>Ngày:</strong>
-                                                <t t-esc="image.img_date" t-options="{'widget': 'date'}"/>
-                                            </div>
-                                            <div>
-                                                <strong>Xét nghiệm:</strong>
-                                                <t t-esc="image.MedicalTest_id.test_code"/>
+                                        <div class="mt-3">
+                                            <div class="d-flex justify-content-between">
+                                                <small>
+                                                    <strong>Ngày:</strong>
+                                                    <t t-esc="image.img_date" t-options="{'widget': 'date'}"/>
+                                                </small>
+                                                <small>
+                                                    <a t-attf-href="/medical/test/{{image.MedicalTest_id.id}}" class="text-primary">
+                                                        <t t-esc="image.MedicalTest_id.test_code"/>
+                                                    </a>
+                                                </small>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card-footer">
-                                        <a t-attf-href="/medical/image/{{image.id}}" class="btn btn-info w-100">
-                                            <i class="fa fa-eye"/>
-                                            Xem chi tiết
-                                        </a>
+                                    <div class="card-footer p-2">
+                                        <div class="btn-group btn-group-sm w-100">
+                                            <a t-attf-href="/medical/image/{{image.id}}" class="btn btn-info" title="Xem chi tiết">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                            <a t-attf-href="/medical/image/edit/{{image.id}}" class="btn btn-primary" title="Chỉnh sửa">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <a t-attf-href="/medical/image/delete/{{image.id}}"
+                                               class="btn btn-danger delete-confirm" title="Xóa"
+                                               t-att-data-name="'hình ảnh ' + image.test_code">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </t>
                     </div>
+
+                    <!-- Hiển thị thông báo khi không có dữ liệu -->
+                    <t t-if="not images">
+                        <div class="alert alert-info text-center">
+                            <i class="fa fa-info-circle fa-2x mb-2"></i>
+                            <p>Chưa có hình ảnh nào. Hãy tạo hình ảnh mới!</p>
+                            <a href="/medical/image/create" class="btn btn-medical mt-2">
+                                <i class="fa fa-plus mr-1"></i> Thêm hình ảnh
+                            </a>
+                        </div>
+                    </t>
                 </div>
             </div>
         </t>
     </template>
 
-    <!-- Chi tiết hình ảnh - Updated for image display -->
+    <!-- Chi tiết hình ảnh - improved UI -->
     <template id="medical_image_detail" name="Medical Image Detail">
         <t t-call="medical_management.medical_layout">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3>Chi tiết Hình ảnh</h3>
-                    <div>
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Chi tiết Hình ảnh</h3>
+                    <div class="btn-group">
+                        <a t-attf-href="/medical/image/edit/{{image.id}}" class="btn btn-primary">
+                            <i class="fa fa-edit mr-1"></i>
+                            Sửa
+                        </a>
+                        <a t-attf-href="/medical/image/delete/{{image.id}}"
+                           class="btn btn-danger delete-confirm"
+                           t-att-data-name="'hình ảnh ' + image.test_code">
+                            <i class="fa fa-trash mr-1"></i>
+                            Xóa
+                        </a>
                         <a href="/medical/images" class="btn btn-secondary">
-                            <i class="fa fa-arrow-left"/>
+                            <i class="fa fa-arrow-left mr-1"></i>
                             Quay lại
                         </a>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Mã hình ảnh:</label>
-                                <div class="col-sm-8">
-                                    <p class="form-control-plaintext">
-                                        <t t-esc="image.test_code"/>
-                                    </p>
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0">Thông tin chi tiết</h5>
                                 </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Xét nghiệm:</label>
-                                <div class="col-sm-8">
-                                    <p class="form-control-plaintext">
-                                        <a t-attf-href="/medical/test/{{image.MedicalTest_id.id}}">
-                                            <t t-esc="image.MedicalTest_id.test_code"/>
-                                        </a>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Loại xét nghiệm:</label>
-                                <div class="col-sm-8">
-                                    <p class="form-control-plaintext">
-                                        <t t-esc="dict(image._fields['test_type_img'].selection).get(image.test_type_img)"/>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Ngày thực hiện:</label>
-                                <div class="col-sm-8">
-                                    <p class="form-control-plaintext">
-                                        <t t-esc="image.img_date" t-options="{'widget': 'datetime'}"/>
-                                    </p>
+                                <div class="card-body">
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Mã hình ảnh:</label>
+                                        <div class="col-sm-8">
+                                            <p class="form-control-plaintext font-weight-bold">
+                                                <t t-esc="image.test_code"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Xét nghiệm:</label>
+                                        <div class="col-sm-8">
+                                            <p class="form-control-plaintext">
+                                                <a t-attf-href="/medical/test/{{image.MedicalTest_id.id}}" class="text-primary">
+                                                    <t t-esc="image.MedicalTest_id.test_code"/>
+                                                    <i class="fa fa-external-link-alt ml-1 small"></i>
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Loại xét nghiệm:</label>
+                                        <div class="col-sm-8">
+                                            <p class="form-control-plaintext">
+                                                <span class="badge badge-info">
+                                                    <t t-esc="dict(image._fields['test_type_img'].selection).get(image.test_type_img)"/>
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Ngày thực hiện:</label>
+                                        <div class="col-sm-8">
+                                            <p class="form-control-plaintext">
+                                                <t t-esc="image.img_date" t-options="{'widget': 'datetime'}"/>
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-lg-6 mb-4">
                             <div class="card h-100">
-                                <div class="card-header">
-                                    <h5>Hình ảnh</h5>
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0">Hình ảnh</h5>
                                 </div>
-                                <div class="card-body text-center">
+                                <div class="card-body text-center d-flex align-items-center justify-content-center">
                                     <t t-if="image.Img">
-                                        <!-- Fixed image display -->
-                                        <img t-att-src="image.Img and ('data:image/*;base64,%s' % (image.Img.decode('utf-8') if isinstance(image.Img, bytes) else image.Img))"
-                                             class="img-fluid"/>
+                                        <div class="image-frame">
+                                            <img t-att-src="image.Img and ('data:image/*;base64,%s' % (image.Img.decode('utf-8') if isinstance(image.Img, bytes) else image.Img))"
+                                                 class="img-fluid" style="max-height: 300px;"/>
+                                        </div>
                                     </t>
                                     <t t-else="">
                                         <div class="text-center p-5 bg-light">
-                                            <i class="fa fa-image fa-4x text-muted"></i>
-                                            <p class="mt-3">Không có hình ảnh</p>
+                                            <i class="fa fa-image fa-4x text-muted mb-3"></i>
+                                            <p>Không có hình ảnh</p>
                                         </div>
                                     </t>
                                 </div>
@@ -136,18 +212,18 @@
                         </div>
                     </div>
 
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label>Kết quả chẩn đoán:</label>
-                                <div class="border p-3 bg-light rounded">
-                                    <t t-if="image.result_Img">
-                                        <t t-esc="image.result_Img"/>
-                                    </t>
-                                    <t t-else="">
-                                        <em>Chưa có kết quả chẩn đoán</em>
-                                    </t>
-                                </div>
+                    <div class="card mt-2">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Kết quả chẩn đoán</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="border p-3 bg-light rounded">
+                                <t t-if="image.result_Img">
+                                    <div style="white-space: pre-line;"><t t-esc="image.result_Img"/></div>
+                                </t>
+                                <t t-else="">
+                                    <em>Chưa có kết quả chẩn đoán</em>
+                                </t>
                             </div>
                         </div>
                     </div>
@@ -156,15 +232,15 @@
         </t>
     </template>
 
-    <!-- Form tạo hình ảnh mới -->
+    <!-- Form tạo hình ảnh mới - improved UI -->
     <template id="medical_image_create_form" name="Create Medical Image">
         <t t-call="medical_management.medical_layout">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Thêm Hình ảnh Mới</h3>
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h3 class="mb-0">Thêm Hình ảnh Mới</h3>
                 </div>
                 <div class="card-body">
-                    <form action="/medical/image/save" method="post" enctype="multipart/form-data">
+                    <form action="/medical/image/save" method="post" enctype="multipart/form-data" class="medical-form">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                         <div class="form-group row">
@@ -215,7 +291,7 @@
                                            accept="image/*"/>
                                     <label class="custom-file-label" for="image_file">Chọn file...</label>
                                 </div>
-                                <!-- Preview section -->
+                                <!-- Preview section with improved style -->
                                 <div class="mt-3 image-preview"></div>
                             </div>
                         </div>
@@ -227,9 +303,112 @@
                             </div>
                         </div>
 
-                        <div class="text-end">
-                            <a href="/medical/images" class="btn btn-secondary">Hủy</a>
-                            <button type="submit" class="btn btn-primary ms-2">Lưu</button>
+                        <div class="text-center mt-4">
+                            <a href="/medical/images" class="btn btn-secondary">
+                                <i class="fa fa-times mr-1"></i> Hủy
+                            </a>
+                            <button type="submit" class="btn btn-medical ml-2">
+                                <i class="fa fa-save mr-1"></i> Lưu
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Form chỉnh sửa hình ảnh - new template -->
+    <template id="medical_image_edit_form" name="Edit Medical Image">
+        <t t-call="medical_management.medical_layout">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h3 class="mb-0">Chỉnh sửa Hình ảnh</h3>
+                </div>
+                <div class="card-body">
+                    <form action="/medical/image/update" method="post" enctype="multipart/form-data" class="medical-form">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="image_id" t-att-value="image.id"/>
+
+                        <div class="form-group row">
+                            <label for="test_code" class="col-sm-3 col-form-label">Mã hình ảnh</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="test_code" id="test_code"
+                                       t-att-value="image.test_code" required="required"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="MedicalTest_id" class="col-sm-3 col-form-label">Xét nghiệm liên quan</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="MedicalTest_id" id="MedicalTest_id"
+                                        required="required">
+                                    <t t-foreach="tests" t-as="test">
+                                        <option t-att-value="test.id" t-att-selected="test.id == image.MedicalTest_id.id">
+                                            <t t-esc="test.test_code"/>
+                                            -
+                                            <t t-esc="test.patient_id.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="test_type_img" class="col-sm-3 col-form-label">Loại xét nghiệm</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="test_type_img" id="test_type_img"
+                                        required="required">
+                                    <t t-foreach="test_types.items()" t-as="test_type">
+                                        <option t-att-value="test_type[0]" t-att-selected="test_type[0] == image.test_type_img">
+                                            <t t-esc="test_type[1]"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="image_file" class="col-sm-3 col-form-label">Hình ảnh</label>
+                            <div class="col-sm-9">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" name="image_file" id="image_file"
+                                           accept="image/*"/>
+                                    <label class="custom-file-label" for="image_file">Chọn file mới (không bắt buộc)</label>
+                                </div>
+
+                                <!-- Current image display -->
+                                <div class="mt-3">
+                                    <p><strong>Hình ảnh hiện tại:</strong></p>
+                                    <t t-if="image.Img">
+                                        <div class="image-frame p-2 border">
+                                            <img t-att-src="image.Img and ('data:image/*;base64,%s' % (image.Img.decode('utf-8') if isinstance(image.Img, bytes) else image.Img))"
+                                                class="img-fluid" style="max-height: 200px;"/>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="alert alert-warning">Chưa có hình ảnh</div>
+                                    </t>
+                                </div>
+
+                                <!-- Preview for new image -->
+                                <div class="mt-3 image-preview"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="result_Img" class="col-sm-3 col-form-label">Kết quả chẩn đoán</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" name="result_Img" id="result_Img" rows="4"><t t-esc="image.result_Img or ''"/></textarea>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <a t-attf-href="/medical/image/{{image.id}}" class="btn btn-secondary">
+                                <i class="fa fa-times mr-1"></i> Hủy
+                            </a>
+                            <button type="submit" class="btn btn-medical ml-2">
+                                <i class="fa fa-save mr-1"></i> Cập nhật
+                            </button>
                         </div>
                     </form>
                 </div>

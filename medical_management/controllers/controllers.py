@@ -154,3 +154,89 @@ class MedicalWebsite(http.Controller):
 
         test.write(vals)
         return request.redirect('/medical/test/%s' % test_id)
+
+    # Xóa xét nghiệm
+    @http.route('/medical/test/delete/<int:test_id>', auth='user', website=True)
+    def medical_test_delete(self, test_id, **kw):
+        test = request.env['medical.test'].sudo().browse(test_id)
+        if test.exists():
+            # Kiểm tra các hình ảnh liên quan
+            related_images = request.env['medical.images'].sudo().search([('MedicalTest_id', '=', test_id)])
+            if related_images:
+                # Xóa các hình ảnh liên quan trước
+                related_images.unlink()
+            # Sau đó xóa xét nghiệm
+            test.unlink()
+        return request.redirect('/medical/tests')
+
+    # Chỉnh sửa hình ảnh
+    @http.route('/medical/image/edit/<int:image_id>', auth='user', website=True)
+    def medical_image_edit(self, image_id, **kw):
+        image = request.env['medical.images'].sudo().browse(image_id)
+        if not image.exists():
+            return request.redirect('/medical/images')
+
+        tests = request.env['medical.test'].sudo().search([])
+        test_types = dict(request.env['medical.images']._fields['test_type_img'].selection)
+
+        return request.render('medical_management.medical_image_edit_form', {
+            'image': image,
+            'tests': tests,
+            'test_types': test_types
+        })
+
+    # Cập nhật hình ảnh
+    @http.route('/medical/image/update', auth='user', website=True, type='http', methods=['POST'])
+    def medical_image_update(self, **post):
+        image_id = int(post.get('image_id'))
+        image = request.env['medical.images'].sudo().browse(image_id)
+
+        vals = {
+            'test_code': post.get('test_code'),
+            'MedicalTest_id': int(post.get('MedicalTest_id')),
+            'test_type_img': post.get('test_type_img'),
+            'result_Img': post.get('result_Img', '')
+        }
+
+        # Chỉ cập nhật hình ảnh nếu có file mới được tải lên
+        if post.get('image_file'):
+            image_file = post.get('image_file')
+            image_data = base64.b64encode(image_file.read())
+
+            if isinstance(image_data, bytes):
+                image_data = image_data.decode('utf-8')
+
+            vals['Img'] = image_data
+
+        image.write(vals)
+        return request.redirect('/medical/image/%s' % image_id)
+
+    # Xóa hình ảnh
+    @http.route('/medical/image/delete/<int:image_id>', auth='user', website=True)
+    def medical_image_delete(self, image_id, **kw):
+        image = request.env['medical.images'].sudo().browse(image_id)
+        if image.exists():
+            test_id = image.MedicalTest_id.id
+            image.unlink()
+            # Quay về trang chi tiết xét nghiệm nếu có
+            if test_id:
+                return request.redirect('/medical/test/%s' % test_id)
+        return request.redirect('/medical/images')
+
+    # Cập nhật nhanh trạng thái xét nghiệm (AJAX)
+    @http.route('/medical/test/update_status', auth='user', website=True, type='http', methods=['POST'], csrf=False)
+    def medical_test_update_status(self, **post):
+        if not post.get('test_id') or not post.get('status'):
+            return json.dumps({'success': False, 'error': 'Missing parameters'})
+
+        try:
+            test_id = int(post.get('test_id'))
+            test = request.env['medical.test'].sudo().browse(test_id)
+
+            if not test.exists():
+                return json.dumps({'success': False, 'error': 'Test not found'})
+
+            test.write({'status': post.get('status')})
+            return json.dumps({'success': True})
+        except Exception as e:
+            return json.dumps({'success': False, 'error': str(e)})

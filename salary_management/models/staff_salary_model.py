@@ -3,6 +3,8 @@ from datetime import datetime
 import uuid
 
 BASE_SALARY = 2340000  # 2.340.000 VNĐ
+
+
 # Model quản lý hệ số lương (giữ nguyên)
 class StaffSalaryQualificationLevel(models.Model):
     _name = 'clinic.staff.salary.qualification_level'
@@ -142,8 +144,6 @@ class StaffSalary(models.Model):
          'Mỗi nhân viên chỉ có một phiếu lương cho mỗi bảng lương!'),
         ('unique_name', 'UNIQUE(name)', 'Phiếu lương cho tháng và năm này đã tồn tại!')
     ]
-
-
 
     sheet_name = fields.Char(string='Bảng lương', compute='_compute_sheet_name')
 

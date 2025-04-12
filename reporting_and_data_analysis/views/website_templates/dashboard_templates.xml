@@ -39,8 +39,9 @@
                                     <h5 class="card-title">
                                         <t t-esc="formatLang(latest_month['service_amount'])"/>
                                     </h5>
-                                    <p class="card-text"><t
-                                            t-esc="round(latest_month['service_amount'] / latest_month['total_amount'] * 100 if latest_month['total_amount'] else 0, 1)"/>
+                                    <p class="card-text">
+                                        <t
+                                                t-esc="round(latest_month['service_amount'] / latest_month['total_amount'] * 100 if latest_month['total_amount'] else 0, 1)"/>
                                         % doanh thu
                                     </p>
                                 </div>
@@ -54,8 +55,9 @@
                                     <h5 class="card-title">
                                         <t t-esc="formatLang(latest_month['medicine_amount'])"/>
                                     </h5>
-                                    <p class="card-text"><t
-                                            t-esc="round(latest_month['medicine_amount'] / latest_month['total_amount'] * 100 if latest_month['total_amount'] else 0, 1)"/>
+                                    <p class="card-text">
+                                        <t
+                                                t-esc="round(latest_month['medicine_amount'] / latest_month['total_amount'] * 100 if latest_month['total_amount'] else 0, 1)"/>
                                         % doanh thu
                                     </p>
                                 </div>

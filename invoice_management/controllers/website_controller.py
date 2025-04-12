@@ -275,6 +275,7 @@ class InvoiceWebsiteController(http.Controller):
             values['product_lines'] = product_lines
 
         return values, None  # Return values and no error message
+
     @http.route('/invoice/action/<string:action>/<int:invoice_id>', type='http', auth='user', website=True)
     def invoice_action(self, action, invoice_id, **kw):
         invoice = request.env['clinic.invoice'].browse(invoice_id)
@@ -345,6 +346,7 @@ class InvoiceWebsiteController(http.Controller):
                 json.dumps({'error': str(e)}),
                 headers=[('Content-Type', 'application/json')]
             )
+
     @http.route('/api/prescription/<int:prescription_id>', type='http', auth='user')
     def get_prescription_details(self, prescription_id, **kw):
         """API endpoint to get detailed prescription information"""

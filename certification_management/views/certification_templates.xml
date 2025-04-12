@@ -85,7 +85,7 @@
                                     </div>
                                     <div class="col-md-3 mb-2">
                                         <a href="/certification/inspections" class="btn btn-info btn-block">
-                                            <i class="fa fa-clipboard-check mr-2"></i>
+                                            <i class="fa fa-certificate mr-2"></i>
                                             Danh sách kiểm tra
                                         </a>
                                     </div>
@@ -462,6 +462,60 @@
                     </div>
                 </div>
 
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h4>Quản lý trạng thái</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <p class="mb-2">
+                                            <strong>Trạng thái hiện tại:</strong>
+                                            <span t-attf-class="badge badge-#{certificate.state == 'valid' and 'success' or certificate.state == 'draft' and 'secondary' or certificate.state == 'expiring' and 'warning' or certificate.state == 'expired' and 'danger' or certificate.state == 'renewed' and 'info'} p-2">
+                                                <t t-if="certificate.state == 'valid'">Có hiệu lực</t>
+                                                <t t-elif="certificate.state == 'draft'">Dự thảo</t>
+                                                <t t-elif="certificate.state == 'expiring'">Sắp hết hạn</t>
+                                                <t t-elif="certificate.state == 'expired'">Hết hạn</t>
+                                                <t t-elif="certificate.state == 'renewed'">Đã gia hạn</t>
+                                            </span>
+                                        </p>
+                                        <p>
+                                            <strong>Lưu ý:</strong>
+                                            Chỉ có thể thay đổi trạng thái chứng nhận giữa "Dự thảo" và "Có hiệu lực".
+                                            Các trạng thái "Sắp hết hạn", "Hết hạn" được hệ thống tự động cập nhật dựa
+                                            trên thời hạn chứng nhận.
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <t t-if="certificate.state == 'draft'">
+                                            <a t-att-href="'/certification/certificate/%s/set_valid' % certificate.id"
+                                               class="btn btn-success btn-block">
+                                                <i class="fa fa-check-circle mr-1"></i>
+                                                Xác nhận &amp; Kích hoạt
+                                            </a>
+                                            <p class="text-muted small mt-1">
+                                                Kích hoạt chứng nhận để đưa vào sử dụng
+                                            </p>
+                                        </t>
+                                        <t t-if="certificate.state in ['valid', 'expiring']">
+                                            <a t-att-href="'/certification/certificate/%s/set_draft' % certificate.id"
+                                               class="btn btn-secondary btn-block">
+                                                <i class="fa fa-edit mr-1"></i>
+                                                Đặt về trạng thái Dự thảo
+                                            </a>
+                                            <p class="text-muted small mt-1">
+                                                Đặt về trạng thái Dự thảo để chỉnh sửa trước khi kích hoạt lại
+                                            </p>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Certificate Details -->
                 <div class="row mb-4">
                     <div class="col-md-6">
@@ -626,6 +680,47 @@
                 </div>
             </div>
         </t>
+        <!-- Thêm vào cuối template certificate_detail_template -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h4>Thông tin về trạng thái chứng nhận</h4>
+                    </div>
+                    <div class="card-body">
+                        <h5>Cách thức hoạt động của trạng thái chứng nhận</h5>
+                        <ul>
+                            <li>
+                                <strong>Dự thảo (Draft):</strong>
+                                Trạng thái ban đầu khi tạo chứng nhận mới. Chứng nhận chưa được kích hoạt.
+                            </li>
+                            <li>
+                                <strong>Có hiệu lực (Valid):</strong>
+                                Chứng nhận đã được kích hoạt và đang có hiệu lực.
+                            </li>
+                            <li>
+                                <strong>Sắp hết hạn (Expiring):</strong>
+                                Hệ thống tự động chuyển khi chứng nhận còn 30 ngày trước khi hết hạn.
+                            </li>
+                            <li>
+                                <strong>Hết hạn (Expired):</strong>
+                                Hệ thống tự động chuyển khi đã qua ngày hết hạn.
+                            </li>
+                            <li>
+                                <strong>Đã gia hạn (Renewed):</strong>
+                                Trạng thái sau khi thực hiện gia hạn chứng nhận.
+                            </li>
+                        </ul>
+                        <p class="text-muted mt-2">
+                            Hệ thống sẽ tự động kiểm tra và cập nhật trạng thái chứng nhận hàng ngày dựa trên ngày hết
+                            hạn.
+                            Việc cập nhật tự động chỉ áp dụng cho chứng nhận có trạng thái "Có hiệu lực" hoặc "Sắp hết
+                            hạn".
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </template>
 
     <!-- Certificate Renewal Template -->

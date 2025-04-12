@@ -18,7 +18,9 @@
             </div>
             <div t-if="request.params.get('deleted')" class="alert alert-success alert-dismissible fade show"
                  role="alert">
-                Đã xoá lịch hẹn #<strong t-esc="request.params.get('appointment_name', '')"/> thành công!
+                Đã xoá lịch hẹn #
+                <strong t-esc="request.params.get('appointment_name', '')"/>
+                thành công!
             </div>
             <div t-if="request.params.get('error')" class="alert alert-danger alert-dismissible fade show" role="alert">
                 Có lỗi xảy ra:
@@ -77,7 +79,8 @@
                     <h4 class="mb-0">Tạo lịch hẹn mới</h4>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="/clinic/appointment/create" class="appointment-form" id="create-appointment-form">
+                    <form method="POST" action="/clinic/appointment/create" class="appointment-form"
+                          id="create-appointment-form">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <div class="row">
                             <div class="col-md-4 form-group">
@@ -103,7 +106,9 @@
                                     <option value="">-- Chọn bác sĩ --</option>
                                     <t t-foreach="doctors" t-as="doctor">
                                         <option t-att-value="doctor.id">
-                                            <t t-esc="doctor.name"/> - <t t-esc="doctor.staff_name"/>
+                                            <t t-esc="doctor.name"/>
+                                            -
+                                            <t t-esc="doctor.staff_name"/>
                                         </option>
                                     </t>
                                 </select>
@@ -187,7 +192,8 @@
                                 <div class="card appointment-card h-100">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <span class="font-weight-bold">
-                                            Lịch hẹn #<t t-esc="appointment.id"/>
+                                            Lịch hẹn #
+                                            <t t-esc="appointment.id"/>
                                         </span>
                                         <span t-attf-class="badge badge-{{ appointment.state }}">
                                             <t t-if="appointment.state == 'draft'">Nháp</t>
@@ -203,7 +209,9 @@
                                         </p>
                                         <p>
                                             <strong>Bác sĩ:</strong>
-                                            <t t-esc="appointment.staff_code"/> - <t t-esc="appointment.staff_name"/>
+                                            <t t-esc="appointment.staff_code"/>
+                                            -
+                                            <t t-esc="appointment.staff_name"/>
                                         </p>
                                         <p>
                                             <strong>Thời gian:</strong>
@@ -236,47 +244,47 @@
             <!-- Form validation script -->
             <script type="text/javascript">
                 $(document).ready(function() {
-                    // Set min date for appointment date
-                    const today = new Date();
-                    const tomorrow = new Date(today);
-                    tomorrow.setDate(tomorrow.getDate() + 1);
+                // Set min date for appointment date
+                const today = new Date();
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
 
-                    const minDateStr = tomorrow.toISOString().split('T')[0];
-                    $('#appointment_date').attr('min', minDateStr);
+                const minDateStr = tomorrow.toISOString().split('T')[0];
+                $('#appointment_date').attr('min', minDateStr);
 
-                    // Form validation
-                    $('.appointment-form').on('submit', function(e) {
-                        var isValid = true;
+                // Form validation
+                $('.appointment-form').on('submit', function(e) {
+                var isValid = true;
 
-                        // Check required fields
-                        $(this).find('[required]').each(function() {
-                            if (!$(this).val()) {
-                                isValid = false;
-                                $(this).addClass('is-invalid');
-                            } else {
-                                $(this).removeClass('is-invalid');
-                            }
-                        });
+                // Check required fields
+                $(this).find('[required]').each(function() {
+                if (!$(this).val()) {
+                isValid = false;
+                $(this).addClass('is-invalid');
+                } else {
+                $(this).removeClass('is-invalid');
+                }
+                });
 
-                        // Check appointment date is at least tomorrow
-                        const appointmentDate = new Date($('#appointment_date').val());
-                        const tomorrow = new Date();
-                        tomorrow.setDate(tomorrow.getDate() + 1);
-                        tomorrow.setHours(0, 0, 0, 0);
+                // Check appointment date is at least tomorrow
+                const appointmentDate = new Date($('#appointment_date').val());
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
 
-                        if (appointmentDate &lt; tomorrow) {
-                            isValid = false;
-                            $('#appointment_date').addClass('is-invalid');
-                            alert('Lịch hẹn chỉ có thể được đặt từ ngày mai trở đi.');
-                        }
+                if (appointmentDate &lt; tomorrow) {
+                isValid = false;
+                $('#appointment_date').addClass('is-invalid');
+                alert('Lịch hẹn chỉ có thể được đặt từ ngày mai trở đi.');
+                }
 
-                        if (!isValid) {
-                            e.preventDefault();
-                            if (!$('#appointment_date').hasClass('is-invalid')) {
-                                alert('Vui lòng điền đầy đủ thông tin bắt buộc');
-                            }
-                        }
-                    });
+                if (!isValid) {
+                e.preventDefault();
+                if (!$('#appointment_date').hasClass('is-invalid')) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc');
+                }
+                }
+                });
                 });
             </script>
         </t>
