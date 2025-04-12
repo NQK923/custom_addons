@@ -35,7 +35,8 @@
                         <p class="text-muted mb-0">Quản lý tất cả thông tin bệnh nhân tại phòng khám</p>
                     </div>
                     <a href="/patients/create" class="btn btn-primary btn-icon">
-                        <i class="fa fa-plus-circle"/> Thêm bệnh nhân mới
+                        <i class="fa fa-plus-circle"/>
+                        Thêm bệnh nhân mới
                     </a>
                 </div>
 
@@ -44,10 +45,12 @@
                     <form method="GET" class="row g-3">
                         <div class="col-md-6">
                             <div class="input-group">
-                                <input type="text" name="search" class="form-control" placeholder="Tìm theo mã, tên hoặc SĐT..."
-                                    t-att-value="request.params.get('search', '')"/>
+                                <input type="text" name="search" class="form-control"
+                                       placeholder="Tìm theo mã, tên hoặc SĐT..."
+                                       t-att-value="request.params.get('search', '')"/>
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-search"/> Tìm kiếm
+                                    <i class="fa fa-search"/>
+                                    Tìm kiếm
                                 </button>
                             </div>
                         </div>
@@ -55,26 +58,35 @@
                         <div class="col-md-3">
                             <select name="patient_type" class="form-select">
                                 <option value="">-- Loại bệnh nhân --</option>
-                                <option value="outpatient" t-att-selected="request.params.get('patient_type') == 'outpatient'">Ngoại trú</option>
-                                <option value="inpatient" t-att-selected="request.params.get('patient_type') == 'inpatient'">Nội trú</option>
+                                <option value="outpatient"
+                                        t-att-selected="request.params.get('patient_type') == 'outpatient'">Ngoại trú
+                                </option>
+                                <option value="inpatient"
+                                        t-att-selected="request.params.get('patient_type') == 'inpatient'">Nội trú
+                                </option>
                             </select>
                         </div>
 
                         <div class="col-md-3">
                             <select name="gender" class="form-select">
                                 <option value="">-- Giới tính --</option>
-                                <option value="male" t-att-selected="request.params.get('gender') == 'male'">Nam</option>
-                                <option value="female" t-att-selected="request.params.get('gender') == 'female'">Nữ</option>
-                                <option value="other" t-att-selected="request.params.get('gender') == 'other'">Khác</option>
+                                <option value="male" t-att-selected="request.params.get('gender') == 'male'">Nam
+                                </option>
+                                <option value="female" t-att-selected="request.params.get('gender') == 'female'">Nữ
+                                </option>
+                                <option value="other" t-att-selected="request.params.get('gender') == 'other'">Khác
+                                </option>
                             </select>
                         </div>
 
                         <div class="col-12 d-flex justify-content-end">
                             <a href="/patients" class="btn btn-outline-secondary me-2">
-                                <i class="fa fa-refresh"/> Xóa bộ lọc
+                                <i class="fa fa-refresh"/>
+                                Xóa bộ lọc
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fa fa-filter"/> Áp dụng bộ lọc
+                                <i class="fa fa-filter"/>
+                                Áp dụng bộ lọc
                             </button>
                         </div>
                     </form>
@@ -85,14 +97,36 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h3>Danh sách bệnh nhân</h3>
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                <i class="fa fa-sort"/> Sắp xếp
+                            <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown">
+                                <i class="fa fa-sort"/>
+                                Sắp xếp
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" t-att-href="'/patients?sort=code' + ('&amp;search=' + request.params.get('search')) if request.params.get('search') else '/patients?sort=code'">Theo mã</a></li>
-                                <li><a class="dropdown-item" t-att-href="'/patients?sort=date' + ('&amp;search=' + request.params.get('search')) if request.params.get('search') else '/patients?sort=date'">Theo ngày đăng ký</a></li>
-                                <li><a class="dropdown-item" t-att-href="'/patients?sort=name' + ('&amp;search=' + request.params.get('search')) if request.params.get('search') else '/patients?sort=name'">Theo tên</a></li>
-                                <li><a class="dropdown-item" t-att-href="'/patients?sort=age' + ('&amp;search=' + request.params.get('search')) if request.params.get('search') else '/patients?sort=age'">Theo tuổi</a></li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       t-att-href="'/patients?sort=code' + ('&amp;search=' + request.params.get('search')) if request.params.get('search') else '/patients?sort=code'">
+                                        Theo mã
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       t-att-href="'/patients?sort=date' + ('&amp;search=' + request.params.get('search')) if request.params.get('search') else '/patients?sort=date'">
+                                        Theo ngày đăng ký
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       t-att-href="'/patients?sort=name' + ('&amp;search=' + request.params.get('search')) if request.params.get('search') else '/patients?sort=name'">
+                                        Theo tên
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       t-att-href="'/patients?sort=age' + ('&amp;search=' + request.params.get('search')) if request.params.get('search') else '/patients?sort=age'">
+                                        Theo tuổi
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -117,45 +151,82 @@
                                     <t t-if="patients">
                                         <t t-foreach="patients" t-as="patient">
                                             <tr>
-                                                <td><span class="fw-medium"><t t-esc="patient.code"/></span></td>
-                                                <td><span class="fw-medium"><t t-esc="patient.name"/></span></td>
-                                                <td><t t-esc="patient.date" t-options='{"widget": "datetime", "format": "dd/MM/yyyy"}'/></td>
                                                 <td>
-                                                    <t t-if="patient.gender == 'male'"><i class="fa fa-male text-primary"/> Nam</t>
-                                                    <t t-elif="patient.gender == 'female'"><i class="fa fa-female text-danger"/> Nữ</t>
-                                                    <t t-else=""><i class="fa fa-genderless text-muted"/> Khác</t>
+                                                    <span class="fw-medium">
+                                                        <t t-esc="patient.code"/>
+                                                    </span>
                                                 </td>
-                                                <td><t t-esc="patient.age"/></td>
+                                                <td>
+                                                    <span class="fw-medium">
+                                                        <t t-esc="patient.name"/>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="patient.date"
+                                                       t-options='{"widget": "datetime", "format": "dd/MM/yyyy"}'/>
+                                                </td>
+                                                <td>
+                                                    <t t-if="patient.gender == 'male'">
+                                                        <i class="fa fa-male text-primary"/>
+                                                        Nam
+                                                    </t>
+                                                    <t t-elif="patient.gender == 'female'">
+                                                        <i class="fa fa-female text-danger"/>
+                                                        Nữ
+                                                    </t>
+                                                    <t t-else="">
+                                                        <i class="fa fa-genderless text-muted"/>
+                                                        Khác
+                                                    </t>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="patient.age"/>
+                                                </td>
                                                 <td>
                                                     <t t-if="patient.phone">
                                                         <a t-att-href="'tel:%s' % patient.phone" class="text-body">
-                                                            <i class="fa fa-phone text-success me-1"/> <t t-esc="patient.phone"/>
+                                                            <i class="fa fa-phone text-success me-1"/>
+                                                            <t t-esc="patient.phone"/>
                                                         </a>
                                                     </t>
                                                     <t t-else="">-</t>
                                                 </td>
                                                 <td>
-                                                    <span t-if="patient.patient_type == 'outpatient'" class="badge badge-outpatient">Ngoại trú</span>
+                                                    <span t-if="patient.patient_type == 'outpatient'"
+                                                          class="badge badge-outpatient">Ngoại trú
+                                                    </span>
                                                     <span t-else="" class="badge badge-inpatient">Nội trú</span>
                                                 </td>
                                                 <td>
                                                     <t t-if="patient.has_insurance">
-                                                        <span class="text-success"><i class="fa fa-check-circle"/> Có BHYT</span>
+                                                        <span class="text-success">
+                                                            <i class="fa fa-check-circle"/>
+                                                            Có BHYT
+                                                        </span>
                                                     </t>
                                                     <t t-else="">
-                                                        <span class="text-muted"><i class="fa fa-times-circle"/> Không</span>
+                                                        <span class="text-muted">
+                                                            <i class="fa fa-times-circle"/>
+                                                            Không
+                                                        </span>
                                                     </t>
                                                 </td>
                                                 <td>
                                                     <div class="d-flex justify-content-center gap-2">
-                                                        <a t-att-href="'/patients/%s' % patient.id" class="btn btn-sm btn-outline-primary">
-                                                            <i class="fa fa-eye"/> Xem
+                                                        <a t-att-href="'/patients/%s' % patient.id"
+                                                           class="btn btn-sm btn-outline-primary">
+                                                            <i class="fa fa-eye"/>
+                                                            Xem
                                                         </a>
-                                                        <a t-att-href="'/patients/%s/edit' % patient.id" class="btn btn-sm btn-outline-secondary">
-                                                            <i class="fa fa-edit"/> Sửa
+                                                        <a t-att-href="'/patients/%s/edit' % patient.id"
+                                                           class="btn btn-sm btn-outline-secondary">
+                                                            <i class="fa fa-edit"/>
+                                                            Sửa
                                                         </a>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger" t-att-onclick="'showDeleteConfirmation(' + str(patient.id) + ', `' + patient.name + '`)'">
-                                                            <i class="fa fa-trash"/> Xóa
+                                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                                t-att-onclick="'showDeleteConfirmation(' + str(patient.id) + ', `' + patient.name + '`)'">
+                                                            <i class="fa fa-trash"/>
+                                                            Xóa
                                                         </button>
                                                     </div>
                                                 </td>
@@ -170,7 +241,8 @@
                                                     <h4>Không tìm thấy bệnh nhân nào</h4>
                                                     <p>Thử thay đổi bộ lọc hoặc tạo bệnh nhân mới</p>
                                                     <a href="/patients/create" class="btn btn-primary mt-2">
-                                                        <i class="fa fa-plus-circle"/> Thêm bệnh nhân mới
+                                                        <i class="fa fa-plus-circle"/>
+                                                        Thêm bệnh nhân mới
                                                     </a>
                                                 </div>
                                             </td>
@@ -191,7 +263,9 @@
                             </li>
                             <t t-foreach="pager['page_ids']" t-as="page">
                                 <li t-attf-class="page-item #{page['num'] == pager['page'] and 'active' or ''}">
-                                    <a t-att-href="page['url']" class="page-link"><t t-esc="page['num']"/></a>
+                                    <a t-att-href="page['url']" class="page-link">
+                                        <t t-esc="page['num']"/>
+                                    </a>
                                 </li>
                             </t>
                             <li t-attf-class="page-item #{pager['page'] == pager['page_count'] and 'disabled' or ''}">
@@ -202,12 +276,14 @@
                 </t>
 
                 <!-- Modal xác nhận xóa -->
-                <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+                <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel"
+                     aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-danger text-white">
                                 <h5 class="modal-title" id="deleteConfirmModalLabel">Xác nhận xóa bệnh nhân</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Đóng"></button>
                             </div>
                             <div class="modal-body">
                                 <p>Bạn có chắc chắn muốn xóa bệnh nhân
@@ -231,55 +307,55 @@
             <!-- JavaScript for delete confirmation - Using vanilla JS -->
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Setup modal close buttons
-                    var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
-                    closeButtons.forEach(function(button) {
-                        button.addEventListener('click', function() {
-                            closeModal();
-                        });
-                    });
+                // Setup modal close buttons
+                var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
+                closeButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                closeModal();
+                });
+                });
 
-                    // Thêm sự kiện đóng modal khi nhấn nút Hủy
-                    var cancelButton = document.querySelector('#deleteConfirmModal .btn-secondary');
-                    if (cancelButton) {
-                        cancelButton.addEventListener('click', function() {
-                            closeModal();
-                        });
-                    }
+                // Thêm sự kiện đóng modal khi nhấn nút Hủy
+                var cancelButton = document.querySelector('#deleteConfirmModal .btn-secondary');
+                if (cancelButton) {
+                cancelButton.addEventListener('click', function() {
+                closeModal();
+                });
+                }
                 });
 
                 function showDeleteConfirmation(patientId, patientName) {
-                    console.log("Showing delete confirmation for patient:", patientId, patientName);
+                console.log("Showing delete confirmation for patient:", patientId, patientName);
 
-                    // Cập nhật nội dung modal
-                    document.getElementById('patientNameToDelete').textContent = patientName;
-                    document.getElementById('deletePatientForm').action = '/patients/' + patientId + '/delete';
+                // Cập nhật nội dung modal
+                document.getElementById('patientNameToDelete').textContent = patientName;
+                document.getElementById('deletePatientForm').action = '/patients/' + patientId + '/delete';
 
-                    // Hiển thị modal
-                    var modal = document.getElementById('deleteConfirmModal');
-                    modal.style.display = 'block';
-                    modal.classList.add('show');
-                    modal.setAttribute('aria-hidden', 'false');
-                    document.body.classList.add('modal-open');
+                // Hiển thị modal
+                var modal = document.getElementById('deleteConfirmModal');
+                modal.style.display = 'block';
+                modal.classList.add('show');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('modal-open');
 
-                    // Tạo backdrop nếu chưa có
-                    var backdrop = document.createElement('div');
-                    backdrop.className = 'modal-backdrop fade show';
-                    document.body.appendChild(backdrop);
+                // Tạo backdrop nếu chưa có
+                var backdrop = document.createElement('div');
+                backdrop.className = 'modal-backdrop fade show';
+                document.body.appendChild(backdrop);
                 }
 
                 function closeModal() {
-                    var modal = document.getElementById('deleteConfirmModal');
-                    modal.style.display = 'none';
-                    modal.classList.remove('show');
-                    modal.setAttribute('aria-hidden', 'true');
-                    document.body.classList.remove('modal-open');
+                var modal = document.getElementById('deleteConfirmModal');
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('modal-open');
 
-                    // Xóa backdrop
-                    var backdrop = document.querySelector('.modal-backdrop');
-                    if (backdrop) {
-                        backdrop.parentNode.removeChild(backdrop);
-                    }
+                // Xóa backdrop
+                var backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                backdrop.parentNode.removeChild(backdrop);
+                }
                 }
             </script>
         </t>

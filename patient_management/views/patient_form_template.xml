@@ -426,77 +426,77 @@
             <!-- JavaScript for tab functionality and delete confirmation - Using vanilla JS -->
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Tab handling with vanilla JS
-                    var tabButtons = document.querySelectorAll('#patientTabs button');
-                    tabButtons.forEach(function(button) {
-                        button.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            var tabID = this.getAttribute('data-bs-target').substring(1);
+                // Tab handling with vanilla JS
+                var tabButtons = document.querySelectorAll('#patientTabs button');
+                tabButtons.forEach(function(button) {
+                button.addEventListener('click', function(e) {
+                e.preventDefault();
+                var tabID = this.getAttribute('data-bs-target').substring(1);
 
-                            // Hide all tab panes
-                            document.querySelectorAll('.tab-pane').forEach(function(pane) {
-                                pane.classList.remove('show', 'active');
-                            });
+                // Hide all tab panes
+                document.querySelectorAll('.tab-pane').forEach(function(pane) {
+                pane.classList.remove('show', 'active');
+                });
 
-                            // Show the selected tab pane
-                            document.getElementById(tabID).classList.add('show', 'active');
+                // Show the selected tab pane
+                document.getElementById(tabID).classList.add('show', 'active');
 
-                            // Update active state on tab buttons
-                            tabButtons.forEach(function(btn) {
-                                btn.classList.remove('active');
-                                btn.setAttribute('aria-selected', 'false');
-                            });
+                // Update active state on tab buttons
+                tabButtons.forEach(function(btn) {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+                });
 
-                            this.classList.add('active');
-                            this.setAttribute('aria-selected', 'true');
-                        });
-                    });
+                this.classList.add('active');
+                this.setAttribute('aria-selected', 'true');
+                });
+                });
 
-                    // Setup modal close buttons
-                    var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
-                    closeButtons.forEach(function(button) {
-                        button.addEventListener('click', function() {
-                            closeModal();
-                        });
-                    });
+                // Setup modal close buttons
+                var closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
+                closeButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                closeModal();
+                });
+                });
 
-                    // Thêm sự kiện đóng modal khi nhấn nút Hủy
-                    var cancelButton = document.querySelector('#deleteConfirmModal .btn-secondary');
-                    if (cancelButton) {
-                        cancelButton.addEventListener('click', function() {
-                            closeModal();
-                        });
-                    }
+                // Thêm sự kiện đóng modal khi nhấn nút Hủy
+                var cancelButton = document.querySelector('#deleteConfirmModal .btn-secondary');
+                if (cancelButton) {
+                cancelButton.addEventListener('click', function() {
+                closeModal();
+                });
+                }
                 });
 
                 function showDeleteConfirmation() {
-                    console.log("Showing delete confirmation modal");
+                console.log("Showing delete confirmation modal");
 
-                    // Hiển thị modal
-                    var modal = document.getElementById('deleteConfirmModal');
-                    modal.style.display = 'block';
-                    modal.classList.add('show');
-                    modal.setAttribute('aria-hidden', 'false');
-                    document.body.classList.add('modal-open');
+                // Hiển thị modal
+                var modal = document.getElementById('deleteConfirmModal');
+                modal.style.display = 'block';
+                modal.classList.add('show');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('modal-open');
 
-                    // Tạo backdrop nếu chưa có
-                    var backdrop = document.createElement('div');
-                    backdrop.className = 'modal-backdrop fade show';
-                    document.body.appendChild(backdrop);
+                // Tạo backdrop nếu chưa có
+                var backdrop = document.createElement('div');
+                backdrop.className = 'modal-backdrop fade show';
+                document.body.appendChild(backdrop);
                 }
 
                 function closeModal() {
-                    var modal = document.getElementById('deleteConfirmModal');
-                    modal.style.display = 'none';
-                    modal.classList.remove('show');
-                    modal.setAttribute('aria-hidden', 'true');
-                    document.body.classList.remove('modal-open');
+                var modal = document.getElementById('deleteConfirmModal');
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('modal-open');
 
-                    // Xóa backdrop
-                    var backdrop = document.querySelector('.modal-backdrop');
-                    if (backdrop) {
-                        backdrop.parentNode.removeChild(backdrop);
-                    }
+                // Xóa backdrop
+                var backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                backdrop.parentNode.removeChild(backdrop);
+                }
                 }
             </script>
         </t>

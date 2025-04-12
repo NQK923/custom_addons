@@ -170,11 +170,24 @@ class CertificationController(http.Controller):
             staff = request.env['clinic.staff'].search([])
             departments = request.env['clinic.department'].search([])
 
+            # Create a dictionary with certificate data
+            form_data = {
+                'name': cert_id.name,
+                'number': cert_id.number,
+                'certification_type': cert_id.certification_type,
+                'authority': cert_id.authority,
+                'issue_date': cert_id.issue_date,
+                'expiry_date': cert_id.expiry_date,
+                'staff_id': cert_id.staff_id.id if cert_id.staff_id else False,
+                'department_id': cert_id.department_id.id if cert_id.department_id else False,
+                'description': cert_id.description,
+            }
+
             values = {
                 'certificate': cert_id,
                 'staff': staff,
                 'departments': departments,
-                'form_data': cert_id,
+                'form_data': form_data,
             }
             return request.render('certification_management.certificate_form_template', values)
 
@@ -406,3 +419,12 @@ class CertificationController(http.Controller):
         except Exception as e:
             _logger.error(f"Error resetting inspection: {str(e)}")
         return request.redirect('/certification/inspection/%s' % insp_id.id)
+
+    @http.route('/certification/certificate/<model("hospital.certification"):cert_id>/set_draft', type='http',
+                auth='user', website=True)
+    def certificate_set_draft(self, cert_id, **kwargs):
+        try:
+            cert_id.action_set_draft()
+        except Exception as e:
+            _logger.error(f"Error setting certificate to draft: {str(e)}")
+        return request.redirect('/certification/certificate/%s' % cert_id.id)
