@@ -97,12 +97,16 @@ class TreatmentProcess(models.Model):
                 # Convert datetime to date for comparison
                 execution_date = record.execution_time.date()
 
+                # Get plan start and end dates
+                plan_start_date = record.plan_id.start_date
+                plan_end_date = record.plan_id.end_date
+
                 # Check if execution date is before plan start date
-                if execution_date < record.plan_id.start_date:
+                if execution_date < plan_start_date:
                     raise ValidationError("Thời gian thực hiện không thể trước ngày bắt đầu của kế hoạch điều trị!")
 
                 # Check if execution date is after plan end date (if end date is set)
-                if record.plan_id.end_date and execution_date > record.plan_id.end_date:
+                if plan_end_date and execution_date > plan_end_date:
                     raise ValidationError("Thời gian thực hiện không thể sau ngày kết thúc của kế hoạch điều trị!")
 
 

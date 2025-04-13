@@ -115,15 +115,16 @@
                                     </p>
                                 </div>
 
-                                <div class="mt-4">
+                                <!-- Fixed button implementation for staff detail page -->
+                                <div class="mt-4 text-center">
                                     <a t-att-href="'/clinic/staff/attendance/%s' % staff.id"
-                                       class="btn btn-block btn-primary">
-                                        <i class="fa fa-clock-o"/>
+                                       class="btn btn-primary btn-lg btn-block">
+                                        <i class="fa fa-clock-o mr-2"/>
                                         Chấm công
                                     </a>
                                     <a t-att-href="'/clinic/staff/performance/%s' % staff.id"
-                                       class="btn btn-block btn-success mt-2">
-                                        <i class="fa fa-star"/>
+                                       class="btn btn-success btn-lg btn-block mt-3">
+                                        <i class="fa fa-star mr-2"/>
                                         Đánh giá hiệu suất
                                     </a>
                                 </div>

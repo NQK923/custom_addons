@@ -14,6 +14,10 @@ class StaffManagementController(http.Controller):
         search_department = kwargs.get('search_department', '')
         search_status = kwargs.get('search_status', '')
 
+        # Get error and success messages from URL parameters
+        error = kwargs.get('error')
+        success = kwargs.get('success')
+
         # Build domain for search
         domain = []
         if search_name:
@@ -34,6 +38,8 @@ class StaffManagementController(http.Controller):
             'search_department': search_department,
             'search_status': search_status,
             'active_tab': 'staff',
+            'error': error,
+            'success': success,
         }
         return request.render('staff_management.staff_list_template', values)
 
@@ -314,7 +320,7 @@ class StaffManagementController(http.Controller):
 
             if attendance_count > 0 or performance_count > 0:
                 return request.redirect(
-                    f'/clinic/staff?error=Không thể xóa nhân viên này vì có {attendance_count} bản ghi chấm công và {performance_count} đánh giá hiệu suất liên quan')
+                    f'/clinic/staff?error=Không thể xóa nhân viên này vì có bản ghi liên quan')
 
             staff_name = staff_id.staff_name  # Save the name before deletion
             staff_id.sudo().unlink()

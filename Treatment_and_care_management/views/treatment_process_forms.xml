@@ -95,7 +95,7 @@
                                 <option value="">-- Chọn đơn thuốc (nếu có) --</option>
                                 <t t-foreach="prescriptions" t-as="prescription">
                                     <option t-att-value="prescription.id">
-                                        <t t-esc="prescription.name"/>
+                                        <t t-esc="prescription.id"/> - <t t-esc="prescription.date"/>
                                     </option>
                                 </t>
                             </select>
@@ -130,6 +130,12 @@
                     const errorBox = document.getElementById('date-error');
                     const errorMessage = document.getElementById('error-message');
 
+                    function parseDateWithoutTime(dateStr) {
+                        // Parse a date string and return a date object with time set to 00:00:00
+                        const parts = dateStr.split('-');
+                        return new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0);
+                    }
+
                     function validateExecutionTime() {
                         if (!executionTimeInput.value) {
                             // If execution time is not set, no validation needed
@@ -137,15 +143,24 @@
                             return true;
                         }
 
-                        // Convert execution time to date
-                        const executionTime = new Date(executionTimeInput.value);
-                        const executionDate = new Date(executionTime.getFullYear(), executionTime.getMonth(), executionTime.getDate());
+                        // Get the execution date (just the date part) in local timezone
+                        const executionTime = new Date(executionTimeInput.value.replace('T', ' '));
+                        const executionDate = new Date(
+                            executionTime.getFullYear(),
+                            executionTime.getMonth(),
+                            executionTime.getDate()
+                        );
 
-                        // Convert plan start date to date
-                        const planStartDate = new Date(planStartDateStr);
+                        // Parse plan start date properly
+                        const planStartDate = parseDateWithoutTime(planStartDateStr);
+
+                        // For debugging
+                        console.log('Execution date:', executionDate);
+                        console.log('Plan start date:', planStartDate);
 
                         // Check if execution date is before plan start date
-                        if (executionDate &lt; planStartDate) {
+                        // Compare using getTime() to properly compare Date objects
+                        if (executionDate.getTime() &lt; planStartDate.getTime()) {
                             errorBox.style.display = 'block';
                             errorMessage.textContent = 'Thời gian thực hiện không thể trước ngày bắt đầu của kế hoạch điều trị!';
                             return false;
@@ -153,8 +168,9 @@
 
                         // Check if execution date is after plan end date (if end date is set)
                         if (planEndDateStr) {
-                            const planEndDate = new Date(planEndDateStr);
-                            if (executionDate > planEndDate) {
+                            const planEndDate = parseDateWithoutTime(planEndDateStr);
+                            console.log('Plan end date:', planEndDate);
+                            if (executionDate.getTime() > planEndDate.getTime()) {
                                 errorBox.style.display = 'block';
                                 errorMessage.textContent = 'Thời gian thực hiện không thể sau ngày kết thúc của kế hoạch điều trị!';
                                 return false;
@@ -290,7 +306,7 @@
                                 <t t-foreach="prescriptions" t-as="prescription">
                                     <option t-att-value="prescription.id"
                                             t-att-selected="prescription.id == process.prescription_id.id">
-                                        <t t-esc="prescription.name"/> <!-- Hoặc trường khác như code -->
+                                        <t t-esc="prescription.id"/> - <t t-esc="prescription.date"/>
                                     </option>
                                 </t>
                             </select>
@@ -325,6 +341,12 @@
                     const errorBox = document.getElementById('edit-date-error');
                     const errorMessage = document.getElementById('edit-error-message');
 
+                    function parseDateWithoutTime(dateStr) {
+                        // Parse a date string and return a date object with time set to 00:00:00
+                        const parts = dateStr.split('-');
+                        return new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0);
+                    }
+
                     function validateExecutionTime() {
                         if (!executionTimeInput.value) {
                             // If execution time is not set, no validation needed
@@ -332,15 +354,24 @@
                             return true;
                         }
 
-                        // Convert execution time to date
-                        const executionTime = new Date(executionTimeInput.value);
-                        const executionDate = new Date(executionTime.getFullYear(), executionTime.getMonth(), executionTime.getDate());
+                        // Get the execution date (just the date part) in local timezone
+                        const executionTime = new Date(executionTimeInput.value.replace('T', ' '));
+                        const executionDate = new Date(
+                            executionTime.getFullYear(),
+                            executionTime.getMonth(),
+                            executionTime.getDate()
+                        );
 
-                        // Convert plan start date to date
-                        const planStartDate = new Date(planStartDateStr);
+                        // Parse plan start date properly
+                        const planStartDate = parseDateWithoutTime(planStartDateStr);
+
+                        // For debugging
+                        console.log('Execution date:', executionDate);
+                        console.log('Plan start date:', planStartDate);
 
                         // Check if execution date is before plan start date
-                        if (executionDate &lt; planStartDate) {
+                        // Compare using getTime() to properly compare Date objects
+                        if (executionDate.getTime() &lt; planStartDate.getTime()) {
                             errorBox.style.display = 'block';
                             errorMessage.textContent = 'Thời gian thực hiện không thể trước ngày bắt đầu của kế hoạch điều trị!';
                             return false;
@@ -348,8 +379,9 @@
 
                         // Check if execution date is after plan end date (if end date is set)
                         if (planEndDateStr) {
-                            const planEndDate = new Date(planEndDateStr);
-                            if (executionDate > planEndDate) {
+                            const planEndDate = parseDateWithoutTime(planEndDateStr);
+                            console.log('Plan end date:', planEndDate);
+                            if (executionDate.getTime() > planEndDate.getTime()) {
                                 errorBox.style.display = 'block';
                                 errorMessage.textContent = 'Thời gian thực hiện không thể sau ngày kết thúc của kế hoạch điều trị!';
                                 return false;
