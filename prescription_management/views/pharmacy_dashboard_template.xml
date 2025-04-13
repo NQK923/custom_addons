@@ -27,10 +27,7 @@
                         <div class="card bg-primary text-white">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-3">
-                                        <i class="fa fa-pills fa-3x"/>
-                                    </div>
-                                    <div class="col-9 text-right">
+                                    <div class="text-center">
                                         <h3 t-esc="product_count"/>
                                         <p class="m-0">Dược phẩm</p>
                                     </div>
@@ -49,10 +46,7 @@
                         <div class="card bg-success text-white">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-3">
-                                        <i class="fa fa-clipboard-list fa-3x"/>
-                                    </div>
-                                    <div class="col-9 text-right">
+                                    <div class="text-center">
                                         <h3 t-esc="prescription_count"/>
                                         <p class="m-0">Đơn thuốc</p>
                                     </div>
@@ -71,10 +65,7 @@
                         <div class="card bg-info text-white">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-3">
-                                        <i class="fa fa-stethoscope fa-3x"/>
-                                    </div>
-                                    <div class="col-9 text-right">
+                                    <div class="text-center">
                                         <h3 t-esc="service_count"/>
                                         <p class="m-0">Dịch vụ</p>
                                     </div>
@@ -93,10 +84,7 @@
                         <div class="card bg-warning text-white">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-3">
-                                        <i class="fa fa-exclamation-triangle fa-3x"/>
-                                    </div>
-                                    <div class="col-9 text-right">
+                                    <div class="text-center">
                                         <h3 t-esc="low_stock_count"/>
                                         <p class="m-0">Sắp hết hàng</p>
                                     </div>
