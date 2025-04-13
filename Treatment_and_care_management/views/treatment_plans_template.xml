@@ -392,7 +392,9 @@
                                                 <t t-else="">Chưa thực hiện</t>
                                             </td>
                                             <td>
-                                                <t t-if="process.prescription_id" t-esc="process.prescription_id.name"/>
+                                                <t t-if="process.prescription_id">
+                                                    <t t-esc="process.prescription_id.id"/> - <t t-esc="process.prescription_id.date"/>
+                                                </t>
                                                 <t t-else="">Không có</t>
                                             </td>
                                             <td>
