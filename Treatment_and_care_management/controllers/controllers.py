@@ -32,6 +32,7 @@ class TreatmentAndCareController(http.Controller):
             'treatment_plans': treatment_plans,
             'all_treatment_plans': all_treatment_plans,
             'search_value': search_value,
+            'datetime': datetime,  # Add datetime to the template context
         }
 
         return request.render('Treatment_and_care_management.treatment_plans_template', values)
@@ -253,6 +254,7 @@ class TreatmentAndCareController(http.Controller):
             'care_records': care_records,
             'all_care_records': all_care_records,
             'search_value': search_value,
+            'datetime': datetime,  # Add datetime to the template context
         }
 
         return request.render('Treatment_and_care_management.patient_care_template', values)

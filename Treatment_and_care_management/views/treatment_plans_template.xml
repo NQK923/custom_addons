@@ -87,6 +87,46 @@
                 text-decoration: none;
                 color: white;
                 }
+                /* New styles for the quick access section */
+                .quick-access-section {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 25px;
+                border: 1px solid #dee2e6;
+                text-align: center;
+                }
+                .quick-access-btn {
+                display: inline-block;
+                background-color: #28a745;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 10px 20px;
+                font-size: 1.1rem;
+                margin: 10px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                text-decoration: none;
+                }
+                .quick-access-btn:hover {
+                background-color: #218838;
+                color: white;
+                text-decoration: none;
+                }
+                /* Modal styles */
+                .modal-content {
+                border-radius: 8px;
+                }
+                .modal-header {
+                background-color: #007bff;
+                color: white;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                }
+                .modal-footer {
+                border-top: 1px solid #dee2e6;
+                }
             </style>
 
             <div class="container mt-5 treatment-container">
@@ -96,6 +136,17 @@
                 <div class="text-center mb-4">
                     <a href="/clinic/treatment_plans" class="btn btn-primary mx-2 active">Kế hoạch điều trị</a>
                     <a href="/clinic/patient_care" class="btn btn-outline-primary mx-2">Theo dõi chăm sóc</a>
+                </div>
+
+                <!-- Quick Access Section - NEW -->
+                <div class="quick-access-section">
+                    <h3 class="section-heading">Truy cập nhanh</h3>
+                    <p>Thêm mới kế hoạch điều trị mà không cần tìm kiếm bệnh nhân trước</p>
+
+                    <!-- Button to open patient selection modal -->
+                    <button type="button" class="quick-access-btn" data-bs-toggle="modal" data-bs-target="#quickCreateModal">
+                        <i class="fa fa-plus-circle me-2"></i>Tạo kế hoạch điều trị mới
+                    </button>
                 </div>
 
                 <!-- Search Form -->
@@ -282,224 +333,48 @@
                     </t>
                 </t>
             </div>
-        </t>
-    </template>
 
-    <!-- Treatment Plan Details Template -->
-    <template id="treatment_plan_details_template" name="Treatment Plan Details">
-        <t t-call="website.layout">
-            <style>
-                .details-container {
-                background-color: #f8f9fa;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                max-width: 1200px;
-                margin: 0 auto;
-                }
-                .plan-header, .process-list {
-                background-color: #fff;
-                padding: 20px;
-                border-radius: 8px;
-                margin-bottom: 25px;
-                border: 1px solid #dee2e6;
-                }
-                .section-heading {
-                color: #007bff;
-                border-bottom: 2px solid #007bff;
-                padding-bottom: 8px;
-                margin-bottom: 20px;
-                font-size: 1.5rem;
-                }
-                .plan-info p {
-                margin: 8px 0;
-                font-size: 1rem;
-                color: #343a40;
-                }
-                .plan-info strong {
-                color: #495057;
-                min-width: 150px;
-                display: inline-block;
-                }
-                .table {
-                margin-bottom: 0;
-                }
-                .table th {
-                background-color: #007bff;
-                color: #fff;
-                padding: 12px;
-                text-align: center;
-                }
-                .table td {
-                vertical-align: middle;
-                padding: 10px;
-                text-align: center;
-                }
-                .no-data {
-                color: #6c757d;
-                font-style: italic;
-                text-align: center;
-                padding: 20px;
-                }
-                .status-badge {
-                padding: 5px 10px;
-                border-radius: 20px;
-                color: white;
-                font-size: 0.85rem;
-                }
-                .status-pending {
-                background-color: #ffc107;
-                }
-                .status-in-progress {
-                background-color: #17a2b8;
-                }
-                .status-completed {
-                background-color: #28a745;
-                }
-                .back-btn {
-                background-color: #6c757d;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                padding: 8px 16px;
-                cursor: pointer;
-                transition: background-color 0.3s;
-                text-decoration: none;
-                display: inline-block;
-                margin-top: 20px;
-                }
-                .back-btn:hover {
-                background-color: #5a6268;
-                text-decoration: none;
-                color: white;
-                }
-            </style>
+            <!-- Quick Create Modal - NEW -->
+            <div class="modal fade" id="quickCreateModal" tabindex="-1" aria-labelledby="quickCreateModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="quickCreateModalLabel">Tạo kế hoạch điều trị mới</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="quickCreateForm" method="POST" action="/clinic/treatment_plan/create">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
-            <div class="container mt-5 details-container">
-                <h1 class="text-center mb-5">Chi tiết kế hoạch điều trị</h1>
+                                <div class="form-group mb-3">
+                                    <label for="patient_selection" class="form-label">Chọn bệnh nhân:</label>
+                                    <select class="form-select" id="patient_selection" name="patient_id" required="required">
+                                        <option value="">-- Chọn bệnh nhân --</option>
+                                        <t t-foreach="request.env['clinic.patient'].sudo().search([])" t-as="p">
+                                            <option t-att-value="p.id">
+                                                <t t-esc="p.name"/> (<t t-esc="p.code"/>)
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
 
-                <!-- Plan Information -->
-                <div class="plan-header">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h3 class="section-heading mb-0">Thông tin kế hoạch</h3>
-                        <div>
-                            <a t-att-href="'/clinic/treatment_plan/edit/%s' % plan.id" class="btn btn-info me-2">
-                                <i class="fa fa-edit"></i>
-                                Chỉnh sửa
-                            </a>
-                            <a t-att-href="'/clinic/treatment_plan/delete/%s' % plan.id"
-                               class="btn btn-danger"
-                               onclick="return confirm('Bạn có chắc chắn muốn xóa kế hoạch điều trị này?')">
-                                <i class="fa fa-trash"></i>
-                                Xóa
-                            </a>
+                                <div class="form-group mb-3">
+                                    <label for="start_date" class="form-label">Ngày bắt đầu:</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date"
+                                           t-att-value="datetime.date.today().strftime('%Y-%m-%d')" required="required"/>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="end_date" class="form-label">Ngày kết thúc (không bắt buộc):</label>
+                                    <input type="date" class="form-control" id="end_date" name="end_date"/>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit" form="quickCreateForm" class="btn btn-primary">Tạo kế hoạch</button>
                         </div>
                     </div>
-                    <div class="row plan-info">
-                        <div class="col-md-6">
-                            <p>
-                                <strong>Mã kế hoạch:</strong>
-                                <t t-esc="plan.code"/>
-                            </p>
-                            <p>
-                                <strong>Bệnh nhân:</strong>
-                                <t t-esc="plan.patient_id.name"/>
-                                (<t t-esc="plan.patient_id.code"/>)
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <p>
-                                <strong>Ngày bắt đầu:</strong>
-                                <t t-esc="plan.start_date"/>
-                            </p>
-                            <p>
-                                <strong>Ngày kết thúc:</strong>
-                                <t t-if="plan.end_date" t-esc="plan.end_date"/>
-                                <t t-else="">Chưa kết thúc</t>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Treatment Processes -->
-                <div class="process-list">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h3 class="section-heading mb-0">Quá trình điều trị</h3>
-                        <a t-att-href="'/clinic/treatment_process/create?plan_id=%s' % plan.id" class="btn btn-success">
-                            <i class="fa fa-plus-circle"></i>
-                            Thêm quá trình mới
-                        </a>
-                    </div>
-                    <t t-if="processes">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Mã quá trình</th>
-                                        <th>Loại dịch vụ</th>
-                                        <th>Người thực hiện</th>
-                                        <th>Trạng thái</th>
-                                        <th>Thời gian thực hiện</th>
-                                        <th>Đơn thuốc</th>
-                                        <th>Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-foreach="processes" t-as="process">
-                                        <tr>
-                                            <td>
-                                                <t t-esc="process.code"/>
-                                            </td>
-                                            <td>
-                                                <t t-esc="process.service_id.name"/>
-                                            </td>
-                                            <td>
-                                                <t t-esc="process.executor_id.name"/>
-                                            </td>
-                                            <td>
-                                                <span t-att-class="'status-badge ' + ('status-pending' if process.state == 'pending' else 'status-in-progress' if process.state == 'in_progress' else 'status-completed')">
-                                                    <t t-if="process.state == 'pending'">Chưa thực hiện</t>
-                                                    <t t-elif="process.state == 'in_progress'">Đang thực hiện</t>
-                                                    <t t-elif="process.state == 'completed'">Hoàn thành</t>
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <t t-if="process.execution_time" t-esc="process.execution_time"/>
-                                                <t t-else="">Chưa thực hiện</t>
-                                            </td>
-                                            <td>
-                                                <t t-if="process.prescription_id" t-esc="process.prescription_id.name"/>
-                                                <t t-else="">Không có</t>
-                                            </td>
-                                            <td>
-                                                <a t-att-href="'/clinic/treatment_process/edit/%s' % process.id"
-                                                   class="btn btn-sm btn-info me-1">
-                                                    <i class="fa fa-edit"></i>
-                                                </a>
-                                                <a t-att-href="'/clinic/treatment_process/delete/%s' % process.id"
-                                                   class="btn btn-sm btn-danger"
-                                                   onclick="return confirm('Bạn có chắc chắn muốn xóa quá trình này?')">
-                                                    <i class="fa fa-trash"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </tbody>
-                            </table>
-                        </div>
-                    </t>
-                    <t t-else="">
-                        <div class="no-data">
-                            <p>Chưa có quá trình điều trị nào trong kế hoạch này.</p>
-                        </div>
-                    </t>
-                </div>
-
-                <div class="text-center">
-                    <a href="/clinic/treatment_plans" class="back-btn">
-                        <i class="fa fa-arrow-left"></i>
-                        Quay lại danh sách
-                    </a>
                 </div>
             </div>
         </t>
