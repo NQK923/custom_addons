@@ -5,116 +5,62 @@
         <t t-call="appointment_management.appointment_layout">
             <!-- Thêm CSS và JS cần thiết cho calendar -->
             <t t-set="head">
-                <link rel="stylesheet"
-                      href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css"/>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
             </t>
 
             <!-- Thông báo kết quả -->
-            <div t-if="request.params.get('success')" class="alert alert-success alert-dismissible fade show"
-                 role="alert">
-                Đã tạo lịch hẹn mới thành công!
+            <div t-if="request.params.get('success')" class="alert alert-success fade show" role="alert">
+                <i class="fas fa-check-circle mr-2"></i> Đã tạo lịch hẹn mới thành công!
             </div>
-            <div t-if="request.params.get('deleted')" class="alert alert-success alert-dismissible fade show"
-                 role="alert">
-                Đã xoá lịch hẹn #
-                <strong t-esc="request.params.get('appointment_name', '')"/>
-                thành công!
+            <div t-if="request.params.get('deleted')" class="alert alert-success fade show" role="alert">
+                <i class="fas fa-check-circle mr-2"></i> Đã xoá lịch hẹn #<strong t-esc="request.params.get('appointment_name', '')"/> thành công!
             </div>
-            <div t-if="request.params.get('error')" class="alert alert-danger alert-dismissible fade show" role="alert">
-                Có lỗi xảy ra:
-                <t t-esc="request.params.get('message', 'Vui lòng kiểm tra lại thông tin')"/>
-            </div>
-
-            <!-- Form tìm kiếm lịch hẹn -->
-            <div class="card mb-3">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">
-                        <i class="fa fa-search"></i>
-                        Tìm kiếm lịch hẹn
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <form method="GET" action="/clinic/appointments" class="search-form">
-                        <input type="hidden" name="view_mode" t-att-value="view_mode"/>
-                        <input type="hidden" name="state" t-att-value="state_filter"/>
-                        <div class="row">
-                            <div class="col-md-4 form-group">
-                                <label for="search">Tìm kiếm</label>
-                                <input type="text" class="form-control" id="search" name="search"
-                                       t-att-value="search_term"
-                                       placeholder="Mã lịch hẹn, tên bệnh nhân, bác sĩ..."/>
-                            </div>
-                            <div class="col-md-4 form-group">
-                                <label for="date_from">Từ ngày</label>
-                                <input type="date" class="form-control" id="date_from" name="date_from"
-                                       t-att-value="date_from"/>
-                            </div>
-                            <div class="col-md-4 form-group">
-                                <label for="date_to">Đến ngày</label>
-                                <input type="date" class="form-control" id="date_to" name="date_to"
-                                       t-att-value="date_to"/>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12 text-right">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-search"></i>
-                                    Tìm kiếm
-                                </button>
-                                <a href="/clinic/appointments" class="btn btn-secondary ml-2">
-                                    <i class="fa fa-refresh"></i>
-                                    Đặt lại
-                                </a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+            <div t-if="request.params.get('error')" class="alert alert-danger fade show" role="alert">
+                <i class="fas fa-exclamation-triangle mr-2"></i> Có lỗi xảy ra: <t t-esc="request.params.get('message', 'Vui lòng kiểm tra lại thông tin')"/>
             </div>
 
             <!-- Form tạo lịch hẹn mới -->
             <div class="card form-container mb-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <i class="fas fa-calendar-plus fa-lg mr-3"></i>
                     <h4 class="mb-0">Tạo lịch hẹn mới</h4>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="/clinic/appointment/create" class="appointment-form"
-                          id="create-appointment-form">
+                    <form method="POST" action="/clinic/appointment/create" class="appointment-form" id="create-appointment-form">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <div class="row">
                             <div class="col-md-4 form-group">
-                                <label for="patient_id">Bệnh nhân
+                                <label for="patient_id">
+                                    <i class="fas fa-user-injured mr-1"></i> Bệnh nhân
                                     <span class="text-danger">*</span>
                                 </label>
                                 <select name="patient_id" id="patient_id" class="form-control" required="required">
                                     <option value="">-- Chọn bệnh nhân --</option>
                                     <t t-foreach="patients" t-as="patient">
                                         <option t-att-value="patient.id">
-                                            <t t-esc="patient.code"/>
-                                            -
-                                            <t t-esc="patient.name"/>
+                                            <t t-esc="patient.code"/> - <t t-esc="patient.name"/>
                                         </option>
                                     </t>
                                 </select>
                             </div>
                             <div class="col-md-4 form-group">
-                                <label for="staff_id">Bác sĩ
+                                <label for="staff_id">
+                                    <i class="fas fa-user-md mr-1"></i> Bác sĩ
                                     <span class="text-danger">*</span>
                                 </label>
                                 <select name="staff_id" id="staff_id" class="form-control" required="required">
                                     <option value="">-- Chọn bác sĩ --</option>
                                     <t t-foreach="doctors" t-as="doctor">
                                         <option t-att-value="doctor.id">
-                                            <t t-esc="doctor.name"/>
-                                            -
-                                            <t t-esc="doctor.staff_name"/>
+                                            <t t-esc="doctor.name"/> - <t t-esc="doctor.staff_name"/>
                                         </option>
                                     </t>
                                 </select>
                             </div>
                             <div class="col-md-4 form-group">
-                                <label for="room_id">Phòng khám</label>
+                                <label for="room_id">
+                                    <i class="fas fa-door-open mr-1"></i> Phòng khám
+                                </label>
                                 <select name="room_id" id="room_id" class="form-control">
                                     <option value="">-- Chọn phòng --</option>
                                     <t t-foreach="rooms" t-as="room">
@@ -127,164 +73,274 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 form-group">
-                                <label for="appointment_date">Ngày hẹn
+                                <label for="appointment_date">
+                                    <i class="fas fa-calendar-day mr-1"></i> Ngày hẹn
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="date" class="form-control" id="appointment_date" name="appointment_date"
-                                       required="required" t-att-min="min_date"/>
-                                <small class="text-muted">Lịch hẹn chỉ có thể được đặt từ ngày mai trở đi</small>
+                                <input type="date" class="form-control" id="appointment_date" name="appointment_date" required="required" t-att-min="min_date"/>
+                                <small class="text-muted"><i class="fas fa-info-circle mr-1"></i> Lịch hẹn chỉ có thể được đặt từ ngày mai trở đi</small>
                             </div>
                             <div class="col-md-6 form-group">
-                                <label for="appointment_time">Giờ hẹn
+                                <label for="appointment_time">
+                                    <i class="fas fa-clock mr-1"></i> Giờ hẹn
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="time" name="appointment_time" id="appointment_time" class="form-control"
-                                       required="1" min="08:00" max="21:00"/>
-                                <small class="text-muted">Lịch hẹn chỉ có thể được đặt từ 8:00 sáng đến 21:00 tối
-                                </small>
+                                <input type="time" name="appointment_time" id="appointment_time" class="form-control" required="1" min="08:00" max="21:00"/>
+                                <small class="text-muted"><i class="fas fa-info-circle mr-1"></i> Lịch hẹn chỉ có thể được đặt từ 8:00 sáng đến 21:00 tối</small>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="note">Ghi chú</label>
-                            <textarea name="note" id="note" class="form-control" rows="3"></textarea>
+                            <label for="note">
+                                <i class="fas fa-sticky-note mr-1"></i> Ghi chú
+                            </label>
+                            <textarea name="note" id="note" class="form-control" rows="3" placeholder="Nhập ghi chú hoặc lưu ý cho lịch hẹn..."></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary mt-2">
-                            <i class="fa fa-plus-circle"></i>
-                            Tạo lịch hẹn
-                        </button>
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-calendar-plus mr-2"></i>Tạo lịch hẹn
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
 
-            <!-- Filter và toggle chế độ xem -->
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <form method="GET" action="/clinic/appointments" class="form-inline">
-                        <input type="hidden" name="view_mode" t-att-value="view_mode"/>
-                        <input type="hidden" name="search" t-att-value="search_term"/>
-                        <input type="hidden" name="date_from" t-att-value="date_from"/>
-                        <input type="hidden" name="date_to" t-att-value="date_to"/>
-                        <label for="state" class="mr-2">Lọc theo trạng thái:</label>
-                        <select name="state" id="state" class="form-control mr-2" onchange="this.form.submit()">
-                            <option value="all" t-att-selected="state_filter == 'all'">Tất cả</option>
-                            <option value="draft" t-att-selected="state_filter == 'draft'">Nháp</option>
-                            <option value="confirmed" t-att-selected="state_filter == 'confirmed'">Đã xác nhận</option>
-                            <option value="done" t-att-selected="state_filter == 'done'">Hoàn thành</option>
-                            <option value="cancelled" t-att-selected="state_filter == 'cancelled'">Đã hủy</option>
-                        </select>
+            <!-- Form tìm kiếm lịch hẹn -->
+            <div class="card form-container mb-4">
+                <div class="card-header bg-info text-white d-flex align-items-center">
+                    <i class="fas fa-search fa-lg mr-3"></i>
+                    <h5 class="mb-0">Tìm kiếm lịch hẹn</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="/clinic/appointments" class="search-form">
+                        <input type="hidden" name="state" t-att-value="state_filter"/>
+
+                        <!-- Search bar -->
+                        <div class="form-group">
+                            <label for="search">
+                                <i class="fas fa-search mr-1"></i> Tìm kiếm theo từ khoá
+                            </label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="search" name="search"
+                                       t-att-value="search_term" placeholder="Nhập mã lịch hẹn, tên bệnh nhân hoặc bác sĩ..."/>
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search mr-1"></i> Tìm kiếm
+                                    </button>
+                                    <a href="/clinic/appointments" class="btn btn-secondary">
+                                        <i class="fas fa-sync-alt mr-1"></i> Đặt lại
+                                    </a>
+                                </div>
+                            </div>
+                            <small class="text-muted mt-1 d-inline-block">
+                                <i class="fas fa-info-circle mr-1"></i> Hỗ trợ tìm kiếm theo mã lịch hẹn, thông tin bệnh nhân hoặc bác sĩ
+                            </small>
+                        </div>
+
+                        <!-- Date range -->
+                        <div class="form-group mt-4">
+                            <label>
+                                <i class="fas fa-calendar-alt mr-1"></i> Lọc theo khoảng thời gian
+                            </label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Từ ngày</span>
+                                        </div>
+                                        <input type="date" class="form-control" id="date_from" name="date_from" t-att-value="date_from"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Đến ngày</span>
+                                        </div>
+                                        <input type="date" class="form-control" id="date_to" name="date_to" t-att-value="date_to"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filter badges -->
+                        <div class="form-group mt-4">
+                            <label>
+                                <i class="fas fa-filter mr-1"></i> Lọc theo trạng thái
+                            </label>
+                            <div class="d-flex flex-wrap mt-2">
+                                <a t-att-href="'/clinic/appointments?state=all' + ('&amp;search=' + search_term if search_term else '') + ('&amp;date_from=' + date_from if date_from else '') + ('&amp;date_to=' + date_to if date_to else '')"
+                                   t-att-class="'badge badge-pill mr-2 mb-2 ' + ('badge-primary' if state_filter == 'all' else 'badge-light')" style="font-size: 0.9rem; padding: 0.5rem 0.8rem;">
+                                    <i class="fas fa-tasks mr-1"></i> Tất cả
+                                </a>
+                                <a t-att-href="'/clinic/appointments?state=draft' + ('&amp;search=' + search_term if search_term else '') + ('&amp;date_from=' + date_from if date_from else '') + ('&amp;date_to=' + date_to if date_to else '')"
+                                   t-att-class="'badge badge-pill mr-2 mb-2 ' + ('badge-info' if state_filter == 'draft' else 'badge-light')" style="font-size: 0.9rem; padding: 0.5rem 0.8rem;">
+                                    <i class="fas fa-edit mr-1"></i> Nháp
+                                </a>
+                                <a t-att-href="'/clinic/appointments?state=confirmed' + ('&amp;search=' + search_term if search_term else '') + ('&amp;date_from=' + date_from if date_from else '') + ('&amp;date_to=' + date_to if date_to else '')"
+                                   t-att-class="'badge badge-pill mr-2 mb-2 ' + ('badge-success' if state_filter == 'confirmed' else 'badge-light')" style="font-size: 0.9rem; padding: 0.5rem 0.8rem;">
+                                    <i class="fas fa-check-circle mr-1"></i> Đã xác nhận
+                                </a>
+                                <a t-att-href="'/clinic/appointments?state=done' + ('&amp;search=' + search_term if search_term else '') + ('&amp;date_from=' + date_from if date_from else '') + ('&amp;date_to=' + date_to if date_to else '')"
+                                   t-att-class="'badge badge-pill mr-2 mb-2 ' + ('badge-secondary' if state_filter == 'done' else 'badge-light')" style="font-size: 0.9rem; padding: 0.5rem 0.8rem;">
+                                    <i class="fas fa-check-double mr-1"></i> Hoàn thành
+                                </a>
+                                <a t-att-href="'/clinic/appointments?state=cancelled' + ('&amp;search=' + search_term if search_term else '') + ('&amp;date_from=' + date_from if date_from else '') + ('&amp;date_to=' + date_to if date_to else '')"
+                                   t-att-class="'badge badge-pill mr-2 mb-2 ' + ('badge-danger' if state_filter == 'cancelled' else 'badge-light')" style="font-size: 0.9rem; padding: 0.5rem 0.8rem;">
+                                    <i class="fas fa-ban mr-1"></i> Đã hủy
+                                </a>
+                            </div>
+                        </div>
                     </form>
                 </div>
-                <div class="col-md-6 text-right view-toggle">
-                    <a t-att-href="'/clinic/appointments?view_mode=list&amp;state=' + state_filter + '&amp;search=' + (search_term or '') + '&amp;date_from=' + (date_from or '') + '&amp;date_to=' + (date_to or '')"
-                       class="btn btn-outline-primary mr-2" t-att-class="{'active': view_mode == 'list'}">
-                        <i class="fa fa-list"></i>
-                        Danh sách
-                    </a>
-                </div>
             </div>
+
+            <!-- Bộ lọc trạng thái - Removing this section since it's now integrated in the search form -->
+
 
             <!-- Hiển thị dạng danh sách -->
-            <t t-if="view_mode == 'list'">
-                <t t-if="appointments">
-                    <div class="row">
-                        <t t-foreach="appointments" t-as="appointment">
-                            <div class="col-md-6 col-lg-4 mb-3">
-                                <div class="card appointment-card h-100">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <span class="font-weight-bold">
-                                            Lịch hẹn #
-                                            <t t-esc="appointment.id"/>
-                                        </span>
-                                        <span t-attf-class="badge badge-{{ appointment.state }}">
-                                            <t t-if="appointment.state == 'draft'">Nháp</t>
-                                            <t t-elif="appointment.state == 'confirmed'">Đã xác nhận</t>
-                                            <t t-elif="appointment.state == 'done'">Hoàn thành</t>
-                                            <t t-elif="appointment.state == 'cancelled'">Đã hủy</t>
-                                        </span>
-                                    </div>
-                                    <div class="card-body">
-                                        <p>
+            <div class="section-divider"></div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <h3 class="section-title">
+                        <i class="fas fa-calendar-check mr-2"></i>Danh sách lịch hẹn
+                        <span class="badge badge-pill badge-primary ml-2">
+                            <t t-esc="len(appointments)"/>
+                        </span>
+                    </h3>
+                </div>
+            </div>
+
+            <t t-if="appointments">
+                <div class="row">
+                    <t t-foreach="appointments" t-as="appointment">
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card appointment-card h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <span class="font-weight-bold">
+                                        <i class="fas fa-calendar-alt mr-2"></i>Lịch hẹn #<t t-esc="appointment.id"/>
+                                    </span>
+                                    <span t-attf-class="badge badge-pill badge-{{ appointment.state }}">
+                                        <t t-if="appointment.state == 'draft'"><i class="fas fa-edit mr-1"></i>Nháp</t>
+                                        <t t-elif="appointment.state == 'confirmed'"><i class="fas fa-check-circle mr-1"></i>Đã xác nhận</t>
+                                        <t t-elif="appointment.state == 'done'"><i class="fas fa-check-double mr-1"></i>Hoàn thành</t>
+                                        <t t-elif="appointment.state == 'cancelled'"><i class="fas fa-ban mr-1"></i>Đã hủy</t>
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <p class="mb-2">
+                                            <i class="fas fa-user-injured text-primary mr-2"></i>
                                             <strong>Bệnh nhân:</strong>
                                             <t t-esc="appointment.patient_id.name"/>
                                         </p>
-                                        <p>
+                                        <p class="mb-2">
+                                            <i class="fas fa-user-md text-success mr-2"></i>
                                             <strong>Bác sĩ:</strong>
-                                            <t t-esc="appointment.staff_code"/>
-                                            -
-                                            <t t-esc="appointment.staff_name"/>
+                                            <t t-esc="appointment.staff_code"/> - <t t-esc="appointment.staff_name"/>
                                         </p>
-                                        <p>
+                                        <p class="mb-2">
+                                            <i class="far fa-clock text-info mr-2"></i>
                                             <strong>Thời gian:</strong>
                                             <t t-esc="appointment.appointment_date.strftime('%d/%m/%Y %H:%M')"/>
                                         </p>
-                                        <p t-if="appointment.room_id">
+                                        <p t-if="appointment.room_id" class="mb-0">
+                                            <i class="fas fa-door-open text-warning mr-2"></i>
                                             <strong>Phòng:</strong>
                                             <t t-esc="appointment.room_id.name"/>
                                         </p>
                                     </div>
-                                    <div class="card-footer text-center">
-                                        <a t-att-href="'/clinic/appointment/%s' % appointment.id"
-                                           class="btn btn-primary">
-                                            <i class="fa fa-eye"></i>
-                                            Chi tiết
-                                        </a>
-                                    </div>
+                                    <p t-if="appointment.note" class="mb-0 mt-2 p-2 bg-light rounded">
+                                        <i class="fas fa-sticky-note text-secondary mr-2"></i>
+                                        <strong>Ghi chú:</strong>
+                                        <span class="text-muted"><t t-esc="appointment.note"/></span>
+                                    </p>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <a t-att-href="'/clinic/appointment/%s' % appointment.id" class="btn btn-primary">
+                                        <i class="fas fa-eye mr-2"></i>Chi tiết
+                                    </a>
                                 </div>
                             </div>
-                        </t>
-                    </div>
-                </t>
-                <t t-else="">
-                    <div class="alert alert-info">
-                        <p class="mb-0 text-center">Không có lịch hẹn nào phù hợp với điều kiện tìm kiếm.</p>
-                    </div>
-                </t>
+                        </div>
+                    </t>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="alert alert-info text-center py-4">
+                    <i class="fas fa-info-circle fa-2x mb-3 d-block"></i>
+                    <p class="mb-0 font-weight-medium">Không có lịch hẹn nào phù hợp với điều kiện tìm kiếm.</p>
+                </div>
             </t>
 
             <!-- Form validation script -->
             <script type="text/javascript">
                 $(document).ready(function() {
-                // Set min date for appointment date
-                const today = new Date();
-                const tomorrow = new Date(today);
-                tomorrow.setDate(tomorrow.getDate() + 1);
+                    // Set min date for appointment date
+                    const today = new Date();
+                    const tomorrow = new Date(today);
+                    tomorrow.setDate(tomorrow.getDate() + 1);
 
-                const minDateStr = tomorrow.toISOString().split('T')[0];
-                $('#appointment_date').attr('min', minDateStr);
+                    const minDateStr = tomorrow.toISOString().split('T')[0];
+                    $('#appointment_date').attr('min', minDateStr);
 
-                // Form validation
-                $('.appointment-form').on('submit', function(e) {
-                var isValid = true;
+                    // Form validation with improved feedback
+                    $('.appointment-form').on('submit', function(e) {
+                        var isValid = true;
 
-                // Check required fields
-                $(this).find('[required]').each(function() {
-                if (!$(this).val()) {
-                isValid = false;
-                $(this).addClass('is-invalid');
-                } else {
-                $(this).removeClass('is-invalid');
-                }
-                });
+                        // Reset all validation states
+                        $(this).find('.is-invalid').removeClass('is-invalid');
+                        $(this).find('.invalid-feedback').remove();
 
-                // Check appointment date is at least tomorrow
-                const appointmentDate = new Date($('#appointment_date').val());
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                tomorrow.setHours(0, 0, 0, 0);
+                        // Check required fields
+                        $(this).find('[required]').each(function() {
+                            if (!$(this).val()) {
+                                isValid = false;
+                                $(this).addClass('is-invalid');
+                                $(this).after('<div class="invalid-feedback">Vui lòng nhập thông tin này</div>');
+                            } else {
+                                $(this).removeClass('is-invalid');
+                            }
+                        });
 
-                if (appointmentDate &lt; tomorrow) {
-                isValid = false;
-                $('#appointment_date').addClass('is-invalid');
-                alert('Lịch hẹn chỉ có thể được đặt từ ngày mai trở đi.');
-                }
+                        // Check appointment date is at least tomorrow
+                        const appointmentDate = new Date($('#appointment_date').val());
+                        const tomorrow = new Date();
+                        tomorrow.setDate(tomorrow.getDate() + 1);
+                        tomorrow.setHours(0, 0, 0, 0);
 
-                if (!isValid) {
-                e.preventDefault();
-                if (!$('#appointment_date').hasClass('is-invalid')) {
-                alert('Vui lòng điền đầy đủ thông tin bắt buộc');
-                }
-                }
-                });
+                        if (appointmentDate &lt; tomorrow) {
+                            isValid = false;
+                            $('#appointment_date').addClass('is-invalid');
+                            if ($('#appointment_date').next('.invalid-feedback').length === 0) {
+                                $('#appointment_date').after('<div class="invalid-feedback">Lịch hẹn chỉ có thể được đặt từ ngày mai trở đi</div>');
+                            }
+                        }
+
+                        // Check time is within working hours
+                        const timeInput = $('#appointment_time').val();
+                        if (timeInput) {
+                            const hours = parseInt(timeInput.split(':')[0]);
+                            if (hours &lt; 8 || hours >= 21) {
+                                isValid = false;
+                                $('#appointment_time').addClass('is-invalid');
+                                if ($('#appointment_time').next('.invalid-feedback').length === 0) {
+                                    $('#appointment_time').after('<div class="invalid-feedback">Giờ hẹn phải từ 8:00 đến 21:00</div>');
+                                }
+                            }
+                        }
+
+                        if (!isValid) {
+                            e.preventDefault();
+
+                            // Scroll to first error
+                            const firstError = $(this).find('.is-invalid').first();
+                            if (firstError.length > 0) {
+                                $('html, body').animate({
+                                    scrollTop: firstError.offset().top - 100
+                                }, 500);
+                            }
+                        }
+                    });
                 });
             </script>
         </t>

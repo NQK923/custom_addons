@@ -4,50 +4,281 @@
     <template id="appointment_layout" name="Appointment Management Layout">
         <t t-call="website.layout">
             <style>
-                /* Styles for status badges */
-                .badge-draft { background-color: #17a2b8; color: white; }
-                .badge-confirmed { background-color: #28a745; color: white; }
-                .badge-done { background-color: #6c757d; color: white; }
-                .badge-cancelled { background-color: #dc3545; color: white; }
+                /* Color palette */
+                :root {
+                    --primary-color: #4a6da7;
+                    --secondary-color: #6c88b7;
+                    --success-color: #5cb85c;
+                    --info-color: #5bc0de;
+                    --warning-color: #f0ad4e;
+                    --danger-color: #d9534f;
+                    --light-color: #f8f9fa;
+                    --dark-color: #343a40;
+                    --border-radius: 8px;
+                    --box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                    --transition: all 0.3s ease;
+                }
 
-                /* Card styles */
+                /* Typography improvements */
+                .appointment-section {
+                    font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+                }
+
+                .section-title {
+                    color: var(--primary-color);
+                    font-weight: 600;
+                    margin-bottom: 1.5rem;
+                    padding-bottom: 0.5rem;
+                    border-bottom: 2px solid var(--primary-color);
+                }
+
+                /* Status badges with improved styling */
+                .badge-draft {
+                    background-color: var(--info-color);
+                    color: white;
+                    padding: 0.4em 0.8em;
+                    font-weight: 500;
+                    border-radius: 30px;
+                }
+                .badge-confirmed {
+                    background-color: var(--success-color);
+                    color: white;
+                    padding: 0.4em 0.8em;
+                    font-weight: 500;
+                    border-radius: 30px;
+                }
+                .badge-done {
+                    background-color: var(--dark-color);
+                    color: white;
+                    padding: 0.4em 0.8em;
+                    font-weight: 500;
+                    border-radius: 30px;
+                }
+                .badge-cancelled {
+                    background-color: var(--danger-color);
+                    color: white;
+                    padding: 0.4em 0.8em;
+                    font-weight: 500;
+                    border-radius: 30px;
+                }
+
+                /* Card styles with modern look */
                 .appointment-card {
-                transition: all 0.3s ease;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                    transition: var(--transition);
+                    box-shadow: var(--box-shadow);
+                    border: none;
+                    border-radius: var(--border-radius);
+                    overflow: hidden;
                 }
+
+                .appointment-card .card-header {
+                    background-color: var(--light-color);
+                    border-bottom: 1px solid rgba(0,0,0,0.1);
+                    padding: 15px 20px;
+                }
+
+                .appointment-card .card-body {
+                    padding: 20px;
+                }
+
+                .appointment-card .card-footer {
+                    background-color: var(--light-color);
+                    border-top: 1px solid rgba(0,0,0,0.1);
+                    padding: 15px 20px;
+                }
+
                 .appointment-card:hover {
-                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                transform: translateY(-2px);
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+                    transform: translateY(-5px);
                 }
 
-                /* Calendar styles */
-                .appointment-state-draft { background-color: #17a2b8 !important; border-color: #17a2b8 !important; }
-                .appointment-state-confirmed { background-color: #28a745 !important; border-color: #28a745 !important; }
-                .appointment-state-done { background-color: #6c757d !important; border-color: #6c757d !important; }
-                .appointment-state-cancelled { background-color: #dc3545 !important; border-color: #dc3545 !important; }
+                /* Filter badges */
+                .filter-badge {
+                    transition: var(--transition);
+                    cursor: pointer;
+                }
 
-                /* Tab buttons */
-                .view-toggle .btn {
-                width: 120px;
+                .filter-badge:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+                }
+
+                /* Status counter badges */
+                .status-counter {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 24px;
+                    height: 24px;
+                    border-radius: 12px;
+                    background-color: rgba(255,255,255,0.3);
+                    color: white;
+                    font-size: 0.75rem;
+                    margin-left: 5px;
+                    padding: 0 6px;
                 }
 
                 /* Form elements */
                 .form-container {
-                background-color: #f8f9fa;
-                border-radius: 10px;
-                padding: 20px;
-                margin-bottom: 20px;
+                    background-color: white;
+                    border-radius: var(--border-radius);
+                    box-shadow: var(--box-shadow);
+                    margin-bottom: 30px;
+                    overflow: hidden;
                 }
 
-                /* Action buttons */
+                .form-container .card-header {
+                    padding: 15px 20px;
+                }
+
+                .form-container .card-body {
+                    padding: 25px;
+                }
+
+                /* Input fields styling */
+                .form-control {
+                    border-radius: 5px;
+                    padding: 10px 15px;
+                    border: 1px solid #dce4ec;
+                    transition: var(--transition);
+                }
+
+                .form-control:focus {
+                    border-color: var(--primary-color);
+                    box-shadow: 0 0 0 0.2rem rgba(74, 109, 167, 0.2);
+                }
+
+                /* Labels */
+                label {
+                    color: var(--dark-color);
+                    font-weight: 500;
+                    margin-bottom: 8px;
+                }
+
+                /* Buttons */
+                .btn-primary {
+                    background-color: var(--primary-color);
+                    border-color: var(--primary-color);
+                    border-radius: 5px;
+                    font-weight: 500;
+                    padding: 9px 20px;
+                    transition: var(--transition);
+                }
+
+                .btn-primary:hover {
+                    background-color: #3a5a8e;
+                    border-color: #3a5a8e;
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+                }
+
+                .btn-secondary {
+                    background-color: #6c757d;
+                    border-color: #6c757d;
+                    border-radius: 5px;
+                    font-weight: 500;
+                    padding: 9px 20px;
+                    transition: var(--transition);
+                }
+
+                .btn-success {
+                    background-color: var(--success-color);
+                    border-color: var(--success-color);
+                    border-radius: 5px;
+                    font-weight: 500;
+                    padding: 9px 20px;
+                    transition: var(--transition);
+                }
+
+                .btn-danger {
+                    background-color: var(--danger-color);
+                    border-color: var(--danger-color);
+                    border-radius: 5px;
+                    font-weight: 500;
+                    padding: 9px 20px;
+                    transition: var(--transition);
+                }
+
+                /* Action buttons - more polished */
                 .btn-action {
-                min-width: 120px;
+                    min-width: 130px;
+                    margin-right: 10px;
+                    margin-bottom: 10px;
+                    border-radius: 5px;
+                    font-weight: 500;
+                    padding: 9px 20px;
+                    transition: var(--transition);
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .btn-action i {
+                    margin-right: 8px;
+                }
+
+                .btn-action:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+                }
+
+                /* Responsive adjustments */
+                @media (max-width: 768px) {
+                    .btn-action {
+                        min-width: 100px;
+                        font-size: 0.9rem;
+                        padding: 8px 16px;
+                    }
+
+                    .form-container .card-body {
+                        padding: 15px;
+                    }
+                }
+
+                /* Alert styling */
+                .alert {
+                    border-radius: var(--border-radius);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    padding: 15px 20px;
+                }
+
+                /* Badge colors */
+                .badge-pill {
+                    padding: 0.4em 0.8em;
+                    font-weight: 500;
+                }
+
+                /* Search form refinements */
+                .search-form .form-group {
+                    margin-bottom: 1.25rem;
+                }
+
+                /* Patient-doctor info box */
+                .info-box {
+                    padding: 20px;
+                    background-color: #f8f9fa;
+                    border-radius: var(--border-radius);
+                    margin-bottom: 20px;
+                    border-left: 4px solid var(--primary-color);
+                }
+
+                .info-box h5 {
+                    color: var(--primary-color);
+                    margin-bottom: 15px;
+                    font-weight: 600;
+                }
+
+                /* Divider for sections */
+                .section-divider {
+                    height: 1px;
+                    background: linear-gradient(to right, rgba(0,0,0,0.05), rgba(0,0,0,0.15), rgba(0,0,0,0.05));
+                    margin: 25px 0;
                 }
             </style>
-            <div class="container mt-4 mb-5">
-                <div class="row">
+            <div class="container mt-4 mb-5 appointment-section">
+                <div class="row mb-4">
                     <div class="col-12">
-                        <h1 class="text-center mb-4">Quản lý lịch hẹn khám bệnh</h1>
+                        <h1 class="text-center section-title">Quản lý lịch hẹn khám bệnh</h1>
                     </div>
                 </div>
                 <t t-raw="0"/>
