@@ -14,10 +14,6 @@
 
                 <!-- Quick Access Section - NEW -->
                 <div class="quick-access-section">
-                    <h3 class="section-heading">Truy cập nhanh</h3>
-                    <p>Thêm mới thông tin chăm sóc mà không cần tìm kiếm bệnh nhân trước</p>
-
-                    <!-- Button to open patient selection modal -->
                     <button type="button" class="quick-access-btn" data-bs-toggle="modal" data-bs-target="#quickCareCreateModal">
                         <i class="fa fa-plus-circle me-2"></i>Thêm thông tin chăm sóc mới
                     </button>

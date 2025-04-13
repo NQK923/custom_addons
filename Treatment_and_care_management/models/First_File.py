@@ -3,6 +3,7 @@ from datetime import datetime
 from pkg_resources import require
 
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 
 # Kế hoạch điều trị
@@ -33,8 +34,11 @@ class TreatmentPlan(models.Model):
             vals['code'] = self.env['ir.sequence'].next_by_code('treatment.plan') or '1'
         return super(TreatmentPlan, self).create(vals)
 
-
-from odoo.exceptions import ValidationError
+    @api.constrains('start_date', 'end_date')
+    def _check_dates(self):
+        for record in self:
+            if record.end_date and record.start_date and record.end_date < record.start_date:
+                raise ValidationError("Ngày kết thúc không thể trước ngày bắt đầu!")
 
 
 class TreatmentProcess(models.Model):
@@ -85,6 +89,21 @@ class TreatmentProcess(models.Model):
         if 'executor_id' in vals and not vals['executor_id']:
             raise ValidationError("Người thực hiện không được để trống.")
         return super(TreatmentProcess, self).write(vals)
+
+    @api.constrains('execution_time', 'plan_id')
+    def _check_execution_date(self):
+        for record in self:
+            if record.execution_time and record.plan_id:
+                # Convert datetime to date for comparison
+                execution_date = record.execution_time.date()
+
+                # Check if execution date is before plan start date
+                if execution_date < record.plan_id.start_date:
+                    raise ValidationError("Thời gian thực hiện không thể trước ngày bắt đầu của kế hoạch điều trị!")
+
+                # Check if execution date is after plan end date (if end date is set)
+                if record.plan_id.end_date and execution_date > record.plan_id.end_date:
+                    raise ValidationError("Thời gian thực hiện không thể sau ngày kết thúc của kế hoạch điều trị!")
 
 
 class PatientCareTracking(models.Model):
