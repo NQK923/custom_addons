@@ -5,6 +5,7 @@ import logging
 import pytz
 import html
 import traceback
+from odoo.exceptions import ValidationError
 from odoo.tools import formataddr
 
 _logger = logging.getLogger(__name__)
@@ -23,11 +24,15 @@ class AppointmentBookingController(http.Controller):
             ('room_type', '=', 'exam')
         ])
 
+        # Calculate minimum date for appointment (tomorrow)
+        min_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+
         values = {
             'doctors': doctors,
             'exam_rooms': exam_rooms,
             'datetime': datetime,
             'error': kw.get('error'),
+            'min_date': min_date
         }
         return request.render("clinic_appointment_booking.appointment_booking_form", values)
 
@@ -38,33 +43,40 @@ class AppointmentBookingController(http.Controller):
         """
         Appointment = request.env['clinic.appointment'].sudo()
 
+        # Kiểm tra ngày hẹn phải từ ngày mai trở đi
+        tomorrow = datetime.now() + timedelta(days=1)
+        tomorrow = tomorrow.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        if appointment_datetime < tomorrow:
+            return False, "Không thể đặt lịch hẹn trong quá khứ hoặc hôm nay. Vui lòng chọn ngày mai hoặc sau đó!"
+
         one_hour_before = appointment_datetime - timedelta(hours=1)
         one_hour_after = appointment_datetime + timedelta(hours=1)
 
+        # Kiểm tra xung đột với lịch của bác sĩ
         conflicting_doctor_appointments = Appointment.search([
             ('staff_id', '=', doctor_id),
-            ('state', 'in', ['draft', 'confirmed']),
-            '&',
+            ('state', 'not in', ['cancelled']),
             ('appointment_date', '>=', one_hour_before),
             ('appointment_date', '<=', one_hour_after)
         ])
 
         if conflicting_doctor_appointments:
-            earliest = min(conflicting_doctor_appointments.mapped('appointment_date'))
-            return False, f"Bác sĩ đã có lịch hẹn vào khoảng thời gian này (lúc {earliest.strftime('%H:%M')}). Vui lòng chọn thời gian khác."
+            doctor = request.env['clinic.staff'].sudo().browse(doctor_id)
+            return False, f"Bác sĩ {doctor.staff_name} đã có lịch hẹn khác trong vòng 1 tiếng của thời điểm này!"
 
+        # Kiểm tra xung đột với phòng khám
         if room_id:
             conflicting_room_appointments = Appointment.search([
                 ('room_id', '=', room_id),
-                ('state', 'in', ['draft', 'confirmed']),
-                '&',
+                ('state', 'not in', ['cancelled']),
                 ('appointment_date', '>=', one_hour_before),
                 ('appointment_date', '<=', one_hour_after)
             ])
 
             if conflicting_room_appointments:
-                earliest = min(conflicting_room_appointments.mapped('appointment_date'))
-                return False, f"Phòng khám đã được sử dụng vào khoảng thời gian này (lúc {earliest.strftime('%H:%M')}). Vui lòng chọn phòng khác hoặc đổi thời gian."
+                room = request.env['clinic.room'].sudo().browse(room_id)
+                return False, f"Phòng {room.name} đã được đặt trong vòng 1 tiếng của thời điểm này!"
 
         return True, ""
 
@@ -122,18 +134,18 @@ class AppointmentBookingController(http.Controller):
                     _logger.error("Invalid date/time format: %s", appointment_datetime_str)
                     return request.redirect('/appointment?error=Định dạng thời gian không hợp lệ')
 
-            # Step 3: Get doctor and room IDs
+            # Step 2: Get doctor and room IDs
             doctor_id = int(post.get('doctor_id'))
             room_id = post.get('room_id') and int(post.get('room_id')) or False
 
-            # Step 4: Check availability
+            # Step 3: Check availability
             _logger.info("Checking availability for doctor %s and room %s", doctor_id, room_id)
             is_available, message = self._check_availability(doctor_id, room_id, appointment_datetime)
             if not is_available:
                 _logger.warning("Availability check failed: %s", message)
                 return request.redirect(f'/appointment?error={message}')
 
-            # Step 5: Find or create patient
+            # Step 4: Find or create patient
             _logger.info("Finding or creating patient with phone: %s", post.get('phone'))
             Patient = request.env['clinic.patient'].sudo()
             patient = Patient.search([('phone', '=', post.get('phone'))], limit=1)
@@ -150,7 +162,7 @@ class AppointmentBookingController(http.Controller):
                 }
                 patient = Patient.create(patient_vals)
 
-            # Step 6: Create appointment
+            # Step 5: Create appointment
             _logger.info("Creating appointment for patient %s", patient.id)
             appointment_vals = {
                 'patient_id': patient.id,
@@ -167,7 +179,7 @@ class AppointmentBookingController(http.Controller):
             doctor = request.env['clinic.staff'].sudo().browse(doctor_id)
             room = room_id and request.env['clinic.room'].sudo().browse(room_id) or False
 
-            # Step 7: Prepare values for thank you page
+            # Step 6: Prepare values for thank you page
             values = {
                 'appointment_name': appointment.name,
                 'appointment_date': appointment.appointment_date,
@@ -175,7 +187,7 @@ class AppointmentBookingController(http.Controller):
                 'room_name': room and room.name or "Chưa phân phòng"
             }
 
-            # Step 8: Send email if needed
+            # Step 7: Send email if needed
             if post.get('email'):
                 _logger.info("Attempting to send confirmation email")
                 template = request.env.ref('clinic_appointment_booking.email_template_appointment',
@@ -186,7 +198,7 @@ class AppointmentBookingController(http.Controller):
                 else:
                     _logger.warning("Email template not found")
 
-            # Step 9: Render thank you page
+            # Step 8: Render thank you page
             _logger.info("Rendering thank you page")
             try:
                 thank_you_page = request.render("clinic_appointment_booking.appointment_booking_thankyou", values)
@@ -197,59 +209,13 @@ class AppointmentBookingController(http.Controller):
                 return request.redirect(
                     '/appointment?error=Lịch hẹn đã được đặt nhưng không thể hiển thị trang xác nhận')
 
+        except ValidationError as ve:
+            _logger.error("Validation error creating appointment: %s", str(ve))
+            return request.redirect(f'/appointment?error={str(ve)}')
         except Exception as e:
             _logger.error("Error creating appointment: %s", str(e))
+            _logger.error(traceback.format_exc())
             return request.redirect(f'/appointment?error=Đã xảy ra lỗi: {str(e)}')
-
-    @http.route(['/appointment/check'], type='http', auth="public", website=True)
-    def appointment_check_form(self, **kw):
-        return request.render("clinic_appointment_booking.appointment_check_form")
-
-    @http.route(['/appointment/check/result'], type='http', auth="public", website=True, methods=['POST'])
-    def appointment_check_result(self, **post):
-        if not post.get('phone'):
-            return request.redirect('/appointment/check')
-
-        try:
-            patient = request.env['clinic.patient'].sudo().search([('phone', '=', post.get('phone'))], limit=1)
-
-            if not patient:
-                return request.render("clinic_appointment_booking.appointment_check_results", {
-                    'error': 'Không tìm thấy bệnh nhân với số điện thoại này'
-                })
-
-            appointments = request.env['clinic.appointment'].sudo().search([
-                ('patient_id', '=', patient.id),
-                ('appointment_date', '>=', fields.Datetime.now()),
-                ('state', 'in', ['draft', 'confirmed'])
-            ])
-
-            if not appointments:
-                return request.render("clinic_appointment_booking.appointment_check_results", {
-                    'error': 'Không có lịch hẹn nào sắp tới',
-                    'patient': patient
-                })
-
-            return request.render("clinic_appointment_booking.appointment_check_results", {
-                'appointments': appointments,
-                'patient': patient
-            })
-
-        except Exception as e:
-            _logger.error("Error checking appointments: %s", str(e))
-            return request.redirect('/appointment/check')
-
-    @http.route(['/my/appointments'], type='http', auth="user", website=True)
-    def my_appointments(self, **kw):
-        partner = request.env.user.partner_id
-        appointments = request.env['clinic.appointment'].sudo().search([
-            ('email', '=', partner.email)
-        ])
-
-        values = {
-            'appointments': appointments
-        }
-        return request.render("clinic_appointment_booking.portal_my_appointments", values)
 
     @http.route(['/appointment/check'], type='http', auth="public", website=True)
     def appointment_check_form(self, **kw):
