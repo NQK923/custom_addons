@@ -3,73 +3,6 @@
     <!-- Template for creating new treatment process -->
     <template id="treatment_process_form_template" name="Create Treatment Process">
         <t t-call="website.layout">
-            <style>
-                .form-container {
-                background-color: #f8f9fa;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                max-width: 800px;
-                margin: 0 auto;
-                }
-                .form-card {
-                background-color: #fff;
-                padding: 20px;
-                border-radius: 8px;
-                margin-bottom: 25px;
-                border: 1px solid #dee2e6;
-                }
-                .section-heading {
-                color: #007bff;
-                border-bottom: 2px solid #007bff;
-                padding-bottom: 8px;
-                margin-bottom: 20px;
-                font-size: 1.5rem;
-                }
-                .plan-info p {
-                margin: 8px 0;
-                font-size: 1rem;
-                color: #343a40;
-                }
-                .plan-info strong {
-                color: #495057;
-                min-width: 150px;
-                display: inline-block;
-                }
-                .form-group {
-                margin-bottom: 20px;
-                }
-                .form-group label {
-                font-weight: 600;
-                color: #495057;
-                margin-bottom: 6px;
-                }
-                .form-control:focus {
-                border-color: #80bdff;
-                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-                }
-                .btn-primary {
-                background-color: #007bff;
-                border-color: #007bff;
-                }
-                .btn-primary:hover {
-                background-color: #0069d9;
-                border-color: #0062cc;
-                }
-                .btn-secondary {
-                background-color: #6c757d;
-                border-color: #6c757d;
-                }
-                .btn-secondary:hover {
-                background-color: #5a6268;
-                border-color: #545b62;
-                }
-                .required-field::after {
-                content: " *";
-                color: red;
-                }
-            </style>
-
             <div class="container mt-5 form-container">
                 <h1 class="text-center mb-4">Thêm quá trình điều trị mới</h1>
 
@@ -127,7 +60,7 @@
                                 <option value="">-- Chọn người thực hiện --</option>
                                 <t t-foreach="staff" t-as="person">
                                     <option t-att-value="person.id">
-                                        <t t-esc="person.name"/>
+                                        <t t-esc="person.staff_name"/> (<t t-esc="person.name"/>)
                                     </option>
                                 </t>
                             </select>
@@ -185,73 +118,6 @@
     <!-- Template for editing treatment process -->
     <template id="treatment_process_edit_template" name="Edit Treatment Process">
         <t t-call="website.layout">
-            <style>
-                .form-container {
-                background-color: #f8f9fa;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                max-width: 800px;
-                margin: 0 auto;
-                }
-                .form-card {
-                background-color: #fff;
-                padding: 20px;
-                border-radius: 8px;
-                margin-bottom: 25px;
-                border: 1px solid #dee2e6;
-                }
-                .section-heading {
-                color: #007bff;
-                border-bottom: 2px solid #007bff;
-                padding-bottom: 8px;
-                margin-bottom: 20px;
-                font-size: 1.5rem;
-                }
-                .plan-info p {
-                margin: 8px 0;
-                font-size: 1rem;
-                color: #343a40;
-                }
-                .plan-info strong {
-                color: #495057;
-                min-width: 150px;
-                display: inline-block;
-                }
-                .form-group {
-                margin-bottom: 20px;
-                }
-                .form-group label {
-                font-weight: 600;
-                color: #495057;
-                margin-bottom: 6px;
-                }
-                .form-control:focus {
-                border-color: #80bdff;
-                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-                }
-                .btn-primary {
-                background-color: #007bff;
-                border-color: #007bff;
-                }
-                .btn-primary:hover {
-                background-color: #0069d9;
-                border-color: #0062cc;
-                }
-                .btn-secondary {
-                background-color: #6c757d;
-                border-color: #6c757d;
-                }
-                .btn-secondary:hover {
-                background-color: #5a6268;
-                border-color: #545b62;
-                }
-                .required-field::after {
-                content: " *";
-                color: red;
-                }
-            </style>
-
             <div class="container mt-5 form-container">
                 <h1 class="text-center mb-4">Chỉnh sửa quá trình điều trị</h1>
 
@@ -317,7 +183,7 @@
                                 <t t-foreach="staff" t-as="person">
                                     <option t-att-value="person.id"
                                             t-att-selected="person.id == process.executor_id.id">
-                                        <t t-esc="person.name"/>
+                                        <t t-esc="person.staff_name"/> (<t t-esc="person.name"/>)
                                     </option>
                                 </t>
                             </select>

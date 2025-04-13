@@ -16,6 +16,11 @@
         'views/patient_care_forms.xml',
         'views/website_menu.xml',
     ],
+    'assets': {
+        'web.assets_frontend': [
+            '/Treatment_and_care_management/static/src/css/treatment_styles.scss',
+        ],
+    },
     'installable': True,
     'application': True,
     'license': 'LGPL-3',

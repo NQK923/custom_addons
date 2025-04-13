@@ -3,154 +3,6 @@
     <!-- Main Patient Care Template -->
     <template id="patient_care_template" name="Patient Care Tracking">
         <t t-call="website.layout">
-            <style>
-                .care-container {
-                background-color: #f8f9fa;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                max-width: 1200px;
-                margin: 0 auto;
-                }
-                .patient-info, .care-list {
-                background-color: #fff;
-                padding: 20px;
-                border-radius: 8px;
-                margin-bottom: 25px;
-                border: 1px solid #dee2e6;
-                }
-                .section-heading {
-                color: #007bff;
-                border-bottom: 2px solid #007bff;
-                padding-bottom: 8px;
-                margin-bottom: 20px;
-                font-size: 1.5rem;
-                }
-                .patient-data p {
-                margin: 8px 0;
-                font-size: 1rem;
-                color: #343a40;
-                }
-                .patient-data strong {
-                color: #495057;
-                min-width: 150px;
-                display: inline-block;
-                }
-                .search-form {
-                max-width: 500px;
-                margin: 0 auto 30px auto;
-                }
-                .search-form label {
-                font-weight: 600;
-                color: #495057;
-                }
-                .search-form .form-control {
-                border-radius: 5px;
-                box-shadow: none;
-                }
-                .search-form .btn-primary {
-                width: 100%;
-                border-radius: 5px;
-                padding: 10px;
-                }
-                .table {
-                margin-bottom: 0;
-                }
-                .table th {
-                background-color: #007bff;
-                color: #fff;
-                padding: 12px;
-                text-align: center;
-                }
-                .table td {
-                vertical-align: middle;
-                padding: 10px;
-                text-align: center;
-                }
-                .no-data {
-                color: #6c757d;
-                font-style: italic;
-                text-align: center;
-                padding: 20px;
-                }
-                .action-btn {
-                background-color: #17a2b8;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                padding: 6px 12px;
-                cursor: pointer;
-                transition: background-color 0.3s;
-                }
-                .action-btn:hover {
-                background-color: #138496;
-                text-decoration: none;
-                color: white;
-                }
-                .status-badge {
-                padding: 5px 10px;
-                border-radius: 20px;
-                color: white;
-                font-size: 0.85rem;
-                }
-                .status-pending {
-                background-color: #ffc107;
-                }
-                .status-in-progress {
-                background-color: #17a2b8;
-                }
-                .status-completed {
-                background-color: #28a745;
-                }
-                .emergency-badge {
-                background-color: #dc3545;
-                color: white;
-                padding: 3px 8px;
-                border-radius: 12px;
-                font-size: 0.75rem;
-                }
-                /* New styles for the quick access section */
-                .quick-access-section {
-                background-color: #fff;
-                padding: 20px;
-                border-radius: 8px;
-                margin-bottom: 25px;
-                border: 1px solid #dee2e6;
-                text-align: center;
-                }
-                .quick-access-btn {
-                display: inline-block;
-                background-color: #28a745;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                padding: 10px 20px;
-                font-size: 1.1rem;
-                margin: 10px;
-                cursor: pointer;
-                transition: background-color 0.3s;
-                text-decoration: none;
-                }
-                .quick-access-btn:hover {
-                background-color: #218838;
-                color: white;
-                text-decoration: none;
-                }
-                /* Modal styles */
-                .modal-content {
-                border-radius: 8px;
-                }
-                .modal-header {
-                background-color: #007bff;
-                color: white;
-                border-top-left-radius: 8px;
-                border-top-right-radius: 8px;
-                }
-                .modal-footer {
-                border-top: 1px solid #dee2e6;
-                }
-            </style>
-
             <div class="container mt-5 care-container">
                 <h1 class="text-center mb-4">Theo dõi chăm sóc bệnh nhân</h1>
 
@@ -162,6 +14,10 @@
 
                 <!-- Quick Access Section - NEW -->
                 <div class="quick-access-section">
+                    <h3 class="section-heading">Truy cập nhanh</h3>
+                    <p>Thêm mới thông tin chăm sóc mà không cần tìm kiếm bệnh nhân trước</p>
+
+                    <!-- Button to open patient selection modal -->
                     <button type="button" class="quick-access-btn" data-bs-toggle="modal" data-bs-target="#quickCareCreateModal">
                         <i class="fa fa-plus-circle me-2"></i>Thêm thông tin chăm sóc mới
                     </button>
@@ -440,7 +296,7 @@
                                         <option value="">-- Chọn nhân viên --</option>
                                         <t t-foreach="request.env['clinic.staff'].sudo().search([])" t-as="s">
                                             <option t-att-value="s.id">
-                                                <t t-esc="s.name"/>
+                                                <t t-esc="s.staff_name"/> (<t t-esc="s.name"/>)
                                             </option>
                                         </t>
                                     </select>
@@ -452,6 +308,222 @@
                             <button type="submit" form="quickCareCreateForm" class="btn btn-primary">Tạo hồ sơ chăm sóc</button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Patient Care Details Template -->
+    <template id="patient_care_details_template" name="Patient Care Details">
+        <t t-call="website.layout">
+            <div class="container mt-5 details-container">
+                <h1 class="text-center mb-5">Chi tiết chăm sóc bệnh nhân</h1>
+
+                <!-- Care Header Information -->
+                <div class="care-header">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="section-heading mb-0">Thông tin chung</h3>
+                        <div>
+                            <a t-att-href="'/clinic/patient_care/edit/%s' % care.id" class="btn btn-info me-2">
+                                <i class="fa fa-edit"></i>
+                                Chỉnh sửa
+                            </a>
+                            <a t-att-href="'/clinic/patient_care/delete/%s' % care.id"
+                               class="btn btn-danger"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa lịch sử chăm sóc này?')">
+                                <i class="fa fa-trash"></i>
+                                Xóa
+                            </a>
+                        </div>
+                    </div>
+
+                    <t t-if="care.is_emergency">
+                        <div class="emergency-banner">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            TÌNH TRẠNG KHẨN CẤP
+                        </div>
+                    </t>
+
+                    <t t-if="care.is_alert_triggered">
+                        <div class="alert-banner">
+                            <i class="fa fa-bell"></i>
+                            CẢNH BÁO: Có dấu hiệu bất thường cần chú ý
+                        </div>
+                    </t>
+
+                    <div class="row care-info">
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Bệnh nhân:</strong>
+                                <t t-esc="care.patient_id.name"/>
+                                (<t t-esc="care.patient_id.code"/>)
+                            </p>
+                            <p>
+                                <strong>Ngày chăm sóc:</strong>
+                                <t t-esc="care.care_date"/>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Trạng thái:</strong>
+                                <span t-att-class="'status-badge ' + ('status-pending' if care.statenew == 'pending' else 'status-in-progress' if care.statenew == 'in_progress' else 'status-completed')">
+                                    <t t-if="care.statenew == 'pending'">Chưa thực hiện</t>
+                                    <t t-elif="care.statenew == 'in_progress'">Đang thực hiện</t>
+                                    <t t-elif="care.statenew == 'completed'">Hoàn thành</t>
+                                </span>
+                            </p>
+                            <p>
+                                <strong>Ngày tạo:</strong>
+                                <t t-esc="care.created_at"/>
+                            </p>
+                            <p>
+                                <strong>Cập nhật lần cuối:</strong>
+                                <t t-esc="care.updated_at"/>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vital Signs -->
+                <div class="vitals-section">
+                    <h3 class="section-heading">Dấu hiệu sinh tồn</h3>
+                    <div class="row vital-signs">
+                        <div class="col">
+                            <div class="vital-box">
+                                <div class="value">
+                                    <t t-esc="care.temperature or '--'"/>
+                                </div>
+                                <div class="label">Nhiệt độ (°C)</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="vital-box">
+                                <div class="value">
+                                    <t t-esc="care.blood_pressure or '--'"/>
+                                </div>
+                                <div class="label">Huyết áp (mmHg)</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="vital-box">
+                                <div class="value">
+                                    <t t-esc="care.heart_rate or '--'"/>
+                                </div>
+                                <div class="label">Nhịp tim (bpm)</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="vital-box">
+                                <div class="value">
+                                    <t t-esc="care.respiration_rate or '--'"/>
+                                </div>
+                                <div class="label">Tần số hô hấp</div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="vital-box">
+                                <div class="value">
+                                    <t t-esc="care.oxygen_saturation or '--'"/>
+                                </div>
+                                <div class="label">Độ bão hòa oxy (%)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Special Care Section -->
+                <div class="special-care-section">
+                    <h3 class="section-heading">Chăm sóc đặc biệt</h3>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4 class="section-subheading">Mô tả chăm sóc đặc biệt</h4>
+                            <div class="notes-box">
+                                <t t-if="care.special_care_description">
+                                    <p>
+                                        <t t-esc="care.special_care_description"/>
+                                    </p>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted">Không có mô tả chăm sóc đặc biệt</p>
+                                </t>
+                            </div>
+
+                            <h4 class="section-subheading mt-4">Thiết bị y tế sử dụng</h4>
+                            <div class="notes-box">
+                                <t t-if="care.medical_equipment_used">
+                                    <p>
+                                        <t t-esc="care.medical_equipment_used"/>
+                                    </p>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted">Không có thiết bị y tế được sử dụng</p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Nursing Section -->
+                <div class="daily-care-section">
+                    <h3 class="section-heading">Điều dưỡng hàng ngày</h3>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4 class="section-subheading">Ghi chú chăm sóc hằng ngày</h4>
+                            <div class="notes-box">
+                                <t t-if="care.daily_nursing_notes">
+                                    <p>
+                                        <t t-esc="care.daily_nursing_notes"/>
+                                    </p>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted">Không có ghi chú điều dưỡng</p>
+                                </t>
+                            </div>
+
+                            <h4 class="section-subheading mt-4">Sự kiện bất thường</h4>
+                            <div class="notes-box">
+                                <t t-if="care.abnormal_event">
+                                    <p>
+                                        <t t-esc="care.abnormal_event"/>
+                                    </p>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted">Không có sự kiện bất thường</p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Caregiver Section -->
+                <div class="caregiver-section">
+                    <h3 class="section-heading">Thông tin người chăm sóc</h3>
+                    <div class="row care-info">
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Nhân viên chăm sóc:</strong>
+                                <t t-if="care.doctor_id">
+                                    <t t-esc="care.doctor_id.staff_name"/> (<t t-esc="care.doctor_id.name"/>)
+                                </t>
+                                <t t-else="">
+                                    Không xác định
+                                </t>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Vai trò người chăm sóc:</strong>
+                                <t t-esc="care.caregiver_role or 'Không xác định'"/>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <a href="/clinic/patient_care" class="back-btn">
+                        <i class="fa fa-arrow-left"></i>
+                        Quay lại danh sách
+                    </a>
                 </div>
             </div>
         </t>
