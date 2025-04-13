@@ -1,0 +1,316 @@
+/* Treatment and Care Management Module Styles */
+
+/* Common styles for containers */
+.treatment-container, .care-container, .details-container, .form-container {
+    background-color: #f8f9fa;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Common styles for cards */
+.patient-info, .treatment-list, .care-list, .form-card,
+.plan-header, .process-list, .care-header, .vitals-section,
+.special-care-section, .daily-care-section, .caregiver-section,
+.quick-access-section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border: 1px solid #dee2e6;
+}
+
+/* Common heading styles */
+.section-heading {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.section-subheading {
+    color: #495057;
+    font-size: 1.1rem;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Patient data display styles */
+.patient-data p, .plan-info p, .care-info p {
+    margin: 8px 0;
+    font-size: 1rem;
+    color: #343a40;
+}
+
+.patient-data strong, .plan-info strong, .care-info strong {
+    color: #495057;
+    min-width: 150px;
+    display: inline-block;
+}
+
+/* Form styles */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 6px;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.required-field::after {
+    content: " *";
+    color: red;
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Table styles */
+.table th {
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px;
+    text-align: center;
+}
+
+.table td {
+    vertical-align: middle;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Status badges */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.85rem;
+}
+
+.status-pending {
+    background-color: #ffc107;
+}
+
+.status-in-progress {
+    background-color: #17a2b8;
+}
+
+.status-completed {
+    background-color: #28a745;
+}
+
+.emergency-badge {
+    background-color: #dc3545;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+}
+
+/* Action buttons */
+.action-btn {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.action-btn:hover {
+    background-color: #138496;
+    text-decoration: none;
+    color: white;
+}
+
+.back-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 20px;
+}
+
+.back-btn:hover {
+    background-color: #5a6268;
+    text-decoration: none;
+    color: white;
+}
+
+/* Search form */
+.search-form {
+    max-width: 500px;
+    margin: 0 auto 30px auto;
+}
+
+.search-form label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.search-form .form-control {
+    border-radius: 5px;
+    box-shadow: none;
+}
+
+.search-form .btn-primary {
+    width: 100%;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+/* No data message */
+.no-data {
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Vital signs display */
+.vital-signs {
+    background-color: #f0f8ff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.vital-box {
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.vital-box .value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.vital-box .label {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Quick access section styles */
+.quick-access-section {
+    text-align: center;
+}
+
+.quick-access-btn {
+    display: inline-block;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    margin: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none;
+}
+
+.quick-access-btn:hover {
+    background-color: #218838;
+    color: white;
+    text-decoration: none;
+}
+
+/* Modal styles */
+.modal-content {
+    border-radius: 8px;
+}
+
+.modal-header {
+    background-color: #007bff;
+    color: white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+}
+
+/* Checkbox container */
+.checkbox-container {
+    display: block;
+    padding: 10px 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+/* Notes boxes */
+.notes-box {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #6c757d;
+    margin-top: 10px;
+}
+
+/* Alert banners */
+.emergency-banner {
+    background-color: #dc3545;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.alert-banner {
+    background-color: #ffc107;
+    color: #343a40;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* Text areas */
+textarea {
+    min-height: 100px;
+}
