@@ -169,6 +169,7 @@ class MedicalTest(models.Model):
 
     test_code = fields.Char(string='Mã xét nghiệm và chuẩn đoán', required=True, copy=False, default="New")
     patient_id = fields.Many2one('clinic.patient', string='Bệnh nhân', required=True)
+    doctor_id = fields.Many2one('clinic.staff', string='Người thực hiện', required=True)
     test_type = fields.Selection(
         [('test', 'Chuẩn đoán'), ('blood', 'Máu'), ('urine', 'Nước tiểu'), ('xray', 'X-Quang'), ('ecg', 'ECG'),
          ('other', 'Khác')],
