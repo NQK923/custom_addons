@@ -38,7 +38,7 @@
                 <!-- Treatment Plan Form -->
                 <div class="form-card">
                     <h3 class="section-heading">Thông tin kế hoạch điều trị</h3>
-                    <form method="POST" action="/clinic/treatment_plan/create">
+                    <form method="POST" action="/clinic/treatment_plan/create" id="treatment_plan_form">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <input type="hidden" name="patient_id" t-att-value="patient.id"/>
 
@@ -54,9 +54,14 @@
                             <small class="text-muted">Để trống nếu chưa xác định ngày kết thúc</small>
                         </div>
 
+                        <div class="alert alert-danger mt-3" id="date-error" style="display: none;">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <span id="error-message">Ngày kết thúc không thể trước ngày bắt đầu!</span>
+                        </div>
+
                         <div class="row mt-4">
                             <div class="col-md-6">
-                                <button type="submit" class="btn btn-primary w-100">
+                                <button type="submit" class="btn btn-primary w-100" id="submit-btn">
                                     <i class="fa fa-save"></i>
                                     Lưu kế hoạch
                                 </button>
@@ -71,6 +76,44 @@
                     </form>
                 </div>
             </div>
+
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    const form = document.getElementById('treatment_plan_form');
+                    const startDateInput = document.getElementById('start_date');
+                    const endDateInput = document.getElementById('end_date');
+                    const errorBox = document.getElementById('date-error');
+                    const errorMessage = document.getElementById('error-message');
+
+                    function validateDates() {
+                        const startDate = new Date(startDateInput.value);
+                        // Only validate if end date is not empty
+                        if (endDateInput.value) {
+                            const endDate = new Date(endDateInput.value);
+
+                            if (endDate &lt; startDate) {
+                                errorBox.style.display = 'block';
+                                errorMessage.textContent = 'Ngày kết thúc không thể trước ngày bắt đầu!';
+                                return false;
+                            }
+                        }
+
+                        errorBox.style.display = 'none';
+                        return true;
+                    }
+
+                    // Validate on input change
+                    startDateInput.addEventListener('change', validateDates);
+                    endDateInput.addEventListener('change', validateDates);
+
+                    // Validate on form submit
+                    form.addEventListener('submit', function(event) {
+                        if (!validateDates()) {
+                            event.preventDefault();
+                        }
+                    });
+                });
+            </script>
         </t>
     </template>
 
@@ -119,7 +162,7 @@
                         </p>
                     </div>
 
-                    <form t-att-action="'/clinic/treatment_plan/edit/%s' % plan.id" method="POST">
+                    <form t-att-action="'/clinic/treatment_plan/edit/%s' % plan.id" method="POST" id="edit_treatment_plan_form">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                         <div class="form-group">
@@ -133,6 +176,11 @@
                             <input type="date" class="form-control" id="end_date" name="end_date"
                                    t-att-value="plan.end_date"/>
                             <small class="text-muted">Để trống nếu chưa xác định ngày kết thúc</small>
+                        </div>
+
+                        <div class="alert alert-danger mt-3" id="edit-date-error" style="display: none;">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <span id="edit-error-message">Ngày kết thúc không thể trước ngày bắt đầu!</span>
                         </div>
 
                         <div class="row mt-4">
@@ -153,6 +201,47 @@
                     </form>
                 </div>
             </div>
+
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    const form = document.getElementById('edit_treatment_plan_form');
+                    const startDateInput = document.getElementById('start_date');
+                    const endDateInput = document.getElementById('end_date');
+                    const errorBox = document.getElementById('edit-date-error');
+                    const errorMessage = document.getElementById('edit-error-message');
+
+                    function validateDates() {
+                        const startDate = new Date(startDateInput.value);
+                        // Only validate if end date is not empty
+                        if (endDateInput.value) {
+                            const endDate = new Date(endDateInput.value);
+
+                            if (endDate &lt; startDate) {
+                                errorBox.style.display = 'block';
+                                errorMessage.textContent = 'Ngày kết thúc không thể trước ngày bắt đầu!';
+                                return false;
+                            }
+                        }
+
+                        errorBox.style.display = 'none';
+                        return true;
+                    }
+
+                    // Validate on input change
+                    startDateInput.addEventListener('change', validateDates);
+                    endDateInput.addEventListener('change', validateDates);
+
+                    // Validate on form submit
+                    form.addEventListener('submit', function(event) {
+                        if (!validateDates()) {
+                            event.preventDefault();
+                        }
+                    });
+
+                    // Initial validation
+                    validateDates();
+                });
+            </script>
         </t>
     </template>
 </odoo>
