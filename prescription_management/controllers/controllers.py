@@ -5,8 +5,21 @@ import json
 
 
 class PrescriptionManagementController(http.Controller):
-    @http.route('/pharmacy/prescriptions', type='http', auth='public', website=True, methods=['GET', 'POST'])
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý đơn thuốc không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('prescription_management.group_prescription_manager')
+        return is_manager
+
+    @http.route('/pharmacy/prescriptions', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def prescription_list(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         search_value = kwargs.get('search_value', '')
         patient = False
 
@@ -36,9 +49,13 @@ class PrescriptionManagementController(http.Controller):
         }
         return request.render('prescription_management.prescription_list_template', values)
 
-    @http.route('/pharmacy/prescription/<model("prescription.order"):prescription_id>', type='http', auth='public',
+    @http.route('/pharmacy/prescription/<model("prescription.order"):prescription_id>', type='http', auth='user',
                 website=True)
     def prescription_detail(self, prescription_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if not prescription_id:
             return request.redirect('/pharmacy/prescriptions')
 
@@ -50,8 +67,12 @@ class PrescriptionManagementController(http.Controller):
 
     # === PHARMACY PRODUCT MANAGEMENT ===
 
-    @http.route('/pharmacy/products', type='http', auth='public', website=True, methods=['GET'])
+    @http.route('/pharmacy/products', type='http', auth='user', website=True, methods=['GET'])
     def pharmacy_products(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         search = kwargs.get('search', '')
         domain = []
 
@@ -70,8 +91,12 @@ class PrescriptionManagementController(http.Controller):
         }
         return request.render('prescription_management.pharmacy_products_template', values)
 
-    @http.route('/pharmacy/product/<model("pharmacy.product"):product_id>', type='http', auth='public', website=True)
+    @http.route('/pharmacy/product/<model("pharmacy.product"):product_id>', type='http', auth='user', website=True)
     def pharmacy_product_detail(self, product_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if not product_id:
             return request.redirect('/pharmacy/products')
 
@@ -82,6 +107,10 @@ class PrescriptionManagementController(http.Controller):
 
     @http.route('/pharmacy/product/new', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def pharmacy_product_new(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             try:
                 # Prepare values
@@ -151,6 +180,10 @@ class PrescriptionManagementController(http.Controller):
     @http.route('/pharmacy/product/<model("pharmacy.product"):product_id>/edit', type='http', auth='user', website=True,
                 methods=['GET', 'POST'])
     def pharmacy_product_edit(self, product_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if not product_id:
             return request.redirect('/pharmacy/products')
 
@@ -237,6 +270,10 @@ class PrescriptionManagementController(http.Controller):
     @http.route('/pharmacy/product/<model("pharmacy.product"):product_id>/delete', type='http', auth='user',
                 website=True)
     def pharmacy_product_delete(self, product_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if not product_id:
             return request.redirect('/pharmacy/products')
 
@@ -248,8 +285,12 @@ class PrescriptionManagementController(http.Controller):
 
     # === CLINIC SERVICES CRUD ===
 
-    @http.route('/pharmacy/services', type='http', auth='public', website=True, methods=['GET'])
+    @http.route('/pharmacy/services', type='http', auth='user', website=True, methods=['GET'])
     def clinic_services(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         search = kwargs.get('search', '')
         domain = []
 
@@ -264,8 +305,12 @@ class PrescriptionManagementController(http.Controller):
         }
         return request.render('prescription_management.clinic_services_template', values)
 
-    @http.route('/pharmacy/service/<model("clinic.service"):service_id>', type='http', auth='public', website=True)
+    @http.route('/pharmacy/service/<model("clinic.service"):service_id>', type='http', auth='user', website=True)
     def clinic_service_detail(self, service_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if not service_id:
             return request.redirect('/pharmacy/services')
 
@@ -276,6 +321,10 @@ class PrescriptionManagementController(http.Controller):
 
     @http.route('/pharmacy/service/new', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def clinic_service_new(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             try:
                 # Prepare values
@@ -307,6 +356,10 @@ class PrescriptionManagementController(http.Controller):
     @http.route('/pharmacy/service/<model("clinic.service"):service_id>/edit', type='http', auth='user', website=True,
                 methods=['GET', 'POST'])
     def clinic_service_edit(self, service_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if not service_id:
             return request.redirect('/pharmacy/services')
 
@@ -349,6 +402,10 @@ class PrescriptionManagementController(http.Controller):
 
     @http.route('/pharmacy/service/<model("clinic.service"):service_id>/delete', type='http', auth='user', website=True)
     def clinic_service_delete(self, service_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if not service_id:
             return request.redirect('/pharmacy/services')
 
@@ -362,6 +419,10 @@ class PrescriptionManagementController(http.Controller):
 
     @http.route('/pharmacy/new_prescription', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def new_prescription(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             patient_id = int(kwargs.get('patient_id', 0))
             staff_id = int(kwargs.get('staff_id', 0))
@@ -398,6 +459,10 @@ class PrescriptionManagementController(http.Controller):
     @http.route('/pharmacy/prescription/<model("prescription.order"):prescription_id>/edit', type='http', auth='user',
                 website=True, methods=['GET', 'POST'])
     def edit_prescription(self, prescription_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if not prescription_id:
             return request.redirect('/pharmacy/prescriptions')
 
@@ -466,16 +531,13 @@ class PrescriptionManagementController(http.Controller):
         }
         return request.render('prescription_management.edit_prescription_template', values)
 
-        values = {
-            'prescription': prescription_id,
-            'prescription_lines': prescription_id.prescription_line_ids,
-            'products': request.env['pharmacy.product'].sudo().search([], order='name'),
-        }
-        return request.render('prescription_management.edit_prescription_template', values)
-
     @http.route('/pharmacy/prescription/line/<model("prescription.line"):line_id>/delete', type='http', auth='user',
                 website=True)
     def delete_prescription_line(self, line_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if not line_id:
             return request.redirect('/pharmacy/prescriptions')
 
@@ -486,8 +548,12 @@ class PrescriptionManagementController(http.Controller):
 
     # === DASHBOARD & QUICK LINKS ===
 
-    @http.route('/pharmacy', type='http', auth='public', website=True)
+    @http.route('/pharmacy', type='http', auth='user', website=True)
     def pharmacy_dashboard(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Get counts for dashboard
         product_count = request.env['pharmacy.product'].sudo().search_count([])
         prescription_count = request.env['prescription.order'].sudo().search_count([])
@@ -517,6 +583,10 @@ class PrescriptionManagementController(http.Controller):
     @http.route('/pharmacy/prescription/<model("prescription.order"):prescription_id>/update', type='http', auth='user',
                 website=True, methods=['GET', 'POST'])
     def update_prescription(self, prescription_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if not prescription_id:
             return request.redirect('/pharmacy/prescriptions')
 
@@ -566,6 +636,10 @@ class PrescriptionManagementController(http.Controller):
     @http.route('/pharmacy/prescription/<model("prescription.order"):prescription_id>/delete', type='http', auth='user',
                 website=True)
     def delete_prescription(self, prescription_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if not prescription_id:
             return request.redirect('/pharmacy/prescriptions')
 

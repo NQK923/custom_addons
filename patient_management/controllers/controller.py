@@ -8,8 +8,21 @@ import psycopg2
 
 
 class PatientController(http.Controller):
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý bệnh nhân không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('patient_management.group_patient_manager')
+        return is_manager
+
     @http.route('/patients', type='http', auth='user', website=True)
     def patient_list(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Xử lý tham số tìm kiếm và bộ lọc
         search = kw.get('search', '')
         patient_type = kw.get('patient_type', '')
@@ -107,6 +120,10 @@ class PatientController(http.Controller):
 
     @http.route('/patients/<model("clinic.patient"):patient>', type='http', auth='user', website=True)
     def patient_detail(self, patient, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Hiển thị thông báo thành công nếu có
         message = kw.get('message', '')
         message_type = kw.get('message_type', '')
@@ -162,6 +179,10 @@ class PatientController(http.Controller):
 
     @http.route('/patients/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def patient_create(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Xử lý tạo mới bệnh nhân
         if request.httprequest.method == 'POST':
             try:
@@ -214,6 +235,10 @@ class PatientController(http.Controller):
     @http.route('/patients/<model("clinic.patient"):patient>/edit', type='http', auth='user', website=True,
                 methods=['GET', 'POST'])
     def patient_edit(self, patient, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Xử lý cập nhật thông tin bệnh nhân
         if request.httprequest.method == 'POST':
             try:
@@ -264,6 +289,10 @@ class PatientController(http.Controller):
     @http.route('/patients/<model("clinic.patient"):patient>/delete', type='http', auth='user', website=True,
                 methods=['POST'])
     def patient_delete(self, patient, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         try:
             # Lấy tên của bệnh nhân để hiển thị trong thông báo
             patient_name = patient.name

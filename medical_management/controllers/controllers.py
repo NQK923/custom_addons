@@ -7,9 +7,22 @@ from datetime import datetime
 
 
 class MedicalWebsite(http.Controller):
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý xét nghiệm y tế không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('medical_management.group_medical_manager')
+        return is_manager
+
     # Trang chủ - Hiển thị danh sách xét nghiệm
     @http.route('/medical/tests', auth='user', website=True)
     def medical_tests(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         tests = request.env['medical.test'].sudo().search([])
         return request.render('medical_management.medical_tests_list', {
             'tests': tests,
@@ -18,6 +31,10 @@ class MedicalWebsite(http.Controller):
     # Trang chi tiết xét nghiệm
     @http.route('/medical/test/<int:test_id>', auth='user', website=True)
     def medical_test_detail(self, test_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         test = request.env['medical.test'].sudo().browse(test_id)
         if not test.exists():
             return request.redirect('/medical/tests')
@@ -31,6 +48,10 @@ class MedicalWebsite(http.Controller):
     # Form tạo xét nghiệm mới
     @http.route('/medical/test/create', auth='user', website=True)
     def medical_test_create_form(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         patients = request.env['clinic.patient'].sudo().search([])
         doctors = request.env['clinic.staff'].sudo().search([])
         test_types = dict(request.env['medical.test']._fields['test_type'].selection)
@@ -43,6 +64,10 @@ class MedicalWebsite(http.Controller):
     # Lưu xét nghiệm mới
     @http.route('/medical/test/save', auth='user', website=True, type='http', methods=['POST'])
     def medical_test_save(self, **post):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         vals = {
             'test_code': post.get('test_code'),
             'patient_id': int(post.get('patient_id')),
@@ -58,6 +83,10 @@ class MedicalWebsite(http.Controller):
     # Trang danh sách hình ảnh
     @http.route('/medical/images', auth='user', website=True)
     def medical_images(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         images = request.env['medical.images'].sudo().search([])
         return request.render('medical_management.medical_images_list', {
             'images': images,
@@ -66,6 +95,10 @@ class MedicalWebsite(http.Controller):
     # Trang chi tiết hình ảnh
     @http.route('/medical/image/<int:image_id>', auth='user', website=True)
     def medical_image_detail(self, image_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         image = request.env['medical.images'].sudo().browse(image_id)
         if not image.exists():
             return request.redirect('/medical/images')
@@ -77,6 +110,10 @@ class MedicalWebsite(http.Controller):
     # Form tạo hình ảnh mới
     @http.route('/medical/image/create', auth='user', website=True)
     def medical_image_create_form(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         tests = request.env['medical.test'].sudo().search([])
         test_types = dict(request.env['medical.images']._fields['test_type_img'].selection)
         return request.render('medical_management.medical_image_create_form', {
@@ -87,6 +124,10 @@ class MedicalWebsite(http.Controller):
     # Lưu hình ảnh mới - Updated with fixes
     @http.route('/medical/image/save', auth='user', website=True, type='http', methods=['POST'])
     def medical_image_save(self, **post):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         image_data = False
         if post.get('image_file'):
             # Properly encode image file
@@ -122,6 +163,10 @@ class MedicalWebsite(http.Controller):
     # Chỉnh sửa xét nghiệm
     @http.route('/medical/test/edit/<int:test_id>', auth='user', website=True)
     def medical_test_edit(self, test_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         test = request.env['medical.test'].sudo().browse(test_id)
         if not test.exists():
             return request.redirect('/medical/tests')
@@ -140,6 +185,10 @@ class MedicalWebsite(http.Controller):
     # Cập nhật xét nghiệm
     @http.route('/medical/test/update', auth='user', website=True, type='http', methods=['POST'])
     def medical_test_update(self, **post):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         test_id = int(post.get('test_id'))
         test = request.env['medical.test'].sudo().browse(test_id)
 
@@ -158,6 +207,10 @@ class MedicalWebsite(http.Controller):
     # Xóa xét nghiệm
     @http.route('/medical/test/delete/<int:test_id>', auth='user', website=True)
     def medical_test_delete(self, test_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         test = request.env['medical.test'].sudo().browse(test_id)
         if test.exists():
             # Kiểm tra các hình ảnh liên quan
@@ -172,6 +225,10 @@ class MedicalWebsite(http.Controller):
     # Chỉnh sửa hình ảnh
     @http.route('/medical/image/edit/<int:image_id>', auth='user', website=True)
     def medical_image_edit(self, image_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         image = request.env['medical.images'].sudo().browse(image_id)
         if not image.exists():
             return request.redirect('/medical/images')
@@ -188,6 +245,10 @@ class MedicalWebsite(http.Controller):
     # Cập nhật hình ảnh
     @http.route('/medical/image/update', auth='user', website=True, type='http', methods=['POST'])
     def medical_image_update(self, **post):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         image_id = int(post.get('image_id'))
         image = request.env['medical.images'].sudo().browse(image_id)
 
@@ -214,6 +275,10 @@ class MedicalWebsite(http.Controller):
     # Xóa hình ảnh
     @http.route('/medical/image/delete/<int:image_id>', auth='user', website=True)
     def medical_image_delete(self, image_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         image = request.env['medical.images'].sudo().browse(image_id)
         if image.exists():
             test_id = image.MedicalTest_id.id
@@ -226,6 +291,10 @@ class MedicalWebsite(http.Controller):
     # Cập nhật nhanh trạng thái xét nghiệm (AJAX)
     @http.route('/medical/test/update_status', auth='user', website=True, type='http', methods=['POST'], csrf=False)
     def medical_test_update_status(self, **post):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return json.dumps({'success': False, 'error': 'Không có quyền truy cập'})
+
         if not post.get('test_id') or not post.get('status'):
             return json.dumps({'success': False, 'error': 'Missing parameters'})
 

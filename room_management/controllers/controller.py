@@ -4,9 +4,22 @@ from odoo.exceptions import ValidationError
 
 
 class RoomManagementController(http.Controller):
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý phòng không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('room_management.group_room_manager')
+        return is_manager
+
     @http.route('/clinic/rooms', type='http', auth='user', website=True)
     def room_list(self, **kwargs):
         """Hiển thị danh sách phòng khám"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         rooms = request.env['clinic.room'].sudo().search([])
         values = {
             'rooms': rooms,
@@ -16,6 +29,10 @@ class RoomManagementController(http.Controller):
     @http.route('/clinic/room/<model("clinic.room"):room>', type='http', auth='user', website=True)
     def room_detail(self, room, **kwargs):
         """Hiển thị chi tiết phòng khám và danh sách giường bệnh"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         values = {
             'room': room,
         }
@@ -24,6 +41,10 @@ class RoomManagementController(http.Controller):
     @http.route('/clinic/rooms/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def create_room(self, **kwargs):
         """Tạo phòng mới"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         error = None
         success = None
 
@@ -67,6 +88,10 @@ class RoomManagementController(http.Controller):
                 methods=['GET', 'POST'])
     def edit_room(self, room, **kwargs):
         """Chỉnh sửa thông tin phòng"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         error = None
         success = None
 
@@ -117,6 +142,10 @@ class RoomManagementController(http.Controller):
     @http.route('/clinic/room/<model("clinic.room"):room>/delete', type='http', auth='user', website=True)
     def delete_room(self, room, **kwargs):
         """Xóa phòng"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         try:
             # Kiểm tra xem phòng có giường đang có bệnh nhân không
             occupied_beds = room.bed_ids.filtered(lambda b: b.patient_id)
@@ -134,6 +163,10 @@ class RoomManagementController(http.Controller):
                 methods=['GET', 'POST'])
     def assign_patient(self, bed, **kwargs):
         """Xếp bệnh nhân vào giường"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Xử lý khi form được submit
         if request.httprequest.method == 'POST':
             patient_id = kwargs.get('patient_id')
@@ -152,6 +185,10 @@ class RoomManagementController(http.Controller):
     @http.route('/clinic/bed/<model("clinic.bed"):bed>/discharge', type='http', auth='user', website=True)
     def discharge_patient(self, bed, **kwargs):
         """Xuất viện cho bệnh nhân"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if bed.patient_id:
             bed.sudo().action_out()
         return request.redirect('/clinic/room/' + str(bed.room_id.id))

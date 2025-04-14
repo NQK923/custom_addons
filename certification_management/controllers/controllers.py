@@ -9,9 +9,22 @@ _logger = logging.getLogger(__name__)
 
 
 class CertificationController(http.Controller):
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý chứng nhận không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('certification_management.group_certification_manager')
+        return is_manager
+
     # Dashboard
     @http.route('/certification/dashboard', type='http', auth='user', website=True)
     def certification_dashboard(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Get certification statistics
         Certification = request.env['hospital.certification']
 
@@ -47,6 +60,10 @@ class CertificationController(http.Controller):
     # Certificate routes
     @http.route('/certification/certificates', type='http', auth='user', website=True)
     def certificates(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Get certifications with potential filters
         domain = []
 
@@ -80,6 +97,10 @@ class CertificationController(http.Controller):
     @http.route('/certification/certificate/<model("hospital.certification"):cert_id>', type='http', auth='user',
                 website=True)
     def certificate_detail(self, cert_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         values = {
             'certificate': cert_id,
         }
@@ -87,6 +108,10 @@ class CertificationController(http.Controller):
 
     @http.route('/certification/certificate/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def certificate_create(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             try:
                 # Create new certification
@@ -134,6 +159,10 @@ class CertificationController(http.Controller):
     @http.route('/certification/certificate/<model("hospital.certification"):cert_id>/edit', type='http', auth='user',
                 website=True, methods=['GET', 'POST'])
     def certificate_edit(self, cert_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             try:
                 # Update certification
@@ -194,6 +223,10 @@ class CertificationController(http.Controller):
     @http.route('/certification/certificate/<model("hospital.certification"):cert_id>/set_valid', type='http',
                 auth='user', website=True)
     def certificate_set_valid(self, cert_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         try:
             cert_id.action_set_valid()
         except Exception as e:
@@ -203,6 +236,10 @@ class CertificationController(http.Controller):
     @http.route('/certification/certificate/<model("hospital.certification"):cert_id>/renew', type='http', auth='user',
                 website=True, methods=['GET', 'POST'])
     def certificate_renew(self, cert_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             try:
                 # Calculate default new expiry date (1 year from current)
@@ -242,6 +279,10 @@ class CertificationController(http.Controller):
     # Inspection routes
     @http.route('/certification/inspections', type='http', auth='user', website=True)
     def inspections(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Get inspections with potential filters
         domain = []
 
@@ -275,6 +316,10 @@ class CertificationController(http.Controller):
     @http.route('/certification/inspection/<model("hospital.inspection"):insp_id>', type='http', auth='user',
                 website=True)
     def inspection_detail(self, insp_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         values = {
             'inspection': insp_id,
         }
@@ -282,6 +327,10 @@ class CertificationController(http.Controller):
 
     @http.route('/certification/inspection/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def inspection_create(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             try:
                 # Create new inspection
@@ -341,6 +390,10 @@ class CertificationController(http.Controller):
     @http.route('/certification/inspection/<model("hospital.inspection"):insp_id>/edit', type='http', auth='user',
                 website=True, methods=['GET', 'POST'])
     def inspection_edit(self, insp_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             try:
                 # Update inspection
@@ -387,6 +440,10 @@ class CertificationController(http.Controller):
     @http.route('/certification/inspection/<model("hospital.inspection"):insp_id>/start', type='http', auth='user',
                 website=True)
     def inspection_start(self, insp_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         try:
             insp_id.action_start()
         except Exception as e:
@@ -396,6 +453,10 @@ class CertificationController(http.Controller):
     @http.route('/certification/inspection/<model("hospital.inspection"):insp_id>/complete', type='http', auth='user',
                 website=True)
     def inspection_complete(self, insp_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         try:
             insp_id.action_complete()
         except Exception as e:
@@ -405,6 +466,10 @@ class CertificationController(http.Controller):
     @http.route('/certification/inspection/<model("hospital.inspection"):insp_id>/cancel', type='http', auth='user',
                 website=True)
     def inspection_cancel(self, insp_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         try:
             insp_id.action_cancel()
         except Exception as e:
@@ -414,6 +479,10 @@ class CertificationController(http.Controller):
     @http.route('/certification/inspection/<model("hospital.inspection"):insp_id>/reset', type='http', auth='user',
                 website=True)
     def inspection_reset(self, insp_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         try:
             insp_id.action_reset()
         except Exception as e:
@@ -423,6 +492,10 @@ class CertificationController(http.Controller):
     @http.route('/certification/certificate/<model("hospital.certification"):cert_id>/set_draft', type='http',
                 auth='user', website=True)
     def certificate_set_draft(self, cert_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         try:
             cert_id.action_set_draft()
         except Exception as e:

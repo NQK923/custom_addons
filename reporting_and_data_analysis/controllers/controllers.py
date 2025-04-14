@@ -26,9 +26,22 @@ def _return_error_response(message):
 
 
 class MedicalReportPDFController(http.Controller):
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý báo cáo không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('reporting_and_data_analysis.group_reporting_manager')
+        return is_manager
+
     @http.route(['/report/medical_pdf/<int:report_id>'], type='http', auth="user")
     def get_medical_report_pdf(self, report_id, **kwargs):
         """Generate PDF report for medical reports using ReportLab"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         try:
             # Check if the report model exists
             report_model_name = 'report.med_report_pdf'
@@ -136,6 +149,15 @@ def _get_status_data(year=None):
 
 
 class WebsiteReportController(http.Controller):
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý báo cáo không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('reporting_and_data_analysis.group_reporting_manager')
+        return is_manager
+
     # Define formatLang helper method - UPDATED to use simple Python formatting
     def formatLang(self, value, digits=None, grouping=True, monetary=False, dp=False, currency_obj=False):
         """Helper method to correctly format amounts for templates"""
@@ -154,6 +176,10 @@ class WebsiteReportController(http.Controller):
     # Dashboard route
     @http.route('/clinic/reports/dashboard', type='http', auth='user', website=True)
     def reports_dashboard(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Prepare dashboard data
         monthly_data = _get_monthly_data()  # Gọi hàm toàn cục, không phải self._get_monthly_data()
         service_data = _get_service_data()  # Gọi hàm toàn cục, không phải self._get_service_data()
@@ -172,6 +198,10 @@ class WebsiteReportController(http.Controller):
     # Invoice report routes
     @http.route('/clinic/reports/invoice/monthly', type='http', auth='user', website=True)
     def invoice_monthly(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         year = int(kwargs.get('year', datetime.now().year))
         # Get monthly reports for selected year
         monthly_data = _get_monthly_data(year=year)
@@ -201,6 +231,10 @@ class WebsiteReportController(http.Controller):
 
     @http.route('/clinic/reports/invoice/services', type='http', auth='user', website=True)
     def invoice_services(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         service_data = _get_service_data()
 
         # Prepare data for charts
@@ -222,6 +256,10 @@ class WebsiteReportController(http.Controller):
 
     @http.route('/clinic/reports/invoice/products', type='http', auth='user', website=True)
     def invoice_products(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         product_data = _get_product_data()
 
         # Prepare data for charts
@@ -243,6 +281,10 @@ class WebsiteReportController(http.Controller):
 
     @http.route('/clinic/reports/invoice/patients', type='http', auth='user', website=True)
     def invoice_patients(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         patient_data = _get_patient_data()
 
         values = {
@@ -254,6 +296,10 @@ class WebsiteReportController(http.Controller):
 
     @http.route('/clinic/reports/invoice/status', type='http', auth='user', website=True)
     def invoice_status(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         year = int(kwargs.get('year', datetime.now().year))
         status_data = _get_status_data(year=year)
 
@@ -269,6 +315,10 @@ class WebsiteReportController(http.Controller):
     # Medical report routes
     @http.route('/clinic/reports/medical', type='http', auth='user', website=True)
     def medical_reports_list(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         reports = request.env['hospital.medical.report'].search([])
 
         values = {
@@ -279,6 +329,10 @@ class WebsiteReportController(http.Controller):
 
     @http.route('/clinic/reports/medical/<int:report_id>', type='http', auth='user', website=True)
     def medical_report_detail(self, report_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         report = request.env['hospital.medical.report'].browse(report_id)
         if not report.exists():
             return request.redirect('/clinic/reports/medical')
@@ -291,6 +345,10 @@ class WebsiteReportController(http.Controller):
 
     @http.route('/clinic/reports/medical/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def medical_report_create(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             # Create new report
             try:
@@ -356,6 +414,10 @@ class WebsiteReportController(http.Controller):
 
     @http.route('/clinic/reports/medical/<int:report_id>/regenerate', type='http', auth='user', website=True)
     def medical_report_regenerate(self, report_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         report = request.env['hospital.medical.report'].browse(report_id)
         if report.exists():
             report.generate_report()
@@ -363,6 +425,10 @@ class WebsiteReportController(http.Controller):
 
     @http.route('/clinic/reports/medical/<int:report_id>/approve', type='http', auth='user', website=True)
     def medical_report_approve(self, report_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         report = request.env['hospital.medical.report'].browse(report_id)
         if report.exists():
             report.action_approve()

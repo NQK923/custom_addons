@@ -6,8 +6,21 @@ from datetime import datetime
 
 
 class TreatmentAndCareController(http.Controller):
-    @http.route('/clinic/treatment_plans', type='http', auth='public', website=True, methods=['GET', 'POST'])
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý điều trị và chăm sóc không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('Treatment_and_care_management.group_treatment_manager')
+        return is_manager
+
+    @http.route('/clinic/treatment_plans', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def treatment_plans(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         search_value = kwargs.get('search_value', '')
         patient = False
         treatment_plans = False
@@ -37,8 +50,12 @@ class TreatmentAndCareController(http.Controller):
 
         return request.render('Treatment_and_care_management.treatment_plans_template', values)
 
-    @http.route('/clinic/treatment_plan/create', type='http', auth='public', website=True, methods=['GET', 'POST'])
+    @http.route('/clinic/treatment_plan/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def treatment_plan_create(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             # Extract form data
             patient_id = int(kwargs.get('patient_id'))
@@ -69,9 +86,13 @@ class TreatmentAndCareController(http.Controller):
 
         return request.render('Treatment_and_care_management.treatment_plan_form_template', values)
 
-    @http.route('/clinic/treatment_plan/edit/<int:plan_id>', type='http', auth='public', website=True,
+    @http.route('/clinic/treatment_plan/edit/<int:plan_id>', type='http', auth='user', website=True,
                 methods=['GET', 'POST'])
     def treatment_plan_edit(self, plan_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         plan = request.env['treatment.plan'].sudo().browse(plan_id)
 
         if not plan.exists():
@@ -98,8 +119,12 @@ class TreatmentAndCareController(http.Controller):
 
         return request.render('Treatment_and_care_management.treatment_plan_edit_template', values)
 
-    @http.route('/clinic/treatment_plan/delete/<int:plan_id>', type='http', auth='public', website=True)
+    @http.route('/clinic/treatment_plan/delete/<int:plan_id>', type='http', auth='user', website=True)
     def treatment_plan_delete(self, plan_id):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         plan = request.env['treatment.plan'].sudo().browse(plan_id)
 
         if plan.exists():
@@ -109,8 +134,12 @@ class TreatmentAndCareController(http.Controller):
 
         return request.redirect('/clinic/treatment_plans')
 
-    @http.route('/clinic/treatment_plan_details/<int:plan_id>', type='http', auth='public', website=True)
+    @http.route('/clinic/treatment_plan_details/<int:plan_id>', type='http', auth='user', website=True)
     def treatment_plan_details(self, plan_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         plan = request.env['treatment.plan'].sudo().browse(plan_id)
         if not plan.exists():
             return request.not_found()
@@ -122,8 +151,12 @@ class TreatmentAndCareController(http.Controller):
 
         return request.render('Treatment_and_care_management.treatment_plan_details_template', values)
 
-    @http.route('/clinic/treatment_process/create', type='http', auth='public', website=True, methods=['GET', 'POST'])
+    @http.route('/clinic/treatment_process/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def treatment_process_create(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             # Extract form data
             plan_id = int(kwargs.get('plan_id'))
@@ -171,9 +204,13 @@ class TreatmentAndCareController(http.Controller):
 
         return request.render('Treatment_and_care_management.treatment_process_form_template', values)
 
-    @http.route('/clinic/treatment_process/edit/<int:process_id>', type='http', auth='public', website=True,
+    @http.route('/clinic/treatment_process/edit/<int:process_id>', type='http', auth='user', website=True,
                 methods=['GET', 'POST'])
     def treatment_process_edit(self, process_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         process = request.env['treatment.process'].sudo().browse(process_id)
 
         if not process.exists():
@@ -217,8 +254,12 @@ class TreatmentAndCareController(http.Controller):
 
         return request.render('Treatment_and_care_management.treatment_process_edit_template', values)
 
-    @http.route('/clinic/treatment_process/delete/<int:process_id>', type='http', auth='public', website=True)
+    @http.route('/clinic/treatment_process/delete/<int:process_id>', type='http', auth='user', website=True)
     def treatment_process_delete(self, process_id):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         process = request.env['treatment.process'].sudo().browse(process_id)
 
         if process.exists():
@@ -228,8 +269,12 @@ class TreatmentAndCareController(http.Controller):
 
         return request.redirect('/clinic/treatment_plans')
 
-    @http.route('/clinic/patient_care', type='http', auth='public', website=True, methods=['GET', 'POST'])
+    @http.route('/clinic/patient_care', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def patient_care(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         search_value = kwargs.get('search_value', '')
         patient = False
         care_records = False
@@ -259,8 +304,12 @@ class TreatmentAndCareController(http.Controller):
 
         return request.render('Treatment_and_care_management.patient_care_template', values)
 
-    @http.route('/clinic/patient_care/create', type='http', auth='public', website=True, methods=['GET', 'POST'])
+    @http.route('/clinic/patient_care/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def patient_care_create(self, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             # Extract form data
             patient_id = int(kwargs.get('patient_id'))
@@ -327,9 +376,13 @@ class TreatmentAndCareController(http.Controller):
 
         return request.render('Treatment_and_care_management.patient_care_form_template', values)
 
-    @http.route('/clinic/patient_care/edit/<int:care_id>', type='http', auth='public', website=True,
+    @http.route('/clinic/patient_care/edit/<int:care_id>', type='http', auth='user', website=True,
                 methods=['GET', 'POST'])
     def patient_care_edit(self, care_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         care = request.env['patient.care.tracking'].sudo().browse(care_id)
 
         if not care.exists():
@@ -393,8 +446,12 @@ class TreatmentAndCareController(http.Controller):
 
         return request.render('Treatment_and_care_management.patient_care_edit_template', values)
 
-    @http.route('/clinic/patient_care/delete/<int:care_id>', type='http', auth='public', website=True)
+    @http.route('/clinic/patient_care/delete/<int:care_id>', type='http', auth='user', website=True)
     def patient_care_delete(self, care_id):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         care = request.env['patient.care.tracking'].sudo().browse(care_id)
 
         if care.exists():
@@ -404,8 +461,12 @@ class TreatmentAndCareController(http.Controller):
 
         return request.redirect('/clinic/patient_care')
 
-    @http.route('/clinic/patient_care_details/<int:care_id>', type='http', auth='public', website=True)
+    @http.route('/clinic/patient_care_details/<int:care_id>', type='http', auth='user', website=True)
     def patient_care_details(self, care_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         care = request.env['patient.care.tracking'].sudo().browse(care_id)
         if not care.exists():
             return request.not_found()

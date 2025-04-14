@@ -6,9 +6,22 @@ from odoo.exceptions import AccessError, ValidationError
 
 
 class ComplianceManagementController(http.Controller):
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý tuân thủ không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('compliance_management.group_health_compliance_manager')
+        return is_manager
+
     # Dashboard chính
     @http.route('/compliance/dashboard', type='http', auth='user', website=True)
     def compliance_dashboard(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Lấy các đánh giá tuân thủ gần đây
         recent_compliances = request.env['health.compliance'].sudo().search(
             [], order="date_assessment desc", limit=10)
@@ -51,6 +64,10 @@ class ComplianceManagementController(http.Controller):
     # Danh sách đánh giá tuân thủ
     @http.route('/compliance/assessments', type='http', auth='user', website=True)
     def compliance_list(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Xử lý các tham số tìm kiếm và lọc
         search_term = kw.get('search', '')
         filter_state = kw.get('state', '')
@@ -81,6 +98,10 @@ class ComplianceManagementController(http.Controller):
     @http.route(['/compliance/assessment/new', '/compliance/assessment/<int:compliance_id>'],
                 type='http', auth='user', website=True)
     def compliance_form(self, compliance_id=None, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Mode edit hoặc create
         compliance = None
         if compliance_id:
@@ -142,6 +163,10 @@ class ComplianceManagementController(http.Controller):
     # Danh sách quy định y tế
     @http.route('/compliance/regulations', type='http', auth='user', website=True)
     def regulation_list(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Xử lý các tham số tìm kiếm và lọc
         search_term = kw.get('search', '')
         filter_scope = kw.get('scope', '')
@@ -169,6 +194,10 @@ class ComplianceManagementController(http.Controller):
     @http.route(['/compliance/regulation/new', '/compliance/regulation/<int:regulation_id>'],
                 type='http', auth='user', website=True)
     def regulation_form(self, regulation_id=None, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Mode edit hoặc create
         regulation = None
         if regulation_id:
@@ -225,6 +254,10 @@ class ComplianceManagementController(http.Controller):
     # Danh sách cơ quan quản lý
     @http.route('/compliance/authorities', type='http', auth='user', website=True)
     def authority_list(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Xử lý các tham số tìm kiếm
         search_term = kw.get('search', '')
 
@@ -247,6 +280,10 @@ class ComplianceManagementController(http.Controller):
     @http.route(['/compliance/authority/new', '/compliance/authority/<int:authority_id>'],
                 type='http', auth='user', website=True)
     def authority_form(self, authority_id=None, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Mode edit hoặc create
         authority = None
         if authority_id:
