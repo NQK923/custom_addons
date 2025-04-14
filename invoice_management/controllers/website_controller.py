@@ -5,9 +5,22 @@ import json
 
 
 class InvoiceWebsiteController(http.Controller):
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý hóa đơn không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('invoice_management.group_invoice_manager')
+        return is_manager
+
     # Invoice routes
     @http.route('/invoice/list', type='http', auth='user', website=True)
     def invoice_list(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Get filter parameters from request
         filter_state = kw.get('state')
         filter_date_from = kw.get('date_from')
@@ -48,6 +61,10 @@ class InvoiceWebsiteController(http.Controller):
 
     @http.route('/invoice/view/<int:invoice_id>', type='http', auth='user', website=True)
     def invoice_view(self, invoice_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         invoice = request.env['clinic.invoice'].browse(invoice_id)
 
         if not invoice.exists():
@@ -62,6 +79,10 @@ class InvoiceWebsiteController(http.Controller):
 
     @http.route(['/invoice/create', '/invoice/edit/<int:invoice_id>'], type='http', auth='user', website=True)
     def invoice_form(self, invoice_id=None, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         invoice = request.env['clinic.invoice'].browse(invoice_id) if invoice_id else False
 
         # Redirect nếu hóa đơn đã bị hủy - không cho phép chỉnh sửa
@@ -278,6 +299,10 @@ class InvoiceWebsiteController(http.Controller):
 
     @http.route('/invoice/action/<string:action>/<int:invoice_id>', type='http', auth='user', website=True)
     def invoice_action(self, action, invoice_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         invoice = request.env['clinic.invoice'].browse(invoice_id)
 
         if not invoice.exists():
@@ -299,6 +324,13 @@ class InvoiceWebsiteController(http.Controller):
     @http.route('/api/prescriptions', type='http', auth='user')
     def get_patient_prescriptions(self, **kw):
         """API endpoint to get prescriptions for a patient"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.make_response(
+                json.dumps({'error': 'Không có quyền truy cập'}),
+                headers=[('Content-Type', 'application/json')]
+            )
+
         patient_id = kw.get('patient_id')
         if not patient_id:
             return request.make_response(
@@ -350,6 +382,13 @@ class InvoiceWebsiteController(http.Controller):
     @http.route('/api/prescription/<int:prescription_id>', type='http', auth='user')
     def get_prescription_details(self, prescription_id, **kw):
         """API endpoint to get detailed prescription information"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.make_response(
+                json.dumps({'error': 'Không có quyền truy cập'}),
+                headers=[('Content-Type', 'application/json')]
+            )
+
         try:
             # Get prescription
             prescription = request.env['prescription.order'].browse(prescription_id)
@@ -383,6 +422,10 @@ class InvoiceWebsiteController(http.Controller):
     # Insurance invoice routes
     @http.route('/insurance/list', type='http', auth='user', website=True)
     def insurance_list(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         insurance_invoices = request.env['clinic.invoice.insurance'].search([])
 
         values = {
@@ -394,6 +437,10 @@ class InvoiceWebsiteController(http.Controller):
 
     @http.route('/insurance/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def insurance_create(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             # Get form data
             date_from = kw.get('date_from')
@@ -430,6 +477,10 @@ class InvoiceWebsiteController(http.Controller):
 
     @http.route('/insurance/view/<int:insurance_id>', type='http', auth='user', website=True)
     def insurance_view(self, insurance_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         insurance = request.env['clinic.invoice.insurance'].browse(insurance_id)
 
         if not insurance.exists():
@@ -444,6 +495,10 @@ class InvoiceWebsiteController(http.Controller):
 
     @http.route('/insurance/action/<string:action>/<int:insurance_id>', type='http', auth='user', website=True)
     def insurance_action(self, action, insurance_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         insurance = request.env['clinic.invoice.insurance'].browse(insurance_id)
 
         if not insurance.exists():
@@ -464,6 +519,10 @@ class InvoiceWebsiteController(http.Controller):
     # Purchase order routes
     @http.route('/purchase/list', type='http', auth='user', website=True)
     def purchase_list(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         purchase_orders = request.env['clinic.purchase.order'].search([])
 
         values = {
@@ -475,6 +534,10 @@ class InvoiceWebsiteController(http.Controller):
 
     @http.route('/purchase/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def purchase_create(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             try:
                 # Get basic form data
@@ -576,6 +639,10 @@ class InvoiceWebsiteController(http.Controller):
 
     @http.route('/purchase/view/<int:purchase_id>', type='http', auth='user', website=True)
     def purchase_view(self, purchase_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         purchase = request.env['clinic.purchase.order'].browse(purchase_id)
 
         if not purchase.exists():
@@ -590,6 +657,10 @@ class InvoiceWebsiteController(http.Controller):
 
     @http.route('/purchase/action/<string:action>/<int:purchase_id>', type='http', auth='user', website=True)
     def purchase_action(self, action, purchase_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         purchase = request.env['clinic.purchase.order'].browse(purchase_id)
 
         if not purchase.exists():
@@ -606,6 +677,10 @@ class InvoiceWebsiteController(http.Controller):
     # Statistics routes
     @http.route('/statistics/dashboard', type='http', auth='user', website=True)
     def statistics_dashboard(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Get latest statistics or create monthly stats if none exists
         statistics = request.env['clinic.statistics'].search([], limit=1, order='id desc')
         if not statistics:
@@ -623,6 +698,10 @@ class InvoiceWebsiteController(http.Controller):
 
     @http.route('/statistics/generate', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def statistics_generate(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if request.httprequest.method == 'POST':
             date_from = kw.get('date_from')
             date_to = kw.get('date_to')
@@ -643,6 +722,10 @@ class InvoiceWebsiteController(http.Controller):
 
     @http.route('/statistics/view/<int:statistics_id>', type='http', auth='user', website=True)
     def statistics_view(self, statistics_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         statistics = request.env['clinic.statistics'].browse(statistics_id)
 
         if not statistics.exists():
@@ -674,5 +757,9 @@ class InvoiceWebsiteController(http.Controller):
 
     @http.route('/statistics/print/<int:statistics_id>', type='http', auth='user', website=True)
     def statistics_print(self, statistics_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Redirect to the PDF report download URL
         return request.redirect(f'/report/statistics_pdf/{statistics_id}')

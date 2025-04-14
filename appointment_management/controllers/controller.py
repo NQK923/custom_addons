@@ -7,11 +7,24 @@ from odoo.exceptions import ValidationError
 
 
 class AppointmentController(http.Controller):
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('appointment_management.group_appointment_manager')
+        return is_manager
+
     @http.route('/clinic/appointments', type='http', auth='user', website=True)
     def appointment_list(self, **kwargs):
         """
         Hiển thị danh sách và lịch hẹn
         """
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Lấy thông tin bệnh nhân và bác sĩ cho form tạo mới
         patients = request.env['clinic.patient'].sudo().search([])
         doctors = request.env['clinic.staff'].sudo().search([('staff_type', '=', 'Bác sĩ')], order='staff_name asc')
@@ -77,6 +90,10 @@ class AppointmentController(http.Controller):
         """
         Tạo lịch hẹn mới
         """
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if not post:
             return request.redirect('/clinic/appointments')
 
@@ -158,6 +175,10 @@ class AppointmentController(http.Controller):
         """
         Hiển thị chi tiết lịch hẹn
         """
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         appointment = request.env['clinic.appointment'].sudo().browse(appointment_id)
         if not appointment.exists():
             return request.redirect('/clinic/appointments')
@@ -184,6 +205,10 @@ class AppointmentController(http.Controller):
         """
         Cập nhật lịch hẹn
         """
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         appointment = request.env['clinic.appointment'].sudo().browse(appointment_id)
         if not appointment.exists():
             return request.redirect('/clinic/appointments')
@@ -277,6 +302,10 @@ class AppointmentController(http.Controller):
         """
         Thực hiện các hành động với lịch hẹn (xác nhận, hoàn thành, hủy, đặt về nháp)
         """
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         appointment = request.env['clinic.appointment'].sudo().browse(appointment_id)
         if not appointment.exists() or not action:
             return request.redirect('/clinic/appointments')
@@ -302,6 +331,10 @@ class AppointmentController(http.Controller):
         """
         Xoá lịch hẹn
         """
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         appointment = request.env['clinic.appointment'].sudo().browse(appointment_id)
         if not appointment.exists():
             return request.redirect('/clinic/appointments')

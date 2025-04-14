@@ -4,27 +4,48 @@ from datetime import date
 
 
 class InsuranceController(http.Controller):
-    @http.route('/clinic/insurance', type='http', auth='public', website=True, methods=['GET'])
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý bảo hiểm không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('insurance_management.group_insurance_manager')
+        return is_manager
+
+    @http.route('/clinic/insurance', type='http', auth='user', website=True, methods=['GET'])
     def insurance_list(self, **kwargs):
         """Hiển thị danh sách các bảo hiểm y tế"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         insurance_policies = request.env['clinic.insurance.policy'].sudo().search([])
         values = {
             'insurance_policies': insurance_policies,
         }
         return request.render('insurance_management.insurance_list_template', values)
 
-    @http.route('/clinic/insurance/<model("clinic.insurance.policy"):insurance>', type='http', auth='public',
+    @http.route('/clinic/insurance/<model("clinic.insurance.policy"):insurance>', type='http', auth='user',
                 website=True, methods=['GET'])
     def insurance_detail(self, insurance, **kwargs):
         """Hiển thị chi tiết thông tin bảo hiểm y tế"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         values = {
             'insurance': insurance,
         }
         return request.render('insurance_management.insurance_detail_template', values)
 
-    @http.route('/clinic/insurance/create', type='http', auth='public', website=True, methods=['GET', 'POST'])
+    @http.route('/clinic/insurance/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def insurance_create(self, **kwargs):
         """Tạo mới thông tin bảo hiểm y tế"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Lấy danh sách bệnh nhân để hiển thị dropdown
         patients = request.env['clinic.patient'].sudo().search([])
 
@@ -76,10 +97,14 @@ class InsuranceController(http.Controller):
         }
         return request.render('insurance_management.insurance_form_template', values)
 
-    @http.route('/clinic/insurance/<model("clinic.insurance.policy"):insurance>/edit', type='http', auth='public',
+    @http.route('/clinic/insurance/<model("clinic.insurance.policy"):insurance>/edit', type='http', auth='user',
                 website=True, methods=['GET', 'POST'])
     def insurance_edit(self, insurance, **kwargs):
         """Chỉnh sửa thông tin bảo hiểm y tế"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Lấy danh sách bệnh nhân để hiển thị dropdown
         patients = request.env['clinic.patient'].sudo().search([])
 
@@ -135,10 +160,14 @@ class InsuranceController(http.Controller):
         }
         return request.render('insurance_management.insurance_form_template', values)
 
-    @http.route('/clinic/insurance/<model("clinic.insurance.policy"):insurance>/delete', type='http', auth='public',
+    @http.route('/clinic/insurance/<model("clinic.insurance.policy"):insurance>/delete', type='http', auth='user',
                 website=True, methods=['POST'])
     def insurance_delete(self, insurance, **kwargs):
         """Xóa thông tin bảo hiểm y tế"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         try:
             insurance.sudo().unlink()
             return request.redirect('/clinic/insurance')

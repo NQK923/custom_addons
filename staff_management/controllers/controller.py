@@ -5,11 +5,23 @@ from datetime import datetime
 
 
 class StaffManagementController(http.Controller):
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý nhân viên không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('staff_management.group_staff_manager')
+        return is_manager
 
     # === Staff List ===
-    @http.route('/clinic/staff', type='http', auth='public', website=True, methods=['GET', 'POST'])
+    @http.route('/clinic/staff', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def staff_list(self, **kwargs):
         """Display the list of staff members with search functionality"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         search_name = kwargs.get('search_name', '')
         search_department = kwargs.get('search_department', '')
         search_status = kwargs.get('search_status', '')
@@ -44,9 +56,13 @@ class StaffManagementController(http.Controller):
         return request.render('staff_management.staff_list_template', values)
 
     # === Staff Type CRUD Operations ===
-    @http.route('/clinic/staff_type', type='http', auth='public', website=True)
+    @http.route('/clinic/staff_type', type='http', auth='user', website=True)
     def staff_type_list(self, **kwargs):
         """Display list of staff types"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         staff_types = request.env['clinic.staff.type'].sudo().search([])
 
         success = kwargs.get('success')
@@ -60,9 +76,13 @@ class StaffManagementController(http.Controller):
         }
         return request.render('staff_management.staff_type_list_template', values)
 
-    @http.route('/clinic/staff_type/create', type='http', auth='public', website=True)
+    @http.route('/clinic/staff_type/create', type='http', auth='user', website=True)
     def staff_type_create(self, **kwargs):
         """Display form to create a new staff type"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         values = {
             'staff_type': None,
             'mode': 'create',
@@ -70,10 +90,14 @@ class StaffManagementController(http.Controller):
         }
         return request.render('staff_management.staff_type_form_template', values)
 
-    @http.route('/clinic/staff_type/<model("clinic.staff.type"):staff_type_id>/edit', type='http', auth='public',
+    @http.route('/clinic/staff_type/<model("clinic.staff.type"):staff_type_id>/edit', type='http', auth='user',
                 website=True)
     def staff_type_edit(self, staff_type_id, **kwargs):
         """Display form to edit an existing staff type"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         values = {
             'staff_type': staff_type_id,
             'mode': 'edit',
@@ -81,9 +105,13 @@ class StaffManagementController(http.Controller):
         }
         return request.render('staff_management.staff_type_form_template', values)
 
-    @http.route('/clinic/staff_type/save', type='http', auth='public', website=True, methods=['POST'])
+    @http.route('/clinic/staff_type/save', type='http', auth='user', website=True, methods=['POST'])
     def staff_type_save(self, **kwargs):
         """Save new or updated staff type"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         mode = kwargs.get('mode', 'create')
         position = kwargs.get('position', '').strip()
         note = kwargs.get('note', '').strip()
@@ -113,10 +141,14 @@ class StaffManagementController(http.Controller):
         except Exception as e:
             return request.redirect(f'/clinic/staff_type?error={str(e)}')
 
-    @http.route('/clinic/staff_type/<model("clinic.staff.type"):staff_type_id>/delete', type='http', auth='public',
+    @http.route('/clinic/staff_type/<model("clinic.staff.type"):staff_type_id>/delete', type='http', auth='user',
                 website=True)
     def staff_type_delete(self, staff_type_id, **kwargs):
         """Delete a staff type"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         try:
             # Check if the staff type is being used by any staff
             staff_count = request.env['clinic.staff'].sudo().search_count([('staff_type', '=', staff_type_id.id)])
@@ -131,9 +163,13 @@ class StaffManagementController(http.Controller):
             return request.redirect(f'/clinic/staff_type?error={str(e)}')
 
     # === Department CRUD Operations ===
-    @http.route('/clinic/department', type='http', auth='public', website=True)
+    @http.route('/clinic/department', type='http', auth='user', website=True)
     def department_list(self, **kwargs):
         """Display list of departments"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         departments = request.env['clinic.department'].sudo().search([])
 
         success = kwargs.get('success')
@@ -147,9 +183,13 @@ class StaffManagementController(http.Controller):
         }
         return request.render('staff_management.department_list_template', values)
 
-    @http.route('/clinic/department/create', type='http', auth='public', website=True)
+    @http.route('/clinic/department/create', type='http', auth='user', website=True)
     def department_create(self, **kwargs):
         """Display form to create a new department"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         values = {
             'department': None,
             'mode': 'create',
@@ -157,10 +197,14 @@ class StaffManagementController(http.Controller):
         }
         return request.render('staff_management.department_form_template', values)
 
-    @http.route('/clinic/department/<model("clinic.department"):department_id>/edit', type='http', auth='public',
+    @http.route('/clinic/department/<model("clinic.department"):department_id>/edit', type='http', auth='user',
                 website=True)
     def department_edit(self, department_id, **kwargs):
         """Display form to edit an existing department"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         values = {
             'department': department_id,
             'mode': 'edit',
@@ -168,9 +212,13 @@ class StaffManagementController(http.Controller):
         }
         return request.render('staff_management.department_form_template', values)
 
-    @http.route('/clinic/department/save', type='http', auth='public', website=True, methods=['POST'])
+    @http.route('/clinic/department/save', type='http', auth='user', website=True, methods=['POST'])
     def department_save(self, **kwargs):
         """Save new or updated department"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         mode = kwargs.get('mode', 'create')
         department_name = kwargs.get('department_name', '').strip()
         type = kwargs.get('type', '').strip()
@@ -206,10 +254,14 @@ class StaffManagementController(http.Controller):
         except Exception as e:
             return request.redirect(f'/clinic/department?error={str(e)}')
 
-    @http.route('/clinic/department/<model("clinic.department"):department_id>/delete', type='http', auth='public',
+    @http.route('/clinic/department/<model("clinic.department"):department_id>/delete', type='http', auth='user',
                 website=True)
     def department_delete(self, department_id, **kwargs):
         """Delete a department"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         try:
             # Check if the department is being used by any staff
             staff_count = request.env['clinic.staff'].sudo().search_count([('department_id', '=', department_id.id)])
@@ -224,9 +276,13 @@ class StaffManagementController(http.Controller):
             return request.redirect(f'/clinic/department?error={str(e)}')
 
     # === Staff CRUD Operations ===
-    @http.route('/clinic/staff/create', type='http', auth='public', website=True)
+    @http.route('/clinic/staff/create', type='http', auth='user', website=True)
     def staff_create(self, **kwargs):
         """Display form to create a new staff member"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         staff_types = request.env['clinic.staff.type'].sudo().search([])
         departments = request.env['clinic.department'].sudo().search([])
 
@@ -239,9 +295,13 @@ class StaffManagementController(http.Controller):
         }
         return request.render('staff_management.staff_form_template', values)
 
-    @http.route('/clinic/staff/<model("clinic.staff"):staff_id>/edit', type='http', auth='public', website=True)
+    @http.route('/clinic/staff/<model("clinic.staff"):staff_id>/edit', type='http', auth='user', website=True)
     def staff_edit(self, staff_id, **kwargs):
         """Display form to edit an existing staff member"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         staff_types = request.env['clinic.staff.type'].sudo().search([])
         departments = request.env['clinic.department'].sudo().search([])
 
@@ -254,9 +314,13 @@ class StaffManagementController(http.Controller):
         }
         return request.render('staff_management.staff_form_template', values)
 
-    @http.route('/clinic/staff/save', type='http', auth='public', website=True, methods=['POST'])
+    @http.route('/clinic/staff/save', type='http', auth='user', website=True, methods=['POST'])
     def staff_save(self, **kwargs):
         """Save new or updated staff member"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         mode = kwargs.get('mode', 'create')
         staff_id = kwargs.get('staff_id')
 
@@ -308,9 +372,13 @@ class StaffManagementController(http.Controller):
         except Exception as e:
             return request.redirect(f'/clinic/staff?error={str(e)}')
 
-    @http.route('/clinic/staff/<model("clinic.staff"):staff_id>/delete', type='http', auth='public', website=True)
+    @http.route('/clinic/staff/<model("clinic.staff"):staff_id>/delete', type='http', auth='user', website=True)
     def staff_delete(self, staff_id, **kwargs):
         """Delete a staff member"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         try:
             # Check if the staff has attendance or performance records
             attendance_count = request.env['clinic.staff.attendance'].sudo().search_count(
@@ -328,9 +396,13 @@ class StaffManagementController(http.Controller):
         except Exception as e:
             return request.redirect(f'/clinic/staff?error={str(e)}')
 
-    @http.route('/clinic/staff/<model("clinic.staff"):staff_id>', type='http', auth='public', website=True)
+    @http.route('/clinic/staff/<model("clinic.staff"):staff_id>', type='http', auth='user', website=True)
     def staff_detail(self, staff_id, **kwargs):
         """Display detailed information for a specific staff member"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         # Fetch related attendance records
         attendances = request.env['clinic.staff.attendance'].sudo().search([
             ('staff_id', '=', staff_id.id)
@@ -349,10 +421,14 @@ class StaffManagementController(http.Controller):
         }
         return request.render('staff_management.staff_detail_template', values)
 
-    @http.route('/clinic/staff/attendance/<model("clinic.staff"):staff_id>', type='http', auth='public', website=True,
+    @http.route('/clinic/staff/attendance/<model("clinic.staff"):staff_id>', type='http', auth='user', website=True,
                 methods=['GET', 'POST'])
     def staff_attendance(self, staff_id, **kwargs):
         """Handle attendance tracking for a staff member"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         error = None
         success = None
 
@@ -419,10 +495,14 @@ class StaffManagementController(http.Controller):
         }
         return request.render('staff_management.attendance_template', values)
 
-    @http.route('/clinic/staff/performance/<model("clinic.staff"):staff_id>', type='http', auth='public', website=True,
+    @http.route('/clinic/staff/performance/<model("clinic.staff"):staff_id>', type='http', auth='user', website=True,
                 methods=['GET', 'POST'])
     def staff_performance(self, staff_id, **kwargs):
         """Handle performance evaluation for a staff member"""
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         error = None
         success = None
 

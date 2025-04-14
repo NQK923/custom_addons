@@ -10,9 +10,22 @@ import json
 
 
 class HealthcareManagement(http.Controller):
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý chăm sóc khách hàng y tế không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('healthcare_management.group_healthcare_manager')
+        return is_manager
+
     # Trang chủ
     @http.route('/healthcare/dashboard', type='http', auth='user', website=True)
     def healthcare_dashboard(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         return request.render('healthcare_management.healthcare_dashboard_template', {
             'title': 'Quản lý chăm sóc khách hàng y tế',
         })
@@ -20,6 +33,10 @@ class HealthcareManagement(http.Controller):
     # Phản hồi bệnh nhân
     @http.route('/healthcare/patient_feedback', type='http', auth='user', website=True)
     def patient_feedback_list(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         domain = []
 
         # Xử lý filter nếu có
@@ -36,12 +53,20 @@ class HealthcareManagement(http.Controller):
     @http.route('/healthcare/patient_feedback/<model("healthcare.patient.feedback"):feedback>', type='http',
                 auth='user', website=True)
     def patient_feedback_detail(self, feedback, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         return request.render('healthcare_management.patient_feedback_detail_template', {
             'feedback': feedback,
         })
 
     @http.route('/healthcare/patient_feedback/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def patient_feedback_create(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         patients = request.env['clinic.patient'].sudo().search([])
         departments = request.env['clinic.department'].sudo().search([])
 
@@ -78,6 +103,10 @@ class HealthcareManagement(http.Controller):
     # Bảng điều khiển phản hồi
     @http.route('/healthcare/feedback_dashboard', type='http', auth='user', website=True)
     def feedback_dashboard(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         date_from = kw.get('date_from', (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d'))
         date_to = kw.get('date_to', datetime.today().strftime('%Y-%m-%d'))
 
@@ -149,6 +178,10 @@ class HealthcareManagement(http.Controller):
     # Khiếu nại bệnh nhân
     @http.route('/healthcare/patient_complaint', type='http', auth='user', website=True)
     def patient_complaint_list(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         complaints = request.env['healthcare.patient.complaint'].sudo().search([])
         return request.render('healthcare_management.patient_complaint_list_template', {
             'complaints': complaints,
@@ -157,6 +190,10 @@ class HealthcareManagement(http.Controller):
     @http.route('/healthcare/patient_complaint/<model("healthcare.patient.complaint"):complaint>', type='http',
                 auth='user', website=True)
     def patient_complaint_detail(self, complaint, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         return request.render('healthcare_management.patient_complaint_detail_template', {
             'complaint': complaint,
         })
@@ -164,6 +201,10 @@ class HealthcareManagement(http.Controller):
     # Thống kê phản hồi
     @http.route('/healthcare/feedback_statistics', type='http', auth='user', website=True)
     def feedback_statistics(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         date_from = kw.get('date_from', (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d'))
         date_to = kw.get('date_to', datetime.today().strftime('%Y-%m-%d'))
 
@@ -233,6 +274,10 @@ class HealthcareManagement(http.Controller):
         This method can receive parameters either directly as function arguments
         or within the kw dictionary from the JSON request body.
         """
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return {'success': False, 'error': 'Không có quyền truy cập'}
+
         _logger = logging.getLogger(__name__)
 
         # Get parameters either from direct arguments or from kw
@@ -271,6 +316,10 @@ class HealthcareManagement(http.Controller):
     # API cho xử lý thao tác khiếu nại (AJAX)
     @http.route('/healthcare/patient_complaint/action', type='json', auth='user', website=True)
     def patient_complaint_action(self, complaint_id, action, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return {'success': False, 'error': 'Không có quyền truy cập'}
+
         complaint = request.env['healthcare.patient.complaint'].sudo().browse(int(complaint_id))
 
         if not complaint.exists():
@@ -293,6 +342,10 @@ class HealthcareManagement(http.Controller):
     # Tạo khiếu nại từ phản hồi bệnh nhân
     @http.route('/healthcare/patient_complaint/create_from_feedback', type='json', auth='user', website=True)
     def create_complaint_from_feedback(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return {'success': False, 'error': 'Không có quyền truy cập'}
+
         feedback_id = kw.get('feedback_id')
 
         if not feedback_id:
@@ -317,6 +370,10 @@ class HealthcareManagement(http.Controller):
     # API cho xử lý thao tác phản hồi (AJAX)
     @http.route('/healthcare/patient_feedback/action', type='json', auth='user', website=True)
     def patient_feedback_action(self, feedback_id, action, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return {'success': False, 'error': 'Không có quyền truy cập'}
+
         feedback = request.env['healthcare.patient.feedback'].sudo().browse(int(feedback_id))
 
         if not feedback.exists():
@@ -339,6 +396,10 @@ class HealthcareManagement(http.Controller):
     # API cho xử lý thao tác khiếu nại (AJAX)
     @http.route('/healthcare/patient_complaint/action', type='json', auth='user', website=True)
     def patient_complaint_action(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return {'success': False, 'error': 'Không có quyền truy cập'}
+
         _logger = logging.getLogger(__name__)
         _logger.info("Complaint action received: %s", kw)
 
@@ -379,6 +440,10 @@ class HealthcareManagement(http.Controller):
     # Tạo khiếu nại từ phản hồi bệnh nhân
     @http.route('/healthcare/patient_complaint/create_from_feedback', type='json', auth='user', website=True)
     def create_complaint_from_feedback(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return {'success': False, 'error': 'Không có quyền truy cập'}
+
         feedback_id = kw.get('feedback_id')
 
         if not feedback_id:
@@ -403,6 +468,10 @@ class HealthcareManagement(http.Controller):
     # Complaint Dashboard
     @http.route('/healthcare/complaint_dashboard', type='http', auth='user', website=True)
     def complaint_dashboard(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         date_from = kw.get('date_from', (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d'))
         date_to = kw.get('date_to', datetime.today().strftime('%Y-%m-%d'))
 
@@ -517,6 +586,10 @@ class HealthcareManagement(http.Controller):
     # Complaint Statistics
     @http.route('/healthcare/complaint_statistics', type='http', auth='user', website=True)
     def complaint_statistics(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         date_from = kw.get('date_from', (datetime.today() - timedelta(days=30)).strftime('%Y-%m-%d'))
         date_to = kw.get('date_to', datetime.today().strftime('%Y-%m-%d'))
         filter_category = kw.get('filter_category', False)
@@ -614,6 +687,10 @@ class HealthcareManagement(http.Controller):
     # Appointment Reminder
     @http.route('/healthcare/appointment_reminder', type='http', auth='user', website=True)
     def appointment_reminder_list(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         domain = []
 
         # Xử lý filter nếu có
@@ -642,6 +719,10 @@ class HealthcareManagement(http.Controller):
     @http.route('/healthcare/appointment_reminder/<model("appointment.reminder"):reminder>', type='http', auth='user',
                 website=True)
     def appointment_reminder_detail(self, reminder, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         company_name = request.env.user.company_id.name
         return request.render('healthcare_management.appointment_reminder_detail_template', {
             'reminder': reminder,
@@ -650,6 +731,10 @@ class HealthcareManagement(http.Controller):
 
     @http.route('/healthcare/appointment_reminder/sync', type='json', auth='user', website=True)
     def appointment_reminder_sync(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return {'success': False, 'error': 'Không có quyền truy cập'}
+
         try:
             # Gọi hàm đồng bộ lịch hẹn
             result = request.env['appointment.reminder'].sudo().action_sync_all_appointments()
@@ -676,6 +761,10 @@ class HealthcareManagement(http.Controller):
 
     @http.route('/healthcare/appointment_reminder/action', type='json', auth='user', website=True)
     def appointment_reminder_action(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return {'success': False, 'error': 'Không có quyền truy cập'}
+
         _logger = logging.getLogger(__name__)
         reminder_id = kw.get('reminder_id')
         action = kw.get('action')
@@ -793,6 +882,10 @@ class HealthcareManagement(http.Controller):
 
     @http.route('/healthcare/patient_complaint/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def patient_complaint_create(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         patients = request.env['clinic.patient'].sudo().search([])
 
         # Default values

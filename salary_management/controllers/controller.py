@@ -8,15 +8,31 @@ _logger = logging.getLogger(__name__)
 
 
 class SalaryManagementController(http.Controller):
+    def _check_manager_access(self):
+        """
+        Kiểm tra xem người dùng hiện tại có phải là quản lý lương không
+        Trả về True nếu có quyền, False nếu không
+        """
+        current_user = request.env.user
+        is_manager = current_user.has_group('salary_management.group_salary_manager')
+        return is_manager
 
     # Main salary dashboard
     @http.route('/salary/dashboard', type='http', auth='user', website=True)
     def salary_dashboard(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         return request.render('salary_management.salary_dashboard_template', {})
 
     # View list of salary sheets
     @http.route('/salary/sheets', type='http', auth='user', website=True)
     def salary_sheets(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         sheets = request.env['clinic.salary.sheet'].sudo().search([])
         values = {
             'sheets': sheets,
@@ -26,6 +42,10 @@ class SalaryManagementController(http.Controller):
     # Create or edit a salary sheet
     @http.route('/salary/sheet/<model("clinic.salary.sheet"):sheet>', type='http', auth='user', website=True)
     def salary_sheet_detail(self, sheet=None, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if not sheet:
             sheet = request.env['clinic.salary.sheet'].sudo().create({
                 'month': kw.get('month'),
@@ -42,6 +62,10 @@ class SalaryManagementController(http.Controller):
     # Create a new salary sheet form
     @http.route('/salary/sheet/new', type='http', auth='user', website=True)
     def new_salary_sheet(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         years = [(str(year), str(year)) for year in range(2020, 2031)]
         months = [
             ('1', 'Tháng 1'), ('2', 'Tháng 2'), ('3', 'Tháng 3'),
@@ -59,6 +83,10 @@ class SalaryManagementController(http.Controller):
     # Process the creation of a new salary sheet
     @http.route('/salary/sheet/create', type='http', auth='user', website=True, methods=['POST'])
     def create_salary_sheet(self, **post):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         if post.get('month') and post.get('year'):
             try:
                 sheet = request.env['clinic.salary.sheet'].sudo().create({
@@ -83,6 +111,10 @@ class SalaryManagementController(http.Controller):
     # Generate salary records for all staff
     @http.route('/salary/sheet/<int:sheet_id>/generate', type='http', auth='user', website=True)
     def generate_salary_records(self, sheet_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         sheet = request.env['clinic.salary.sheet'].sudo().browse(sheet_id)
         if sheet:
             try:
@@ -98,6 +130,10 @@ class SalaryManagementController(http.Controller):
     # View individual salary details
     @http.route('/salary/detail/<model("clinic.staff.salary"):salary>', type='http', auth='user', website=True)
     def salary_detail(self, salary, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         allowances = request.env['clinic.staff.salary.allowance'].sudo().search([])
         bonuses = request.env['clinic.staff.salary.bonus'].sudo().search([])
         deductions = request.env['clinic.staff.salary.deduction'].sudo().search([])
@@ -113,6 +149,10 @@ class SalaryManagementController(http.Controller):
     # Update salary record (add/remove allowances, bonuses, deductions)
     @http.route('/salary/update/<int:salary_id>', type='http', auth='user', website=True, methods=['POST'])
     def update_salary(self, salary_id, **post):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         salary = request.env['clinic.staff.salary'].sudo().browse(salary_id)
         if not salary:
             return request.redirect('/salary/sheets')
@@ -137,6 +177,10 @@ class SalaryManagementController(http.Controller):
     # Confirm salary
     @http.route('/salary/confirm/<int:salary_id>', type='http', auth='user', website=True)
     def confirm_salary(self, salary_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         salary = request.env['clinic.staff.salary'].sudo().browse(salary_id)
         if salary and salary.state == 'draft':
             try:
@@ -152,6 +196,10 @@ class SalaryManagementController(http.Controller):
     # Pay salary
     @http.route('/salary/pay/<int:salary_id>', type='http', auth='user', website=True)
     def pay_salary(self, salary_id, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         salary = request.env['clinic.staff.salary'].sudo().browse(salary_id)
         if salary and salary.state == 'confirmed':
             try:
@@ -167,6 +215,10 @@ class SalaryManagementController(http.Controller):
     # Manage allowances list
     @http.route('/salary/allowances', type='http', auth='user', website=True)
     def allowances(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         allowances = request.env['clinic.staff.salary.allowance'].sudo().search([])
         values = {
             'allowances': allowances,
@@ -176,12 +228,20 @@ class SalaryManagementController(http.Controller):
     # Create new allowance form
     @http.route('/salary/allowance/new', type='http', auth='user', website=True)
     def new_allowance(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         return request.render('salary_management.allowance_form_template', {})
 
     # Edit allowance form
     @http.route('/salary/allowance/<model("clinic.staff.salary.allowance"):allowance>/edit', type='http', auth='user',
                 website=True)
     def edit_allowance(self, allowance, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         values = {
             'allowance': allowance,
         }
@@ -190,6 +250,10 @@ class SalaryManagementController(http.Controller):
     # Create or update allowance
     @http.route('/salary/allowance/save', type='http', auth='user', website=True, methods=['POST'])
     def save_allowance(self, **post):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         allowance_id = int(post.get('allowance_id', 0))
 
         values = {
@@ -210,6 +274,10 @@ class SalaryManagementController(http.Controller):
     # Similar routes for bonuses management
     @http.route('/salary/bonuses', type='http', auth='user', website=True)
     def bonuses(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         bonuses = request.env['clinic.staff.salary.bonus'].sudo().search([])
         values = {
             'bonuses': bonuses,
@@ -218,10 +286,18 @@ class SalaryManagementController(http.Controller):
 
     @http.route('/salary/bonus/new', type='http', auth='user', website=True)
     def new_bonus(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         return request.render('salary_management.bonus_form_template', {})
 
     @http.route('/salary/bonus/<model("clinic.staff.salary.bonus"):bonus>/edit', type='http', auth='user', website=True)
     def edit_bonus(self, bonus, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         values = {
             'bonus': bonus,
         }
@@ -229,6 +305,10 @@ class SalaryManagementController(http.Controller):
 
     @http.route('/salary/bonus/save', type='http', auth='user', website=True, methods=['POST'])
     def save_bonus(self, **post):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         bonus_id = int(post.get('bonus_id', 0))
 
         values = {
@@ -249,6 +329,10 @@ class SalaryManagementController(http.Controller):
     # Similar routes for deductions management
     @http.route('/salary/deductions', type='http', auth='user', website=True)
     def deductions(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         deductions = request.env['clinic.staff.salary.deduction'].sudo().search([])
         values = {
             'deductions': deductions,
@@ -257,11 +341,19 @@ class SalaryManagementController(http.Controller):
 
     @http.route('/salary/deduction/new', type='http', auth='user', website=True)
     def new_deduction(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         return request.render('salary_management.deduction_form_template', {})
 
     @http.route('/salary/deduction/<model("clinic.staff.salary.deduction"):deduction>/edit', type='http', auth='user',
                 website=True)
     def edit_deduction(self, deduction, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         values = {
             'deduction': deduction,
         }
@@ -269,6 +361,10 @@ class SalaryManagementController(http.Controller):
 
     @http.route('/salary/deduction/save', type='http', auth='user', website=True, methods=['POST'])
     def save_deduction(self, **post):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         deduction_id = int(post.get('deduction_id', 0))
 
         values = {
@@ -290,6 +386,10 @@ class SalaryManagementController(http.Controller):
     # Qualification levels management
     @http.route('/salary/qualification_levels', type='http', auth='user', website=True)
     def qualification_levels(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         levels = request.env['clinic.staff.salary.qualification_level'].sudo().search([])
         values = {
             'levels': levels,
@@ -298,6 +398,10 @@ class SalaryManagementController(http.Controller):
 
     @http.route('/salary/qualification_level/new', type='http', auth='user', website=True)
     def new_qualification_level(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         staff_types = request.env['clinic.staff.type'].sudo().search([])
         ranks = [(str(i), str(i)) for i in range(1, 16)]
         values = {
@@ -309,6 +413,10 @@ class SalaryManagementController(http.Controller):
     @http.route('/salary/qualification_level/<model("clinic.staff.salary.qualification_level"):level>/edit',
                 type='http', auth='user', website=True)
     def edit_qualification_level(self, level, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         staff_types = request.env['clinic.staff.type'].sudo().search([])
         ranks = [(str(i), str(i)) for i in range(1, 16)]
         values = {
@@ -320,6 +428,10 @@ class SalaryManagementController(http.Controller):
 
     @http.route('/salary/qualification_level/save', type='http', auth='user', website=True, methods=['POST'])
     def save_qualification_level(self, **post):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
         level_id = int(post.get('level_id', 0))
 
         values = {
