@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from odoo import http, _
-from odoo.http import request
-from odoo.exceptions import AccessError, UserError
 import logging
+
+from odoo import http
+from odoo.http import request
 
 _logger = logging.getLogger(__name__)
 

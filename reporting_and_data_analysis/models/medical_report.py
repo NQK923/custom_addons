@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime, timedelta
 import base64
 import io
+from datetime import datetime, timedelta
 
 from odoo import models, fields, api
 

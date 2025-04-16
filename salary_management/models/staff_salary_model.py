@@ -1,6 +1,7 @@
-from odoo import models, fields, api
-from datetime import datetime
 import uuid
+from datetime import datetime
+
+from odoo import models, fields, api
 
 BASE_SALARY = 2340000  # 2.340.000 VNĐ
 

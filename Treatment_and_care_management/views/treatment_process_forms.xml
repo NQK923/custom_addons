@@ -62,7 +62,8 @@
                                 <option value="">-- Chọn người thực hiện --</option>
                                 <t t-foreach="staff" t-as="person">
                                     <option t-att-value="person.id">
-                                        <t t-esc="person.staff_name"/> (<t t-esc="person.name"/>)
+                                        <t t-esc="person.staff_name"/>
+                                        (<t t-esc="person.name"/>)
                                     </option>
                                 </t>
                             </select>
@@ -95,7 +96,9 @@
                                 <option value="">-- Chọn đơn thuốc (nếu có) --</option>
                                 <t t-foreach="prescriptions" t-as="prescription">
                                     <option t-att-value="prescription.id">
-                                        <t t-esc="prescription.id"/> - <t t-esc="prescription.date"/>
+                                        <t t-esc="prescription.id"/>
+                                        -
+                                        <t t-esc="prescription.date"/>
                                     </option>
                                 </t>
                             </select>
@@ -123,76 +126,76 @@
 
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    const form = document.getElementById('treatment_process_form');
-                    const executionTimeInput = document.getElementById('execution_time');
-                    const planStartDateStr = document.getElementById('plan_start_date').value;
-                    const planEndDateStr = document.getElementById('plan_end_date').value;
-                    const errorBox = document.getElementById('date-error');
-                    const errorMessage = document.getElementById('error-message');
+                const form = document.getElementById('treatment_process_form');
+                const executionTimeInput = document.getElementById('execution_time');
+                const planStartDateStr = document.getElementById('plan_start_date').value;
+                const planEndDateStr = document.getElementById('plan_end_date').value;
+                const errorBox = document.getElementById('date-error');
+                const errorMessage = document.getElementById('error-message');
 
-                    function parseDateWithoutTime(dateStr) {
-                        // Parse a date string and return a date object with time set to 00:00:00
-                        const parts = dateStr.split('-');
-                        return new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0);
-                    }
+                function parseDateWithoutTime(dateStr) {
+                // Parse a date string and return a date object with time set to 00:00:00
+                const parts = dateStr.split('-');
+                return new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0);
+                }
 
-                    function validateExecutionTime() {
-                        if (!executionTimeInput.value) {
-                            // If execution time is not set, no validation needed
-                            errorBox.style.display = 'none';
-                            return true;
-                        }
+                function validateExecutionTime() {
+                if (!executionTimeInput.value) {
+                // If execution time is not set, no validation needed
+                errorBox.style.display = 'none';
+                return true;
+                }
 
-                        // Get the execution date (just the date part) in local timezone
-                        const executionTime = new Date(executionTimeInput.value.replace('T', ' '));
-                        const executionDate = new Date(
-                            executionTime.getFullYear(),
-                            executionTime.getMonth(),
-                            executionTime.getDate()
-                        );
+                // Get the execution date (just the date part) in local timezone
+                const executionTime = new Date(executionTimeInput.value.replace('T', ' '));
+                const executionDate = new Date(
+                executionTime.getFullYear(),
+                executionTime.getMonth(),
+                executionTime.getDate()
+                );
 
-                        // Parse plan start date properly
-                        const planStartDate = parseDateWithoutTime(planStartDateStr);
+                // Parse plan start date properly
+                const planStartDate = parseDateWithoutTime(planStartDateStr);
 
-                        // For debugging
-                        console.log('Execution date:', executionDate);
-                        console.log('Plan start date:', planStartDate);
+                // For debugging
+                console.log('Execution date:', executionDate);
+                console.log('Plan start date:', planStartDate);
 
-                        // Check if execution date is before plan start date
-                        // Compare using getTime() to properly compare Date objects
-                        if (executionDate.getTime() &lt; planStartDate.getTime()) {
-                            errorBox.style.display = 'block';
-                            errorMessage.textContent = 'Thời gian thực hiện không thể trước ngày bắt đầu của kế hoạch điều trị!';
-                            return false;
-                        }
+                // Check if execution date is before plan start date
+                // Compare using getTime() to properly compare Date objects
+                if (executionDate.getTime() &lt; planStartDate.getTime()) {
+                errorBox.style.display = 'block';
+                errorMessage.textContent = 'Thời gian thực hiện không thể trước ngày bắt đầu của kế hoạch điều trị!';
+                return false;
+                }
 
-                        // Check if execution date is after plan end date (if end date is set)
-                        if (planEndDateStr) {
-                            const planEndDate = parseDateWithoutTime(planEndDateStr);
-                            console.log('Plan end date:', planEndDate);
-                            if (executionDate.getTime() > planEndDate.getTime()) {
-                                errorBox.style.display = 'block';
-                                errorMessage.textContent = 'Thời gian thực hiện không thể sau ngày kết thúc của kế hoạch điều trị!';
-                                return false;
-                            }
-                        }
+                // Check if execution date is after plan end date (if end date is set)
+                if (planEndDateStr) {
+                const planEndDate = parseDateWithoutTime(planEndDateStr);
+                console.log('Plan end date:', planEndDate);
+                if (executionDate.getTime() > planEndDate.getTime()) {
+                errorBox.style.display = 'block';
+                errorMessage.textContent = 'Thời gian thực hiện không thể sau ngày kết thúc của kế hoạch điều trị!';
+                return false;
+                }
+                }
 
-                        errorBox.style.display = 'none';
-                        return true;
-                    }
+                errorBox.style.display = 'none';
+                return true;
+                }
 
-                    // Validate on input change
-                    executionTimeInput.addEventListener('change', validateExecutionTime);
+                // Validate on input change
+                executionTimeInput.addEventListener('change', validateExecutionTime);
 
-                    // Validate on form submit
-                    form.addEventListener('submit', function(event) {
-                        if (!validateExecutionTime()) {
-                            event.preventDefault();
-                        }
-                    });
+                // Validate on form submit
+                form.addEventListener('submit', function(event) {
+                if (!validateExecutionTime()) {
+                event.preventDefault();
+                }
+                });
 
-                    // Initial validation
-                    validateExecutionTime();
+                // Initial validation
+                validateExecutionTime();
                 });
             </script>
         </t>
@@ -245,7 +248,8 @@
                         </p>
                     </div>
 
-                    <form t-att-action="'/clinic/treatment_process/edit/%s' % process.id" method="POST" id="edit_treatment_process_form">
+                    <form t-att-action="'/clinic/treatment_process/edit/%s' % process.id" method="POST"
+                          id="edit_treatment_process_form">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                         <div class="form-group">
@@ -268,7 +272,8 @@
                                 <t t-foreach="staff" t-as="person">
                                     <option t-att-value="person.id"
                                             t-att-selected="person.id == process.executor_id.id">
-                                        <t t-esc="person.staff_name"/> (<t t-esc="person.name"/>)
+                                        <t t-esc="person.staff_name"/>
+                                        (<t t-esc="person.name"/>)
                                     </option>
                                 </t>
                             </select>
@@ -306,7 +311,9 @@
                                 <t t-foreach="prescriptions" t-as="prescription">
                                     <option t-att-value="prescription.id"
                                             t-att-selected="prescription.id == process.prescription_id.id">
-                                        <t t-esc="prescription.id"/> - <t t-esc="prescription.date"/>
+                                        <t t-esc="prescription.id"/>
+                                        -
+                                        <t t-esc="prescription.date"/>
                                     </option>
                                 </t>
                             </select>
@@ -334,76 +341,76 @@
 
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    const form = document.getElementById('edit_treatment_process_form');
-                    const executionTimeInput = document.getElementById('execution_time');
-                    const planStartDateStr = document.getElementById('plan_start_date').value;
-                    const planEndDateStr = document.getElementById('plan_end_date').value;
-                    const errorBox = document.getElementById('edit-date-error');
-                    const errorMessage = document.getElementById('edit-error-message');
+                const form = document.getElementById('edit_treatment_process_form');
+                const executionTimeInput = document.getElementById('execution_time');
+                const planStartDateStr = document.getElementById('plan_start_date').value;
+                const planEndDateStr = document.getElementById('plan_end_date').value;
+                const errorBox = document.getElementById('edit-date-error');
+                const errorMessage = document.getElementById('edit-error-message');
 
-                    function parseDateWithoutTime(dateStr) {
-                        // Parse a date string and return a date object with time set to 00:00:00
-                        const parts = dateStr.split('-');
-                        return new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0);
-                    }
+                function parseDateWithoutTime(dateStr) {
+                // Parse a date string and return a date object with time set to 00:00:00
+                const parts = dateStr.split('-');
+                return new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0);
+                }
 
-                    function validateExecutionTime() {
-                        if (!executionTimeInput.value) {
-                            // If execution time is not set, no validation needed
-                            errorBox.style.display = 'none';
-                            return true;
-                        }
+                function validateExecutionTime() {
+                if (!executionTimeInput.value) {
+                // If execution time is not set, no validation needed
+                errorBox.style.display = 'none';
+                return true;
+                }
 
-                        // Get the execution date (just the date part) in local timezone
-                        const executionTime = new Date(executionTimeInput.value.replace('T', ' '));
-                        const executionDate = new Date(
-                            executionTime.getFullYear(),
-                            executionTime.getMonth(),
-                            executionTime.getDate()
-                        );
+                // Get the execution date (just the date part) in local timezone
+                const executionTime = new Date(executionTimeInput.value.replace('T', ' '));
+                const executionDate = new Date(
+                executionTime.getFullYear(),
+                executionTime.getMonth(),
+                executionTime.getDate()
+                );
 
-                        // Parse plan start date properly
-                        const planStartDate = parseDateWithoutTime(planStartDateStr);
+                // Parse plan start date properly
+                const planStartDate = parseDateWithoutTime(planStartDateStr);
 
-                        // For debugging
-                        console.log('Execution date:', executionDate);
-                        console.log('Plan start date:', planStartDate);
+                // For debugging
+                console.log('Execution date:', executionDate);
+                console.log('Plan start date:', planStartDate);
 
-                        // Check if execution date is before plan start date
-                        // Compare using getTime() to properly compare Date objects
-                        if (executionDate.getTime() &lt; planStartDate.getTime()) {
-                            errorBox.style.display = 'block';
-                            errorMessage.textContent = 'Thời gian thực hiện không thể trước ngày bắt đầu của kế hoạch điều trị!';
-                            return false;
-                        }
+                // Check if execution date is before plan start date
+                // Compare using getTime() to properly compare Date objects
+                if (executionDate.getTime() &lt; planStartDate.getTime()) {
+                errorBox.style.display = 'block';
+                errorMessage.textContent = 'Thời gian thực hiện không thể trước ngày bắt đầu của kế hoạch điều trị!';
+                return false;
+                }
 
-                        // Check if execution date is after plan end date (if end date is set)
-                        if (planEndDateStr) {
-                            const planEndDate = parseDateWithoutTime(planEndDateStr);
-                            console.log('Plan end date:', planEndDate);
-                            if (executionDate.getTime() > planEndDate.getTime()) {
-                                errorBox.style.display = 'block';
-                                errorMessage.textContent = 'Thời gian thực hiện không thể sau ngày kết thúc của kế hoạch điều trị!';
-                                return false;
-                            }
-                        }
+                // Check if execution date is after plan end date (if end date is set)
+                if (planEndDateStr) {
+                const planEndDate = parseDateWithoutTime(planEndDateStr);
+                console.log('Plan end date:', planEndDate);
+                if (executionDate.getTime() > planEndDate.getTime()) {
+                errorBox.style.display = 'block';
+                errorMessage.textContent = 'Thời gian thực hiện không thể sau ngày kết thúc của kế hoạch điều trị!';
+                return false;
+                }
+                }
 
-                        errorBox.style.display = 'none';
-                        return true;
-                    }
+                errorBox.style.display = 'none';
+                return true;
+                }
 
-                    // Validate on input change
-                    executionTimeInput.addEventListener('change', validateExecutionTime);
+                // Validate on input change
+                executionTimeInput.addEventListener('change', validateExecutionTime);
 
-                    // Validate on form submit
-                    form.addEventListener('submit', function(event) {
-                        if (!validateExecutionTime()) {
-                            event.preventDefault();
-                        }
-                    });
+                // Validate on form submit
+                form.addEventListener('submit', function(event) {
+                if (!validateExecutionTime()) {
+                event.preventDefault();
+                }
+                });
 
-                    // Initial validation
-                    validateExecutionTime();
+                // Initial validation
+                validateExecutionTime();
                 });
             </script>
         </t>

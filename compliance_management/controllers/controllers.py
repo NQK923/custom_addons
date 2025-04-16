@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from odoo import http, _
-from odoo.http import request
 from datetime import datetime, timedelta
-from odoo.exceptions import AccessError, ValidationError
+
+from odoo import http
+from odoo.http import request
 
 
 class ComplianceManagementController(http.Controller):

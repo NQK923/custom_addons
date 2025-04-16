@@ -1,7 +1,8 @@
+import uuid
+from datetime import datetime
+
 from odoo import models, fields, api
 from odoo.exceptions import UserError
-from datetime import datetime
-import uuid
 
 
 class StaffType(models.Model):

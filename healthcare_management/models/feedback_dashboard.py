@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
-from datetime import datetime, timedelta
 from collections import defaultdict
+from datetime import timedelta
+
+from odoo import models, fields, api
 
 
 class FeedbackDashboard(models.Model):

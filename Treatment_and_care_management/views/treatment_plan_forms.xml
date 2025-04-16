@@ -79,39 +79,39 @@
 
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    const form = document.getElementById('treatment_plan_form');
-                    const startDateInput = document.getElementById('start_date');
-                    const endDateInput = document.getElementById('end_date');
-                    const errorBox = document.getElementById('date-error');
-                    const errorMessage = document.getElementById('error-message');
+                const form = document.getElementById('treatment_plan_form');
+                const startDateInput = document.getElementById('start_date');
+                const endDateInput = document.getElementById('end_date');
+                const errorBox = document.getElementById('date-error');
+                const errorMessage = document.getElementById('error-message');
 
-                    function validateDates() {
-                        const startDate = new Date(startDateInput.value);
-                        // Only validate if end date is not empty
-                        if (endDateInput.value) {
-                            const endDate = new Date(endDateInput.value);
+                function validateDates() {
+                const startDate = new Date(startDateInput.value);
+                // Only validate if end date is not empty
+                if (endDateInput.value) {
+                const endDate = new Date(endDateInput.value);
 
-                            if (endDate &lt; startDate) {
-                                errorBox.style.display = 'block';
-                                errorMessage.textContent = 'Ngày kết thúc không thể trước ngày bắt đầu!';
-                                return false;
-                            }
-                        }
+                if (endDate &lt; startDate) {
+                errorBox.style.display = 'block';
+                errorMessage.textContent = 'Ngày kết thúc không thể trước ngày bắt đầu!';
+                return false;
+                }
+                }
 
-                        errorBox.style.display = 'none';
-                        return true;
-                    }
+                errorBox.style.display = 'none';
+                return true;
+                }
 
-                    // Validate on input change
-                    startDateInput.addEventListener('change', validateDates);
-                    endDateInput.addEventListener('change', validateDates);
+                // Validate on input change
+                startDateInput.addEventListener('change', validateDates);
+                endDateInput.addEventListener('change', validateDates);
 
-                    // Validate on form submit
-                    form.addEventListener('submit', function(event) {
-                        if (!validateDates()) {
-                            event.preventDefault();
-                        }
-                    });
+                // Validate on form submit
+                form.addEventListener('submit', function(event) {
+                if (!validateDates()) {
+                event.preventDefault();
+                }
+                });
                 });
             </script>
         </t>
@@ -162,7 +162,8 @@
                         </p>
                     </div>
 
-                    <form t-att-action="'/clinic/treatment_plan/edit/%s' % plan.id" method="POST" id="edit_treatment_plan_form">
+                    <form t-att-action="'/clinic/treatment_plan/edit/%s' % plan.id" method="POST"
+                          id="edit_treatment_plan_form">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                         <div class="form-group">
@@ -204,42 +205,42 @@
 
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    const form = document.getElementById('edit_treatment_plan_form');
-                    const startDateInput = document.getElementById('start_date');
-                    const endDateInput = document.getElementById('end_date');
-                    const errorBox = document.getElementById('edit-date-error');
-                    const errorMessage = document.getElementById('edit-error-message');
+                const form = document.getElementById('edit_treatment_plan_form');
+                const startDateInput = document.getElementById('start_date');
+                const endDateInput = document.getElementById('end_date');
+                const errorBox = document.getElementById('edit-date-error');
+                const errorMessage = document.getElementById('edit-error-message');
 
-                    function validateDates() {
-                        const startDate = new Date(startDateInput.value);
-                        // Only validate if end date is not empty
-                        if (endDateInput.value) {
-                            const endDate = new Date(endDateInput.value);
+                function validateDates() {
+                const startDate = new Date(startDateInput.value);
+                // Only validate if end date is not empty
+                if (endDateInput.value) {
+                const endDate = new Date(endDateInput.value);
 
-                            if (endDate &lt; startDate) {
-                                errorBox.style.display = 'block';
-                                errorMessage.textContent = 'Ngày kết thúc không thể trước ngày bắt đầu!';
-                                return false;
-                            }
-                        }
+                if (endDate &lt; startDate) {
+                errorBox.style.display = 'block';
+                errorMessage.textContent = 'Ngày kết thúc không thể trước ngày bắt đầu!';
+                return false;
+                }
+                }
 
-                        errorBox.style.display = 'none';
-                        return true;
-                    }
+                errorBox.style.display = 'none';
+                return true;
+                }
 
-                    // Validate on input change
-                    startDateInput.addEventListener('change', validateDates);
-                    endDateInput.addEventListener('change', validateDates);
+                // Validate on input change
+                startDateInput.addEventListener('change', validateDates);
+                endDateInput.addEventListener('change', validateDates);
 
-                    // Validate on form submit
-                    form.addEventListener('submit', function(event) {
-                        if (!validateDates()) {
-                            event.preventDefault();
-                        }
-                    });
+                // Validate on form submit
+                form.addEventListener('submit', function(event) {
+                if (!validateDates()) {
+                event.preventDefault();
+                }
+                });
 
-                    // Initial validation
-                    validateDates();
+                // Initial validation
+                validateDates();
                 });
             </script>
         </t>

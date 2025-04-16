@@ -1,9 +1,9 @@
-from odoo import http, fields
-from odoo.http import request
-from datetime import datetime, timedelta
 import json
-import pytz
+from datetime import datetime, timedelta
+
+from odoo import http
 from odoo.exceptions import ValidationError
+from odoo.http import request
 
 
 class AppointmentController(http.Controller):

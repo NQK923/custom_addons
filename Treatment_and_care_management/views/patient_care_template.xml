@@ -14,7 +14,8 @@
 
                 <!-- Quick Access Section - NEW -->
                 <div class="quick-access-section">
-                    <button type="button" class="quick-access-btn" data-bs-toggle="modal" data-bs-target="#quickCareCreateModal">
+                    <button type="button" class="quick-access-btn" data-bs-toggle="modal"
+                            data-bs-target="#quickCareCreateModal">
                         <i class="fa fa-plus-circle me-2"></i>Thêm thông tin chăm sóc mới
                     </button>
                 </div>
@@ -248,7 +249,8 @@
             </div>
 
             <!-- Quick Create Modal - NEW -->
-            <div class="modal fade" id="quickCareCreateModal" tabindex="-1" aria-labelledby="quickCareCreateModalLabel" aria-hidden="true">
+            <div class="modal fade" id="quickCareCreateModal" tabindex="-1" aria-labelledby="quickCareCreateModalLabel"
+                 aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -261,11 +263,13 @@
 
                                 <div class="form-group mb-3">
                                     <label for="care_patient_selection" class="form-label">Chọn bệnh nhân:</label>
-                                    <select class="form-select" id="care_patient_selection" name="patient_id" required="required">
+                                    <select class="form-select" id="care_patient_selection" name="patient_id"
+                                            required="required">
                                         <option value="">-- Chọn bệnh nhân --</option>
                                         <t t-foreach="request.env['clinic.patient'].sudo().search([])" t-as="p">
                                             <option t-att-value="p.id">
-                                                <t t-esc="p.name"/> (<t t-esc="p.code"/>)
+                                                <t t-esc="p.name"/>
+                                                (<t t-esc="p.code"/>)
                                             </option>
                                         </t>
                                     </select>
@@ -274,7 +278,8 @@
                                 <div class="form-group mb-3">
                                     <label for="care_date" class="form-label">Ngày chăm sóc:</label>
                                     <input type="date" class="form-control" id="care_date" name="care_date"
-                                           t-att-value="datetime.date.today().strftime('%Y-%m-%d')" required="required"/>
+                                           t-att-value="datetime.date.today().strftime('%Y-%m-%d')"
+                                           required="required"/>
                                 </div>
 
                                 <div class="form-group mb-3">
@@ -287,12 +292,14 @@
                                 </div>
 
                                 <div class="form-group mb-3">
-                                    <label for="doctor_id" class="form-label">Nhân viên chăm sóc (không bắt buộc):</label>
+                                    <label for="doctor_id" class="form-label">Nhân viên chăm sóc (không bắt buộc):
+                                    </label>
                                     <select class="form-select" id="doctor_id" name="doctor_id">
                                         <option value="">-- Chọn nhân viên --</option>
                                         <t t-foreach="request.env['clinic.staff'].sudo().search([])" t-as="s">
                                             <option t-att-value="s.id">
-                                                <t t-esc="s.staff_name"/> (<t t-esc="s.name"/>)
+                                                <t t-esc="s.staff_name"/>
+                                                (<t t-esc="s.name"/>)
                                             </option>
                                         </t>
                                     </select>
@@ -301,7 +308,9 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="submit" form="quickCareCreateForm" class="btn btn-primary">Tạo hồ sơ chăm sóc</button>
+                            <button type="submit" form="quickCareCreateForm" class="btn btn-primary">Tạo hồ sơ chăm
+                                sóc
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -499,7 +508,8 @@
                             <p>
                                 <strong>Nhân viên chăm sóc:</strong>
                                 <t t-if="care.doctor_id">
-                                    <t t-esc="care.doctor_id.staff_name"/> (<t t-esc="care.doctor_id.name"/>)
+                                    <t t-esc="care.doctor_id.staff_name"/>
+                                    (<t t-esc="care.doctor_id.name"/>)
                                 </t>
                                 <t t-else="">
                                     Không xác định

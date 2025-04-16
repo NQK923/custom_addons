@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _
 from datetime import timedelta
+
+from odoo import models, fields, api, _
 
 
 class PatientComplaint(models.Model):

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
-from datetime import datetime, timedelta
+from datetime import timedelta
+
+from odoo import api, fields, models
 
 
 class HealthRegulation(models.Model):

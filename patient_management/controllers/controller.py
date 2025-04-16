@@ -1,10 +1,11 @@
-from odoo import http
-from odoo.http import request
-import werkzeug
-from datetime import date
 import re
+from datetime import date
+
+import werkzeug
+
+from odoo import http
 from odoo.exceptions import ValidationError
-import psycopg2
+from odoo.http import request
 
 
 class PatientController(http.Controller):

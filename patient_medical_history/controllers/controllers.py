@@ -1,10 +1,10 @@
+import html
+import logging
+import traceback
+
 from odoo import http
 from odoo.http import request
-import logging
-from datetime import datetime
 from odoo.tools import formataddr
-import html
-import traceback
 
 _logger = logging.getLogger(__name__)
 

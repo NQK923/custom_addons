@@ -35,7 +35,8 @@
                                         <i class="fa fa-search"></i>
                                     </span>
                                 </div>
-                                <input type="text" id="search_query" class="form-control" placeholder="Nhập từ khóa..."/>
+                                <input type="text" id="search_query" class="form-control"
+                                       placeholder="Nhập từ khóa..."/>
                             </div>
                         </div>
                     </div>
@@ -48,7 +49,9 @@
                                 <div class="card h-100 medical-card">
                                     <div class="card-header bg-light py-2">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <h6 class="mb-0"><t t-esc="image.test_code"/></h6>
+                                            <h6 class="mb-0">
+                                                <t t-esc="image.test_code"/>
+                                            </h6>
                                             <span class="badge badge-info">
                                                 <t t-esc="dict(image._fields['test_type_img'].selection).get(image.test_type_img)"/>
                                             </span>
@@ -62,7 +65,8 @@
                                             </div>
                                         </t>
                                         <t t-else="">
-                                            <div class="image-frame d-flex align-items-center justify-content-center" style="height: 150px;">
+                                            <div class="image-frame d-flex align-items-center justify-content-center"
+                                                 style="height: 150px;">
                                                 <div class="text-center text-muted">
                                                     <i class="fa fa-image fa-3x mb-2"></i>
                                                     <p class="small mb-0">Không có hình ảnh</p>
@@ -76,7 +80,8 @@
                                                     <t t-esc="image.img_date" t-options="{'widget': 'date'}"/>
                                                 </small>
                                                 <small>
-                                                    <a t-attf-href="/medical/test/{{image.MedicalTest_id.id}}" class="text-primary">
+                                                    <a t-attf-href="/medical/test/{{image.MedicalTest_id.id}}"
+                                                       class="text-primary">
                                                         <t t-esc="image.MedicalTest_id.test_code"/>
                                                     </a>
                                                 </small>
@@ -85,10 +90,12 @@
                                     </div>
                                     <div class="card-footer p-2">
                                         <div class="btn-group btn-group-sm w-100">
-                                            <a t-attf-href="/medical/image/{{image.id}}" class="btn btn-info" title="Xem chi tiết">
+                                            <a t-attf-href="/medical/image/{{image.id}}" class="btn btn-info"
+                                               title="Xem chi tiết">
                                                 <i class="fa fa-eye"></i>
                                             </a>
-                                            <a t-attf-href="/medical/image/edit/{{image.id}}" class="btn btn-primary" title="Chỉnh sửa">
+                                            <a t-attf-href="/medical/image/edit/{{image.id}}" class="btn btn-primary"
+                                               title="Chỉnh sửa">
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                             <a t-attf-href="/medical/image/delete/{{image.id}}"
@@ -109,7 +116,8 @@
                             <i class="fa fa-info-circle fa-2x mb-2"></i>
                             <p>Chưa có hình ảnh nào. Hãy tạo hình ảnh mới!</p>
                             <a href="/medical/image/create" class="btn btn-medical mt-2">
-                                <i class="fa fa-plus mr-1"></i> Thêm hình ảnh
+                                <i class="fa fa-plus mr-1"></i>
+                                Thêm hình ảnh
                             </a>
                         </div>
                     </t>
@@ -161,7 +169,8 @@
                                         <label class="col-sm-4 col-form-label">Xét nghiệm:</label>
                                         <div class="col-sm-8">
                                             <p class="form-control-plaintext">
-                                                <a t-attf-href="/medical/test/{{image.MedicalTest_id.id}}" class="text-primary">
+                                                <a t-attf-href="/medical/test/{{image.MedicalTest_id.id}}"
+                                                   class="text-primary">
                                                     <t t-esc="image.MedicalTest_id.test_code"/>
                                                     <i class="fa fa-external-link-alt ml-1 small"></i>
                                                 </a>
@@ -219,7 +228,9 @@
                         <div class="card-body">
                             <div class="border p-3 bg-light rounded">
                                 <t t-if="image.result_Img">
-                                    <div style="white-space: pre-line;"><t t-esc="image.result_Img"/></div>
+                                    <div style="white-space: pre-line;">
+                                        <t t-esc="image.result_Img"/>
+                                    </div>
                                 </t>
                                 <t t-else="">
                                     <em>Chưa có kết quả chẩn đoán</em>
@@ -305,10 +316,12 @@
 
                         <div class="text-center mt-4">
                             <a href="/medical/images" class="btn btn-secondary">
-                                <i class="fa fa-times mr-1"></i> Hủy
+                                <i class="fa fa-times mr-1"></i>
+                                Hủy
                             </a>
                             <button type="submit" class="btn btn-medical ml-2">
-                                <i class="fa fa-save mr-1"></i> Lưu
+                                <i class="fa fa-save mr-1"></i>
+                                Lưu
                             </button>
                         </div>
                     </form>
@@ -325,7 +338,8 @@
                     <h3 class="mb-0">Chỉnh sửa Hình ảnh</h3>
                 </div>
                 <div class="card-body">
-                    <form action="/medical/image/update" method="post" enctype="multipart/form-data" class="medical-form">
+                    <form action="/medical/image/update" method="post" enctype="multipart/form-data"
+                          class="medical-form">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <input type="hidden" name="image_id" t-att-value="image.id"/>
 
@@ -343,7 +357,8 @@
                                 <select class="form-control" name="MedicalTest_id" id="MedicalTest_id"
                                         required="required">
                                     <t t-foreach="tests" t-as="test">
-                                        <option t-att-value="test.id" t-att-selected="test.id == image.MedicalTest_id.id">
+                                        <option t-att-value="test.id"
+                                                t-att-selected="test.id == image.MedicalTest_id.id">
                                             <t t-esc="test.test_code"/>
                                             -
                                             <t t-esc="test.patient_id.name"/>
@@ -359,7 +374,8 @@
                                 <select class="form-control" name="test_type_img" id="test_type_img"
                                         required="required">
                                     <t t-foreach="test_types.items()" t-as="test_type">
-                                        <option t-att-value="test_type[0]" t-att-selected="test_type[0] == image.test_type_img">
+                                        <option t-att-value="test_type[0]"
+                                                t-att-selected="test_type[0] == image.test_type_img">
                                             <t t-esc="test_type[1]"/>
                                         </option>
                                     </t>
@@ -373,16 +389,19 @@
                                 <div class="custom-file">
                                     <input type="file" class="custom-file-input" name="image_file" id="image_file"
                                            accept="image/*"/>
-                                    <label class="custom-file-label" for="image_file">Chọn file mới (không bắt buộc)</label>
+                                    <label class="custom-file-label" for="image_file">Chọn file mới (không bắt buộc)
+                                    </label>
                                 </div>
 
                                 <!-- Current image display -->
                                 <div class="mt-3">
-                                    <p><strong>Hình ảnh hiện tại:</strong></p>
+                                    <p>
+                                        <strong>Hình ảnh hiện tại:</strong>
+                                    </p>
                                     <t t-if="image.Img">
                                         <div class="image-frame p-2 border">
                                             <img t-att-src="image.Img and ('data:image/*;base64,%s' % (image.Img.decode('utf-8') if isinstance(image.Img, bytes) else image.Img))"
-                                                class="img-fluid" style="max-height: 200px;"/>
+                                                 class="img-fluid" style="max-height: 200px;"/>
                                         </div>
                                     </t>
                                     <t t-else="">
@@ -398,16 +417,20 @@
                         <div class="form-group row">
                             <label for="result_Img" class="col-sm-3 col-form-label">Kết quả chẩn đoán</label>
                             <div class="col-sm-9">
-                                <textarea class="form-control" name="result_Img" id="result_Img" rows="4"><t t-esc="image.result_Img or ''"/></textarea>
+                                <textarea class="form-control" name="result_Img" id="result_Img" rows="4">
+                                    <t t-esc="image.result_Img or ''"/>
+                                </textarea>
                             </div>
                         </div>
 
                         <div class="text-center mt-4">
                             <a t-attf-href="/medical/image/{{image.id}}" class="btn btn-secondary">
-                                <i class="fa fa-times mr-1"></i> Hủy
+                                <i class="fa fa-times mr-1"></i>
+                                Hủy
                             </a>
                             <button type="submit" class="btn btn-medical ml-2">
-                                <i class="fa fa-save mr-1"></i> Cập nhật
+                                <i class="fa fa-save mr-1"></i>
+                                Cập nhật
                             </button>
                         </div>
                     </form>

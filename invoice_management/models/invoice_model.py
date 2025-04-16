@@ -1,11 +1,8 @@
-from odoo import models, fields, api
-from odoo.exceptions import ValidationError, UserError
-import uuid  # Add this at the top
+import logging
+import uuid
 
 from odoo import models, fields, api
-from odoo.exceptions import ValidationError, UserError
-import uuid
-import logging
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 

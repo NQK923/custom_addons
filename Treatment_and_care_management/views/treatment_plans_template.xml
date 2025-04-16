@@ -14,7 +14,8 @@
 
                 <!-- Quick Access Section -->
                 <div class="quick-access-section">
-                    <button type="button" class="quick-access-btn" data-bs-toggle="modal" data-bs-target="#quickCreateModal">
+                    <button type="button" class="quick-access-btn" data-bs-toggle="modal"
+                            data-bs-target="#quickCreateModal">
                         <i class="fa fa-plus-circle me-2"></i>Tạo kế hoạch điều trị mới
                     </button>
                 </div>
@@ -205,7 +206,8 @@
             </div>
 
             <!-- Quick Create Modal - NEW -->
-            <div class="modal fade" id="quickCreateModal" tabindex="-1" aria-labelledby="quickCreateModalLabel" aria-hidden="true">
+            <div class="modal fade" id="quickCreateModal" tabindex="-1" aria-labelledby="quickCreateModalLabel"
+                 aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -218,11 +220,13 @@
 
                                 <div class="form-group mb-3">
                                     <label for="patient_selection" class="form-label">Chọn bệnh nhân:</label>
-                                    <select class="form-select" id="patient_selection" name="patient_id" required="required">
+                                    <select class="form-select" id="patient_selection" name="patient_id"
+                                            required="required">
                                         <option value="">-- Chọn bệnh nhân --</option>
                                         <t t-foreach="request.env['clinic.patient'].sudo().search([])" t-as="p">
                                             <option t-att-value="p.id">
-                                                <t t-esc="p.name"/> (<t t-esc="p.code"/>)
+                                                <t t-esc="p.name"/>
+                                                (<t t-esc="p.code"/>)
                                             </option>
                                         </t>
                                     </select>
@@ -231,11 +235,13 @@
                                 <div class="form-group mb-3">
                                     <label for="modal_start_date" class="form-label">Ngày bắt đầu:</label>
                                     <input type="date" class="form-control" id="modal_start_date" name="start_date"
-                                           t-att-value="datetime.date.today().strftime('%Y-%m-%d')" required="required"/>
+                                           t-att-value="datetime.date.today().strftime('%Y-%m-%d')"
+                                           required="required"/>
                                 </div>
 
                                 <div class="form-group mb-3">
-                                    <label for="modal_end_date" class="form-label">Ngày kết thúc (không bắt buộc):</label>
+                                    <label for="modal_end_date" class="form-label">Ngày kết thúc (không bắt buộc):
+                                    </label>
                                     <input type="date" class="form-control" id="modal_end_date" name="end_date"/>
                                 </div>
 
@@ -247,7 +253,9 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="submit" form="quickCreateForm" class="btn btn-primary" id="modal-submit-btn">Tạo kế hoạch</button>
+                            <button type="submit" form="quickCreateForm" class="btn btn-primary" id="modal-submit-btn">
+                                Tạo kế hoạch
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -255,41 +263,41 @@
 
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Modal form validation
-                    const modalForm = document.getElementById('quickCreateForm');
-                    const modalStartDateInput = document.getElementById('modal_start_date');
-                    const modalEndDateInput = document.getElementById('modal_end_date');
-                    const modalErrorBox = document.getElementById('modal-date-error');
-                    const modalErrorMessage = document.getElementById('modal-error-message');
-                    const modalSubmitBtn = document.getElementById('modal-submit-btn');
+                // Modal form validation
+                const modalForm = document.getElementById('quickCreateForm');
+                const modalStartDateInput = document.getElementById('modal_start_date');
+                const modalEndDateInput = document.getElementById('modal_end_date');
+                const modalErrorBox = document.getElementById('modal-date-error');
+                const modalErrorMessage = document.getElementById('modal-error-message');
+                const modalSubmitBtn = document.getElementById('modal-submit-btn');
 
-                    function validateModalDates() {
-                        const startDate = new Date(modalStartDateInput.value);
-                        // Only validate if end date is not empty
-                        if (modalEndDateInput.value) {
-                            const endDate = new Date(modalEndDateInput.value);
+                function validateModalDates() {
+                const startDate = new Date(modalStartDateInput.value);
+                // Only validate if end date is not empty
+                if (modalEndDateInput.value) {
+                const endDate = new Date(modalEndDateInput.value);
 
-                            if (endDate &lt; startDate) {
-                                modalErrorBox.style.display = 'block';
-                                modalErrorMessage.textContent = 'Ngày kết thúc không thể trước ngày bắt đầu!';
-                                return false;
-                            }
-                        }
+                if (endDate &lt; startDate) {
+                modalErrorBox.style.display = 'block';
+                modalErrorMessage.textContent = 'Ngày kết thúc không thể trước ngày bắt đầu!';
+                return false;
+                }
+                }
 
-                        modalErrorBox.style.display = 'none';
-                        return true;
-                    }
+                modalErrorBox.style.display = 'none';
+                return true;
+                }
 
-                    // Validate on input change
-                    modalStartDateInput.addEventListener('change', validateModalDates);
-                    modalEndDateInput.addEventListener('change', validateModalDates);
+                // Validate on input change
+                modalStartDateInput.addEventListener('change', validateModalDates);
+                modalEndDateInput.addEventListener('change', validateModalDates);
 
-                    // Validate on form submit
-                    modalForm.addEventListener('submit', function(event) {
-                        if (!validateModalDates()) {
-                            event.preventDefault();
-                        }
-                    });
+                // Validate on form submit
+                modalForm.addEventListener('submit', function(event) {
+                if (!validateModalDates()) {
+                event.preventDefault();
+                }
+                });
                 });
             </script>
         </t>
@@ -393,7 +401,9 @@
                                             </td>
                                             <td>
                                                 <t t-if="process.prescription_id">
-                                                    <t t-esc="process.prescription_id.id"/> - <t t-esc="process.prescription_id.date"/>
+                                                    <t t-esc="process.prescription_id.id"/>
+                                                    -
+                                                    <t t-esc="process.prescription_id.date"/>
                                                 </t>
                                                 <t t-else="">Không có</t>
                                             </td>

@@ -1,6 +1,6 @@
 from odoo import http
-from odoo.http import request
 from odoo.exceptions import ValidationError
+from odoo.http import request
 
 
 class RoomManagementController(http.Controller):

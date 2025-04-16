@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from odoo import http, fields, _
-from odoo.http import request
-from datetime import datetime, timedelta
-from odoo.exceptions import AccessError, ValidationError
 import logging
+from datetime import timedelta
+
+from odoo import http, fields
+from odoo.http import request
 
 _logger = logging.getLogger(__name__)
 

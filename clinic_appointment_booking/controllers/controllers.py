@@ -1,12 +1,11 @@
-from odoo import http, fields, _
-from odoo.http import request
-from datetime import datetime, timedelta
-import logging
-import pytz
 import html
+import logging
 import traceback
+from datetime import datetime, timedelta
+
+from odoo import http, fields
 from odoo.exceptions import ValidationError
-from odoo.tools import formataddr
+from odoo.http import request
 
 _logger = logging.getLogger(__name__)
 

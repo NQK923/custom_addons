@@ -245,7 +245,6 @@
                 <meta name="csrf-token" t-att-content="request.csrf_token()"/>
                 <t t-if="head" t-raw="head"/>
             </t>
-            <!-- CSS styling -->
             <style>
                 .complaint-container {
                 max-width: 1200px;
@@ -289,13 +288,25 @@
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
 
+                /* Sửa đổi style cho detail-label - đảm bảo màu chữ tối */
                 .detail-label {
                 font-weight: 600;
-                color: #495057;
+                color: #333333; /* Đổi màu chữ sang tối */
+                background-color: transparent !important; /* Loại bỏ màu nền nếu có */
                 }
 
                 .btn-group .btn {
                 margin-right: 5px;
+                }
+
+                /* Thêm style cho bảng thông tin chi tiết */
+                .table-borderless th, .table-borderless td {
+                background-color: transparent;
+                }
+
+                /* Đảm bảo contrast cao cho text */
+                .table th, .table td {
+                color: #333;
                 }
             </style>
 
@@ -428,10 +439,19 @@
                                 <h5 class="border-bottom pb-2">Giải pháp xử lý</h5>
                                 <div class="p-3 complaint-section rounded">
                                     <t t-if="complaint.resolution">
-                                        <p t-esc="complaint.resolution"/>
+                                        <div class="alert alert-success">
+                                            <h6><i class="fa fa-check-circle me-2"></i>Đã giải quyết vào:
+                                                <t t-esc="complaint.resolved_date.strftime('%d/%m/%Y')"/>
+                                            </h6>
+                                            <p t-esc="complaint.resolution"/>
+                                        </div>
                                     </t>
                                     <t t-else="">
-                                        <p class="text-muted">Chưa có giải pháp xử lý.</p>
+                                        <div class="alert alert-secondary">
+                                            <p class="text-muted"><i class="fa fa-info-circle me-2"></i>Chưa có giải
+                                                pháp xử lý.
+                                            </p>
+                                        </div>
                                     </t>
                                 </div>
                             </div>
@@ -449,7 +469,8 @@
                                 Xử lý
                             </button>
                             <button type="button" class="btn btn-success" t-att-data-complaint-id="complaint.id"
-                                    t-att-data-action="'resolve'" t-att-disabled="complaint.state != 'in_progress'">
+                                    t-att-data-action="'resolve'" t-att-disabled="complaint.state != 'in_progress'"
+                                    data-bs-toggle="modal" data-bs-target="#resolutionModal">
                                 <i class="fa fa-check me-1"></i>
                                 Giải quyết
                             </button>
@@ -462,13 +483,52 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Cập nhật phần modal dialog trong complaint_template.xml -->
+                <!-- Đảm bảo phần modal dialog có nội dung sau -->
+
+                <div class="modal fade" id="resolutionModal" tabindex="-1" aria-labelledby="resolutionModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="resolutionModalLabel">Giải quyết khiếu nại</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="resolutionForm">
+                                    <div class="form-group mb-3">
+                                        <label for="resolution" class="form-label">Phương án giải quyết
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <textarea class="form-control" id="resolution" name="resolution" rows="5"
+                                                  placeholder="Nhập chi tiết phương án giải quyết khiếu nại..."
+                                                  required="required"/>
+                                        <div class="form-text">Mô tả chi tiết cách giải quyết khiếu nại này, bao gồm các
+                                            biện pháp đã thực hiện và kết quả.
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" class="btn btn-success" id="saveResolution"
+                                        t-att-data-complaint-id="complaint.id">
+                                    <i class="fa fa-check me-1"></i>
+                                    Lưu và giải quyết
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- JavaScript for buttons -->
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
-                // Add event listeners to all action buttons
+                // Add event listeners to action buttons (except resolve button which uses modal)
                 document.querySelectorAll('[data-complaint-id][data-action]').forEach(function(button) {
+                if (button.getAttribute('data-action') !== 'resolve') {
                 button.addEventListener('click', function() {
                 var complaintId = this.getAttribute('data-complaint-id');
                 var action = this.getAttribute('data-action');
@@ -495,7 +555,7 @@
                 })
                 .then(response => response.json())
                 .then(result => {
-                console.log("Full response:", result); // For debugging
+                console.log("Full response:", result);
 
                 // Check for success in the result
                 if (result.result &amp;&amp; result.result.success) {
@@ -516,7 +576,62 @@
                 });
                 }
                 });
+                }
                 });
+
+                // Add event listener for resolution save button - SỬ DỤNG ENDPOINT MỚI
+                var saveResolutionBtn = document.getElementById('saveResolution');
+                if (saveResolutionBtn) {
+                saveResolutionBtn.addEventListener('click', function() {
+                var complaintId = this.getAttribute('data-complaint-id');
+                var resolution = document.getElementById('resolution').value.trim();
+
+                console.log("Saving resolution for complaint ID:", complaintId);
+                console.log("Resolution text:", resolution);
+
+                if (!resolution) {
+                alert('Vui lòng nhập phương án giải quyết!');
+                return;
+                }
+
+                // Sử dụng endpoint mới đặc biệt để lưu giải pháp
+                fetch('/healthcare/patient_complaint/save_resolution', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                jsonrpc: "2.0",
+                method: "call",
+                params: {
+                complaint_id: complaintId,
+                resolution: resolution
+                },
+                id: Math.floor(Math.random() * 1000000)
+                })
+                })
+                .then(response => response.json())
+                .then(result => {
+                console.log("Save resolution result:", result);
+                if (result.result &amp;&amp; result.result.success) {
+                alert('Đã lưu giải pháp xử lý và giải quyết khiếu nại thành công!');
+                location.reload();
+                } else {
+                var errorMsg = 'Không xác định';
+                if (result.result &amp;&amp; result.result.error) {
+                errorMsg = result.result.error;
+                } else if (result.error) {
+                errorMsg = result.error.data &amp;&amp; result.error.data.message || result.error.message;
+                }
+                alert('Lỗi: ' + errorMsg);
+                }
+                })
+                .catch(error => {
+                console.error('Error:', error);
+                alert('Đã xảy ra lỗi khi kết nối đến máy chủ: ' + error.message);
+                });
+                });
+                }
                 });
             </script>
         </t>

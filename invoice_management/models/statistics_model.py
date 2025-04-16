@@ -1,7 +1,7 @@
-from odoo import models, fields, api
-from datetime import datetime, timedelta
 import calendar
-import json
+from datetime import datetime, timedelta
+
+from odoo import models, fields, api
 
 
 class ClinicStatistics(models.Model):
