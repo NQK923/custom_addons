@@ -14,22 +14,26 @@
                                 <ul class="nav flex-column nav-pills">
                                     <li class="nav-item">
                                         <a class="nav-link d-flex align-items-center" href="/medical/tests">
-                                            <i class="fa fa-list mr-2"></i> Danh sách xét nghiệm
+                                            <i class="fa fa-list mr-2"></i>
+                                            Danh sách xét nghiệm
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link d-flex align-items-center" href="/medical/test/create">
-                                            <i class="fa fa-plus-circle mr-2"></i> Tạo xét nghiệm mới
+                                            <i class="fa fa-plus-circle mr-2"></i>
+                                            Tạo xét nghiệm mới
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link d-flex align-items-center" href="/medical/images">
-                                            <i class="fa fa-list mr-2"></i> Hình ảnh xét nghiệm
+                                            <i class="fa fa-list mr-2"></i>
+                                            Hình ảnh xét nghiệm
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link d-flex align-items-center" href="/medical/image/create">
-                                            <i class="fa fa-plus-square mr-2"></i> Thêm hình ảnh mới
+                                            <i class="fa fa-plus-square mr-2"></i>
+                                            Thêm hình ảnh mới
                                         </a>
                                     </li>
                                 </ul>
@@ -88,7 +92,8 @@
                                         <i class="fa fa-search"></i>
                                     </span>
                                 </div>
-                                <input type="text" id="search_query" class="form-control" placeholder="Nhập từ khóa..."/>
+                                <input type="text" id="search_query" class="form-control"
+                                       placeholder="Nhập từ khóa..."/>
                             </div>
                         </div>
                     </div>
@@ -126,14 +131,16 @@
                                         <td>
                                             <t t-esc="test.test_date" t-options="{'widget': 'datetime'}"/>
                                         </td>
-                                        <td class="test-status" t-att-data-status="test.status" t-attf-class="status-cell-${test.id}">
+                                        <td class="test-status" t-att-data-status="test.status"
+                                            t-attf-class="status-cell-${test.id}">
                                             <span t-attf-class="badge {{ 'badge-warning' if test.status == 'request' else 'badge-info' if test.status == 'processing' else 'badge-success' }}">
                                                 <t t-esc="dict(test._fields['status'].selection).get(test.status)"/>
                                             </span>
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
-                                                <a t-attf-href="/medical/test/{{test.id}}" class="btn btn-info" title="Xem chi tiết">
+                                                <a t-attf-href="/medical/test/{{test.id}}" class="btn btn-info"
+                                                   title="Xem chi tiết">
                                                     <i class="fa fa-eye"></i>
                                                 </a>
                                                 <a t-attf-href="/medical/test/edit/{{test.id}}"
@@ -159,7 +166,8 @@
                             <i class="fa fa-info-circle fa-2x mb-2"></i>
                             <p>Chưa có xét nghiệm nào. Hãy tạo xét nghiệm mới!</p>
                             <a href="/medical/test/create" class="btn btn-medical mt-2">
-                                <i class="fa fa-plus mr-1"></i> Tạo xét nghiệm
+                                <i class="fa fa-plus mr-1"></i>
+                                Tạo xét nghiệm
                             </a>
                         </div>
                     </t>
@@ -270,7 +278,9 @@
                         <div class="card-body">
                             <div class="border p-3 bg-light rounded">
                                 <t t-if="test.result">
-                                    <div style="white-space: pre-line;"><t t-esc="test.result"/></div>
+                                    <div style="white-space: pre-line;">
+                                        <t t-esc="test.result"/>
+                                    </div>
                                 </t>
                                 <t t-else="">
                                     <em>Chưa có kết quả</em>
@@ -284,7 +294,8 @@
                         <div class="card-header bg-light d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Hình ảnh liên quan</h5>
                             <a t-attf-href="/medical/image/create?test_id={{test.id}}" class="btn btn-sm btn-medical">
-                                <i class="fa fa-plus mr-1"></i> Thêm hình ảnh
+                                <i class="fa fa-plus mr-1"></i>
+                                Thêm hình ảnh
                             </a>
                         </div>
                         <div class="card-body">
@@ -295,7 +306,9 @@
                                             <div class="card h-100 medical-card">
                                                 <div class="card-header bg-light py-2 px-3">
                                                     <div class="d-flex justify-content-between align-items-center">
-                                                        <small class="text-muted"><t t-esc="image.test_code"/></small>
+                                                        <small class="text-muted">
+                                                            <t t-esc="image.test_code"/>
+                                                        </small>
                                                         <small class="text-muted">
                                                             <t t-esc="image.img_date" t-options="{'widget': 'date'}"/>
                                                         </small>
@@ -305,11 +318,12 @@
                                                     <t t-if="image.Img">
                                                         <div class="image-frame">
                                                             <img t-att-src="image.Img and ('data:image/*;base64,%s' % (image.Img.decode('utf-8') if isinstance(image.Img, bytes) else image.Img))"
-                                                                class="img-fluid mb-2" style="max-height: 150px;"/>
+                                                                 class="img-fluid mb-2" style="max-height: 150px;"/>
                                                         </div>
                                                     </t>
                                                     <t t-else="">
-                                                        <div class="image-frame d-flex align-items-center justify-content-center" style="height: 150px;">
+                                                        <div class="image-frame d-flex align-items-center justify-content-center"
+                                                             style="height: 150px;">
                                                             <div class="text-center text-muted">
                                                                 <i class="fa fa-image fa-3x mb-2"></i>
                                                                 <p class="small mb-0">Không có hình ảnh</p>

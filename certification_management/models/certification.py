@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import logging
+from datetime import timedelta
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
-from datetime import datetime, timedelta
-import logging
 
 _logger = logging.getLogger(__name__)
 

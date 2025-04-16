@@ -1,6 +1,6 @@
-from odoo import models, fields, api, tools
 from psycopg2.extensions import AsIs
-from datetime import datetime, timedelta
+
+from odoo import models, fields, tools
 
 
 class InvoiceReportMonthly(models.Model):

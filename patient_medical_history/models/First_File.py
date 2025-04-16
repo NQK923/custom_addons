@@ -1,10 +1,11 @@
+import uuid
+from datetime import datetime, date, timedelta
+
 from numpy import random
 from pip._internal.utils import logging
 
 from odoo import models, fields, api
-from datetime import datetime, date, timedelta
 from odoo.exceptions import ValidationError
-import uuid
 
 _logger = logging.getLogger(__name__)
 

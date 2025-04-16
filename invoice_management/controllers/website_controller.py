@@ -1,7 +1,8 @@
+import json
+from datetime import datetime
+
 from odoo import http
 from odoo.http import request, _logger
-from datetime import datetime, timedelta
-import json
 
 
 class InvoiceWebsiteController(http.Controller):

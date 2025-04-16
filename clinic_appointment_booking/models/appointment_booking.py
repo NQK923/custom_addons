@@ -1,5 +1,6 @@
-from odoo import models, fields, api, _
 from datetime import datetime, timedelta
+
+from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
 

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
+import json
+from datetime import datetime, timedelta
 from pydoc import html
 
 from pip._internal.utils import logging
 
 from odoo import http, fields
 from odoo.http import request
-from datetime import datetime, timedelta
-import json
 
 
 class HealthcareManagement(http.Controller):
@@ -313,30 +313,101 @@ class HealthcareManagement(http.Controller):
             _logger.error("Error in patient_feedback_action: %s", str(e), exc_info=True)
             return {'success': False, 'error': str(e)}
 
-    # API cho xử lý thao tác khiếu nại (AJAX)
     @http.route('/healthcare/patient_complaint/action', type='json', auth='user', website=True)
-    def patient_complaint_action(self, complaint_id, action, **kw):
+    def patient_complaint_action(self, **kw):
         # Kiểm tra quyền quản lý
         if not self._check_manager_access():
             return {'success': False, 'error': 'Không có quyền truy cập'}
 
-        complaint = request.env['healthcare.patient.complaint'].sudo().browse(int(complaint_id))
+        _logger = logging.getLogger(__name__)
+        _logger.info("Complaint action received: %s", kw)
 
-        if not complaint.exists():
-            return {'success': False, 'error': 'Không tìm thấy khiếu nại'}
+        # For JSON-RPC, parameters come directly from kw
+        complaint_id = kw.get('complaint_id')
+        action = kw.get('action')
+
+        if not complaint_id or not action:
+            _logger.error("Missing parameters: complaint_id=%s, action=%s", complaint_id, action)
+            return {'success': False, 'error': 'Thiếu thông tin cần thiết'}
 
         try:
+            _logger.info("Processing complaint ID: %s with action: %s", complaint_id, action)
+
+            complaint = request.env['healthcare.patient.complaint'].sudo().browse(int(complaint_id))
+
+            if not complaint.exists():
+                _logger.error("Complaint not found with ID: %s", complaint_id)
+                return {'success': False, 'error': 'Không tìm thấy khiếu nại'}
+
+            # Lưu ý: resolution không được xử lý ở đây nữa
+            # Chúng ta sẽ sử dụng endpoint /healthcare/patient_complaint/save_resolution
+            # để xử lý riêng việc lưu resolution
+
             if action == 'open':
-                complaint.write({'state': 'open'})
+                complaint.action_progress()  # Use the model method for state changes
+                _logger.info("Complaint %s marked as in_progress", complaint_id)
             elif action == 'resolve':
-                complaint.write({'state': 'resolved', 'resolved_date': fields.Date.today()})
+                # Chỉ chuyển trạng thái, không lưu resolution
+                # Resolution được xử lý bởi endpoint riêng
+                complaint.action_resolve()  # Use the model method
+                _logger.info("Complaint %s marked as resolved", complaint_id)
             elif action == 'cancel':
-                complaint.write({'state': 'cancelled'})
+                complaint.action_cancel()  # Use the model method
+                _logger.info("Complaint %s marked as cancelled", complaint_id)
             else:
+                _logger.error("Invalid action: %s", action)
                 return {'success': False, 'error': 'Hành động không hợp lệ'}
 
             return {'success': True}
         except Exception as e:
+            _logger.exception("Error processing complaint action: %s", str(e))
+            return {'success': False, 'error': str(e)}
+
+    @http.route('/healthcare/patient_complaint/save_resolution', type='json', auth='user', website=True)
+    def save_complaint_resolution(self, **kw):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return {'success': False, 'error': 'Không có quyền truy cập'}
+
+        _logger = logging.getLogger(__name__)
+        _logger.info("Resolution save request received: %s", kw)
+
+        complaint_id = kw.get('complaint_id')
+        resolution = kw.get('resolution')
+
+        if not complaint_id or not resolution:
+            _logger.error("Missing required parameters: complaint_id=%s, resolution=%s", complaint_id, resolution)
+            return {'success': False, 'error': 'Thiếu thông tin cần thiết'}
+
+        try:
+            # Kiểm tra complaint có tồn tại không trước khi cập nhật
+            complaint = request.env['healthcare.patient.complaint'].sudo().browse(int(complaint_id))
+            if not complaint.exists():
+                _logger.error("Complaint not found with ID: %s", complaint_id)
+                return {'success': False, 'error': 'Không tìm thấy khiếu nại'}
+
+            # Direct database update using SQL to bypass ORM
+            query = """
+                UPDATE healthcare_patient_complaint 
+                SET resolution = %s, state = 'resolved', resolved_date = %s
+                WHERE id = %s
+            """
+            params = (resolution, fields.Date.today(), int(complaint_id))
+            _logger.info("Executing direct SQL: %s with params %s", query, params)
+            request.env.cr.execute(query, params)
+            request.env.cr.commit()  # Make sure to commit the transaction
+            _logger.info("Direct SQL update completed")
+
+            # Không sử dụng refresh() nữa
+            # Thay vào đó, đọc lại record để log thông tin nếu cần
+            updated_complaint = request.env['healthcare.patient.complaint'].sudo().browse(int(complaint_id))
+            _logger.info("After update - Resolution exists: %s, State: %s",
+                         bool(updated_complaint.resolution),
+                         updated_complaint.state)
+
+            return {'success': True}
+        except Exception as e:
+            _logger.exception("Error in direct SQL update: %s", str(e))
             return {'success': False, 'error': str(e)}
 
     # Tạo khiếu nại từ phản hồi bệnh nhân

@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Xử lý xác nhận xóa
     const deleteLinks = document.querySelectorAll('.delete-confirm');
     deleteLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
             e.preventDefault();
             const url = this.getAttribute('href');
             const itemName = this.getAttribute('data-name') || 'mục này';
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Đổi trạng thái nhanh (Quick Status Change)
     const quickStatusChanges = document.querySelectorAll('.quick-status-change');
     quickStatusChanges.forEach(select => {
-        select.addEventListener('change', function() {
+        select.addEventListener('change', function () {
             const testId = this.getAttribute('data-test-id');
             const status = this.value;
             const formData = new FormData();
@@ -114,38 +114,38 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 credentials: 'same-origin'
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Hiển thị thông báo thành công
-                    const statusCell = document.querySelector(`.status-cell-${testId}`);
-                    if (statusCell) {
-                        const statusText = {
-                            'request': 'Yêu cầu',
-                            'processing': 'Đang xử lý',
-                            'completed': 'Hoàn tất'
-                        }[status];
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Hiển thị thông báo thành công
+                        const statusCell = document.querySelector(`.status-cell-${testId}`);
+                        if (statusCell) {
+                            const statusText = {
+                                'request': 'Yêu cầu',
+                                'processing': 'Đang xử lý',
+                                'completed': 'Hoàn tất'
+                            }[status];
 
-                        const statusClass = {
-                            'request': 'badge-warning',
-                            'processing': 'badge-info',
-                            'completed': 'badge-success'
-                        }[status];
+                            const statusClass = {
+                                'request': 'badge-warning',
+                                'processing': 'badge-info',
+                                'completed': 'badge-success'
+                            }[status];
 
-                        statusCell.innerHTML = `<span class="badge ${statusClass}">${statusText}</span>`;
+                            statusCell.innerHTML = `<span class="badge ${statusClass}">${statusText}</span>`;
+                        }
+
+                        // Hiển thị thông báo nhỏ
+                        showToast('Cập nhật trạng thái thành công!');
+                    } else {
+                        // Hiển thị thông báo lỗi
+                        showToast('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
                     }
-
-                    // Hiển thị thông báo nhỏ
-                    showToast('Cập nhật trạng thái thành công!');
-                } else {
-                    // Hiển thị thông báo lỗi
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                     showToast('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
-            });
+                });
         });
     });
 
@@ -201,12 +201,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // Hiệu ứng cho các card
     const cards = document.querySelectorAll('.medical-card');
     cards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
+        card.addEventListener('mouseenter', function () {
             this.style.transform = 'translateY(-5px)';
             this.style.boxShadow = '0 8px 15px rgba(0, 0, 0, 0.1)';
         });
 
-        card.addEventListener('mouseleave', function() {
+        card.addEventListener('mouseleave', function () {
             this.style.transform = 'translateY(0)';
             this.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
         });

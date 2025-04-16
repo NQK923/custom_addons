@@ -1,8 +1,9 @@
-from odoo import models, fields, api
-from datetime import datetime, date
-from odoo.exceptions import ValidationError
-import uuid
 import re
+import uuid
+from datetime import datetime, date
+
+from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 
 class ClinicPatient(models.Model):

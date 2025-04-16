@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from odoo import http, fields
-from odoo.http import request
 import base64
 import json
-from datetime import datetime
+
+from odoo import http, fields
+from odoo.http import request
 
 
 class MedicalWebsite(http.Controller):

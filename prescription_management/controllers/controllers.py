@@ -1,7 +1,8 @@
-from odoo import http, _
-from odoo.http import request
-from odoo.exceptions import ValidationError, AccessError
 import json
+
+from odoo import http, _
+from odoo.exceptions import ValidationError, AccessError
+from odoo.http import request
 
 
 class PrescriptionManagementController(http.Controller):

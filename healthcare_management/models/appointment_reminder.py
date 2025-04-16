@@ -1,5 +1,6 @@
+from datetime import timedelta
+
 from odoo import models, fields, api
-from datetime import datetime, timedelta
 
 
 class AppointmentReminder(models.Model):

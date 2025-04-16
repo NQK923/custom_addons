@@ -156,7 +156,8 @@
                                         <option value="">-- Chọn nhân viên --</option>
                                         <t t-foreach="staff" t-as="person">
                                             <option t-att-value="person.id">
-                                                <t t-esc="person.staff_name"/> (<t t-esc="person.name"/>)
+                                                <t t-esc="person.staff_name"/>
+                                                (<t t-esc="person.name"/>)
                                             </option>
                                         </t>
                                     </select>
@@ -358,7 +359,8 @@
                                         <t t-foreach="staff" t-as="person">
                                             <option t-att-value="person.id"
                                                     t-att-selected="person.id == care.doctor_id.id">
-                                                <t t-esc="person.staff_name"/> (<t t-esc="person.name"/>)
+                                                <t t-esc="person.staff_name"/>
+                                                (<t t-esc="person.name"/>)
                                             </option>
                                         </t>
                                     </select>
