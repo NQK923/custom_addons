@@ -279,7 +279,7 @@
                                     <div class="table-responsive">
                                         <table class="table table-hover">
                                             <thead>
-                                                <tr>
+                                                <tr class="text-nowrap">
                                                     <th>Tên</th>
                                                     <th>Số hiệu</th>
                                                     <th>Loại</th>
@@ -367,8 +367,8 @@
                                 </t>
                                 <t t-else="">
                                     <div class="alert alert-info">
-                                        <p class="mb-0">Không tìm thấy chứng nhận nào. <a
-                                                href="/certification/certificate/create">Tạo chứng nhận mới</a>?
+                                        <p class="mb-0">Không tìm thấy chứng nhận nào.
+                                                href="/certification/certificate/create">Tạo chứng nhận mới?
                                         </p>
                                     </div>
                                 </t>
@@ -595,6 +595,28 @@
                                     <t t-esc="certificate.description"/>
                                 </p>
                                 <p t-else="" class="text-muted">Không có mô tả.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tài liệu đính kèm -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Tài liệu đính kèm</h4>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="certificate.document">
+                                    <p>
+                                        <strong>Tên file:</strong> <t t-esc="certificate.document_filename or 'Tài liệu chứng nhận'"/>
+                                    </p>
+                                    <a t-att-href="'/certification/certificate/%s/download_document' % certificate.id" class="btn btn-primary">
+                                        <i class="fa fa-download mr-1"></i> Tải xuống tài liệu
+                                    </a>
+                                </t>
+                                <p t-else="" class="text-muted">Không có tài liệu đính kèm.</p>
                             </div>
                         </div>
                     </div>

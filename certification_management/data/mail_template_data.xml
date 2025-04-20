@@ -36,7 +36,6 @@
 ]]>
             </field>
             <field name="lang">${object.responsible_id.lang}</field>
-            <field name="auto_delete" eval="True"/>
         </record>
     </data>
 </odoo>

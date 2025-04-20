@@ -259,7 +259,9 @@
                     <div class="o_patient_pagination">
                         <ul class="pagination">
                             <li t-attf-class="page-item #{pager['page'] == 1 and 'disabled' or ''}">
-                                <a t-att-href="pager['page_previous']['url']" class="page-link">Previous</a>
+                                <a t-att-href="pager['page_previous'] and pager['page_previous']['url'] or '#'" class="page-link">
+                                    Trước
+                                </a>
                             </li>
                             <t t-foreach="pager['page_ids']" t-as="page">
                                 <li t-attf-class="page-item #{page['num'] == pager['page'] and 'active' or ''}">
@@ -269,7 +271,9 @@
                                 </li>
                             </t>
                             <li t-attf-class="page-item #{pager['page'] == pager['page_count'] and 'disabled' or ''}">
-                                <a t-att-href="pager['page_next']['url']" class="page-link">Next</a>
+                                <a t-att-href="pager['page_next'] and pager['page_next']['url'] or '#'" class="page-link">
+                                    Sau
+                                </a>
                             </li>
                         </ul>
                     </div>

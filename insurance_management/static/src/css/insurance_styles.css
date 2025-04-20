@@ -1,58 +1,89 @@
-/* Màu sắc chủ đạo */
+/* Màu sắc chủ đạo - Màu dịu hơn */
 :root {
-    --primary-color: #007bff;
-    --primary-dark: #0056b3;
-    --secondary-color: #6c757d;
-    --success-color: #28a745;
-    --danger-color: #dc3545;
-    --warning-color: #ffc107;
-    --info-color: #17a2b8;
+    --primary-color: #4285f4;
+    --primary-dark: #3367d6;
+    --primary-light: #e8f0fe;
+    --secondary-color: #7c8a97;
+    --success-color: #34a853;
+    --danger-color: #ea4335;
+    --warning-color: #fbbc05;
+    --info-color: #4285f4;
     --light-color: #f8f9fa;
-    --dark-color: #343a40;
+    --dark-color: #3c4043;
+    --border-color: #e0e0e0;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.07);
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --transition: all 0.3s ease;
 }
 
-/* Card styles */
+/* Card styles - Mềm mại hơn */
 .insurance-card {
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    /* Đã bỏ hiệu ứng hover */
+    box-shadow: var(--shadow-md);
+    border: none;
+    transition: var(--transition);
+}
+
+.insurance-card:hover {
+    box-shadow: var(--shadow-lg);
 }
 
 .insurance-card .card-header {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    padding: 1.2rem 1.5rem;
+    padding: 1.5rem;
+    border-bottom: none;
 }
 
-/* Button styles */
+/* Button styles - Làm tròn và mềm mại hơn */
 .btn-insurance-primary {
     background: var(--primary-color);
     border: none;
-    border-radius: 6px;
-    padding: 0.6rem 1.5rem;
+    border-radius: var(--radius-sm);
+    padding: 0.7rem 1.5rem;
     color: white;
     font-weight: 500;
-    box-shadow: 0 3px 5px rgba(0, 123, 255, 0.15);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.btn-insurance-primary:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
 }
 
 .btn-insurance-secondary {
     background: white;
-    border: 1px solid var(--primary-color);
-    border-radius: 6px;
-    padding: 0.6rem 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.7rem 1.5rem;
     color: var(--primary-color);
     font-weight: 500;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
 }
 
-/* Table styles */
+.btn-insurance-secondary:hover {
+    background: var(--primary-light);
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+/* Table styles - Mềm mại hơn */
 .table-insurance {
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-sm);
 }
 
 .table-insurance thead th {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    background: linear-gradient(160deg, var(--primary-color), var(--primary-dark));
     color: white;
     border: none;
     padding: 1rem;
@@ -60,21 +91,26 @@
 }
 
 .table-insurance tbody tr {
-    /* Đã bỏ hiệu ứng hover */
+    transition: var(--transition);
+}
+
+.table-insurance tbody tr:hover {
+    background-color: var(--primary-light);
 }
 
 .table-insurance th, .table-insurance td {
     padding: 1rem;
     vertical-align: middle;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Badge styles */
+/* Badge styles - Mềm mại hơn */
 .badge-insurance-valid {
     background-color: var(--success-color);
     color: white;
     font-weight: 500;
     padding: 0.5rem 0.8rem;
-    border-radius: 20px;
+    border-radius: 30px;
 }
 
 .badge-insurance-expired {
@@ -82,55 +118,68 @@
     color: white;
     font-weight: 500;
     padding: 0.5rem 0.8rem;
-    border-radius: 20px;
+    border-radius: 30px;
 }
 
-/* Action buttons */
+/* Action buttons - Làm tròn hơn */
 .btn-action {
-    width: 38px;
-    height: 38px;
-    border-radius: 4px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     margin: 0 3px;
+    transition: var(--transition);
+    color: white;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .btn-action-view {
     background-color: var(--info-color);
-    color: white;
 }
 
 .btn-action-edit {
     background-color: var(--warning-color);
-    color: white;
 }
 
-/* Breadcrumbs */
+/* Breadcrumbs - Mềm mại hơn */
 .insurance-breadcrumb {
     background-color: transparent;
-    padding: 0.5rem 0;
+    padding: 0.8rem 0;
     margin-bottom: 1.5rem;
 }
 
 .insurance-breadcrumb .breadcrumb-item a {
     color: var(--primary-color);
+    transition: var(--transition);
+}
+
+.insurance-breadcrumb .breadcrumb-item a:hover {
+    text-decoration: none;
+    color: var(--primary-dark);
 }
 
 .insurance-breadcrumb .breadcrumb-item.active {
     color: var(--secondary-color);
 }
 
-/* Empty state */
+/* Empty state - Hiện đại hơn */
 .empty-state {
     text-align: center;
-    padding: 3rem 1rem;
+    padding: 3.5rem 1rem;
+    background-color: var(--light-color);
+    border-radius: var(--radius-md);
 }
 
 .empty-state i {
     font-size: 4rem;
     color: #d1d1d1;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     display: block;
 }
 
@@ -139,22 +188,22 @@
     font-size: 1.1rem;
 }
 
-/* Search box */
+/* Search box - Mềm mại hơn */
 .insurance-search {
     position: relative;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.8rem;
 }
 
 .insurance-search input {
     border-radius: 30px;
-    padding: 0.8rem 1.5rem;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e0e0e0;
-    transition: all 0.3s;
+    padding: 1rem 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
 }
 
 .insurance-search input:focus {
-    box-shadow: 0 3px 8px rgba(0, 123, 255, 0.1);
+    box-shadow: 0 3px 12px rgba(66, 133, 244, 0.15);
     border-color: var(--primary-color);
 }
 
@@ -168,84 +217,181 @@
 
 /* Form styles - Cải thiện */
 .form-insurance .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.8rem;
     position: relative;
 }
 
 .form-insurance .form-group label {
-    font-weight: 600;
+    font-weight: 500;
     color: var(--dark-color);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
     display: block;
     font-size: 0.95rem;
 }
 
 .form-insurance .form-control {
-    border-radius: 4px;
-    padding: 0.7rem 1rem;
-    border: 1px solid #e0e0e0;
-    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color);
+    background-color: #ffffff;
     height: auto;
     font-size: 1rem;
+    transition: var(--transition);
 }
 
 .form-insurance .form-control:focus {
-    background-color: #fff;
     border-color: var(--primary-color);
     outline: none;
-    box-shadow: none;
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.15);
 }
 
-/* Form section styling */
+/* Form section styling - Mềm mại hơn */
 .form-section {
-    background-color: #f5f7fa;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    border-left: 4px solid var(--primary-color);
+    background-color: #ffffff;
+    border-radius: var(--radius-sm);
+    padding: 1.8rem;
+    margin-bottom: 1.8rem;
+    border-left: none;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.form-section:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .form-section-title {
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--primary-color);
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--primary-light);
 }
 
 .form-section-title i {
-    margin-right: 0.5rem;
+    margin-right: 0.8rem;
+    background: var(--primary-light);
+    padding: 0.5rem;
+    border-radius: 50%;
+    color: var(--primary-color);
 }
 
-/* Required field indicator */
+/* Required field indicator - Mềm mại hơn */
 .field-required {
     color: var(--danger-color);
     font-weight: bold;
     margin-left: 3px;
 }
 
-/* Improved input groups */
+/* Improved input groups - Mềm mại hơn */
 .input-group-text {
-    background-color: #f0f3f9;
-    border-color: #e0e0e0;
+    background-color: var(--primary-light);
+    border: 1px solid var(--border-color);
     color: var(--primary-color);
+    border-radius: 8px 0 0 8px;
+    border-right: none;
 }
 
-/* Help text styling */
+.input-group .form-control {
+    border-radius: 0 8px 8px 0;
+}
+
+/* Help text styling - Mềm mại hơn */
 .form-text {
-    color: #6c757d;
+    color: var(--secondary-color);
     font-size: 0.85rem;
-    margin-top: 0.25rem;
+    margin-top: 0.5rem;
+    transition: var(--transition);
 }
 
-/* Action button area */
+/* Action button area - Hiện đại hơn */
 .form-actions {
     display: flex;
     justify-content: space-between;
-    padding: 1rem 0;
-    margin-top: 1rem;
-    border-top: 1px solid #eee;
+    padding: 1.5rem 0;
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Card Tips - Hiện đại hơn */
+.tips-card {
+    border-radius: var(--radius-md);
+    border: none;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.tips-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.tips-card .card-header {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+    border-bottom: none;
+    padding: 1.2rem 1.5rem;
+}
+
+.tips-card .alert {
+    border: none;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Avatar - Hiện đại hơn */
+.avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.avatar:hover {
+    transform: scale(1.05);
+}
+
+/* Modal - Mềm mại hơn */
+.modal-content {
+    border: none;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    border-bottom: none;
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: none;
+    padding: 1.2rem 1.5rem;
+}
+
+.modal-body {
+    padding: 1.8rem;
+}
+
+/* Các trạng thái invalid */
+.is-invalid {
+    border-color: var(--danger-color) !important;
+}
+
+.invalid-feedback {
+    display: block;
+    color: var(--danger-color);
+    font-size: 0.85rem;
+    margin-top: 0.4rem;
 }
 
 /* Responsive adjustments */
@@ -261,16 +407,17 @@
 
     .table-insurance tr {
         margin-bottom: 1rem;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
         overflow: hidden;
+        box-shadow: var(--shadow-sm);
     }
 
     .table-insurance td {
         text-align: right;
         padding-left: 50%;
         position: relative;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .table-insurance td:before {
@@ -285,5 +432,20 @@
 
     .table-insurance td:last-child {
         border-bottom: none;
+    }
+
+    .form-section {
+        padding: 1.2rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn-insurance-secondary,
+    .form-actions .btn-insurance-primary {
+        width: 100%;
+        margin-bottom: 0.8rem;
+        text-align: center;
     }
 }

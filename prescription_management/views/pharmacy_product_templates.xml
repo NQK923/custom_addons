@@ -138,11 +138,39 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Pagination -->
+                <t t-if="pager">
+                    <div class="o_patient_pagination mt-3">
+                        <ul class="pagination justify-content-center">
+                            <li t-attf-class="page-item #{pager['page'] == 1 and 'disabled' or ''}">
+                                <a t-att-href="pager['page_previous'] and pager['page_previous']['url'] or '#'" class="page-link">
+                                    Trước
+                                </a>
+                            </li>
+                            <t t-foreach="pager['page_ids']" t-as="page">
+                                <li t-attf-class="page-item #{page['num'] == pager['page'] and 'active' or ''}">
+                                    <a t-att-href="page['url']" class="page-link">
+                                        <t t-esc="page['num']"/>
+                                    </a>
+                                </li>
+                            </t>
+                            <li t-attf-class="page-item #{pager['page'] == pager['page_count'] and 'disabled' or ''}">
+                                <a t-att-href="pager['page_next'] and pager['page_next']['url'] or '#'" class="page-link">
+                                    Tiếp
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="text-center text-muted">
+                        <small>Hiển thị <t t-esc="(pager['page']-1) * 10 + 1"/> - <t t-esc="min(pager['page'] * 10, total_count)"/> trên tổng số <t t-esc="total_count"/> dược phẩm</small>
+                    </div>
+                </t>
             </div>
         </t>
     </template>
 
-    <!-- Template for pharmacy product detail -->
+    <!-- Template for pharmacy product detail remains unchanged -->
     <template id="pharmacy_product_detail_template" name="Pharmacy Product Detail">
         <t t-call="website.layout">
             <div class="container mt-4">
