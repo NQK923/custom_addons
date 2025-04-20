@@ -44,15 +44,192 @@
             .table-hover tbody tr:hover {
             background-color: rgba(0,123,255,0.05);
             }
-            .nav-tabs .nav-link {
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
+
+            /* IMPROVED NAVIGATION STYLES */
+            .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            border-bottom: none;
+            margin-bottom: 0;
             }
-            .nav-tabs .nav-link.active {
+
+            .nav-tabs .nav-item {
+            margin: 0;
+            }
+
+            .nav-tabs .nav-link {
+            border: 1px solid #dee2e6;
+            background-color: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 12px 12px 0 0 !important;
             font-weight: 600;
+            color: #495057;
+            position: relative;
+            z-index: 1;
+            transition: all 0.25s ease;
+            }
+
+            .nav-tabs .nav-link.active {
+            background-color: #ffffff;
+            border-bottom-color: #ffffff;
             color: #007bff;
             border-top: 3px solid #007bff;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+            z-index: 2;
             }
+
+            .nav-tabs .nav-link:hover:not(.active) {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+            color: #0056b3;
+            }
+
+            .nav-tabs .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: #ffffff;
+            z-index: 3;
+            }
+
+            /* CUSTOM SUB-NAVIGATION STYLES */
+            .custom-sub-nav {
+            background-color: #f8f9fa;
+            border-color: #e9ecef !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Increased from 12px to 20px for more space between buttons */
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            margin-bottom: 20px;
+            }
+
+            /* Base button style for all navigation buttons */
+            .custom-nav-btn {
+            display: inline-block;
+            text-decoration: none;
+            padding: 10px 24px;
+            border-radius: 100px; /* Increased from 50px to 100px for maximum roundness */
+            font-weight: 500;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin: 5px; /* Increased from 3px to 5px for more spacing */
+            font-size: 14px;
+            }
+
+            /* Secondary (inactive) buttons */
+            .custom-nav-btn-secondary {
+            background-color: white;
+            border-radius: 10px;
+            padding 3px;
+            margin: 5px;
+            color: #495057;
+            border: 1px solid #ced4da;
+            }
+
+            .custom-nav-btn-secondary:hover {
+            color: #007bff;
+            background-color: #f0f7ff;
+            padding: 3px;
+            margin: 5px;
+            border-radius: 10px;
+            border-color: #b8daff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            /* Primary (active) button */
+            .custom-nav-btn-primary {
+            background: linear-gradient(135deg, #007bff, #0069d9);
+            border-radius: 10px;
+            padding: 3px;
+            margin: 5px;
+            border: 1px solid #0062cc;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
+            }
+
+            .custom-nav-btn-primary:hover {
+            background: linear-gradient(135deg, #0069d9, #0056b3);
+            border-color: #004085;
+            padding: 3px;
+            margin: 5px;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+            }
+
+            /* SUB-NAVIGATION LEGACY STYLES - FOR BACKWARD COMPATIBILITY */
+            .sub-navigation {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: between;
+            gap: 20px; /* Increased from 10px to 20px */
+            }
+
+            .sub-navigation .btn {
+            border-radius: 100px; /* Increased from 50px to 100px for maximum roundness */
+            padding: 8px 24px;
+            font-weight: 500;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin: 5px; /* Increased from 3px to 5px */
+            }
+
+            .sub-navigation .btn-outline-secondary {
+            color: #495057;
+            border-radius: 10px;
+            padding: 3px;
+            margin: 5px;
+            background-color: white;
+            border-color: #ced4da;
+            }
+
+            .sub-navigation .btn-outline-secondary:hover {
+            color: #007bff;
+            border-radius: 10px;
+            padding: 3px;
+            margin: 5px;
+            background-color: #f0f7ff;
+            border-color: #b8daff;
+            }
+
+            .sub-navigation .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0069d9);
+            border-color: #0062cc;
+            padding: 3px;
+            margin: 5px;
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
+            }
+
+            .sub-navigation .btn-primary:hover {
+            background: linear-gradient(135deg, #0069d9, #0056b3);
+            border-radius: 10px;
+            padding: 3px;
+            margin: 5px;
+            border-color: #004085;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+            }
+
+            /* Original styles continued */
             pre {
             background-color: #f8f9fa;
             border-radius: 5px;
@@ -170,128 +347,6 @@
             .table td, .table th {
             background-color: white !important;
             }
-            }
-
-            /* NEW TAB NAVIGATION STYLES */
-            .nav-tabs .nav-link {
-            border-radius: 8px 8px 0 0;
-            font-weight: 600;
-            color: #495057;
-            }
-
-            .nav-tabs .nav-link.active {
-            background-color: #f8f9fa;
-            border-color: #dee2e6 #dee2e6 #f8f9fa;
-            color: #007bff;
-            border-top: 3px solid #007bff;
-            }
-
-            .nav-tabs .nav-link:hover:not(.active) {
-            background-color: rgba(0, 123, 255, 0.05);
-            border-color: #e9ecef #e9ecef #dee2e6;
-            }
-
-            .sub-navigation {
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            }
-
-            .sub-navigation .btn-outline-secondary {
-            background-color: white;
-            }
-
-            .sub-navigation .btn-outline-secondary:hover {
-            background-color: #f8f9fa;
-            }
-
-            /* CSS cho Sub Tab Menu */
-            .sub-navigation {
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 0 0 8px 8px;
-            margin-bottom: 20px;
-            }
-
-            .sub-navigation .btn {
-            margin-right: 8px;
-            margin-bottom: 5px;
-            border-radius: 20px;
-            padding: 6px 15px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            text-shadow: none;
-            }
-
-            .sub-navigation .btn-outline-secondary {
-            background-color: white;
-            color: #495057;
-            }
-
-            .sub-navigation .btn-outline-secondary:hover {
-            background-color: #e9ecef;
-            color: #007bff;
-            }
-
-            .sub-navigation .btn-primary {
-            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
-            margin 5px;
-            }
-
-            .sub-navigation .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
-            }
-            .nav-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 10px; /* Thêm khoảng cách 10px giữa các tab */
-            border-bottom: none;
-            margin-bottom: 0;
-            }
-
-            .nav-tabs .nav-item {
-            margin: 0 5px; /* Thêm lề trái phải 5px cho mỗi tab */
-            }
-
-            .nav-tabs .nav-link {
-            border: 1px solid #dee2e6;
-            background-color: #f8f9fa;
-            padding: 10px 20px;
-            border-radius: 8px 8px 0 0 !important;
-            position: relative;
-            z-index: 1;
-            }
-
-            .nav-tabs .nav-link.active {
-            background-color: #ffffff;
-            border-bottom-color: #ffffff;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
-            z-index: 2;
-            }
-
-            /* Để kết nối tab active với sub-navigation */
-            .nav-tabs .nav-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background-color: #ffffff;
-            z-index: 3;
-            }
-
-            /* Kiểu màu sắc cho sub-navigation để phù hợp với tab */
-            .sub-navigation {
-            padding: 12px;
-            background-color: #ffffff;
-            border: 1px solid #dee2e6;
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            position: relative;
-            z-index: 1;
             }
         </style>
     </template>

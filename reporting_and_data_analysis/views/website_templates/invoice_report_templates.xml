@@ -30,32 +30,33 @@
                 </li>
             </ul>
 
-            <div class="sub-navigation bg-light p-2 border border-top-0 rounded-bottom mb-3">
+            <!-- IMPROVED SUB NAVIGATION WITH BETTER STYLING -->
+            <div class="custom-sub-nav p-3 border border-top-0 rounded-bottom mb-3">
                 <div t-if="page_name in ['invoice_monthly', 'invoice_services', 'invoice_products', 'invoice_patients', 'invoice_status']"
-                     class="d-flex flex-wrap justify-content-between gap-2">
+                     class="d-flex flex-wrap justify-content-center">
                     <a href="/clinic/reports/invoice/monthly"
-                       class="btn btn-sm"
-                       t-att-class="'btn-primary' if page_name == 'invoice_monthly' else 'btn-outline-secondary'">
+                       class="custom-nav-btn"
+                       t-att-class="'custom-nav-btn-primary' if page_name == 'invoice_monthly' else 'custom-nav-btn-secondary'">
                         Doanh Thu Theo Tháng
                     </a>
                     <a href="/clinic/reports/invoice/services"
-                       class="btn btn-sm"
-                       t-att-class="'btn-primary' if page_name == 'invoice_services' else 'btn-outline-secondary'">
+                       class="custom-nav-btn"
+                       t-att-class="'custom-nav-btn-primary' if page_name == 'invoice_services' else 'custom-nav-btn-secondary'">
                         Phân Tích Dịch Vụ
                     </a>
                     <a href="/clinic/reports/invoice/products"
-                       class="btn btn-sm"
-                       t-att-class="'btn-primary' if page_name == 'invoice_products' else 'btn-outline-secondary'">
+                       class="custom-nav-btn"
+                       t-att-class="'custom-nav-btn-primary' if page_name == 'invoice_products' else 'custom-nav-btn-secondary'">
                         Phân Tích Thuốc
                     </a>
                     <a href="/clinic/reports/invoice/patients"
-                       class="btn btn-sm"
-                       t-att-class="'btn-primary' if page_name == 'invoice_patients' else 'btn-outline-secondary'">
+                       class="custom-nav-btn"
+                       t-att-class="'custom-nav-btn-primary' if page_name == 'invoice_patients' else 'custom-nav-btn-secondary'">
                         Phân Tích Bệnh Nhân
                     </a>
                     <a href="/clinic/reports/invoice/status"
-                       class="btn btn-sm"
-                       t-att-class="'btn-primary' if page_name == 'invoice_status' else 'btn-outline-secondary'">
+                       class="custom-nav-btn"
+                       t-att-class="'custom-nav-btn-primary' if page_name == 'invoice_status' else 'custom-nav-btn-secondary'">
                         Trạng Thái Hóa Đơn
                     </a>
                 </div>

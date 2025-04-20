@@ -22,6 +22,12 @@
   margin: 0 auto;
 }
 
+/* Fix for table headers - ensure all table headers have proper text color */
+.o_patient_container table th {
+  color: var(--dark);
+  font-weight: 600;
+}
+
 /* Card Styling */
 .o_patient_card {
   box-shadow: var(--card-shadow);
