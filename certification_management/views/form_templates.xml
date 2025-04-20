@@ -191,6 +191,24 @@
                                         </div>
                                     </div>
 
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <label for="document">Tài liệu đính kèm</label>
+                                                <t t-if="certificate and certificate.document">
+                                                    <p class="mb-2">
+                                                        <strong>Tệp hiện tại:</strong> <t t-esc="certificate.document_filename or 'Tài liệu chứng nhận'"/>
+                                                        <a t-att-href="'/certification/certificate/%s/download_document' % certificate.id" class="ml-2">
+                                                            <i class="fa fa-download"></i> Tải xuống
+                                                        </a>
+                                                    </p>
+                                                </t>
+                                                <input type="file" class="form-control-file" id="document" name="document" />
+                                                <small class="form-text text-muted">Tải lên tài liệu chứng nhận (PDF, DOC, DOCX, JPG). Tải lên tài liệu mới sẽ thay thế tài liệu cũ (nếu có)</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-primary">
                                             <t t-if="certificate">Lưu thay đổi</t>

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
+import io
+import base64
 from datetime import timedelta
 
 from odoo import http, fields
-from odoo.http import request
+from odoo.http import request, content_disposition
 
 _logger = logging.getLogger(__name__)
 
@@ -106,6 +108,33 @@ class CertificationController(http.Controller):
         }
         return request.render('certification_management.certificate_detail_template', values)
 
+    @http.route('/certification/certificate/<model("hospital.certification"):cert_id>/download_document', type='http',
+                auth='user')
+    def certificate_download_document(self, cert_id, **kwargs):
+        # Kiểm tra quyền quản lý
+        if not self._check_manager_access():
+            return request.redirect('/')
+
+        # Kiểm tra tài liệu có tồn tại không
+        if not cert_id.document:
+            return request.redirect('/certification/certificate/%s' % cert_id.id)
+
+        # Chuẩn bị response để tải xuống
+        filename = cert_id.document_filename or 'certificate_document'
+
+        # Tạo response với nội dung file
+        document_content = base64.b64decode(cert_id.document)
+
+        # Tạo response thay vì sử dụng http.send_file
+        response = request.make_response(
+            document_content,
+            headers=[
+                ('Content-Type', 'application/octet-stream'),
+                ('Content-Disposition', content_disposition(filename)),
+                ('Content-Length', len(document_content)),
+            ]
+        )
+        return response
     @http.route('/certification/certificate/create', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def certificate_create(self, **kwargs):
         # Kiểm tra quyền quản lý
@@ -127,6 +156,12 @@ class CertificationController(http.Controller):
                     'description': kwargs.get('description'),
                     'state': 'draft',
                 }
+
+                # Xử lý tệp tải lên
+                document = kwargs.get('document')
+                if document and hasattr(document, 'read'):
+                    values['document'] = base64.b64encode(document.read())
+                    values['document_filename'] = document.filename
 
                 new_cert = request.env['hospital.certification'].create(values)
                 return request.redirect('/certification/certificate/%s' % new_cert.id)
@@ -177,6 +212,12 @@ class CertificationController(http.Controller):
                     'department_id': int(kwargs.get('department_id')) if kwargs.get('department_id') else False,
                     'description': kwargs.get('description'),
                 }
+
+                # Xử lý tệp tải lên
+                document = kwargs.get('document')
+                if document and hasattr(document, 'read'):
+                    values['document'] = base64.b64encode(document.read())
+                    values['document_filename'] = document.filename
 
                 cert_id.write(values)
                 return request.redirect('/certification/certificate/%s' % cert_id.id)

@@ -1,4 +1,5 @@
 import json
+import werkzeug
 
 from odoo import http, _
 from odoo.exceptions import ValidationError, AccessError
@@ -15,6 +16,43 @@ class PrescriptionManagementController(http.Controller):
         is_manager = current_user.has_group('prescription_management.group_prescription_manager')
         return is_manager
 
+    def _get_pager(self, page, limit, total, url, url_args=None):
+        """Hàm helper để tạo đối tượng phân trang."""
+        if url_args is None:
+            url_args = {}
+
+        # Tính toán các thông số phân trang
+        page_count = int(total / limit) + (1 if total % limit else 0)
+        if page_count <= 1:
+            return None
+
+        url_args = dict(url_args)  # Tạo bản sao để tránh thay đổi đối tượng gốc
+
+        # Tạo URL cho các trang
+        def get_page_url(page):
+            url_args['page'] = page
+            return '%s?%s' % (url, werkzeug.urls.url_encode(url_args))
+
+        # Tạo thông tin cho các trang
+        pages = []
+        for p in range(1, page_count + 1):
+            pages.append({
+                'num': p,
+                'url': get_page_url(p),
+                'active': p == page
+            })
+
+        return {
+            'page_count': page_count,
+            'offset': (page - 1) * limit,
+            'page': page,
+            'page_start': max(page - 2, 1),
+            'page_previous': {'num': page - 1, 'url': get_page_url(page - 1)} if page > 1 else None,
+            'page_next': {'num': page + 1, 'url': get_page_url(page + 1)} if page < page_count else None,
+            'page_end': min(page + 2, page_count),
+            'page_ids': pages,
+        }
+
     @http.route('/pharmacy/prescriptions', type='http', auth='user', website=True, methods=['GET', 'POST'])
     def prescription_list(self, **kwargs):
         # Kiểm tra quyền quản lý
@@ -24,6 +62,12 @@ class PrescriptionManagementController(http.Controller):
         search_value = kwargs.get('search_value', '')
         patient = False
 
+        # Phân trang
+        page = int(kwargs.get('page', 1))
+        limit = 10
+        offset = (page - 1) * limit
+
+        domain = []
         # Get all prescriptions by default
         if search_value:
             # Search for patient by code or name
@@ -33,20 +77,26 @@ class PrescriptionManagementController(http.Controller):
 
             if patient:
                 # Get prescriptions for this patient
-                prescriptions = request.env['prescription.order'].sudo().search([
-                    ('patient_id', '=', patient.id)
-                ], order='date desc')
-            else:
-                # If no patient is found but search was performed, return empty set
-                prescriptions = request.env['prescription.order'].sudo().search([])
-        else:
-            # If no search, get all prescriptions
-            prescriptions = request.env['prescription.order'].sudo().search([], order='date desc')
+                domain = [('patient_id', '=', patient.id)]
+
+        # Get total count for pagination
+        total_count = request.env['prescription.order'].sudo().search_count(domain)
+
+        # Get paginated prescriptions
+        prescriptions = request.env['prescription.order'].sudo().search(
+            domain, limit=limit, offset=offset, order='date desc'
+        )
+
+        # Create pager
+        url_args = {'search_value': search_value} if search_value else {}
+        pager = self._get_pager(page, limit, total_count, '/pharmacy/prescriptions', url_args)
 
         values = {
             'patient': patient,
             'prescriptions': prescriptions,
             'search_value': search_value,
+            'pager': pager,
+            'total_count': total_count,
         }
         return request.render('prescription_management.prescription_list_template', values)
 
@@ -84,11 +134,28 @@ class PrescriptionManagementController(http.Controller):
                       ('category', 'ilike', search)
                       ]
 
-        pharmacy_products = request.env['pharmacy.product'].sudo().search(domain, order='name')
+        # Phân trang
+        page = int(kwargs.get('page', 1))
+        limit = 10
+        offset = (page - 1) * limit
+
+        # Get total count for pagination
+        total_count = request.env['pharmacy.product'].sudo().search_count(domain)
+
+        # Get paginated products
+        pharmacy_products = request.env['pharmacy.product'].sudo().search(
+            domain, limit=limit, offset=offset, order='name'
+        )
+
+        # Create pager
+        url_args = {'search': search} if search else {}
+        pager = self._get_pager(page, limit, total_count, '/pharmacy/products', url_args)
 
         values = {
             'pharmacy_products': pharmacy_products,
-            'search': search
+            'search': search,
+            'pager': pager,
+            'total_count': total_count,
         }
         return request.render('prescription_management.pharmacy_products_template', values)
 
@@ -298,11 +365,28 @@ class PrescriptionManagementController(http.Controller):
         if search:
             domain = [('service_name', 'ilike', search)]
 
-        clinic_services = request.env['clinic.service'].sudo().search(domain, order='service_name')
+        # Phân trang
+        page = int(kwargs.get('page', 1))
+        limit = 10
+        offset = (page - 1) * limit
+
+        # Get total count for pagination
+        total_count = request.env['clinic.service'].sudo().search_count(domain)
+
+        # Get paginated services
+        clinic_services = request.env['clinic.service'].sudo().search(
+            domain, limit=limit, offset=offset, order='service_name'
+        )
+
+        # Create pager
+        url_args = {'search': search} if search else {}
+        pager = self._get_pager(page, limit, total_count, '/pharmacy/services', url_args)
 
         values = {
             'clinic_services': clinic_services,
-            'search': search
+            'search': search,
+            'pager': pager,
+            'total_count': total_count,
         }
         return request.render('prescription_management.clinic_services_template', values)
 

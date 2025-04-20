@@ -94,10 +94,10 @@ class MedicalCertification(models.Model):
     def _send_expiry_reminders(self):
         today = fields.Date.today()
         for cert in self.search([('renewal_reminder', '=', True)]):
-            if cert.expiry_date and cert.responsible_id and cert.reminder_days:
+            if cert.expiry_date and cert.staff_id and cert.reminder_days:
                 reminder_date = cert.expiry_date - timedelta(days=cert.reminder_days)
                 if reminder_date <= today and cert.state != 'expired':
-                    template = self.env.ref('hospital_certification.mail_template_certification_reminder')
+                    template = self.env.ref('certification_management.mail_template_certification_reminder')
                     if template:
                         template.send_mail(cert.id, force_send=True)
 

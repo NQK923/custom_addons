@@ -78,6 +78,16 @@
                 padding: 12px;
                 text-align: center;
                 }
+                .pagination {
+                margin-top: 20px;
+                }
+                .pagination .page-item.active .page-link {
+                background-color: #007bff;
+                border-color: #007bff;
+                }
+                .pagination .page-link {
+                color: #007bff;
+                }
             </style>
             <div class="container mt-5 prescription-container">
                 <div class="row mb-3">
@@ -219,6 +229,34 @@
                                     </div>
                                 </t>
                             </div>
+
+                            <!-- Pagination for patient-specific prescriptions -->
+                            <t t-if="pager">
+                                <div class="d-flex justify-content-center">
+                                    <ul class="pagination">
+                                        <li t-attf-class="page-item #{pager['page'] == 1 and 'disabled' or ''}">
+                                            <a t-att-href="pager['page_previous'] and pager['page_previous']['url'] or '#'" class="page-link">
+                                                Trước
+                                            </a>
+                                        </li>
+                                        <t t-foreach="pager['page_ids']" t-as="page">
+                                            <li t-attf-class="page-item #{page['num'] == pager['page'] and 'active' or ''}">
+                                                <a t-att-href="page['url']" class="page-link">
+                                                    <t t-esc="page['num']"/>
+                                                </a>
+                                            </li>
+                                        </t>
+                                        <li t-attf-class="page-item #{pager['page'] == pager['page_count'] and 'disabled' or ''}">
+                                            <a t-att-href="pager['page_next'] and pager['page_next']['url'] or '#'" class="page-link">
+                                                Tiếp
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="text-center text-muted">
+                                    <small>Hiển thị <t t-esc="(pager['page']-1) * 10 + 1"/> - <t t-esc="min(pager['page'] * 10, total_count)"/> trên tổng số <t t-esc="total_count"/> đơn thuốc</small>
+                                </div>
+                            </t>
                         </t>
                         <t t-elif="patient and not prescriptions">
                             <p class="no-data">Bệnh nhân chưa có đơn thuốc nào.</p>
@@ -255,7 +293,7 @@
                                         <t t-foreach="prescriptions" t-as="prescription">
                                             <tr>
                                                 <td>
-                                                    <t t-esc="prescription_index + 1"/>
+                                                    <t t-esc="(pager and (pager['page']-1) * 10 or 0) + prescription_index + 1"/>
                                                 </td>
                                                 <td>
                                                     <t t-esc="prescription.name"/>
@@ -301,6 +339,34 @@
                                     </tbody>
                                 </table>
                             </div>
+
+                            <!-- Pagination for all prescriptions -->
+                            <t t-if="pager">
+                                <div class="d-flex justify-content-center">
+                                    <ul class="pagination">
+                                        <li t-attf-class="page-item #{pager['page'] == 1 and 'disabled' or ''}">
+                                            <a t-att-href="pager['page_previous'] and pager['page_previous']['url'] or '#'" class="page-link">
+                                                Trước
+                                            </a>
+                                        </li>
+                                        <t t-foreach="pager['page_ids']" t-as="page">
+                                            <li t-attf-class="page-item #{page['num'] == pager['page'] and 'active' or ''}">
+                                                <a t-att-href="page['url']" class="page-link">
+                                                    <t t-esc="page['num']"/>
+                                                </a>
+                                            </li>
+                                        </t>
+                                        <li t-attf-class="page-item #{pager['page'] == pager['page_count'] and 'disabled' or ''}">
+                                            <a t-att-href="pager['page_next'] and pager['page_next']['url'] or '#'" class="page-link">
+                                                Tiếp
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="text-center text-muted">
+                                    <small>Hiển thị <t t-esc="(pager['page']-1) * 10 + 1"/> - <t t-esc="min(pager['page'] * 10, total_count)"/> trên tổng số <t t-esc="total_count"/> đơn thuốc</small>
+                                </div>
+                            </t>
                         </t>
                         <t t-else="">
                             <div class="alert alert-info">
@@ -313,7 +379,7 @@
         </t>
     </template>
 
-    <!-- Template for prescription details -->
+    <!-- Template for prescription details remains unchanged -->
     <template id="prescription_detail_template" name="Prescription Detail">
         <t t-call="website.layout">
             <style>

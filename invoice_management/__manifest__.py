@@ -23,6 +23,12 @@
         'views/statistics_templates.xml',
         'views/website_menu.xml',
     ],
+
+    'assets': {
+        'web.assets_frontend': [
+            'invoice_management/static/src/css/insurance_styles.css',
+        ],
+    },
     'demo': [],
     'installable': True,
     'application': True,
