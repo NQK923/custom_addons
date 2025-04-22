@@ -164,7 +164,7 @@
                                 <div class="table-responsive">
                                     <table class="table table-hover">
                                         <thead>
-                                            <tr>
+                                            <tr class="text-nowrap">
                                                 <th>Tên</th>
                                                 <th>Quy định</th>
                                                 <th>Ngày đánh giá</th>
